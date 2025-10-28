@@ -1,0 +1,522 @@
+@import url('globalStyles.css');
+
+/* Sin animaciones al cargar (solo para el nav) */
+html:not(.ui-ready) #sidebar,
+html:not(.ui-ready) .navbarContainer,
+html:not(.ui-ready) .navbarItem,
+html:not(.ui-ready) .navbarText,
+html:not(.ui-ready) .userContainer,
+html:not(.ui-ready) .btnNavbarContainer,
+html:not(.ui-ready) #submenu {
+    transition: none !important;
+    animation: none !important;
+}
+
+body:not(.sidebar-ready) {
+    visibility: hidden;
+}
+
+#sidebar {
+    position: relative;
+    height: 100dvh;
+    transition: all .3s ease;
+}
+
+.navbarContainer {
+    --bg-color: #f7f7f7;
+    --height-logo-container: clamp(100px, 20vh, 125px);
+    --height-user-container: clamp(60px, 15vh, 115px);
+    background-color: var(--bg-color);
+    border-top-right-radius: 12px;
+    box-shadow: var(--bx-shadow-primary);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    transition: width .3s ease;
+}
+
+.navbar {
+    padding: 20px 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.navHeader {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--height-logo-container);
+}
+
+.logoContainer {
+    width: calc(100% - 100px);
+    border-bottom: solid var(--helper-color) 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 30px;
+}
+
+.logo {
+    width: 80%;
+    cursor: pointer;
+}
+
+.btnNavbarIcon {
+    width: 100%;
+}
+
+.navBody {
+    height: calc(94dvh - var(--height-logo-container) - var(--height-user-container));
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.navbarItemsContainer {
+    width: calc(100% - 100px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.groupItems {
+    width: 100%;
+    background-color: var(--bg-color);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    z-index: 25;
+    margin-right: 13px;
+}
+
+.itemContainer {
+    width: 100%;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    margin-right: 13px;
+}
+
+.navbarItem {
+    text-decoration: none;
+    position: relative;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 30px;
+    font-weight: 500;
+    font-size: 1.5em;
+    font-family: var(--font-text);
+    width: 100%;
+    margin-top: 35px;
+    max-height: 30px;
+    box-sizing: border-box;
+    margin-right: 13px;
+}
+
+.activeNavbarItem::before {
+    content: '';
+    width: 4px;
+    height: clamp(20px, 100%, 35px);
+    left: clamp(-18px, -2vw, -30px);
+    box-shadow: 0 0 6px #647AD3;
+    display: block;
+    background-color: #94ACDA;
+    border-radius: 5px;
+    position: absolute;
+}
+
+.navbarItemEmployeesContainer {
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-top: 35px;
+    max-height: 30px;
+}
+
+.navbarIcon {
+    width: 30px;
+    height: 30px;
+}
+
+.navbarText {
+    color: var(--text-color-secondary);
+    opacity: 1;
+    transition: opacity .3s ease;
+}
+
+#btnSubmenu {
+    margin-left: 30px;
+    display: flex;
+    align-items: center;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+#btnSubmenu img {
+    rotate: 90deg;
+}
+
+#submenu {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+    align-items: end;
+    box-sizing: border-box;
+    transition: height 1s ease;
+    margin-left: 20px;
+}
+
+.submenuItemsContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.drawSubmenu {
+    width: 25px;
+    height: 30px;
+    position: relative;
+    border-left: solid #9DA3C8 2px;
+    border-bottom: solid #9DA3C8 2px;
+}
+
+.submenuItem {
+    text-decoration: none;
+    position: absolute;
+    font-family: var(--font-text);
+    font-weight: 600;
+    font-size: 1em;
+    bottom: -11px;
+    color: #9DA3C8;
+}
+
+.btnNavbarContainer {
+    transition: all .3s ease;
+    position: absolute;
+    top: 100px;
+    z-index: 30;
+    right: -20px;
+}
+
+#btnNavbar {
+    background-color: var(--danger-color);
+    box-shadow: 0 0 5px var(--dark-danger-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    display: grid;
+    place-content: center;
+    z-index: 20;
+    border: none;
+    padding: 11px;
+    cursor: pointer;
+}
+
+
+/*Estilos para abrir y cerrar el nav y dropdown*/
+
+
+.rotate180 {
+    rotate: 180deg;
+}
+
+.submenuClose {
+    height: 0px;
+    translate: 0 -7px;
+}
+
+.submenuOpen {
+    height: 70px;
+    translate: 0 0;
+}
+
+.hideText {
+    opacity: 0;
+}
+
+.navbarOpen {
+    width: 350px;
+    left: 0;
+}
+
+.navbarClose {
+    width: 120px;
+}
+
+
+.logoShort {
+    width: 40px;
+}
+
+/*Nav responsive*/
+
+.navCloseResponsive {
+    left: -300px !important;
+}
+
+.btnNavbarContainerOpen {
+    left: 270px !important;
+    z-index: 35;
+    border: none !important;
+}
+
+@media screen and (max-width: 1225px) {
+
+    #sidebar {
+        position: absolute;
+    }
+
+    .navbarContainer {
+        position: absolute;
+        z-index: 30;
+        width: 300px;
+        left: 0;
+        transition: left .7s ease;
+    }
+
+    .navbar {
+        padding: 0;
+    }
+
+    .navbarItem,
+    .navbarUserItem {
+        font-size: 1.4em;
+        gap: 20px;
+    }
+
+    .logoContainer {
+        width: 250px;
+    }
+
+    .navbarItemsContainer {
+        width: 250px;
+    }
+
+    .btnNavbarContainer {
+        position: absolute;
+        width: 30px;
+        height: 80px;
+        border: solid var(--helper-color) 1px;
+        border-radius: 0 20px 20px 0;
+        right: -210px;
+        background-color: var(--bg-color);
+    }
+
+    #btnNavbar {
+        position: absolute;
+        top: 20px;
+        right: -20px;
+    }
+}
+
+@media screen and (max-width: 500px) {
+
+    .btnNavbarContainerOpen {
+        left: 245px !important;
+    }
+
+    .navbarContainer {
+        width: 275px;
+    }
+
+    .navbarItem,
+    .navbarUserItem {
+        font-size: 1.2em;
+        gap: 15px;
+    }
+
+}
+
+/* ===== Paleta del scrollbar ===== */
+:root {
+    --sb-thumb-base: var(--color-primary, #6774e660);
+    /* normal/hover */
+    --sb-thumb-hover: var(--sb-thumb-base);
+    /* hover = base */
+    --sb-thumb-pressed: var(--color-primary-strong, #6C63FF);
+    /* presionado */
+    --sb-track: transparent;
+    /* canal */
+}
+
+/* ===== Solo vertical (derecha), sin horizontal y SIN EMPUJAR ===== */
+.navBody {
+    display: flex;
+    /* asegura centrado */
+    justify-content: center !important;
+    /* nunca a la izquierda */
+    overflow-y: auto !important;
+    overflow-x: clip !important;
+    /* mata la barra de abajo */
+    scrollbar-gutter: stable !important;
+    /* reserva a la derecha sin mover layout */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.btnPrimary:disabled {
+    opacity: 0.7;
+    /* Make it slightly transparent */
+    cursor: not-allowed;
+    /* Change the cursor to indicate it's blocked */
+    transform: none;
+    /* Override hover effect */
+    box-shadow: none;
+}
+
+/* Mantener el bloque de ítems centrado en cualquier ancho */
+.navbarItemsContainer {
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1225px) {
+    .navbarItemsContainer {
+        height: auto !important;
+    }
+
+    /* deja crecer para que haya scroll */
+}
+
+/* Firefox: color del scrollbar; oculto en reposo con .sb-idle (lo pone el JS) */
+.navBody {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-thumb-base) var(--sb-track);
+}
+
+.navBody.sb-idle {
+    scrollbar-color: transparent transparent;
+}
+
+/* WebKit (Chrome/Edge/Safari) */
+.navBody::-webkit-scrollbar {
+    width: 6px;
+    height: 0 !important;
+}
+
+/* solo lateral */
+.navBody::-webkit-scrollbar:horizontal {
+    height: 0 !important;
+    display: none !important;
+}
+
+.navBody::-webkit-scrollbar-track {
+    background: var(--sb-track) !important;
+}
+
+.navBody::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.navBody::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb-base) !important;
+    border-radius: 8px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    /* evita gris del UA */
+    opacity: var(--sb-op, 0);
+    /* el JS anima esta opacidad */
+    transition: opacity .28s ease, background-color .2s ease;
+}
+
+.navBody::-webkit-scrollbar-thumb:hover {
+    background: var(--sb-thumb-hover) !important;
+}
+
+.navBody::-webkit-scrollbar-thumb:active {
+    background: var(--sb-thumb-pressed) !important;
+}
+
+/* ===== Fix layout ≤ 500px: centrado real, sin empujar a la izquierda ===== */
+@media (max-width: 500px) {
+
+    /* El contenedor de ítems ocupa todo el ancho del sidebar
+     y se centra con padding simétrico */
+    .navbarItemsContainer {
+        width: 100% !important;
+        padding: 0 16px !important;
+        /* aire a ambos lados */
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Quitamos empujes hacia la izquierda por márgenes a la derecha */
+    .groupItems,
+    .navbarItem,
+    .navbarUserItem,
+    .itemContainer {
+        margin-right: 0 !important;
+    }
+
+    /* El área scrollable mantiene centrado el contenido */
+    .navBody {
+        justify-content: center !important;
+    }
+}
+
+/* Por si en algún breakpoint alguien cambia el centrado,
+   lo forzamos en general sin romper el scroll */
+.navBody {
+    display: flex;
+    justify-content: center !important;
+    overflow-y: auto !important;
+    overflow-x: clip !important;
+    /* sin barra de abajo */
+    scrollbar-gutter: stable !important;
+    /* no empuja el layout */
+}
+
+/* Scrollbar (solo derecha) se queda igual con tus colores */
+.navBody::-webkit-scrollbar {
+    width: 6px;
+    height: 0 !important;
+}
+
+.navBody::-webkit-scrollbar:horizontal {
+    height: 0 !important;
+    display: none !important;
+}
+
+.navBody::-webkit-scrollbar-track {
+    background: var(--sb-track, transparent) !important;
+}
+
+.navBody::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb-base, #6774e660) !important;
+    border-radius: 8px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+}
+
+.navBody::-webkit-scrollbar-thumb:hover {
+    background: var(--sb-thumb-hover, #6774e660) !important;
+}
+
+.navBody::-webkit-scrollbar-thumb:active {
+    background: var(--sb-thumb-pressed, #6C63FF) !important;
+}
+
+/* Firefox colores */
+.navBody {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-thumb-base, #6774e660) transparent;
+}
