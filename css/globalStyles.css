@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400&display=swap");
 :root{
     --bg-color: #FCFCFC;
     --text-color: #0D0503;
@@ -5,13 +6,88 @@
     --warning-color: #FFB235;
     --dark-danger-color: #871B19;
     --helper-color: #CD908F;
-    --font-text: Sans-serif; /* Font para mientras */
+    --font-text: 'poppins', 'sans-serif';
     --text-color-secondary: #81859E;
     --bx-shadow-primary: 5px 2px 6px #CD908F44;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --border: 1px solid #81859E;
+    --border-radius-input: 5px;
+    --border-radius-btn: 8px;
+    --font-size-base: 1.1em;
+    --font-size-lg: 1.3em;
+    --font-size-sm: 0.9em;
+    --font-size-breadcrumb: 2.2em;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: var(--font-text);
+}
+
+.bodyContent{
+    display: flex;
+    width: 100dvw;
+    height: 100dvh;
+}
+
+.content{
+    flex: 1;
+    padding: 40px;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.breadCrumbSection{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.breadcrumb{
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-breadcrumb);
+}
+
+.txtSearchData{
+    font-weight: var(--font-weight-regular);
+    padding: 8px 12px;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+    width: clamp(150px, 50%, 600px);
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.filterSection{
+    display: flex;
+    justify-content: space-between;
+}
+
+.cmbFilterData{
+    font-weight: var(--font-weight-regular);
+    padding: 5px;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+    color: var(--text-color-secondary);
+}
+
+.btnPrimary{
+    background-color: var(--danger-color);
+    color: var(--bg-color);
+    border: none;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+}
+
+.btnOpenModal{
+    width: 7em;
+    padding: 5px 0;
+    font-size: var(--font-size-lg);
+    border-radius: var(--border-radius-btn);
 }

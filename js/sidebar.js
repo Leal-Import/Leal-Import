@@ -44,6 +44,10 @@ nav.innerHTML = ` <div class="btnNavbarContainer">
                                 <img src="../media/sidebar/Accidentes.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Configuración</span>
                             </a>
+                            <a href="../pages/maintenance.html" class="navbarItem itemNav" id="accItem">
+                                <img src="../media/sidebar/Accidentes.svg" alt="" class="navbarIcon">
+                                <span class="navbarText navTextVisible">Mantenimientos</span>
+                            </a>
                         </nav>
                     </div>
                 </div>
