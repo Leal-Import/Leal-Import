@@ -20,6 +20,7 @@
     --font-size-base: 1.1em;
     --font-size-lg: 1.3em;
     --font-size-sm: 0.9em;
+    --font-size-title: 1.5em;
     --font-size-breadcrumb: 2.2em;
 }
 
@@ -43,6 +44,8 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .breadCrumbSection{
@@ -79,6 +82,7 @@
     border: var(--border);
     border-radius: var(--border-radius-input);
     color: var(--text-color-secondary);
+    min-width: 200px;
 }
 
 .btnPrimary{
@@ -113,4 +117,16 @@
 
 .table tr{
     border-bottom: var(--border);
+}
+
+.cardContainer{
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, auto));
+    grid-auto-rows: 400px;
+}
+
+.card{
+    border-radius: var(--border-radius-table);
+    border: 1px solid var(--text-color-secondary);
 }

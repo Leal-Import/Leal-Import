@@ -76,7 +76,7 @@ body:not(.sidebar-ready) {
 }
 
 .navBody {
-    height: calc(94dvh - var(--height-logo-container) - var(--height-user-container));
+    height: calc(90dvh - var(--height-logo-container));
     width: 100%;
     display: flex;
     justify-content: center;
