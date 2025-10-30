@@ -4,12 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/employees.css">
     <title>Empleados</title>
 </head>
 <body>
     <div class="bodyContent">
         <div id="sidebar"></div>
-        <div class="content"></div>
+        <div class="content">
+            <div class="headerContent">
+                <div class="breadCrumbSection">
+                   <h1 class="breadcrumb">Empleados</h1>
+                   <input type="text" id="txtSearchData" class="txtSearchData" placeholder="Buscar por: nombre, correo o teléfono">
+                </div>
+                <div class="filterSection">
+                    <select id="cmbSearchByRole" class="cmbFilterData">
+                        <option value="">Buscar por rol</option>
+                    </select>
+                    <button class="btnPrimary btnOpenModal">Añadir</button>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre completo</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="employeesTableBody">
+                </tbody>
+            </table>
+            <div class="paginationContainer"></div>
+        </div>
     </div>
     <script src="../js/sidebar.js"></script>
 </body>

@@ -7,9 +7,32 @@
     <title>Clientes</title>
 </head>
 <body>
-    <div class="bodyContent">
+<div class="bodyContent">
         <div id="sidebar"></div>
-        <div class="content"></div>
+        <div class="content">
+            <div class="headerContent">
+                <div class="breadCrumbSection">
+                   <h1 class="breadcrumb">Clientes</h1>
+                </div>
+                <div class="filterSection">
+                                       <input type="text" id="txtSearchData" class="txtSearchData" placeholder="Buscar por: nombre, Dui o teléfono">
+                    <button class="btnPrimary btnOpenModal">Añadir</button>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre completo</th>
+                        <th>Dui</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="employeesTableBody">
+                </tbody>
+            </table>
+            <div class="paginationContainer"></div>
+        </div>
     </div>
     <script src="../js/sidebar.js"></script>
 </body>
