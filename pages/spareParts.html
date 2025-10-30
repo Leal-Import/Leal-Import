@@ -1,16 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/spareParts.css">
     <title>Repuestos</title>
 </head>
+
 <body>
     <div class="bodyContent">
         <div id="sidebar"></div>
-        <div class="content"></div>
+        <div class="content">
+            <div class="headerContent">
+                <div class="breadCrumbSection">
+                    <h1 class="breadcrumb">Repuestos</h1>
+                    <div class="dataCardContainer">
+                        <div class="seccionCard" id="Stock">
+                            <h2>10,000</h2>
+                            <p>En Stock</p>
+                        </div>
+                        <div class="seccionCard" id="Requested">
+                            <h2>5,565</h2>
+                            <p>Solicitado</p>
+                        </div>
+                        <div class="seccionCard" id="TotalCost">
+                            <h2>$4,360.20</h2>
+                            <p>Costo total</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="filterSection">
+                    <div class="filterContainer">
+                        <input type="text" id="txtSearchData" class="txtSearchData"
+                            placeholder="Buscar por: nombre, correo o teléfono">
+                        <select id="cmbSearchByRole" class="cmbFilterData">
+                            <option value="">Buscar por rol</option>
+                        </select>
+                    </div>
+                    <button class="btnPrimary btnOpenModal">Añadir</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="containerModal hide">
+        <div class="modalAddSapareParts">
+            <div class="headContentModal">
+                <img src="" alt="">
+                <div class="breadCrumbSeccionModal">
+                    <img src="../media/appMedia/BoxParts.svg" alt="">
+                    <h2 class="breadcrumbModal">Registrar un nuevo repuesto</h2>
+                    <p class="date">Última actualización: <span id="lastUpdateDate">29 oct 2025</span></p>
+                </div>
+                <button id="closeAddEmployee" type="button" class="btnClose">
+                    <img src="../media/appMedia/closeIcon.svg" alt="Boton cerrar modal">
+                </button>
+            </div>
+            <form action="" class="formModal">
+                <div class="seccionGrid">
+                    <div class="partsImg">
+                        <img src="../media/appMedia/defaultImg.svg" alt="Imagen previa" class="previewimg">
+                        <input type="file" class="inputFileImg" id="fileInput" hidden>
+                    </div>
+                    <div class="btnGroup">
+                        <button type="button" class="btnPrimary">Subir foto</button>
+                        <button type="button" class="btnDelete">Eliminar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="../js/sidebar.js"></script>
 </body>
+
 </html>

@@ -17,36 +17,36 @@ nav.innerHTML = ` <div class="btnNavbarContainer">
                     <div class="navBody">
                         <nav class="navbarItemsContainer widthOpenItems">
                             <a href="../pages/dashboard.html" style="margin-top: 0;" class="navbarItem itemNav" id="dashItem">
-                                <img src="../media/sidebar/Inicio.svg" alt="" class="navbarIcon">
+                                <img src="../media/sidebarMedia/dashboard.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Inicio</span>
                             </a>
                             <a href="../pages/employees.html" class="navbarItem itemNav" id="trnItem">
-                                <img src="../media/sidebar/capacitaciones.svg" alt="" class="navbarIcon">
+                                <img src="../media/sidebarMedia/Empleados.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Empleados</span>
                             </a>
                             <a href="../pages/customers.html" class="navbarItem itemNav" id="eppItem">
-                                <img src="../media/sidebar/inventoryEpp.svg" alt="" class="navbarIcon">
+                                <img src="../media/sidebarMedia/Clientes.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Clientes</span>
                             </a>
                             <a href="../pages/vehicle.html" class="navbarItem itemNav" id="empItem">
-                                <img src="../media/sidebar/Empleado.svg" alt="" class="navbarIcon">
-                                <span class="navbarText navTextVisible">Vehiculos</span>
+                                <img src="../media/sidebarMedia/Vehiculos.svg" alt="" class="navbarIcon">
+                                <span class="navbarText navTextVisible">Vehículos</span>
                             </a>
                             <a href="../pages/spareParts.html" class="navbarItem itemNav" id="empItem">
-                                <img src="../media/sidebar/Empleado.svg" alt="" class="navbarIcon">
+                                <img src="../media/sidebarMedia/Repuestos.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Repuestos</span>
                             </a>
                             <a href="../pages/workOrders.html" class="navbarItem itemNav" id="accItem">
-                                <img src="../media/sidebar/Accidentes.svg" alt="" class="navbarIcon">
+                                <img src="../media/sidebarMedia/Ordenes.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Ordenes</span>
                             </a>
-                            <a href="../pages/configuration.html" class="navbarItem itemNav" id="accItem">
-                                <img src="../media/sidebar/Accidentes.svg" alt="" class="navbarIcon">
-                                <span class="navbarText navTextVisible">Configuración</span>
-                            </a>
                             <a href="../pages/maintenance.html" class="navbarItem itemNav" id="accItem">
-                                <img src="../media/sidebar/Accidentes.svg" alt="" class="navbarIcon">
+                                <img src="../media/sidebarMedia/Mantenimientos.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Mantenimientos</span>
+                            </a>
+                            <a href="../pages/configuration.html" class="navbarItem itemNav" id="accItem">
+                                <img src="../media/sidebarMedia/Configuracion.svg" alt="" class="navbarIcon">
+                                <span class="navbarText navTextVisible">Configuración</span>
                             </a>
                         </nav>
                     </div>
