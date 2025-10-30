@@ -9,12 +9,14 @@
     --font-text: 'poppins', 'sans-serif';
     --text-color-secondary: #81859E;
     --bx-shadow-primary: 5px 2px 6px #CD908F44;
+    --bx-shadow-btn-primary: 0 0px 7px #D3181399;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
-    --border: 1px solid #81859E;
+    --border: 1px solid #81859E66;
     --border-radius-input: 5px;
     --border-radius-btn: 8px;
+    --border-radius-table: 10px;
     --font-size-base: 1.1em;
     --font-size-lg: 1.3em;
     --font-size-sm: 0.9em;
@@ -47,6 +49,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 1em 0 5em 0;
 }
 
 .breadcrumb{
@@ -67,6 +70,7 @@
 .filterSection{
     display: flex;
     justify-content: space-between;
+    margin-bottom: 1.5em;
 }
 
 .cmbFilterData{
@@ -90,4 +94,23 @@
     padding: 5px 0;
     font-size: var(--font-size-lg);
     border-radius: var(--border-radius-btn);
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+.table{
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 4px #313A8D44;
+    border-radius: var(--border-radius-table);
+    text-align: left;
+    flex: 1;
+}
+
+.table th, .table td{
+    padding: 25px;
+    font-weight: var(--font-weight-medium);
+}
+
+.table tr{
+    border-bottom: var(--border);
 }
