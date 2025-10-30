@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400&display=swap");
 :root{
+    --bg-color-white: #FFFFFF;
     --bg-color: #FCFCFC;
     --text-color: #0D0503;
     --danger-color: #D31813;
@@ -9,6 +10,7 @@
     --success-color: #6DBE45;
     --font-text: 'poppins', 'sans-serif';
     --text-color-secondary: #81859E;
+    --bg-color-modal: rgba(129, 133, 158, 0.5);
     --bx-shadow-primary: 5px 2px 6px #CD908F44;
     --bx-shadow-btn-primary: 0 0px 7px #D3181399;
     --font-weight-regular: 400;
@@ -23,6 +25,7 @@
     --font-size-sm: 0.9em;
     --font-size-title: 1.5em;
     --font-size-breadcrumb: 2.2em;
+    --width-modal: clamp(400px, 70%, 850px);
 }
 
 * {
@@ -130,4 +133,55 @@
 .card{
     border-radius: var(--border-radius-table);
     border: 1px solid var(--text-color-secondary);
+}
+
+/* CSS Global para modales */
+.containerModal {
+    Z-index: 100;
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-color-modal);
+    backdrop-filter: blur(6px);
+}
+
+.modalAdd {
+    position: relative;
+    display: flex;
+    padding: 45px 50px;
+    width: var(--width-modal);
+    flex-direction: column;
+    background-color: var(--bg-color-white);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.lblInputs {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-base);
+}
+
+.txtInputs {
+    padding: 8px 12px;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.btnClose {
+    position: absolute;
+    margin: 20px;
+    right: 0;
+    top: 0;
+    background: none;
+    border: none;
 }
