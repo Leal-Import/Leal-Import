@@ -29,6 +29,10 @@
     grid-template-rows: repeat(2, 1fr);
 }
 
+.statTitle{
+    font-size: var(--font-size-base);
+}
+
 .statItem {
     background-color: var(--card-bg);
     border-radius: var(--border-radius-table);
@@ -151,4 +155,63 @@
 .infoVehicleItem {
     display: flex;
     gap: 5px;
+}
+
+/* Estilos del modal */
+
+.modalVehicleBody{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.upModalPart{
+    display: flex;
+    gap: 20px;
+}
+
+.downModalPart{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rightPartModal{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.pictureVehicle{
+    width: 100%;
+    height: 100%;
+}
+
+.rightPartModal .formGroup{
+    width: 100%;
+}
+
+.containerButtonsImg{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btnAddPhoto{
+    padding: 5px 15px;
+    border-radius: 25px;
+    font-size: var(--font-size-base);
+}
+
+.btnDeletePhoto{
+    cursor: pointer;
+    padding: 5px 15px;
+    border-radius: 25px;
+    border: none;
+    font-size: var(--font-size-base);
+}
+
+.containerPictureModal{
+
 }
