@@ -1,0 +1,154 @@
+.graphicContainer {
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.filterSection {
+    margin-top: 1.5em;
+}
+
+.filtersGroup {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+}
+
+.breadCrumbSection {
+    margin-bottom: 1.5em;
+}
+
+#vehicleChart {
+    width: 100%;
+    height: 100%;
+}
+
+.statsSection {
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.statItem {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-table);
+    border: var(--border);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.statValue {
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-title);
+}
+
+.totalSales {
+    flex-direction: row;
+    justify-content: start;
+}
+
+.totalVehicle {
+    grid-column: 1;
+}
+
+.stockVehicles {
+    grid-column: 2;
+}
+
+.soldVehicles {
+    grid-column: 3;
+}
+
+.totalSales {
+    grid-column-start: span 3;
+    grid-row: 2;
+}
+
+.graphicSection {
+    grid-column-start: span 2;
+    grid-row-start: span 2;
+    display: flex;
+    justify-content: center;
+    border-radius: var(--border-radius-table);
+    border: var(--border);
+}
+
+.colorIdGraphic {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+.containerInfoGraphic {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 20px;
+    gap: 15px;
+}
+
+.infoGraphicItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.graphicContainer {
+    padding: 15px;
+}
+
+.vehicleBrand {
+    font-size: var(--font-size-title);
+}
+
+.vehiclePrice {
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-medium);
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.containerImgVehicle {
+    height: 125px;
+    width: 100%;
+    border: solid 1px;
+}
+
+.footerCard,
+.headerCard {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.footerCard{
+    flex: 1;
+    justify-content: space-around;
+}
+
+.containerInfoVehicle {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.vehicleStatus {
+    padding: 3px 12px;
+    background-color: #DDD;
+    border-radius: 25px;
+    align-self: start;
+}
+
+.infoVehicleItem {
+    display: flex;
+    gap: 5px;
+}
