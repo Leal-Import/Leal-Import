@@ -1,0 +1,45 @@
+@import url('globalStyles.css');
+
+.filterContainer {
+    display: flex;
+    width: 100%;
+    gap: 1em;
+}
+
+.dataCardContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1em;
+    width: 100%;
+    max-width: 750px;
+    justify-items: center;
+    align-items: center;
+}
+
+.seccionCard {
+    display: flex;
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    max-width: 350px;
+    padding: 15px;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+#Stock,
+#TotalCost {
+    --warning-color: rgba(255, 178, 53, 0.6);
+    background-color: var(--warning-color);
+    box-shadow: 0 0 15px 0 var(--warning-color);
+}
+
+#Requested {
+    --text-color-secondary: rgba(129, 133, 158, 0.5);
+    background-color: var(--text-color-secondary);
+    box-shadow: 0 0 10px 0 var(--text-color-secondary);
+}
+
