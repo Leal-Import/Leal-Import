@@ -10,6 +10,46 @@
 </head>
 
 <body>
+    <div class="containerModal hide">
+        <div class="modalAdd">
+            <div class="headContentModal">
+                <button id="closeAddEmployee" type="button" class="btnClose">
+                    <img src="../media/appMedia/closeIcon.svg" alt="Boton cerrar modal">
+                </button>
+                <img src="../media/appMedia/BoxParts.svg" alt="icono repuesto">
+                <div class="breadCrumbSeccionModal">
+                    <h2 class="breadcrumbModal">Registrar un nuevo repuesto</h2>
+                    <p class="date">Última actualización: <span id="lastUpdateDate">29 oct 2025</span></p>
+                </div>
+            </div>
+            <form action="" class="formModal">
+                <div class="seccionGrid">
+                    <div class="partsImg">
+                        <img src="../media/appMedia/defaultImg.svg" alt="Imagen previa" class="previewimg">
+                        <input type="file" class="inputFileImg" id="fileInput" hidden>
+                    </div>
+                </div>
+                <div class="btnGroup">
+                    <button type="button" class="btnPrimary">Subir foto</button>
+                    <button type="button" class="btnDelete">Eliminar</button>
+                </div>
+                <div class="formInputs">
+                    <div class="formGroup">
+                        <label for="" class="lblInputs">Nombre</label>
+                        <input type="text" class="txtInputs">
+                    </div>
+                    <div class="formGroup">
+                        <label for="" class="lblInputs">Marca</label>
+                        <input type="text" class="txtInputs">
+                    </div>
+                    <div class="formGroup">
+                        <label for="" class="lblInputs">Año</label>
+                        <input type="text" class="txtInputs">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
@@ -44,35 +84,6 @@
             </div>
         </div>
     </div>
-
-    <div class="containerModal hide">
-        <div class="modalAddSapareParts">
-            <div class="headContentModal">
-                <img src="" alt="">
-                <div class="breadCrumbSeccionModal">
-                    <img src="../media/appMedia/BoxParts.svg" alt="">
-                    <h2 class="breadcrumbModal">Registrar un nuevo repuesto</h2>
-                    <p class="date">Última actualización: <span id="lastUpdateDate">29 oct 2025</span></p>
-                </div>
-                <button id="closeAddEmployee" type="button" class="btnClose">
-                    <img src="../media/appMedia/closeIcon.svg" alt="Boton cerrar modal">
-                </button>
-            </div>
-            <form action="" class="formModal">
-                <div class="seccionGrid">
-                    <div class="partsImg">
-                        <img src="../media/appMedia/defaultImg.svg" alt="Imagen previa" class="previewimg">
-                        <input type="file" class="inputFileImg" id="fileInput" hidden>
-                    </div>
-                    <div class="btnGroup">
-                        <button type="button" class="btnPrimary">Subir foto</button>
-                        <button type="button" class="btnDelete">Eliminar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script src="../js/sidebar.js"></script>
 </body>
 
