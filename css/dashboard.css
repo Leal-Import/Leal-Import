@@ -1,0 +1,45 @@
+.content {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+}
+
+.statItem {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-table);
+    border: var(--border);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.statTitle {
+    font-size: var(--font-size-base);
+}
+
+.statValue {
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-title);
+}
+
+.statOrders{
+    grid-column: span 2;
+}
+
+.statSales{
+    grid-column-start: 2;
+    grid-column: span 2;
+}
+
+.statCustomers{
+    grid-column-start: 4;
+    grid-column: span 2;
+}
+
+.statEmployees{
+    grid-column-start: 6;
+    grid-column: span 2;
+}

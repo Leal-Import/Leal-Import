@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400&display=swap");
-:root{
+
+:root {
     --bg-color-white: #FFFFFF;
     --bg-color: #FCFCFC;
     --text-color: #0D0503;
@@ -13,6 +14,7 @@
     --bg-color-modal: rgba(129, 133, 158, 0.5);
     --bx-shadow-primary: 5px 2px 6px #CD908F44;
     --bx-shadow-btn-primary: 0 0px 7px #D3181399;
+    --bx-shadow-modal: 2px 4px 10px #A13A8D45;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
@@ -35,13 +37,13 @@
     font-family: var(--font-text);
 }
 
-.bodyContent{
+.bodyContent {
     display: flex;
     width: 100dvw;
     height: 100dvh;
 }
 
-.content{
+.content {
     flex: 1;
     padding: 40px;
     background-color: var(--bg-color);
@@ -52,19 +54,19 @@
     overflow-x: hidden;
 }
 
-.breadCrumbSection{
+.breadCrumbSection {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 1em 0 5em 0;
 }
 
-.breadcrumb{
+.breadcrumb {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-breadcrumb);
 }
 
-.txtSearchData{
+.txtSearchData {
     font-weight: var(--font-weight-regular);
     padding: 8px 12px;
     border: var(--border);
@@ -74,13 +76,13 @@
     font-weight: var(--font-weight-medium);
 }
 
-.filterSection{
+.filterSection {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1.5em;
 }
 
-.cmbFilterData{
+.cmbFilterData {
     font-weight: var(--font-weight-regular);
     padding: 5px;
     border: var(--border);
@@ -89,7 +91,7 @@
     min-width: 200px;
 }
 
-.btnPrimary{
+.btnPrimary {
     background-color: var(--danger-color);
     color: var(--bg-color);
     border: none;
@@ -97,7 +99,7 @@
     cursor: pointer;
 }
 
-.btnOpenModal{
+.btnOpenModal {
     width: 7em;
     padding: 5px 0;
     font-size: var(--font-size-lg);
@@ -105,7 +107,15 @@
     box-shadow: var(--bx-shadow-btn-primary);
 }
 
-.table{
+.btnSubmitData {
+    padding: 5px 15px;
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius-btn);
+    box-shadow: var(--bx-shadow-btn-primary);
+    align-self: end;
+}
+
+.table {
     width: 100%;
     border-collapse: collapse;
     box-shadow: 0 4px 4px #313A8D44;
@@ -114,23 +124,24 @@
     flex: 1;
 }
 
-.table th, .table td{
+.table th,
+.table td {
     padding: 25px;
     font-weight: var(--font-weight-medium);
 }
 
-.table tr{
+.table tr {
     border-bottom: var(--border);
 }
 
-.cardContainer{
+.cardContainer {
     display: grid;
     gap: 15px;
-    grid-template-columns: repeat(auto-fill, minmax(200px, auto));
+    grid-template-columns: repeat(auto-fill, minmax(250px, auto));
     grid-auto-rows: 400px;
 }
 
-.card{
+.card {
     border-radius: var(--border-radius-table);
     border: 1px solid var(--text-color-secondary);
 }
@@ -151,16 +162,29 @@
 .modalAdd {
     position: relative;
     display: flex;
+    box-shadow: var(--bx-shadow-modal);
     padding: 45px 50px;
     width: var(--width-modal);
     flex-direction: column;
+    gap: 15px;
     background-color: var(--bg-color-white);
+}
+
+.titleModal{
+    font-weight: var(--font-weight-medium);
+    text-align: center;
 }
 
 .formGroup {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    flex: 1;
+}
+
+.rowFields {
+    display: flex;
+    gap: 10px;
 }
 
 .lblInputs {
@@ -184,4 +208,15 @@
     top: 0;
     background: none;
     border: none;
+    cursor: pointer;
+}
+
+/* Utilidades */
+
+.show{
+    display: flex;
+}
+
+.hide{
+    display: none;
 }

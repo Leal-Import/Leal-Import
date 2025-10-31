@@ -10,6 +10,62 @@
 </head>
 
 <body>
+    <div class="containerModal hide">
+        <form class="modalAdd">
+            <button class="btnClose" type="button">
+                <img src="../media/appMedia/closeIcon.svg" alt="">
+            </button>
+            <h2 class="titleModal">Agregar vehiculo</h2>
+            <div class="modalVehicleBody">
+                <div class="upModalPart">
+                    <div class="leftPartModal">
+                        <div class="containerPictureModal">
+                            <img src="../media/appMedia/defaultImg.svg" alt="" class="pictureVehicle">
+                        </div>
+                        <div class="containerButtonsImg">
+                            <button class="btnPrimary btnAddPhoto">Añadir</button>
+                            <button class="btnDeletePhoto">Eliminar</button>
+                        </div>
+                    </div>
+                    <div class="rightPartModal">
+                        <div class="formGroup">
+                            <label for="txtVin" class="lblInputs">Vin</label>
+                            <input type="text" class="txtInputs" id="txtVin">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtCustomer" class="lblInputs">Cliente</label>
+                            <input type="text" class="txtInputs" id="txtCustomer">
+                        </div>
+                    </div>
+                </div>
+                <div class="downModalPart">
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtModel" class="lblInputs">Modelo</label>
+                            <input type="text" class="txtInputs" id="txtModel">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtPrice" class="lblInputs">Precio</label>
+                            <input type="text" class="txtInputs" id="txtPrice">
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtBrand" class="lblInputs">Marca</label>
+                            <input type="text" class="txtInputs" id="txtBrand">
+                        </div>
+                        <div class="formGroup">
+                            <label for="cmbYear" class="lblInputs">Año</label>
+                            <select id="cmbYear" class="txtInputs">
+                                <option value="">Selecciona un año</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="submit" class="btnPrimary btnSubmitData" value="Agregar vehiculo" id="btnAddNewVehicle">
+        </form>
+    </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">

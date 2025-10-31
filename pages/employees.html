@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,14 +8,49 @@
     <link rel="stylesheet" href="../css/employees.css">
     <title>Empleados</title>
 </head>
+
 <body>
+    <div class="containerModal hide">
+        <form class="modalAdd">
+            <button class="btnClose" type="button">
+                <img src="../media/appMedia/closeIcon.svg" alt="">
+            </button>
+            <h2 class="titleModal">Agregar empleado</h2>
+            <div class="modalEmployeeBody">
+                <div class="formGroup">
+                    <label for="txtFullName" class="lblInputs">Nombre completo</label>
+                    <input type="text" class="txtInputs" id="txtFullName">
+                </div>
+                <div class="formGroup">
+                    <label for="txtEmployeeEmail" class="lblInputs">Correo electronico</label>
+                    <input type="text" class="txtInputs" id="txtEmployeeEmail">
+                </div>
+                <div class="formGroup">
+                    <label for="txtEmployeePhone" class="lblInputs">Teléfono</label>
+                    <input type="text" class="txtInputs" id="txtEmployeePhone">
+                </div>
+                <div class="formGroup">
+                    <label for="cmbUserRole" class="lblInputs">Rol de usuario</label>
+                    <select id="cmbUserRole" class="txtInputs">
+                        <option value="">Selecciona un rol</option>
+                    </select>
+                </div>
+                <div class="formGroup">
+                    <label for="txtUsername" class="lblInputs">Usuario</label>
+                    <input type="text" class="txtInputs" id="txtUsername">
+                </div>
+            </div>
+            <input type="submit" class="btnPrimary btnSubmitData" value="Agregar empleado" id="btnAddNewVehicle">
+        </form>
+    </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
             <div class="headerContent">
                 <div class="breadCrumbSection">
-                   <h1 class="breadcrumb">Empleados</h1>
-                   <input type="text" id="txtSearchData" class="txtSearchData" placeholder="Buscar por: nombre, correo o teléfono">
+                    <h1 class="breadcrumb">Empleados</h1>
+                    <input type="text" id="txtSearchData" class="txtSearchData"
+                        placeholder="Buscar por: nombre, correo o teléfono">
                 </div>
                 <div class="filterSection">
                     <select id="cmbSearchByRole" class="cmbFilterData">
@@ -41,4 +77,5 @@
     </div>
     <script src="../js/sidebar.js"></script>
 </body>
+
 </html>
