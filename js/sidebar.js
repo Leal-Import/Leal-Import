@@ -11,7 +11,7 @@ nav.innerHTML = ` <div class="btnNavbarContainer">
                 <div class="navbar">
                     <div class="navHeader">
                         <div class="logoContainer widthOpenItems">
-                            <img src="../media/sidebar/newRiskorLogo.svg" alt="" class="logo" id="logo">
+                            <img src="" alt="" class="logo" id="logo">
                         </div>
                     </div>
                     <div class="navBody">
@@ -39,10 +39,6 @@ nav.innerHTML = ` <div class="btnNavbarContainer">
                             <a href="../pages/workOrders.html" class="navbarItem itemNav" id="accItem">
                                 <img src="../media/sidebarMedia/Ordenes.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Ordenes</span>
-                            </a>
-                            <a href="../pages/maintenance.html" class="navbarItem itemNav" id="accItem">
-                                <img src="../media/sidebarMedia/Mantenimientos.svg" alt="" class="navbarIcon">
-                                <span class="navbarText navTextVisible">Mantenimientos</span>
                             </a>
                             <a href="../pages/configuration.html" class="navbarItem itemNav" id="accItem">
                                 <img src="../media/sidebarMedia/Configuracion.svg" alt="" class="navbarIcon">
