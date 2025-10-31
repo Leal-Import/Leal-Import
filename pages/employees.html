@@ -10,9 +10,9 @@
 </head>
 
 <body>
-    <div class="containerModal hide">
+    <div class="containerModal hide" id="modalEmployees">
         <form class="modalAdd">
-            <button class="btnClose" type="button">
+            <button id="closeAddEmployee" class="btnClose" type="button">
                 <img src="../media/appMedia/closeIcon.svg" alt="">
             </button>
             <h2 class="titleModal">Agregar empleado</h2>
@@ -56,7 +56,7 @@
                     <select id="cmbSearchByRole" class="cmbFilterData">
                         <option value="">Buscar por rol</option>
                     </select>
-                    <button class="btnPrimary btnOpenModal">Añadir</button>
+                    <button id="OpenModalEmployees" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
             </div>
             <table class="table">
@@ -76,6 +76,8 @@
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerEmployees.js"></script>
 </body>
 
 </html>

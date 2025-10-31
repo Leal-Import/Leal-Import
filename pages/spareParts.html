@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="containerModal hide">
+    <div class="containerModal hide" id="modalSpareParts">
         <form class="modalAdd">
             <div class="headContentModal">
                 <button id="closeAddEmployee" type="button" class="btnClose">
@@ -119,12 +119,14 @@
                             <option value="">Buscar por rol</option>
                         </select>
                     </div>
-                    <button class="btnPrimary btnOpenModal">Añadir</button>
+                    <button id="modalParts" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
             </div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerSpareParts.js"></script>
 </body>
 
 </html>
