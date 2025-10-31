@@ -10,9 +10,9 @@
 </head>
 
 <body>
-    <div class="containerModal hide">
+    <div class="containerModal hide" id="modalVehicle">
         <form class="modalAdd">
-            <button class="btnClose" type="button">
+            <button id="closeAddVehicle" class="btnClose" type="button">
                 <img src="../media/appMedia/closeIcon.svg" alt="">
             </button>
             <h2 class="titleModal">Agregar vehiculo</h2>
@@ -117,7 +117,7 @@
                             <option value="">Año</option>
                         </select>
                     </div>
-                    <button class="btnPrimary btnOpenModal">Añadir</button>
+                    <button id="OpenModalVehicles" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
                 <div class="cardContainer">
                     <div class="card">
@@ -287,7 +287,8 @@
     </div>
     <script src="../js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../js/controller/controllerVehicle.js"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerVehicle.js"></script>
 </body>
 
 </html>
