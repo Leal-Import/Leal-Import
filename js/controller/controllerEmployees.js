@@ -5,22 +5,27 @@ import {
     isValidEmail,
     isValidPhone,
     highlightAndFocus,
-    formatPhoneNumber
+    formatPhoneNumber,
+    fillSelect,
+    showFloatingMenu
 } from '../utils.js';
 
 import {
     getActiveEmployees,
-    postEmployee
+    postEmployee,
+    getRoles
 } from '../service/serviceEmployees.js';
 
 const modalEmployees = document.getElementById("modalEmployees");
 const frmEmployees = document.getElementById("frmEmployees");
 const txtPhone = document.getElementById("txtEmployeePhone");
+
 // Configurar el modal para agregar empleados
 setupModal("#OpenModalEmployees", "#modalEmployees", "#closeAddEmployee", "#frmEmployees");
 
 document.addEventListener("DOMContentLoaded", () => {
     /* Eventos al cargar la pagina */
+    loadRolesSelect();
     loadEmployees();
 })
 
@@ -47,10 +52,25 @@ let insertEmployees = (employees) => {
         const tdActions = document.createElement("td");
 
         tdName.textContent = employee.fullName;
-        tdEmail.textContent = employee.employeeEmail;
-        tdPhone.textContent = employee.employeePhone;
-        tdRole.textContent = employee.employeeRole;
-        tr.append(tdName, tdEmail, tdPhone, tdRole);
+        tdEmail.textContent = employee.email;
+        tdPhone.textContent = employee.phoneEmploye;
+        tdRole.textContent = rolesList.find(r => r.idRole === employee.idRole)?.roleName || 'Error al cargar rol';
+
+        const actionButton = document.createElement('button');
+        actionButton.textContent = '⋯';
+        actionButton.classList.add('actionButton');
+        tdActions.appendChild(actionButton);
+
+        actionButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showFloatingMenu(event, [
+                { label: 'Editar empleado', onClick: () => editEmployee(employee) },
+                { label: 'Eliminar empleado', onClick: () => deleteEmployee(employee.id) },
+                { label: 'Ver detalles', onClick: () => viewEmployee(employee.id) },
+            ]);
+        });
+
+        tr.append(tdName, tdEmail, tdPhone, tdRole, tdActions);
         fragment.appendChild(tr);
     });
     container.appendChild(fragment);
@@ -91,10 +111,10 @@ frmEmployees.addEventListener("submit", async (e) => {
 
     const employeeData = {
         fullName: txtFullName,
-        employeeEmail: txtEmployeeEmail,
-        employeePhone: txtEmployeePhone,
-        employeeRole: cmbUserRole,
+        email: txtEmployeeEmail,
+        phoneEmploye: txtEmployeePhone,
         username: txtUsername,
+        idRole: cmbUserRole,
     };
 
     try {
@@ -112,3 +132,14 @@ frmEmployees.addEventListener("submit", async (e) => {
     }
 
 });
+
+let rolesList = [];
+let loadRolesSelect = async () => {
+    try {
+        const roles = await getRoles();
+        rolesList = roles; // Guardamos para mapear luego
+        fillSelect('cmbUserRole', rolesList, 'idRole', 'roleName');
+    } catch (error) {
+        console.error('Error al cargar roles en el select:', error);
+    }
+}

@@ -128,3 +128,70 @@ export const formatPhoneNumber = (inputElement) => {
     }
     inputElement.value = value;
 };
+
+/* Llenar select */
+export const fillSelect = (selectId, data, valueKey, textKey) => {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    //limpiar opciones previas
+    while (select.firstChild) {
+        select.removeChild(select.firstChild);
+    }
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Seleccione una opción';
+    select.appendChild(defaultOption);
+
+    data.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item[valueKey];
+        option.textContent = item[textKey];
+        select.appendChild(option);
+    });
+}
+
+/*Menu flotante para las tablas */
+export const showFloatingMenu = (event, actions) => {
+    const existingMenu = document.querySelector('.floatingMenu');
+    if (existingMenu) existingMenu.remove();
+
+    const menu = document.createElement('div');
+    menu.classList.add('floatingMenu');
+    menu.style.visibility = "hidden";
+
+    actions.forEach(action => {
+        const btn = document.createElement('button');
+        btn.textContent = action.label;
+        btn.classList.add('floatingMenuButton');
+        btn.addEventListener('click', action.onClick);
+        menu.appendChild(btn);
+    });
+
+    document.body.appendChild(menu);
+    const rect = event.currentTarget.getBoundingClientRect();
+    const menuWidth = menu.offsetWidth;
+    const menuHeight = menu.offsetHeight;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let top = rect.bottom + 5;
+    let left = rect.right - menuWidth;
+
+    if (left < 5) {
+        if (rect.left + menuWidth <= viewportWidth - 5) left = rect.left;
+        else left = 5;
+    }
+    if (top + menuHeight > viewportHeight - 5) {
+        top = Math.max(5, rect.top - menuHeight - 5);
+    }
+
+    menu.style.top = `${top}px`;
+    menu.style.left = `${left}px`;
+    menu.style.visibility = "";
+
+    document.addEventListener('click', e => {
+        if (!menu.contains(e.target)) menu.remove();
+    }, { once: true });
+};
