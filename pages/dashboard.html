@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,28 +8,152 @@
     <link rel="stylesheet" href="../css/dashboard.css">
     <title>Inicio</title>
 </head>
+
 <body>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
-            <div class="statItem statOrders">
-                <p class="statTitle">Ordenes</p>
-                <h2 class="statValue">150</h2>
-            </div>
-            <div class="statItem statSales">
-                <p class="statTitle">Ventas</p>
-                <h2 class="statValue">$53,203.99</h2>
-            </div>
-            <div class="statItem statCustomers">
-                <p class="statTitle">Clientes</p>
-                <h2 class="statValue">150</h2>
-            </div>
-            <div class="statItem statEmployees">
-                <p class="statTitle">Empleados</p>
-                <h2 class="statValue">30</h2>
+            <div class="contentData">
+                <div class="statItem statOrders">
+                    <p class="statTitle">Ordenes</p>
+                    <h2 class="statValue">150</h2>
+                </div>
+                <div class="statItem statSales">
+                    <p class="statTitle">Ventas</p>
+                    <h2 class="statValue">$53,203.99</h2>
+                </div>
+                <div class="statItem statCustomers">
+                    <p class="statTitle">Clientes</p>
+                    <h2 class="statValue">150</h2>
+                </div>
+                <div class="statItem statEmployees">
+                    <p class="statTitle">Empleados</p>
+                    <h2 class="statValue">30</h2>
+                </div>
+
+                <div class="graphicEarningsSection statItem">
+                    <div class="headerStat">
+                        <h2 class="statTitle downStatsTitle">Ganancias en los ultimos meses</h2>
+                    </div>
+                    <div class="bodyStat">
+                        <div class="graphicContainer">
+                            <div class="canvasContainer">
+                                <canvas id="earningsChart"></canvas>
+                            </div>
+                            <div class="containerFilterDates">
+                                <pre class="btnChangeDates" id="btnPrevGraphic">&lt;</pre>
+                                <div>
+                                    <select id="prevMonth" class="prevMonth selectsFilter">
+                                        <option value="2025-04">Abril 2025</option>
+                                        <option value="2025-05">Mayo 2025</option>
+                                        <option value="2025-06">Junio 2025</option>
+                                        <option value="2025-07">Julio 2025</option>
+                                        <option value="2025-08">Agosto 2025</option>
+                                    </select>
+                                    <span>-</span>
+                                    <select id="lastMonth" class="lastMonth selectsFilter">
+                                        <option value="2025-09">Septiembre 2025</option>
+                                        <option value="2025-10">Octubre 2025</option>
+                                        <option value="2025-11">Noviembre 2025</option>
+                                        <option value="2025-12">Diciembre 2025</option>
+                                        <option value="2026-01">Enero 2026</option>
+                                        <option value="2026-02">Febrero 2026</option>
+                                    </select>
+                                </div>
+                                <pre class="btnChangeDates" id="btnLastGraphic">&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="inventorySection statItem">
+                    <div class="headerStat">
+                        <h2 class="statTitle downStatsTitle">Inventario de repuestos segun stock</h2>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Repuesto</th>
+                                <th>Tipo</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyStock"></tbody>
+                    </table>
+                </div>
+                <div class="graphicTypePartSection statItem">
+                    <div class="headerStat">
+                        <h2 class="statTitle downStatsTitle">Partes solicitadas por tipo</h2>
+                    </div>
+                    <div class="bodyStat bodyTypePartS">
+                        <div class="graphicContainer">
+                            <canvas id="sparePartsGraphic"></canvas>
+                        </div>
+                        <div class="containerInfoGraphic">
+                            <div class="infoGraphicItem">
+                                <div class="colorIdGraphic" style="background-color: var(--danger-color);"></div>
+                                <span>Mecanica</span>
+                            </div>
+                            <div class="infoGraphicItem">
+                                <div class="colorIdGraphic" style="background-color: var(--helper-color);"></div>
+                                <span>Fibra</span>
+                            </div>
+                            <div class="infoGraphicItem">
+                                <div class="colorIdGraphic" style="background-color: var(--warning-color);"></div>
+                                <span>Electrica</span>
+                            </div>
+                            <div class="infoGraphicItem">
+                                <div class="colorIdGraphic" style="background-color: var(--text-color-secondary);">
+                                </div>
+                                <span>Otro</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ordersSection statItem">
+                    <div class="headerStat">
+                        <h2 class="statTitle downStatsTitle">Ordenes</h2>
+                    </div>
+                    <div class="bodyStat bodyOrdersS">
+                        <div class="graphicPartOrd">
+                            <div class="graphicContainer">
+                                <canvas id="ordersGraphic"></canvas>
+                            </div>
+                            <div class="containerInfoGraphic">
+                                <div class="infoGraphicItem">
+                                    <div class="colorIdGraphic" style="background-color: var(--danger-color);"></div>
+                                    <span>Pendientes</span>
+                                </div>
+                                <div class="infoGraphicItem">
+                                    <div class="colorIdGraphic" style="background-color: var(--helper-color);"></div>
+                                    <span>Atrasadas</span>
+                                </div>
+                                <div class="infoGraphicItem">
+                                    <div class="colorIdGraphic" style="background-color: var(--success-color);"></div>
+                                    <span>Completadas</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pendOrdersPart">
+                            <h2 class="statTitle downStatsTitle">Ordenes pendientes</h2>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Vehiculo</th>
+                                        <th>Fecha estimada</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="../js/controller/controllerDashboard.js"></script>
 </body>
+
 </html>

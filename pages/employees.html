@@ -11,7 +11,7 @@
 
 <body>
     <div class="containerModal hide" id="modalEmployees">
-        <form class="modalAdd">
+        <form class="modalAdd" id="frmEmployees">
             <button id="closeAddEmployee" class="btnClose" type="button">
                 <img src="../media/appMedia/closeIcon.svg" alt="">
             </button>
@@ -19,25 +19,25 @@
             <div class="modalEmployeeBody">
                 <div class="formGroup">
                     <label for="txtFullName" class="lblInputs">Nombre completo</label>
-                    <input type="text" class="txtInputs" id="txtFullName">
+                    <input type="text" class="txtInputs" id="txtFullName" required maxlength="256">
                 </div>
                 <div class="formGroup">
                     <label for="txtEmployeeEmail" class="lblInputs">Correo electronico</label>
-                    <input type="text" class="txtInputs" id="txtEmployeeEmail">
+                    <input type="text" class="txtInputs" id="txtEmployeeEmail" required maxlength="100">
                 </div>
                 <div class="formGroup">
                     <label for="txtEmployeePhone" class="lblInputs">Teléfono</label>
-                    <input type="text" class="txtInputs" id="txtEmployeePhone">
+                    <input type="text" class="txtInputs" id="txtEmployeePhone" required maxlength="9">
                 </div>
                 <div class="formGroup">
                     <label for="cmbUserRole" class="lblInputs">Rol de usuario</label>
-                    <select id="cmbUserRole" class="txtInputs">
-                        <option value="">Selecciona un rol</option>
+                    <select id="cmbUserRole" class="txtInputs" required>
+                        <option value="s">Selecciona un rol</option>
                     </select>
                 </div>
                 <div class="formGroup">
                     <label for="txtUsername" class="lblInputs">Usuario</label>
-                    <input type="text" class="txtInputs" id="txtUsername">
+                    <input type="text" class="txtInputs" id="txtUsername" required maxlength="30">
                 </div>
             </div>
             <input type="submit" class="btnPrimary btnSubmitData" value="Agregar empleado" id="btnAddNewVehicle">
@@ -69,15 +69,16 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="employeesTableBody">
-                </tbody>
+                <tbody id="employeesTableBody"></tbody>
             </table>
             <div class="paginationContainer"></div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/utils.js"></script>
     <script type="module" src="../js/controller/controllerEmployees.js"></script>
+    <script type="module" src="../js/service/serviceEmployees.js"></script>
 </body>
 
 </html>

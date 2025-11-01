@@ -130,6 +130,10 @@
     font-weight: var(--font-weight-medium);
 }
 
+.table td {
+    font-weight: var(--font-weight-regular);
+}
+
 .table tr {
     border-bottom: var(--border);
 }
