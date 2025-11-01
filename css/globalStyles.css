@@ -121,7 +121,13 @@
     box-shadow: 0 4px 4px #313A8D44;
     border-radius: var(--border-radius-table);
     text-align: left;
-    flex: 1;
+    /*flex: 1;*/
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .table th,
@@ -174,7 +180,7 @@
     background-color: var(--bg-color-white);
 }
 
-.titleModal{
+.titleModal {
     font-weight: var(--font-weight-medium);
     text-align: center;
 }
@@ -217,10 +223,73 @@
 
 /* Utilidades */
 
-.show{
+.show {
     display: flex;
 }
 
-.hide{
+.hide {
     display: none;
+}
+
+/* ===== MENÚ FLOTANTE GLOBAL ===== */
+.floatingMenu {
+    position: fixed;
+    background-color: var(--bg-color-white);
+    border: var(--border);
+    border-radius: var(--border-radius-btn);
+    box-shadow: var(--bx-shadow-primary);
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    z-index: 999;
+    padding: 8px 0;
+    animation: fadeInScale 0.15s ease-out;
+}
+
+.floatingMenuButton {
+    background: none;
+    border: none;
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+    text-align: left;
+    padding: 10px 20px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-sm);
+}
+
+.floatingMenuButton:hover {
+    background-color: var(--danger-color);
+    color: var(--bg-color-white);
+}
+
+
+.actionButton {
+    background: none;
+    border: none;
+    font-size: 1.4em;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--border-radius-btn);
+    transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+    color: var(--danger-color);
+    background-color: rgba(211, 24, 19, 0.05);
+}
+
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

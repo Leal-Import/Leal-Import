@@ -1,10 +1,13 @@
-const API_URL = "https://api-generator.retool.com/lk8eTA/employee";
+const API_URL = "http://127.0.0.1:8080/api/employees";
+const API_URLR = "http://127.0.0.1:8080/api/roles"
 
 export let getActiveEmployees = async () => {
 
     try {
         // 1. Realiza la petición
-        const request = await fetch(`${API_URL}`);
+        const request = await fetch(`${API_URL}/getEmployees`, {
+            credentials: 'include'
+        });
 
         // 2. Verifica si la respuesta es exitosa (código 200-299)
         if (!request.ok) {
@@ -27,8 +30,9 @@ export let getActiveEmployees = async () => {
 
 export let postEmployee = async (employeeData) => {
     try {
-        const request = await fetch(`${API_URL}`, {
+        const request = await fetch(`${API_URL}/postEmploye`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -63,5 +67,25 @@ export let postEmployee = async (employeeData) => {
         }
 
         throw error;
+    }
+};
+
+// GET para obtener los roles del empleado
+export let getRoles = async () => {
+    try {
+        const request = await fetch(`${API_URLR}/getRoles`, {
+            credentials: 'include'
+        });
+
+        if (!request.ok) {
+            const errorBody = await request.text();
+            throw new Error(`Error ${request.status}: No se pudo obtener la lista de roles. Detalle: ${errorBody.substring(0, 100)}`);
+        }
+
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en getRoles:", error);
+        throw new Error("Fallo al conectar con el servicio de roles.");
     }
 };
