@@ -3,31 +3,86 @@
 .filterContainer {
     display: flex;
     width: 100%;
-    gap: 1em;
+    gap: 0.5em;
+}
+
+.breadCrumbSection {
+    margin-bottom: 1.5em;
 }
 
 .dataCardContainer {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1em;
+    gap: 15px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.statTitle {
+    font-size: var(--font-size-base);
+}
+
+
+
+.filterSectionParts {
+    grid-column-start: span 3;
+    grid-row: 2;
+}
+
+.filterSection {
+    flex-direction: column;
+}
+
+.priceRange {
     width: 100%;
-    max-width: 750px;
-    justify-items: center;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+
+}
+
+.range {
+    width: 80%;
+    gap: 5px;
+}
+
+.graphiData {
+    grid-column-start: span 1;
+    grid-row: span 2;
+}
+
+
+#idTotalCost {
+    width: 320px !important;
+    height: 80% !important;
+    max-height: 500px !important;
+}
+
+.seccionCard.graphiData{
+    height: 100%;
+    display: flex;
+    padding: 15px;
+}
+
+.graphicContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
     align-items: center;
 }
 
 .seccionCard {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-table);
+    border: var(--border);
+    padding: 30px;
     display: flex;
-    color: var(--text-color);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-regular);
-    justify-content: center;
     flex-direction: column;
-    width: 100%;
-    max-width: 350px;
-    padding: 15px;
-    box-sizing: border-box;
-    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .modalAdd {
@@ -188,17 +243,4 @@
     width: 100%;
     justify-content: end;
     margin-top: 0.5em;
-}
-
-#Stock,
-#TotalCost {
-    --warning-color: rgba(255, 178, 53, 0.6);
-    background-color: var(--warning-color);
-    box-shadow: 0 0 15px 0 var(--warning-color);
-}
-
-#Requested {
-    --text-color-secondary: rgba(129, 133, 158, 0.5);
-    background-color: var(--text-color-secondary);
-    box-shadow: 0 0 10px 0 var(--text-color-secondary);
 }
