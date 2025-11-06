@@ -5,10 +5,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/customers.css">
     <title>Clientes</title>
 </head>
 
 <body>
+    <div class="containerModal hide" id="modalCustomers">
+        <form class="modalAdd" id="frmCustomers">
+            <button id="closeAddCustomer" class="btnClose" type="button">
+                <img src="../media/appMedia/closeIcon.svg" alt="">
+            </button>
+            <h2 class="titleModal">Agregar cliente</h2>
+            <div class="modalCustomerBody">
+                <div class="formGroup">
+                    <label for="txtFullName" class="lblInputs">Nombre completo</label>
+                    <input type="text" class="txtInputs" id="txtFullName" required maxlength="256">
+                </div>
+                <div class="formGroup">
+                    <label for="txtCustomerDUI" class="lblInputs">DUI</label>
+                    <input type="text" class="txtInputs" id="txtCustomerDUI" required maxlength="10">
+                </div>
+                <div class="formGroup">
+                    <label for="txtCustomerPhone" class="lblInputs">Teléfono</label>
+                    <input type="text" class="txtInputs" id="txtCustomerPhone" required maxlength="9">
+                </div>
+            </div>
+            <input type="submit" class="btnPrimary btnSubmitData" value="Agregar Clientes" id="btnAddNewCustomer">
+        </form>
+    </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
@@ -19,7 +43,7 @@
                 <div class="filterSection">
                     <input type="text" id="txtSearchData" class="txtSearchData"
                         placeholder="Buscar por: nombre, Dui o teléfono">
-                    <button class="btnPrimary btnOpenModal">Añadir</button>
+                    <button id="openModalCustomer" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
             </div>
             <table class="table">
@@ -31,13 +55,16 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="employeesTableBody">
+                <tbody id="CustomersTableBody">
                 </tbody>
             </table>
             <div class="paginationContainer"></div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerCustomer.js"></script>
+    <script type="module" src="../js/service/serviceCustomers.js"></script>
 </body>
 
 </html>

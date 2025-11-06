@@ -1,0 +1,12 @@
+@import url('globalStyles.css');
+
+.modalAdd{
+    width: clamp(100px, 90%, 500px);
+    border-radius: 15px;
+}
+
+.modalCustomerBody{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
