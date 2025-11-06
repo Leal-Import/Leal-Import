@@ -154,6 +154,7 @@
 .card {
     border-radius: var(--border-radius-table);
     border: 1px solid var(--text-color-secondary);
+    overflow: hidden;
 }
 
 /* CSS Global para modales */

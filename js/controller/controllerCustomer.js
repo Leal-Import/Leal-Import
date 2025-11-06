@@ -1,13 +1,199 @@
 import {
     getCustomers,
     postCustomer,
-    putCustomer 
+    putCustomer
 } from '../service/serviceCustomers.js';
-import{
-    setupModal
+import {
+    setupModal,
+    getInputsValues,
+    showMessage,
+    showFloatingMenu,
+    isValidPhone,
+    highlightAndFocus,
+    formatPhoneNumber,
+    fillForm,
+    toggleModal,
+    enableFormUI,
+    setFormReadOnly,
+    formatDUIInput
 } from '../utils.js';
 
-// Configurar el modal para agregar empleados
-setupModal("#openModalCustomer", "#modalCustomers", "#closeAddCustomer", "#frmCustomers");
+const modalCustomers = document.getElementById("modalCustomers");
+const frmCustomers = document.getElementById("frmCustomers");
+const txtPhone = document.getElementById("txtCustomerPhone");
+const btnAddCustomer = document.getElementById("btnAddNewCustomer");
+const titleModal = modalCustomers?.querySelector('.titleModal');
+const txtCustomerDUI = document.getElementById("txtCustomerDUI");
+
+txtCustomerDUI.addEventListener('input', () => {
+    formatDUIInput(txtCustomerDUI);
+});
+
+// Configurar el modal para agregar clientes
+setupModal("#openModalCustomer", "#modalCustomers", "#closeAddCustomer", "#frmCustomers", "Agregar cliente");
+
+let currentId = null;
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadCustomers();
+});
+
+let loadCustomers = async () => {
+    try {
+        const data = await getCustomers();
+        insertCustomers(data || []);
+    } catch (error) {
+        showMessage("Error crítico", error.message || error, "error");
+    }
+};
+
+let insertCustomers = (customers) => {
+    const fragment = document.createDocumentFragment();
+    const container = document.getElementById("CustomersTableBody");
+    if (!container) return;
+    container.innerHTML = "";
+
+    customers.forEach(customer => {
+        const tr = document.createElement("tr");
+        const tdName = document.createElement("td");
+        const tdDui = document.createElement("td");
+        const tdPhone = document.createElement("td");
+        const tdActions = document.createElement("td");
+
+        tdName.textContent = customer.fullName;
+        tdDui.textContent = customer.dui;
+        tdPhone.textContent = customer.personalPhone;
+
+        const actionButton = document.createElement('button');
+        actionButton.textContent = '⋯';
+        actionButton.classList.add('actionButton');
+        tdActions.appendChild(actionButton);
+
+        const custId = customer.idClient ?? customer.id ?? Math.random().toString(36).slice(2);
+
+        actionButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            // showFloatingMenu en utils.js genera sufijo en ids, maneja posicion y limpieza
+            showFloatingMenu(event, [
+                { label: 'Editar cliente', onClick: () => editCustomer(customer), id: `btnUpdateCust-${custId}` },
+                { label: 'Desactivar cliente', onClick: () => deleteCustomer(customer.idClient), id: `btnDeleteCust-${custId}` },
+                { label: 'Ver detalles', onClick: () => viewCustomer(customer), id: `btnViewCust-${custId}` }
+            ]);
+        });
+
+        tr.append(tdName, tdDui, tdPhone, tdActions);
+        fragment.appendChild(tr);
+    });
+
+    container.appendChild(fragment);
+};
+
+let editCustomer = (customer) => {
+    currentId = customer.idClient;
+    enableFormUI('#frmCustomers');
+    fillForm('#frmCustomers', {
+        txtFullName: customer.fullName,
+        txtCustomerDUI: customer.dui,
+        txtCustomerPhone: customer.personalPhone
+    });
+    btnAddCustomer.value = "Actualizar cliente";
+    if (titleModal) titleModal.textContent = "Actualizar cliente";
+    toggleModal(modalCustomers, true);
+};
+
+let deleteCustomer = (customerId) => {
+    if (!customerId) return;
+    if (!confirm('¿Desea desactivar este cliente?')) return;
+    // TODO: llamar servicio para desactivar/eliminar
+    console.log('Desactivar cliente id:', customerId);
+    showMessage('Funcionalidad no implementada aún', 'Info', 'info');
+};
+
+let viewCustomer = (customer) => {
+    enableFormUI('#frmCustomers'); // ensure consistent state before disabling
+    fillForm('#frmCustomers', {
+        txtFullName: customer.fullName,
+        txtCustomerDUI: customer.dui,
+        txtCustomerPhone: customer.personalPhone
+    });
+    // disable inputs and hide submit for read-only view
+    setFormReadOnly('#frmCustomers', true);
+    if (titleModal) titleModal.textContent = "Detalles del cliente";
+    toggleModal(modalCustomers, true);
+};
+
+txtPhone.addEventListener('input', () => {
+    formatPhoneNumber(txtPhone);
+});
+
+frmCustomers.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = getInputsValues(frmCustomers);
+
+    const {
+        txtFullName,
+        txtCustomerDUI,
+        txtCustomerPhone
+    } = formData;
+
+    // Validaciones según DTO
+    const nameTrim = txtFullName || '';
+    if (!nameTrim || nameTrim.length < 3 || nameTrim.length > 75) {
+        highlightAndFocus(document.getElementById('txtFullName'));
+        showMessage('El nombre debe tener entre 3 y 75 caracteres.', 'Nombre inválido', 'warning');
+        return;
+    }
+    // nombre solo letras, espacios y acentos y apóstrofes
+    const namePattern = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’ ]{3,75}$/;
+    if (!namePattern.test(nameTrim)) {
+        highlightAndFocus(document.getElementById('txtFullName'));
+        showMessage('El nombre contiene caracteres no válidos.', 'Nombre inválido', 'warning');
+        return;
+    }
+
+    // DUI formato XXXXXXXX-Y
+    const dui = txtCustomerDUI || '';
+    const duiPattern = /^[0-9]{8}-[0-9]$/;
+    if (!duiPattern.test(dui)) {
+        highlightAndFocus(document.getElementById('txtCustomerDUI'));
+        showMessage('El DUI debe tener el formato XXXXXXXX-Y', 'DUI inválido', 'warning');
+        return;
+    }
+
+    // Teléfono: usar isValidPhone (quita guiones/espacios internamente)
+    if (!isValidPhone(txtCustomerPhone || '')) {
+        highlightAndFocus(document.getElementById('txtCustomerPhone'));
+        showMessage('Número de teléfono inválido (9 dígitos, comienza con 2,6 o 7).', 'Teléfono inválido', 'warning');
+        return;
+    }
+
+    const customerData = {
+        fullName: txtFullName,
+        dui: txtCustomerDUI,
+        personalPhone: txtCustomerPhone
+    };
+
+    try {
+        if (currentId != null) {
+            await putCustomer(customerData, currentId);
+            showMessage('Cliente actualizado con éxito', 'Éxito', 'success');
+        } else {
+            await postCustomer(customerData);
+            showMessage('Cliente agregado con éxito', 'Éxito', 'success');
+        }
+        await loadCustomers();
+    } catch (error) {
+        console.error('Error al guardar cliente:', error);
+        showMessage(error.message || 'Error desconocido', 'Error', 'error');
+    } finally {
+        toggleModal(modalCustomers, false);
+        frmCustomers.reset();
+        enableFormUI('#frmCustomers');
+        btnAddCustomer.value = "Agregar Clientes";
+        if (titleModal) titleModal.textContent = "Agregar cliente";
+        currentId = null;
+    }
+});
+
 
 

@@ -17,15 +17,18 @@ export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, for
         form.reset();
         modal.querySelector('.titleModal').textContent = text;
         modal.querySelector('input[type="submit"]').value = "Agregar";
+        enableFormUI(formId);
     });
     closeBtn.addEventListener("click", () => {
         toggleModal(modal, false);
         form.reset();
+        enableFormUI(formId);
     });
     modal.addEventListener("click", e => {
         if (e.target === modal) {
             toggleModal(modal, false);
-            form.reset();
+            form.reset();4
+            enableFormUI(formId);
         }
     });
 };
@@ -173,6 +176,45 @@ export const formatPhoneNumber = (inputElement) => {
     inputElement.value = value;
 };
 
+export let formatDUIInput = (inputElement) => {
+    inputElement.addEventListener("input", (e) => {
+        let valor = e.target.value;
+
+        // Quitar todo lo que no sea número
+        valor = valor.replace(/\D/g, "");
+
+        // Limitar a 9 dígitos
+        if (valor.length > 9) {
+            valor = valor.substring(0, 9);
+        }
+
+        // Agregar guion si hay más de 8 dígitos
+        if (valor.length > 8) {
+            valor = valor.substring(0, 8) + "-" + valor.substring(8);
+        }
+
+        e.target.value = valor;
+    });
+}
+
+
+// Helpers para modo lectura / UI
+export function setFormReadOnly(frm, readOnly) {
+    const frmModal = document.querySelector(frm);
+    const controls = frmModal.querySelectorAll('input, textarea, select, button[type="submit"]');
+    controls.forEach(ctrl => {
+        if (ctrl.type === 'submit') {
+            ctrl.style.display = readOnly ? 'none' : '';
+        } else {
+            ctrl.disabled = readOnly;
+        }
+    });
+}
+
+export function enableFormUI(frm) {
+    setFormReadOnly(frm, false);
+}
+
 /* Llenar select */
 export const fillSelect = (selectId, data, valueKey, textKey) => {
     const select = document.getElementById(selectId);
@@ -204,39 +246,102 @@ export const showFloatingMenu = (event, actions) => {
     const menu = document.createElement('div');
     menu.classList.add('floatingMenu');
     menu.style.visibility = "hidden";
+    menu.style.position = "fixed";
+    menu.style.zIndex = "10000";
+
+    const opener = event.currentTarget;
+    const uniqueSuffix = Date.now().toString(36) + Math.random().toString(36).slice(2);
 
     actions.forEach(action => {
         const btn = document.createElement('button');
         btn.textContent = action.label;
         btn.classList.add('floatingMenuButton');
-        btn.addEventListener('click', action.onClick);
+
+        btn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            try {
+                action.onClick && action.onClick();
+            } finally {
+                if (menu.parentNode) menu.parentNode.removeChild(menu);
+                cleanup();
+            }
+        });
+
+        if (action.id) btn.id = `${action.id}-${uniqueSuffix}`;
         menu.appendChild(btn);
-        btn.id = action.id;
     });
 
     document.body.appendChild(menu);
-    const rect = event.currentTarget.getBoundingClientRect();
-    const menuWidth = menu.offsetWidth;
-    const menuHeight = menu.offsetHeight;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
 
-    let top = rect.bottom + 5;
-    let left = rect.right - menuWidth;
+    // función para calcular la posición respecto al opener
+    const positionMenu = () => {
+        if (!document.body.contains(menu)) return;
+        const menuRect = menu.getBoundingClientRect();
+        const menuWidth = menuRect.width;
+        const menuHeight = menuRect.height;
+        const rect = opener.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
 
-    if (left < 5) {
-        if (rect.left + menuWidth <= viewportWidth - 5) left = rect.left;
-        else left = 5;
+        let top = rect.bottom + 5;
+        let left = rect.right - menuWidth;
+
+        if (left < 5) {
+            if (rect.left + menuWidth <= viewportWidth - 5) left = rect.left;
+            else left = 5;
+        }
+        if (top + menuHeight > viewportHeight - 5) {
+            top = Math.max(5, rect.top - menuHeight - 5);
+        }
+
+        menu.style.top = `${top}px`;
+        menu.style.left = `${left}px`;
+    };
+
+    // posicionar tras insertarlo (usar RAF para asegurar layout)
+    requestAnimationFrame(() => {
+        positionMenu();
+        menu.style.visibility = "";
+    });
+
+    const onDocClick = (e) => {
+        if (!menu.contains(e.target) && e.target !== opener) {
+            if (menu.parentNode) menu.parentNode.removeChild(menu);
+            cleanup();
+        }
+    };
+    const onEsc = (e) => {
+        if (e.key === 'Escape') {
+            if (menu.parentNode) menu.parentNode.removeChild(menu);
+            cleanup();
+        }
+    };
+    const onResize = () => {
+        // si el opener ya no está en el DOM, cerrar el menú
+        if (!document.body.contains(opener)) {
+            if (menu.parentNode) menu.parentNode.removeChild(menu);
+            cleanup();
+            return;
+        }
+        positionMenu();
+    };
+    const onScroll = () => {
+        onResize();
+    };
+
+    function cleanup() {
+        document.removeEventListener('click', onDocClick);
+        document.removeEventListener('keydown', onEsc);
+        window.removeEventListener('resize', onResize);
+        window.removeEventListener('scroll', onScroll, true);
     }
-    if (top + menuHeight > viewportHeight - 5) {
-        top = Math.max(5, rect.top - menuHeight - 5);
-    }
 
-    menu.style.top = `${top}px`;
-    menu.style.left = `${left}px`;
-    menu.style.visibility = "";
-
-    document.addEventListener('click', e => {
-        if (!menu.contains(e.target)) menu.remove();
-    }, { once: true });
+    // registrar listeners tras crear el menú (evita interferir con el click que lo abrió)
+    setTimeout(() => {
+        document.addEventListener('click', onDocClick);
+        document.addEventListener('keydown', onEsc);
+        window.addEventListener('resize', onResize);
+        // usar captura para detectar scrolls en elementos internos
+        window.addEventListener('scroll', onScroll, true);
+    }, 0);
 };

@@ -1,0 +1,124 @@
+.breadCrumbSection {
+    margin-bottom: 1.5em;
+}
+
+.statsSection {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 20px;
+    width: 100%;
+}
+
+.statItem {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-table);
+    border: var(--border);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.statTitle {
+    font-size: var(--font-size-base);
+}
+
+.statValue {
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-title);
+}
+
+.filtersGroup {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+}
+
+.totalSales {
+    flex: 2;
+}
+
+.cardContainer {
+    grid-template-columns: repeat(auto-fill, minmax(300px, auto));
+    grid-auto-rows: 400px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+}
+
+.containerImgVehicle {
+    height: 150px;
+    width: 100%;
+}
+
+.containerImgVehicle img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.footerCard {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.containerInfoVehicle{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    border-bottom: var(--border);
+    padding-bottom: 7px;
+}
+
+.vehicleName {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+}
+
+.orderColor {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+.infoVehicleItem{
+    display: flex;
+    gap: 10px;
+}
+
+.containerOrderStatus {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.colorPending {
+    background-color: var(--warning-color);
+}
+
+.pendingOrder {
+    color: var(--warning-color);
+    font-weight: var(--font-weight-medium);
+}
+
+.moreInfoContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.moreInfoContainer .btnPrimary {
+    padding: 5px 12px;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--border-radius-input);
+}
