@@ -111,8 +111,8 @@ function applyCollapsed(collapsed) {
         }
 
         // restablecer estilos “abreviados”
-        logo.classList.remove('logoShort');
-        logo.setAttribute('src', '../media/sidebar/newRiskorLogo.svg');
+        //logo.classList.remove('logoShort');
+        //logo.setAttribute('src', '../media/sidebar/newRiskorLogo.svg');
         menuItems.forEach(i => i.classList.remove('navbarItemClose'));
         navTextVisible.forEach(i => i.classList.remove('hideText'));
     } else {
@@ -123,8 +123,8 @@ function applyCollapsed(collapsed) {
         btnNavbarContainer.classList.remove('btnNavbarContainerOpen');
 
         if (collapsed) {
-            logo.classList.add('logoShort');
-            logo.setAttribute('src', '../media/sidebar/shortLogo.svg');
+            //logo.classList.add('logoShort');
+            //logo.setAttribute('src', '../media/sidebar/shortLogo.svg');
             menuItems.forEach(i => i.classList.add('navbarItemClose'));
             navTextVisible.forEach(i => i.classList.add('hideText'));
             // submenu/button references removed
@@ -132,8 +132,8 @@ function applyCollapsed(collapsed) {
             navbarContainer.classList.add('navbarClose');
             btnNavbar.classList.add('rotate180');
         } else {
-            logo.classList.remove('logoShort');
-            logo.setAttribute('src', '../media/sidebar/newRiskorLogo.svg');
+            //logo.classList.remove('logoShort');
+            //logo.setAttribute('src', '../media/sidebar/newRiskorLogo.svg');
             menuItems.forEach(i => i.classList.remove('navbarItemClose'));
             navTextVisible.forEach(i => i.classList.remove('hideText'));
             // submenu/button references removed

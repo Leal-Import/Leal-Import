@@ -7,21 +7,28 @@ import {
     highlightAndFocus,
     formatPhoneNumber,
     fillSelect,
-    showFloatingMenu
+    showFloatingMenu,
+    toggleModal,
+    fillForm
 } from '../utils.js';
 
 import {
     getActiveEmployees,
     postEmployee,
-    getRoles
+    getRoles,
+    putEmployee
 } from '../service/serviceEmployees.js';
 
 const modalEmployees = document.getElementById("modalEmployees");
 const frmEmployees = document.getElementById("frmEmployees");
 const txtPhone = document.getElementById("txtEmployeePhone");
+const btnAddEmployee = document.getElementById("btnAddEmployee");
+const titleModal = document.querySelector(".titleModal");
 
 // Configurar el modal para agregar empleados
-setupModal("#OpenModalEmployees", "#modalEmployees", "#closeAddEmployee", "#frmEmployees");
+setupModal("#OpenModalEmployees", "#modalEmployees", "#closeAddEmployee", "#frmEmployees", "Agregar empleado");
+
+let currentId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     /* Eventos al cargar la pagina */
@@ -39,7 +46,6 @@ let loadEmployees = async () => {
 }
 
 let insertEmployees = (employees) => {
-    console.log(employees)
     const fragment = document.createDocumentFragment();
     const container = document.getElementById("employeesTableBody");
     container.innerHTML = "";
@@ -64,9 +70,9 @@ let insertEmployees = (employees) => {
         actionButton.addEventListener('click', (event) => {
             event.stopPropagation();
             showFloatingMenu(event, [
-                { label: 'Editar empleado', onClick: () => editEmployee(employee) },
-                { label: 'Eliminar empleado', onClick: () => deleteEmployee(employee.id) },
-                { label: 'Ver detalles', onClick: () => viewEmployee(employee.id) },
+                { label: 'Editar empleado', onClick: () => editEmployee(employee), id: 'btnUpdateEmp' },
+                { label: 'Desactivar empleado', onClick: () => deleteEmployee(employee.id), id: 'btnDeleteEmp' },
+                { label: 'Ver detalles', onClick: () => viewEmployee(employee.id), id: 'btnViewEmp' }
             ]);
         });
 
@@ -74,6 +80,30 @@ let insertEmployees = (employees) => {
         fragment.appendChild(tr);
     });
     container.appendChild(fragment);
+}
+
+let editEmployee = (employee) => {
+    currentId = employee.idEmployee;
+    fillForm('#frmEmployees', {
+        txtFullName: employee.fullName,
+        txtEmployeeEmail: employee.email,
+        txtEmployeePhone: employee.phoneEmploye,
+        txtUsername: employee.username,
+        cmbUserRole: employee.idRole
+    });
+    btnAddEmployee.value = "Actualizar empleado";
+    titleModal.textContent = "Actualizar empleado";
+    toggleModal(modalEmployees, true);
+}
+
+let deleteEmployee = (employeeId) => {
+    console.log("Eliminando empleado ID:", employeeId);
+    // Podés mostrar un modal de confirmación aquí
+}
+
+let viewEmployee = (employeeId) => {
+    console.log("Viendo detalles del empleado ID:", employeeId);
+    setupModal("#btnViewEmp", "#modalEmployees", "#closeAddEmployee", "#frmEmployees");
 }
 
 txtPhone.addEventListener('input', () => {
@@ -118,17 +148,23 @@ frmEmployees.addEventListener("submit", async (e) => {
     };
 
     try {
-        const result = await postEmployee(employeeData);
-        showMessage('¡Empleado agregado con éxito!', 'Exito', 'success');
+        if (currentId != null) {
+            await putEmployee(employeeData, currentId);
+            showMessage('¡Empleado actualizado con éxito!', 'Exito', 'success');
+        } else {
+            await postEmployee(employeeData);
+            showMessage('¡Empleado agregado con éxito!', 'Exito', 'success');
+        }
         loadEmployees();
-
     } catch (error) {
-        console.error("Error al agregar empleado:", error);
+        console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar el empleado.';
         showMessage(errorMessage, 'error', 'error');
     } finally {
         modalEmployees.classList.add('hide');
-        frmEmployees.reset();
+        btnAddEmployee.value = "Agregar empleado";
+        titleModal.textContent = "Agregar nuevo empleado";
+        currentId = null;
     }
 
 });
@@ -137,6 +173,7 @@ let rolesList = [];
 let loadRolesSelect = async () => {
     try {
         const roles = await getRoles();
+        console.log(roles);
         rolesList = roles; // Guardamos para mapear luego
         fillSelect('cmbUserRole', rolesList, 'idRole', 'roleName');
     } catch (error) {
