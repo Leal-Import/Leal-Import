@@ -4,17 +4,19 @@ export const toggleModal = (modal, show) => {
     modal.classList.toggle("hide", !show);
 };
 
-export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, formId) => {
+export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, formId, text) => {
     const openBtn = document.querySelector(openBtnSelector);
     const closeBtn = document.querySelector(closeBtnSelector);
     const modal = document.querySelector(modalSelector);
     const form = document.querySelector(formId);
-
+    
     if (!openBtn || !closeBtn || !modal) return;
 
     openBtn.addEventListener("click", () => {
         toggleModal(modal, true);
         form.reset();
+        modal.querySelector('.titleModal').textContent = text;
+        modal.querySelector('input[type="submit"]').value = "Agregar";
     });
     closeBtn.addEventListener("click", () => {
         toggleModal(modal, false);
@@ -78,6 +80,38 @@ export const showMessage = (title, message, type = 'info', isToast = false) => {
     Swal.fire(config);
 };
 
+/* Llenar formulario */
+export let fillForm = (formSelector, data) => {
+    const form = document.querySelector(formSelector);
+    console.log(form);
+    if (!form) return console.error(`No se encontró el formulario ${formSelector}`);
+
+    Object.keys(data).forEach(key => {
+        const field = document.getElementById(key);
+        console.log(field);
+        console.log(data[key]);
+        if (!field) return; // Si no hay campo con ese nombre, lo salta
+
+        const value = data[key];
+
+        // Verificamos tipo de elemento
+        if (field.tagName === "INPUT") {
+            if (field.type === "checkbox") {
+                field.checked = Boolean(value);
+            } else if (field.type === "radio") {
+                const radio = form.querySelector(`[name="${key}"][value="${value}"]`);
+                if (radio) radio.checked = true;
+            } else {
+                field.value = value ?? '';
+            }
+        } else if (field.tagName === "SELECT") {
+            field.value = value ?? '';
+        } else if (field.tagName === "TEXTAREA") {
+            field.value = value ?? '';
+        }
+    });
+}
+
 /* Validaciones */
 
 /* Esto es para que se haga focus en el elemento q esta mal */
@@ -120,12 +154,22 @@ export const isValidPhone = (phone) => {
 
 export const formatPhoneNumber = (inputElement) => {
     let value = inputElement.value.replace(/\D/g, '');
+
+    // Solo permite que el primer dígito sea 2, 6 o 7
+    if (value.length > 0 && !/^[267]/.test(value)) {
+        value = value.substring(1); // elimina el primer dígito inválido
+    }
+
+    // Limita a 8 dígitos
     if (value.length > 8) {
         value = value.substring(0, 8);
     }
+
+    // Aplica el formato ####-####
     if (value.length > 4) {
-        value = value.substring(0, 4) + '-' + value.substring(4, 8);
+        value = value.substring(0, 4) + '-' + value.substring(4);
     }
+
     inputElement.value = value;
 };
 
@@ -167,6 +211,7 @@ export const showFloatingMenu = (event, actions) => {
         btn.classList.add('floatingMenuButton');
         btn.addEventListener('click', action.onClick);
         menu.appendChild(btn);
+        btn.id = action.id;
     });
 
     document.body.appendChild(menu);
