@@ -1,0 +1,46 @@
+
+.mainContent{
+    flex: 1;
+    border: var(--border);
+}
+
+.vehicleDetailsContainer{
+    height: 100%;
+}
+
+.vehicleDetailsBody{
+    display: flex;
+    height: 100%;
+}
+
+.vehicleImagesSection, .vehicleInfoSection{
+    flex: 1;
+    padding: 20px;
+    height: 100%;
+    border: var(--border);
+}
+
+.headerInfoSection{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: var(--border);
+}
+
+.brand, .price{
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-breadcrumb);
+}
+
+.price{
+    color: var(--danger-color);
+}
+
+.bodyInfoSection{
+    padding-top: 20px;
+}
+
+.titleInfoVehicle{
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-medium);
+}
