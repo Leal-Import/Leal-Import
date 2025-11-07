@@ -29,7 +29,7 @@
     grid-template-rows: repeat(2, 1fr);
 }
 
-.statTitle{
+.statTitle {
     font-size: var(--font-size-base);
 }
 
@@ -134,7 +134,7 @@
     gap: 5px;
 }
 
-.footerCard{
+.footerCard {
     flex: 1;
     justify-content: space-around;
 }
@@ -159,59 +159,90 @@
 
 /* Estilos del modal */
 
-.modalVehicleBody{
+.modalVehicleBody {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.upModalPart{
+.upModalPart {
     display: flex;
+    flex-direction: column;
     gap: 20px;
 }
 
-.downModalPart{
+.downModalPart {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.rightPartModal{
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.swiper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
 }
 
-.pictureVehicle{
+.pictureVehicle {
     width: 100%;
     height: 100%;
 }
 
-.rightPartModal .formGroup{
+.containerPictureModal {
+    height: 200px;
+    background-color: #f0f0f0;
+    padding: 0 1px;
+}
+
+.containerFile {
+    border: 2px dashed var(--danger-color);
+    height: 100%;
+    border-radius: 12px;
+    background: #f4f6ff;
+    padding: 2em 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+}
+
+.fileInputContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7em;
     width: 100%;
 }
 
-.containerButtonsImg{
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.btnAddPhoto{
-    padding: 5px 15px;
-    border-radius: 25px;
-    font-size: var(--font-size-base);
-}
-
-.btnDeletePhoto{
+.labelFileBtn {
+    background: var(--helper-color);
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.7em 2em;
+    font-weight: 600;
+    font-size: 1em;
     cursor: pointer;
-    padding: 5px 15px;
-    border-radius: 25px;
+    box-shadow: 0 2px 8px rgba(44, 49, 80, 0.08);
     border: none;
-    font-size: var(--font-size-base);
+    margin-bottom: 0.5em;
+    transition: background 0.2s;
+    text-align: center;
 }
 
-.containerPictureModal{
+.swiper-button-next, .swiper-button-prev{
+    color: var(--danger-color);
+}
 
+.fileInputContainer p {
+    color: #2c3150;
+    font-size: 1em;
+    margin: 0;
+    text-align: center;
+}
+
+.labelFileBtn:hover {
+    background: var(--danger-color);
 }

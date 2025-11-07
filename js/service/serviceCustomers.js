@@ -55,7 +55,7 @@ export let postCustomer = async (customerData) => {
     }
 };
 
-export let putCustomer = async (customerId, customerData) => {
+export let putCustomer = async (customerData, customerId) => {
     try {
         const request = await fetch(`${API_URL}/putCustomer/${customerId}`, {
             method: 'PUT',

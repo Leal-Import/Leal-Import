@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="shortcut icon" href="../media/icon.svg" type="image/x-icon">
+    <title>Login</title>
+</head>
+
+<body>
+    <div id="RiskorBackground"></div>
+    <button type="button" id="btnBackHome" class="backHomeCorner" aria-label="Volver al inicio">
+        <i class='bx bx-home'></i>
+    </button>
+
+    <!-- Modal Recovery Method -->
+    <div id="modalRecovery" class="modal">
+        <div class="modalContent">
+            <button class="closeBtn" title="Cerrar">
+                <i class='bx bx-x'></i>
+            </button>
+            <h2>Método de Recuperación</h2>
+            <button class="modalBtn" id="openAuth">Verificación por correo</button>
+        </div>
+    </div>
+
+    <!-- Modal Authentication -->
+    <div id="modalAuth" class="modal" style="display:none;">
+        <div class="modalContent">
+            <button class="closeBtn" id="closeAuth" title="Cerrar">
+                <i class='bx bx-x'></i>
+            </button>
+            <div class="modalAuthBody">
+                <h2>Autenticación</h2>
+                <p>
+                    Bienvenido, por aquí te ayudaremos a recuperar tu cuenta, primero, necesitamos verificar que eres
+                    propietario
+                    de una cuenta.
+                </p>
+                <input type="email" class="formControl" placeholder="...@ejemplo.com" id="authEmail" required />
+                <div class="authSuccess">
+                </div>
+                <div class="authBtns">
+                    <button id="btnAuthSend" class="btnPrimary">Listo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Contraseña -->
+    <div id="modalNewPassword" class="modal" style="display: none;">
+        <div class="modalContent">
+            <h2>Reestablecer contraseña</h2>
+            <button class="closeBtn" id="closeNewPassword" title="Cerrar">
+                <i class='bx bx-x'></i>
+            </button>
+            <input type="password" id="newPassword" class="formControl" placeholder="Nueva contraseña" />
+
+            <input type="password" id="confirmPassword" class="formControl" placeholder="Confirmar nueva contraseña" />
+
+            <div class="modalActions">
+                <button type="button" class="btnPrimary" id="btnUpdatePassword">Listo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Código de Seguridad -->
+    <div id="modalCode" class="modal" style="display:none;">
+        <div class="modalContent">
+            <button class="closeBtn" id="closeCode" title="Cerrar">
+                <i class='bx bx-x'></i>
+            </button>
+            <div class="modalCodeBody">
+                <img src="../media/logoRiskor.png" alt="Logo Riskor" />
+                <p>
+                    Código de seguridad enviado a la dirección<br />
+                    <span style="font-weight:400;"><b></b></span>
+                </p>
+                <p>
+                    Coloca el código de seguridad para continuar
+                </p>
+                <div class="codeInputs">
+                    <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
+                    <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
+                    <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
+                    <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
+                    <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
+                    <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
+                </div>
+                <button class="btnPrimary" id="btnCodeContinue" type="button"
+                    style="background:#7884ED; color:#fff;">Listo</button>
+            </div>
+        </div>
+    </div>
+    <!-- Justamente ACÁ es el apartado de LOGIN -->
+    <section>
+        <div class="loginContainer">
+            <form id="formLogin" action="">
+                <img src="../media/RiskorLanding.svg" alt="Riskor icon" class="riskorIcon">
+                <div class="inputBox">
+                    <span class="icon"><i class='bx bx-user'></i></span>
+                    <input type="text" id="userInput" required>
+                    <label>Usuario o correo electrónico</label>
+                </div>
+                <div class="inputBox">
+                    <span class="icon togglePassword"><i class='bx bx-hide'></i></span>
+                    <input type="password" id="passwordInput" required>
+                    <label>Contraseña</label>
+                </div>
+                <button type="submit" class="loginButton" style="margin: 30px 0 10px 0;">Iniciar Sesión</button>
+                <div class="forgotPassword">
+                    <p><a href="#" id="openModalRecovery">Olvidé mi contraseña</a></p>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/service/serviceLogin.js"></script>
+    <script type="module" src="../js/controller/controllerLogin.js"></script>
+</body>
+</html>

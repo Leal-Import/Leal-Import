@@ -9,7 +9,9 @@ import {
     fillSelect,
     showFloatingMenu,
     toggleModal,
-    fillForm
+    fillForm,
+    enableFormUI,
+    setFormReadOnly
 } from '../utils.js';
 
 import {
@@ -30,10 +32,10 @@ setupModal("#OpenModalEmployees", "#modalEmployees", "#closeAddEmployee", "#frmE
 
 let currentId = null;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     /* Eventos al cargar la pagina */
-    loadRolesSelect();
-    loadEmployees();
+    await loadRolesSelect();
+    await loadEmployees();
 })
 
 let loadEmployees = async () => {
@@ -71,8 +73,8 @@ let insertEmployees = (employees) => {
             event.stopPropagation();
             showFloatingMenu(event, [
                 { label: 'Editar empleado', onClick: () => editEmployee(employee), id: 'btnUpdateEmp' },
-                { label: 'Desactivar empleado', onClick: () => deleteEmployee(employee.id), id: 'btnDeleteEmp' },
-                { label: 'Ver detalles', onClick: () => viewEmployee(employee.id), id: 'btnViewEmp' }
+                { label: 'Desactivar empleado', onClick: () => deleteEmployee(employee.idEmployee), id: 'btnDeleteEmp' },
+                { label: 'Ver detalles', onClick: () => viewEmployee(employee), id: 'btnViewEmp' }
             ]);
         });
 
@@ -101,9 +103,18 @@ let deleteEmployee = (employeeId) => {
     // Podés mostrar un modal de confirmación aquí
 }
 
-let viewEmployee = (employeeId) => {
-    console.log("Viendo detalles del empleado ID:", employeeId);
-    setupModal("#btnViewEmp", "#modalEmployees", "#closeAddEmployee", "#frmEmployees");
+let viewEmployee = (employee) => {
+    enableFormUI("#frmEmployees"); // ensure consistent state before disabling
+    fillForm('#frmEmployees', {
+        txtFullName: employee.fullName,
+        txtEmployeeEmail: employee.email,
+        txtEmployeePhone: employee.phoneEmploye,
+        txtUsername: employee.username,
+        cmbUserRole: employee.idRole
+    });
+    setFormReadOnly("#frmEmployees", true);
+    if (titleModal) titleModal.textContent = "Detalles del empleado";
+    toggleModal(modalEmployees, true);
 }
 
 txtPhone.addEventListener('input', () => {
