@@ -9,7 +9,7 @@ export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, for
     const closeBtn = document.querySelector(closeBtnSelector);
     const modal = document.querySelector(modalSelector);
     const form = document.querySelector(formId);
-    
+
     if (!openBtn || !closeBtn || !modal) return;
 
     openBtn.addEventListener("click", () => {
@@ -27,7 +27,7 @@ export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, for
     modal.addEventListener("click", e => {
         if (e.target === modal) {
             toggleModal(modal, false);
-            form.reset();4
+            form.reset(); 4
             enableFormUI(formId);
         }
     });
@@ -122,6 +122,24 @@ export const highlightAndFocus = (element) => {
     element.classList.add('input-error');
     element.focus();
 };
+
+export let isValidImage = (file) => {
+    const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+    if (!validTypes.includes(file.type)) {
+        showMessage("Formato inválido", "Solo se permiten imágenes JPG y PNG.", "warning");
+        return false;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+        showMessage("La imagen es demasiado pesada", "Máximo permitido: 5 MB.", "warning");
+        return false;
+    }
+
+    return true;
+}
+
 
 export const isValidEmail = (email) => {
     if (!email) {

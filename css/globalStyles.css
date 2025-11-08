@@ -282,6 +282,12 @@
     background-color: rgba(211, 24, 19, 0.05);
 }
 
+.noDataMessage {
+    font-size: var(--font-size-lg);
+    color: var(--text-color-secondary);
+    width: 100%;
+}
+
 
 @keyframes fadeInScale {
     from {

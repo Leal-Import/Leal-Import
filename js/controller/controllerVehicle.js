@@ -1,15 +1,224 @@
 import {
-  setupModal
+  setupModal,
+  isValidImage,
+  showMessage,
+  getInputsValues,
+  fillForm,
+  toggleModal
 } from '../utils.js';
-// Configurar el modal para agregar Vehículos
-const fileContainer = document.querySelector(".containerFile");
-const evidencePreview = document.getElementById("evidencePreview");
-const containerImgFile = document.getElementById("containerImgFile");
-const uploadMessage = document.getElementById("uploadMessage");
-const fileInput = document.getElementById("fileInput");
-let selectedFile = null;
 
-setupModal("#OpenModalVehicles", "#modalVehicle", "#closeAddVehicle", "#frmVehicles");
+import { getVehicles, postVehicle } from '../service/serviceVehicle.js';
+
+const frmVehicles = document.getElementById("frmVehicles");
+const modalVehicle = document.getElementById("modalVehicle");
+const btnAddNewVehicle = document.getElementById("btnAddNewVehicle");
+const txtYear = document.getElementById("txtYear");
+const titleModal = document.querySelector(".titleModal");
+
+let selectedFile = null;
+let currentId = null;
+
+setupModal("#OpenModalVehicles", "#modalVehicle", "#closeAddVehicle", "#frmVehicles", "Agregar vehículo");
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadVehicles();
+});
+
+const loadVehicles = async () => {
+  try {
+    const vehicles = await getVehicles();
+    insertVehicles(vehicles.content);
+  } catch (error) {
+    showMessage("Error", "No se pudieron cargar los vehículos." + error, "error");
+  }
+};
+
+
+let insertVehicles = (vehicles) => {
+  const container = document.querySelector(".cardContainer");
+  container.innerHTML = "";
+
+  const fragment = document.createDocumentFragment();
+  if (vehicles.length === 0) {
+    const noDataDiv = document.createElement("div");
+    noDataDiv.textContent = "No hay vehículos disponibles.";
+    noDataDiv.style.gridColumn = "1 / -1";
+    noDataDiv.classList.add("noDataMessage");
+    fragment.appendChild(noDataDiv);
+  } else {
+    vehicles.forEach(vehicle => {
+      const card = document.createElement("div");
+      const headerCard = document.createElement("div");
+      const containerImgVehicle = document.createElement("div");
+      const footerCard = document.createElement("div");
+      const vehicleBrand = document.createElement("span");
+      const vehiclePrice = document.createElement("span");
+      const img = document.createElement("img");
+      const vehicleStatus = document.createElement("div");
+      const containerInfoVehicle = document.createElement("div");
+      const containerButtons = document.createElement("div");
+      const btnEdit = document.createElement("button");
+      const btnView = document.createElement("a");
+      const vinItem = document.createElement("div");
+      const yearItem = document.createElement("div");
+      const modelItem = document.createElement("div");
+
+      vehicleBrand.textContent = vehicle.brand;
+      btnEdit.textContent = "Editar";
+      btnView.textContent = "Ver más";
+      btnEdit.classList.add("btnPrimary");
+      btnView.classList.add("btnPrimary");
+      btnView.href = `vehicleDetails.html?id=${vehicle.vin}`;
+      containerButtons.classList.add("containerButtons");
+      vehiclePrice.textContent = `$${vehicle.price}`;
+      vinItem.innerHTML = `<div>Vin:</div> <span>${vehicle.vin}</span>`;
+      yearItem.innerHTML = `<div>Año:</div> <span>${vehicle.year}</span>`;
+      modelItem.innerHTML = `<div>Modelo:</div> <span>${vehicle.model}</span>`;
+      img.src = vehicle.photos[0].photoUrl || "";
+      img.alt = `Imagen de ${vehicle.brand} ${vehicle.model}`;
+      vehicleStatus.textContent = vehicle.nameStatus;
+
+      card.classList.add("card");
+      headerCard.classList.add("headerCard");
+      containerImgVehicle.classList.add("containerImgVehicle");
+      footerCard.classList.add("footerCard");
+      vehicleBrand.classList.add("vehicleBrand");
+      vehiclePrice.classList.add("vehiclePrice");
+      vehicleStatus.classList.add("vehicleStatus");
+      containerInfoVehicle.classList.add("containerInfoVehicle");
+      vinItem.classList.add("infoVehicleItem");
+      yearItem.classList.add("infoVehicleItem");
+      modelItem.classList.add("infoVehicleItem");
+
+      containerInfoVehicle.appendChild(vinItem);
+      containerInfoVehicle.appendChild(yearItem);
+      containerInfoVehicle.appendChild(modelItem);
+      headerCard.appendChild(vehicleBrand);
+      headerCard.appendChild(vehiclePrice);
+      containerImgVehicle.appendChild(img);
+      footerCard.appendChild(vehicleStatus);
+      footerCard.appendChild(containerInfoVehicle);
+      footerCard.appendChild(containerButtons);
+      containerButtons.appendChild(btnView);
+      containerButtons.appendChild(btnEdit);
+      card.appendChild(headerCard);
+      card.appendChild(containerImgVehicle);
+      card.appendChild(footerCard);
+      fragment.appendChild(card);
+      btnEdit.addEventListener("click", () => {
+        editVehicle(vehicle);
+      });
+    });
+  }
+  container.appendChild(fragment);
+}
+
+let editVehicle = (vehicle) => {
+  currentId = vehicle.vin;
+  fillForm('#frmVehicles', {
+    txtVin: vehicle.vin,
+    txtModel: vehicle.model,
+    txtBrand: vehicle.brand,
+    txtYear: vehicle.year,
+    txtCustomer: vehicle.customer,
+    txtPrice: vehicle.price
+  });
+  btnAddNewVehicle.value = "Actualizar vehiculo";
+  titleModal.textContent = "Actualizar vehiculo";
+  toggleModal(modalVehicle, true);
+}
+
+frmVehicles.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = getInputsValues(frmVehicles);
+
+  let files = [];
+  document.querySelectorAll(".inputFile").forEach(input => {
+    if (input.files.length > 0) {
+      files.push(input.files[0]);
+    }
+  });
+
+  const {
+    txtVin,
+    txtBrand,
+    txtCustomer,
+    txtModel,
+    txtPrice,
+    txtYear
+  } = formData;
+
+  if (!txtVin || !txtModel || !txtPrice || !txtYear || !txtBrand) {
+    showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
+    return;
+  }
+
+  if (files.length === 0) {
+    showMessage('Por favor, agregue al menos una imagen del vehículo.', 'Imagen requerida', 'warning');
+    return;
+  }
+  let idCustomer = null;
+
+  const fd = new FormData();
+
+  const vehicle = {
+    vin: txtVin,
+    brand: txtBrand,
+    idClient: idCustomer,
+    model: txtModel,
+    price: txtPrice,
+    year: txtYear,
+    idVehicleStatus: "5ffd6d0a-bc09-11f0-a5c6-74d4dd6ecc40" // Por defecto, "En stock" este campo es momentaneo
+  };
+
+  files.forEach((file) => {
+    fd.append(`photos`, file);
+  });
+
+  fd.append('vehicleData', JSON.stringify(vehicle));
+
+  try {
+    if (currentId != null) {
+      //await putEmployee(employeeData, currentId);
+      showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
+    } else {
+      await postVehicle(fd);
+      showMessage('Vehiculo agregado con éxito!', 'Exito', 'success');
+    }
+    loadVehicles();
+  } catch (error) {
+    console.error("Error al realizar la operación:", error);
+    const errorMessage = error.message || 'Error desconocido al registrar el vehiculo.';
+    showMessage(errorMessage, 'error', 'error');
+  } finally {
+    modalVehicle.classList.add('hide');
+    btnAddNewVehicle.value = "Agregar vehiculo";
+    titleModal.textContent = "Agregar nuevo vehiculo";
+    currentId = null;
+  }
+});
+
+
+
+txtYear.addEventListener("input", () => {
+  // Solo números
+  txtYear.value = txtYear.value.replace(/\D/g, "");
+
+  const currentYear = new Date().getFullYear();
+  const minYear = currentYear - 40;
+
+  if (txtYear.value.length === 4) {
+    const yearNum = parseInt(txtYear.value);
+
+    if (yearNum > currentYear) {
+      txtYear.value = currentYear;
+    } else if (yearNum < minYear) {
+      txtYear.value = minYear;
+    }
+  }
+});
+
+
 
 const ctx = document.getElementById('vehicleChart').getContext('2d');
 
@@ -42,6 +251,12 @@ new Chart(ctx, {
   }
 });
 
+/* Todo este js de abajo es solo del carrucel de imagenes */
+
+/* ===========================================
+   CONFIGURACIÓN DEL SWIPER (CARRUSEL)
+=========================================== */
+
 let maxSlides = 4;
 
 let swiper = new Swiper(".vehicle-swiper", {
@@ -51,7 +266,36 @@ let swiper = new Swiper(".vehicle-swiper", {
   }
 });
 
-// ✅ Event delegation para detectar click en cualquier label dentro de swiper
+// ✅ TEMPLATE de slide vacío (NO elimina el input)
+function emptySlideTemplate() {
+  return `
+    <div class="swiper-slide upload-slide">
+      <div class="containerFile isEmpty">
+        <div class="fileInputContainer">
+          <input class="inputFile" type="file" accept="image/png,image/jpeg,image/jpg" hidden />
+          <label class="btnPrimary labelFileBtn">Examinar</label>
+          <p>o arrastra tus evidencias aquí</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ✅ TEMPLATE para slide con imagen (NO crea input nuevo)
+function renderImageOnSlide(slide, url) {
+  slide.querySelector(".containerFile").classList.remove("isEmpty");
+  slide.innerHTML = `
+    <button class="slideDeleteBtn">✖</button>
+    <img class="previewImg" src="${url}">
+    <input class="inputFile" type="file" accept="image/png,image/jpeg,image/jpg" hidden />
+  `;
+}
+
+/* ===========================================
+   EVENTOS DEL CARRUSEL
+=========================================== */
+
+// ✅ CLICK en "Examinar"
 document.querySelector(".vehicle-swiper").addEventListener("click", (e) => {
   if (e.target.classList.contains("labelFileBtn")) {
     const input = e.target.closest(".swiper-slide").querySelector(".inputFile");
@@ -59,38 +303,98 @@ document.querySelector(".vehicle-swiper").addEventListener("click", (e) => {
   }
 });
 
-// ✅ Cuando el usuario selecciona un archivo, reemplazar slide por imagen y generar otro vacío
+// ✅ CLICK en imagen para reemplazar
+document.querySelector(".vehicle-swiper").addEventListener("click", (e) => {
+  if (e.target.classList.contains("previewImg")) {
+    const input = e.target.closest(".swiper-slide").querySelector(".inputFile");
+    if (input) input.click();
+  }
+});
+
+// ✅ ELIMINAR SLIDE
+document.querySelector(".vehicle-swiper").addEventListener("click", (e) => {
+  if (e.target.classList.contains("slideDeleteBtn")) {
+    const slide = e.target.closest(".swiper-slide");
+    const index = [...swiper.slides].indexOf(slide);
+
+    swiper.removeSlide(index);
+    swiper.update();
+
+    if (![...swiper.slides].some(s => s.querySelector(".fileInputContainer"))) {
+      swiper.addSlide(swiper.slides.length, emptySlideTemplate());
+      swiper.update();
+    }
+  }
+});
+
+/* ===========================================
+   CAMBIO DE ARCHIVO EN INPUT
+=========================================== */
+
 document.addEventListener("change", (e) => {
   if (!e.target.classList.contains("inputFile")) return;
 
   const file = e.target.files[0];
   if (!file) return;
 
-  const imageURL = URL.createObjectURL(file);
+  if (!isValidImage(file)) {
+    return;
+  }
 
-  // remplaza el contenido del slide actual por la imagen
-  const currentSlide = e.target.closest(".swiper-slide");
-  currentSlide.innerHTML = `<img class="previewImg" src="${imageURL}">`;
+  const url = URL.createObjectURL(file);
+  const slide = e.target.closest(".swiper-slide");
 
-  // si aún no llegó al máximo, genera un nuevo slide vacío
-  if (swiper.slides.length < maxSlides) {
+  renderImageOnSlide(slide, url);
+
+  // Asignar archivo al input existente (que se mantiene)
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  slide.querySelector(".inputFile").files = dt.files;
+
+  if (swiper.slides.length < maxSlides && ![...swiper.slides].some(s => s.querySelector(".fileInputContainer"))) {
     swiper.addSlide(swiper.slides.length, emptySlideTemplate());
   }
 
   swiper.update();
 });
 
-// ✅ Template del slide vacío
-function emptySlideTemplate() {
-  return `
-    <div class="swiper-slide upload-slide">
-        <div class="containerFile isEmpty">
-            <div class="fileInputContainer">
-                <input class="inputFile hide" type="file" accept="image/png,image/jpeg,image/jpg">
-                <label class="btnPrimary labelFileBtn">Examinar</label>
-                <p>o arrastra tus evidencias aquí</p>
-            </div>
-        </div>
-    </div>
-  `;
-}
+/* ===========================================
+   DRAG & DROP
+=========================================== */
+
+document.querySelector(".vehicle-swiper").addEventListener("dragover", (e) => {
+  e.preventDefault();
+  const slide = e.target.closest(".upload-slide");
+  if (slide) slide.classList.add("drag-over");
+});
+
+document.querySelector(".vehicle-swiper").addEventListener("dragleave", (e) => {
+  const slide = e.target.closest(".upload-slide");
+  if (slide) slide.classList.remove("drag-over");
+});
+
+document.querySelector(".vehicle-swiper").addEventListener("drop", (e) => {
+  e.preventDefault();
+
+  const slide = e.target.closest(".upload-slide");
+  if (!slide) return;
+
+  slide.classList.remove("drag-over");
+
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith("image/")) return;
+
+  const url = URL.createObjectURL(file);
+
+  renderImageOnSlide(slide, url);
+
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  slide.querySelector(".inputFile").files = dt.files;
+
+  if (swiper.slides.length < maxSlides) {
+    swiper.addSlide(swiper.slides.length, emptySlideTemplate());
+  }
+
+  swiper.update();
+});

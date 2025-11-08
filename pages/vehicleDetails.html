@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="../css/vehicleDetails.css">
+    <title>Vehiculos</title>
+</head>
+
+<body>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <div class="content">
+            <div class="headerContent"></div>
+            <div class="mainContent">
+                <div class="vehicleDetailsContainer">
+                    <div class="vehicleDetailsBody">
+                        <div class="vehicleImagesSection">
+                            <div class="mainImageContainer">
+                                <img id="mainVehicleImage" src="" alt="Imagen principal del vehículo">
+                            </div>
+                            <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                                <!-- Thumbnails will be dynamically added here -->
+                            </div>
+                        </div>
+                        <div class="vehicleInfoSection">
+                            <div class="headerInfoSection">
+                                <h2 class="brand">Yamaha</h2>
+                                <h3 class="price">$15,000</h3>
+                            </div>
+                            <div class="bodyInfoSection">
+                                <h4 class="titleInfoVehicle">Información</h4>
+                                <div class="infoRow">
+                                    <span class="infoLabel">Modelo:</span>
+                                    <span class="infoValue">kawasaki</span>
+                                </div>
+                                <div class="infoRow">
+                                    <span class="infoLabel">Vin:</span>
+                                    <span class="infoValue">HD73HRJKSHW263G4</span>
+                                </div>
+                                <div class="infoRow">
+                                    <span class="infoLabel">Año:</span>
+                                    <span class="infoValue">2018</span>
+                                </div>
+                                <div class="infoRow">
+                                    <span class="infoLabel">Cliente:</span>
+                                    <span class="infoValue">Leal import</span>
+                                </div>
+                                <div class="infoRow">
+                                    <span class="infoLabel">Estado:</span>
+                                    <span class="infoValue">En inventario</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerVehicleDetails.js"></script>
+    <script type="module" src="../js/service/serviceVehicleDetails.js"></script>
+</body>
+
+</html>

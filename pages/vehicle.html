@@ -16,7 +16,7 @@
             <button id="closeAddVehicle" class="btnClose" type="button">
                 <img src="../media/appMedia/closeIcon.svg" alt="">
             </button>
-            <h2 class="titleModal">Agregar vehiculo</h2>
+            <h2 class="titleModal">Agregar vehículo</h2>
             <div class="modalVehicleBody">
                 <div class="upModalPart">
                     <div class="containerPictureModal">
@@ -32,8 +32,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="swiper-slide">2</div>
-                                <div class="swiper-slide">3</div>
                             </div>
                             <div class="swiper-button-prev"></div>
                             <div class="swiper-button-next"></div>
@@ -68,9 +66,7 @@
                         </div>
                         <div class="formGroup">
                             <label for="cmbYear" class="lblInputs">Año</label>
-                            <select id="cmbYear" class="txtInputs">
-                                <option value="">Selecciona un año</option>
-                            </select>
+                            <input type="text" class="txtInputs" id="txtYear" maxlength="4">
                         </div>
                     </div>
                 </div>
@@ -136,7 +132,6 @@
                 <div class="card">
                     <div class="headerCard">
                         <span class="vehicleBrand">Kawasaki</span>
-                        <h3 class="vehiclePrice">$7,999</h3>
                     </div>
                     <div class="containerImgVehicle">
                         <img src="" alt="Moto Kawasaki">
@@ -298,6 +293,7 @@
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../js/utils.js"></script>
