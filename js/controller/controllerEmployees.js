@@ -26,6 +26,8 @@ const frmEmployees = document.getElementById("frmEmployees");
 const txtPhone = document.getElementById("txtEmployeePhone");
 const btnAddEmployee = document.getElementById("btnAddEmployee");
 const titleModal = document.querySelector(".titleModal");
+const txtSearchCustomer = document.getElementById("txtSearchData");
+const selectSearchRoles = document.getElementById("cmbSearchByRole");
 
 // Configurar el modal para agregar empleados
 setupModal("#OpenModalEmployees", "#modalEmployees", "#closeAddEmployee", "#frmEmployees", "Agregar empleado");
@@ -34,14 +36,26 @@ let currentId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     /* Eventos al cargar la pagina */
-    await loadRolesSelect();
     await loadEmployees();
+    await loadRolesSelect();
 })
 
-let loadEmployees = async () => {
+txtSearchCustomer.addEventListener('input', async () => {
+    const searchQuery = txtSearchCustomer.value.trim();
+    const rolesQuery = selectSearchRoles.value;
+    await loadEmployees(searchQuery, rolesQuery);
+})
+
+selectSearchRoles.addEventListener('change', async () => {
+    const searchQuery = txtSearchCustomer.value.trim();
+    const rolesQuery = selectSearchRoles.value;
+    await loadEmployees(searchQuery, rolesQuery);
+})
+
+let loadEmployees = async (search, idRole) => {
     try {
-        const data = await getActiveEmployees();
-        insertEmployees(data);
+        const data = await getActiveEmployees(0, 15, search, idRole);
+        insertEmployees(data.content);
     } catch (error) {
         showMessage("Error critico", error, "error")
     }
@@ -62,7 +76,7 @@ let insertEmployees = (employees) => {
         tdName.textContent = employee.fullName;
         tdEmail.textContent = employee.email;
         tdPhone.textContent = employee.phoneEmploye;
-        tdRole.textContent = rolesList.find(r => r.idRole === employee.idRole)?.roleName || 'Error al cargar rol';
+        tdRole.textContent = employee.roleName || 'Error al cargar rol';
 
         const actionButton = document.createElement('button');
         actionButton.textContent = '⋯';
@@ -187,7 +201,9 @@ let loadRolesSelect = async () => {
         console.log(roles);
         rolesList = roles; // Guardamos para mapear luego
         fillSelect('cmbUserRole', rolesList, 'idRole', 'roleName');
+        fillSelect('cmbSearchByRole', rolesList, 'idRole', 'roleName')
     } catch (error) {
         console.error('Error al cargar roles en el select:', error);
     }
 }
+

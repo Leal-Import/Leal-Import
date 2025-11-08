@@ -47,7 +47,7 @@ txtSearchCustomer.addEventListener('input', async () =>{
 let loadCustomers = async (search) => {
     try {
         const data = await getCustomers(0, 15, search);
-        insertCustomers(data?.content || []);
+        insertCustomers(data.content);
     } catch (error) {
         showMessage("Error crítico", error.message || error, "error");
     }
