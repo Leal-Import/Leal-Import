@@ -1,8 +1,9 @@
 const API_URL = "http://127.0.0.1:8080/api/customer";
 
-export let getCustomers = async () => {
+export let getCustomers = async (page = 0, size = 15, search = "") => {
     try {
-        const request = await fetch(`${API_URL}/getCustomers`, {
+        const params = new URLSearchParams({ page, size, search });
+        const request = await fetch(`${API_URL}/getCustomers?${params.toString()}`, {
             credentials: 'include'
         }); 
         if (!request.ok) {
