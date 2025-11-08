@@ -24,6 +24,7 @@ const txtPhone = document.getElementById("txtCustomerPhone");
 const btnAddCustomer = document.getElementById("btnAddNewCustomer");
 const titleModal = modalCustomers?.querySelector('.titleModal');
 const txtCustomerDUI = document.getElementById("txtCustomerDUI");
+const txtSearchCustomer = document.getElementById("txtSearchData");
 
 txtCustomerDUI.addEventListener('input', () => {
     formatDUIInput(txtCustomerDUI);
@@ -38,10 +39,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadCustomers();
 });
 
-let loadCustomers = async () => {
+txtSearchCustomer.addEventListener('input', async () =>{
+    const searchQuery = txtSearchCustomer.value.trim();
+    await loadCustomers(searchQuery);
+})
+
+let loadCustomers = async (search) => {
     try {
-        const data = await getCustomers();
-        insertCustomers(data || []);
+        const data = await getCustomers(0, 15, search);
+        insertCustomers(data?.content || []);
     } catch (error) {
         showMessage("Error crítico", error.message || error, "error");
     }
