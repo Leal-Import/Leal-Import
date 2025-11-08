@@ -34,7 +34,14 @@ txtSearchYear.addEventListener("input", () => {
   txtSearchYear.value = txtSearchYear.value.replace(/\D/g, "");
 });
 
-document.addEventListener('input', async () => {
+txtSearchCustomer.addEventListener('input', async () => {
+  const yearQuery = txtSearchYear.value.trim();
+  const searchQuery = txtSearchCustomer.value.trim();
+  const statusQuery = selectSearStatus.value;
+  await loadVehicles(searchQuery, statusQuery, yearQuery);
+});
+
+txtSearchYear.addEventListener('input', async () => {
   const yearQuery = txtSearchYear.value.trim();
   const searchQuery = txtSearchCustomer.value.trim();
   const statusQuery = selectSearStatus.value;
