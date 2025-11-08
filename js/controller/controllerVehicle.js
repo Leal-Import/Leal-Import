@@ -4,29 +4,53 @@ import {
   showMessage,
   getInputsValues,
   fillForm,
-  toggleModal
+  toggleModal,
+  fillSelect
 } from '../utils.js';
 
-import { getVehicles, postVehicle } from '../service/serviceVehicle.js';
+import { getVehicles, postVehicle, getStatus } from '../service/serviceVehicle.js';
 
 const frmVehicles = document.getElementById("frmVehicles");
 const modalVehicle = document.getElementById("modalVehicle");
 const btnAddNewVehicle = document.getElementById("btnAddNewVehicle");
 const txtYear = document.getElementById("txtYear");
 const titleModal = document.querySelector(".titleModal");
+const txtSearchCustomer = document.getElementById("txtSearchData");
+const txtSearchYear = document.getElementById("txtSearchYear");
+const selectSearStatus = document.getElementById("cmbSearchByStatus")
 
 let selectedFile = null;
 let currentId = null;
+let statusList = [];
 
 setupModal("#OpenModalVehicles", "#modalVehicle", "#closeAddVehicle", "#frmVehicles", "Agregar vehículo");
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadVehicles();
+  await loadStatusSelect();
 });
 
-const loadVehicles = async () => {
+txtSearchYear.addEventListener("input", () => {
+  txtSearchYear.value = txtSearchYear.value.replace(/\D/g, "");
+});
+
+document.addEventListener('input', async () => {
+  const yearQuery = txtSearchYear.value.trim();
+  const searchQuery = txtSearchCustomer.value.trim();
+  const statusQuery = selectSearStatus.value;
+  await loadVehicles(searchQuery, statusQuery, yearQuery);
+});
+
+selectSearStatus.addEventListener('change', () => {
+  const yearQuery = txtSearchYear.value.trim();
+  const searchQuery = txtSearchCustomer.value.trim();
+  const statusQuery = selectSearStatus.value;
+  loadVehicles(searchQuery, statusQuery, yearQuery);
+});
+
+const loadVehicles = async (search, stateId, year) => {
   try {
-    const vehicles = await getVehicles();
+    const vehicles = await getVehicles(0, 15, search, stateId, year);
     insertVehicles(vehicles.content);
   } catch (error) {
     showMessage("Error", "No se pudieron cargar los vehículos." + error, "error");
@@ -120,13 +144,27 @@ let editVehicle = (vehicle) => {
     txtModel: vehicle.model,
     txtBrand: vehicle.brand,
     txtYear: vehicle.year,
-    txtCustomer: vehicle.customer,
+    txtCustomer: vehicle.fullName,
     txtPrice: vehicle.price
   });
   btnAddNewVehicle.value = "Actualizar vehiculo";
   titleModal.textContent = "Actualizar vehiculo";
   toggleModal(modalVehicle, true);
 }
+
+/* ===========================================
+   LOAD SELECT
+=========================================== */
+let loadStatusSelect = async () => {
+  try {
+    const status = await getStatus();
+    statusList = status; // Guardamos para mapear luego
+    fillSelect('cmbSearchByStatus', statusList, 'idVehicleStatus', 'statusName');
+  } catch (error) {
+    console.error('Error al cargar roles en el select:', error);
+  }
+}
+
 
 frmVehicles.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -217,8 +255,6 @@ txtYear.addEventListener("input", () => {
     }
   }
 });
-
-
 
 const ctx = document.getElementById('vehicleChart').getContext('2d');
 
