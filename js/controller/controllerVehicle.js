@@ -209,7 +209,7 @@ frmVehicles.addEventListener("submit", async (e) => {
   const vehicle = {
     vin: txtVin,
     brand: txtBrand,
-    idClient: idCustomer,
+    idCustomer: idCustomer,
     model: txtModel,
     price: txtPrice,
     year: txtYear,

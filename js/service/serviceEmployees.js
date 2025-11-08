@@ -1,10 +1,11 @@
 const API_URL = "http://127.0.0.1:8080/api/employees";
 const API_URLR = "http://127.0.0.1:8080/api/roles"
 
-export let getActiveEmployees = async () => {
+export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "") => {
 
     try {
-        const request = await fetch(`${API_URL}/getEmployees`, {
+        const params = new URLSearchParams({ page, size, search, idRole })
+        const request = await fetch(`${API_URL}/getEmployees?${params.toString()}`, {
             credentials: 'include'
         });
         if (!request.ok) {
