@@ -21,6 +21,7 @@ const frmVehicles = document.getElementById("frmVehicles");
 const modalVehicle = document.getElementById("modalVehicle");
 const btnAddNewVehicle = document.getElementById("btnAddNewVehicle");
 const txtYear = document.getElementById("txtYear");
+const txtYearFilter = document.getElementById("txtSearchYear");
 const titleModal = document.querySelector(".titleModal");
 const txtSearchCustomer = document.getElementById("txtSearchData");
 const txtSearchYear = document.getElementById("txtSearchYear");
@@ -254,8 +255,7 @@ frmVehicles.addEventListener("submit", async (e) => {
     idCustomer: idCustomer,
     model: txtModel,
     price: txtPrice,
-    year: txtYear,
-    idVehicleStatus: "5ffd6d0a-bc09-11f0-a5c6-74d4dd6ecc40" // Por defecto, "En stock" este campo es momentaneo
+    year: txtYear
   };
 
   if (currentId != null) vehicle.photosToDeleteIds = photosToDeleteIds;
@@ -293,9 +293,17 @@ frmVehicles.addEventListener("submit", async (e) => {
   }
 });
 
+txtYearFilter.addEventListener("input", () => {
+  formatYear(txtSearchYear);
+})
 
 
 txtYear.addEventListener("input", () => {
+  formatYear(txtYear);
+});
+
+
+let formatYear = (txtYear) => {
   // Solo números
   txtYear.value = txtYear.value.replace(/\D/g, "");
 
@@ -311,7 +319,8 @@ txtYear.addEventListener("input", () => {
       txtYear.value = minYear;
     }
   }
-});
+}
+
 
 const ctx = document.getElementById('vehicleChart').getContext('2d');
 
@@ -529,3 +538,13 @@ document.querySelector(".vehicle-swiper").addEventListener("drop", (e) => {
 
   swiper.update();
 });
+
+
+document.addEventListener("click", (e) => {
+  if (e.target.id == "closeAddVehicle" || e.target.id == "modalVehicle") {
+    // Limpiar slides de imágenes
+    swiper.removeAllSlides();
+    swiper.addSlide(0, emptySlideTemplate());
+    swiper.update();
+  }
+})
