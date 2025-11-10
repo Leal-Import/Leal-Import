@@ -44,9 +44,10 @@
                             <label for="txtVin" class="lblInputs">Vin</label>
                             <input type="text" class="txtInputs" id="txtVin">
                         </div>
-                        <div class="formGroup">
+                        <div class="formGroup containerSuggest">
                             <label for="txtCustomer" class="lblInputs">Cliente</label>
                             <input type="text" class="txtInputs" id="txtCustomer">
+                            <div id="suggestDataContainer" class="suggestions hide"></div>
                         </div>
                     </div>
                     <div class="rowFields">
@@ -65,7 +66,7 @@
                             <input type="text" class="txtInputs" id="txtBrand">
                         </div>
                         <div class="formGroup">
-                            <label for="cmbYear" class="lblInputs">Año</label>
+                            <label for="txtYear" class="lblInputs">Año</label>
                             <input type="text" class="txtInputs" id="txtYear" maxlength="4">
                         </div>
                     </div>
@@ -126,168 +127,7 @@
                     <button id="OpenModalVehicles" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
             </div>
-            <div class="cardContainer">
-                <div class="card">
-                    <div class="headerCard">
-                        <span class="vehicleBrand">Kawasaki</span>
-                    </div>
-                    <div class="containerImgVehicle">
-                        <img src="" alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <div class="vehicleStatus">En stock</div>
-                        <div class="containerInfoVehicle">
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Año:</div> <span>2017</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Modelo:</div> <span>MT-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="headerCard">
-                        <span class="vehicleBrand">Kawasaki</span>
-                        <h3 class="vehiclePrice">$7,999</h3>
-                    </div>
-                    <div class="containerImgVehicle">
-                        <img src="" alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <div class="vehicleStatus">En stock</div>
-                        <div class="containerInfoVehicle">
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Año:</div> <span>2017</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Modelo:</div> <span>MT-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="headerCard">
-                        <span class="vehicleBrand">Kawasaki</span>
-                        <h3 class="vehiclePrice">$7,999</h3>
-                    </div>
-                    <div class="containerImgVehicle">
-                        <img src="" alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <div class="vehicleStatus">En stock</div>
-                        <div class="containerInfoVehicle">
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Año:</div> <span>2017</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Modelo:</div> <span>MT-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="headerCard">
-                        <span class="vehicleBrand">Kawasaki</span>
-                        <h3 class="vehiclePrice">$7,999</h3>
-                    </div>
-                    <div class="containerImgVehicle">
-                        <img src="" alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <div class="vehicleStatus">En stock</div>
-                        <div class="containerInfoVehicle">
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Año:</div> <span>2017</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Modelo:</div> <span>MT-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="headerCard">
-                        <span class="vehicleBrand">Kawasaki</span>
-                        <h3 class="vehiclePrice">$7,999</h3>
-                    </div>
-                    <div class="containerImgVehicle">
-                        <img src="" alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <div class="vehicleStatus">En stock</div>
-                        <div class="containerInfoVehicle">
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Año:</div> <span>2017</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Modelo:</div> <span>MT-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="headerCard">
-                        <span class="vehicleBrand">Kawasaki</span>
-                        <h3 class="vehiclePrice">$7,999</h3>
-                    </div>
-                    <div class="containerImgVehicle">
-                        <img src="" alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <div class="vehicleStatus">En stock</div>
-                        <div class="containerInfoVehicle">
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Año:</div> <span>2017</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Modelo:</div> <span>MT-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="headerCard">
-                        <span class="vehicleBrand">Kawasaki</span>
-                        <h3 class="vehiclePrice">$7,999</h3>
-                    </div>
-                    <div class="containerImgVehicle">
-                        <img src="" alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <div class="vehicleStatus">En stock</div>
-                        <div class="containerInfoVehicle">
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Año:</div> <span>2017</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Modelo:</div> <span>MT-07</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="cardContainer"></div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>

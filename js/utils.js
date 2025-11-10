@@ -20,12 +20,15 @@ export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, for
         enableFormUI(formId);
     });
     closeBtn.addEventListener("click", () => {
+        if (modalSelector == "#modalVehicle") document.getElementById("txtCustomer").removeAttribute("data-id");
         toggleModal(modal, false);
         form.reset();
         enableFormUI(formId);
     });
     modal.addEventListener("click", e => {
         if (e.target === modal) {
+            console.log(modalSelector)
+            if (modalSelector == "#modalVehicle") document.getElementById("txtCustomer").removeAttribute("data-id");
             toggleModal(modal, false);
             form.reset(); 4
             enableFormUI(formId);
