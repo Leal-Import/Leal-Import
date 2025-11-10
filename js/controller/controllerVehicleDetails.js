@@ -78,7 +78,6 @@ let loadImgs = (photos = []) => {
         thumbSlide.classList.add("swiper-slide");
         thumbSlide.innerHTML = `<img src="${photo.photoUrl}">`;
         thumbsSwiper.addSlide(thumbsSwiper.slides.length, thumbSlide);
-        console.log(thumbSlide)
     });
 
     thumbsSwiper.update();
