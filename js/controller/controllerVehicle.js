@@ -8,7 +8,14 @@ import {
   fillSelect
 } from '../utils.js';
 
-import { getVehicles, postVehicle, getStatus } from '../service/serviceVehicle.js';
+import { getCustomers } from '../service/serviceCustomers.js';
+
+import {
+  getVehicles,
+  postVehicle,
+  getStatus,
+  putVehicle
+} from '../service/serviceVehicle.js';
 
 const frmVehicles = document.getElementById("frmVehicles");
 const modalVehicle = document.getElementById("modalVehicle");
@@ -18,16 +25,25 @@ const titleModal = document.querySelector(".titleModal");
 const txtSearchCustomer = document.getElementById("txtSearchData");
 const txtSearchYear = document.getElementById("txtSearchYear");
 const selectSearStatus = document.getElementById("cmbSearchByStatus")
+const txtCustomers = document.getElementById("txtCustomer");
+const boxCus = document.getElementById('suggestDataContainer');
+const btnOpenModal = document.getElementById("OpenModalVehicles");
 
 let selectedFile = null;
+let searchTimeout = null;
 let currentId = null;
 let statusList = [];
+let photosToDeleteIds = [];
 
 setupModal("#OpenModalVehicles", "#modalVehicle", "#closeAddVehicle", "#frmVehicles", "Agregar vehículo");
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadVehicles();
   await loadStatusSelect();
+});
+
+btnOpenModal.addEventListener("click", () => {
+  photosToDeleteIds = [];
 });
 
 txtSearchYear.addEventListener("input", () => {
@@ -154,10 +170,40 @@ let editVehicle = (vehicle) => {
     txtCustomer: vehicle.fullName,
     txtPrice: vehicle.price
   });
+  loadImgs(vehicle.photos)
+  if (vehicle.idCustomer != null) txtCustomers.dataset.id = vehicle.idCustomer;
   btnAddNewVehicle.value = "Actualizar vehiculo";
   titleModal.textContent = "Actualizar vehiculo";
   toggleModal(modalVehicle, true);
 }
+
+let loadImgs = (photos) => {
+
+  swiper.removeAllSlides();
+
+  photos.forEach(photo => {
+
+    const slide = document.createElement("div");
+    slide.classList.add("swiper-slide");
+    slide.dataset.photoId = photo.idPhoto;
+
+    slide.innerHTML = `
+      <button class="slideDeleteBtn" type="button">✖</button>
+      <img class="previewImg" src="${photo.photoUrl}">
+      <input class="inputFile" type="file" accept="image/png,image/jpeg,image/jpg" hidden />
+    `;
+
+    swiper.addSlide(swiper.slides.length, slide);
+  });
+
+  if (swiper.slides.length < maxSlides) {
+    swiper.addSlide(swiper.slides.length, emptySlideTemplate());
+  }
+
+  swiper.update();
+};
+
+
 
 /* ===========================================
    LOAD SELECT
@@ -198,13 +244,9 @@ frmVehicles.addEventListener("submit", async (e) => {
     return;
   }
 
-  if (files.length === 0) {
-    showMessage('Por favor, agregue al menos una imagen del vehículo.', 'Imagen requerida', 'warning');
-    return;
-  }
   let idCustomer = null;
+  if (txtCustomers.dataset.id) idCustomer = txtCustomers.dataset.id;
 
-  const fd = new FormData();
 
   const vehicle = {
     vin: txtVin,
@@ -216,17 +258,24 @@ frmVehicles.addEventListener("submit", async (e) => {
     idVehicleStatus: "5ffd6d0a-bc09-11f0-a5c6-74d4dd6ecc40" // Por defecto, "En stock" este campo es momentaneo
   };
 
+  if (currentId != null) vehicle.photosToDeleteIds = photosToDeleteIds;
+
+  const fd = new FormData();
   files.forEach((file) => {
     fd.append(`photos`, file);
   });
-
   fd.append('vehicleData', JSON.stringify(vehicle));
+  console.log(fd)
 
   try {
     if (currentId != null) {
-      //await putEmployee(employeeData, currentId);
+      await putVehicle(fd, currentId);
       showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
     } else {
+      if (files.length === 0) {
+        showMessage('Por favor, agregue al menos una imagen del vehículo.', 'Imagen requerida', 'warning');
+        return;
+      }
       await postVehicle(fd);
       showMessage('Vehiculo agregado con éxito!', 'Exito', 'success');
     }
@@ -236,6 +285,7 @@ frmVehicles.addEventListener("submit", async (e) => {
     const errorMessage = error.message || 'Error desconocido al registrar el vehiculo.';
     showMessage(errorMessage, 'error', 'error');
   } finally {
+    photosToDeleteIds = [];
     modalVehicle.classList.add('hide');
     btnAddNewVehicle.value = "Agregar vehiculo";
     titleModal.textContent = "Agregar nuevo vehiculo";
@@ -294,6 +344,36 @@ new Chart(ctx, {
   }
 });
 
+/* Busqueda de clientes */
+
+txtCustomers.addEventListener('input', async () => {
+  clearTimeout(searchTimeout);
+  setTimeout(async () => {
+    const query = txtCustomers.value.trim();
+    if (query == "") { boxCus.classList.replace("show", "hide"); return; }
+    const data = await getCustomers(0, 15, query);
+    const filtered = data.content;
+
+    boxCus.innerHTML = '';
+    filtered.forEach(cus => {
+      const div = document.createElement('div');
+      div.className = 'suggestionItem';
+      div.innerHTML = `
+        <span class="customerName">${cus.fullName}</span>
+        <span class="clientDui">${cus.dui}</span>`;
+      div.addEventListener('click', () => {
+        txtCustomers.value = cus.fullName;
+        boxCus.innerHTML = '';
+        boxCus.classList.replace('show', 'hide');
+        txtCustomers.setAttribute('data-id', cus.idClient);
+      });
+      boxCus.appendChild(div);
+    });
+    boxCus.classList.replace('hide', 'show');
+  }, 1500);
+});
+
+
 /* Todo este js de abajo es solo del carrucel de imagenes */
 
 /* ===========================================
@@ -328,7 +408,7 @@ function emptySlideTemplate() {
 function renderImageOnSlide(slide, url) {
   slide.querySelector(".containerFile").classList.remove("isEmpty");
   slide.innerHTML = `
-    <button class="slideDeleteBtn">✖</button>
+    <button class="slideDeleteBtn" type="button">✖</button>
     <img class="previewImg" src="${url}">
     <input class="inputFile" type="file" accept="image/png,image/jpeg,image/jpg" hidden />
   `;
@@ -360,6 +440,13 @@ document.querySelector(".vehicle-swiper").addEventListener("click", (e) => {
     const slide = e.target.closest(".swiper-slide");
     const index = [...swiper.slides].indexOf(slide);
 
+    const photoId = slide.dataset.photoId;
+
+    // Si tiene ID, significa que existía en BD → lo agregamos a la lista de eliminados
+    if (photoId) {
+      photosToDeleteIds.push(photoId);
+    }
+
     swiper.removeSlide(index);
     swiper.update();
 
@@ -367,6 +454,7 @@ document.querySelector(".vehicle-swiper").addEventListener("click", (e) => {
       swiper.addSlide(swiper.slides.length, emptySlideTemplate());
       swiper.update();
     }
+
   }
 });
 
