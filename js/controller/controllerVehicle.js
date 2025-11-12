@@ -417,7 +417,7 @@ txtCustomers.addEventListener('input', async () => {
    CONFIGURACIÓN DEL SWIPER (CARRUSEL)
 =========================================== */
 
-let maxSlides = 4;
+let maxSlides = 12;
 
 let swiper = new Swiper(".vehicle-swiper", {
   navigation: {
