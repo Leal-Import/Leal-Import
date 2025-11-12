@@ -23,7 +23,7 @@ let loadVehicle = async () => {
 
 let loadDataVehicle = (vehicle) => {
     console.log(vehicle)
-    brand.textContent = vehicle.brand;
+    /*brand.textContent = vehicle.brand;
     price.textContent = `$${vehicle.price}`;
     model.textContent = vehicle.model;
     vin.textContent = vehicle.vin;
@@ -31,7 +31,7 @@ let loadDataVehicle = (vehicle) => {
     customerName.textContent = vehicle.fullName;
     status.textContent = vehicle.nameStatus;
     vehicle.suggestedPrice != null ? suggestedPrice.textContent = `$${vehicle.suggestedPrice}` : suggestedPrice.closest(".infoRow").classList.add("hide");
-    dui.textContent = vehicle.dui
+    dui.textContent = vehicle.dui*/
 
     console.log(suggestedPrice)
     loadImgs(vehicle.photos)

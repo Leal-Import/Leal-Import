@@ -1,9 +1,39 @@
+.content{
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+}
+
+.txtInputs{
+    padding: 5px 10px !important;
+}
+
+.vehicleData{
+    border: var(--border);
+    border-radius: var(--border-radius-table);
+    padding: 10px;
+    grid-column: 1 / 5;
+    grid-row: 1 / 7
+}
+
+.imgData{
+    grid-column: 5 / 9;
+    grid-row: 1 / 7;
+}
+
+.costsData{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    grid-column: 1 / 7;
+    grid-row: 7 / 10;
+}
+
 .mainContent {
     flex: 1;
     max-height: clamp(300px, 100%, 1200px);
     max-width: clamp(300px, 100%, 1600px);
     margin: auto;
-    border: var(--border);
 }
 
 .vehicleDetailsContainer {
@@ -20,7 +50,6 @@
     flex: 2;
     padding: 20px;
     height: 100%;
-    border: var(--border);
     display: flex;
     flex-direction: column;
 }
@@ -28,7 +57,6 @@
 .vehicleImagesSection {
     flex: 3;
     min-width: 0;
-    overflow-y: auto;
 }
 
 .vehicleImagesSection>div {
@@ -84,14 +112,17 @@
     font-size: var(--font-size-title);
 }
 
+.infoLabel{
+    font-weight: var(--font-weight-semibold);
+}
+
 #mainSwiper {
-    flex: 1;
-    min-height: 400px;
-    max-width: clamp(300px, 100%, 700px);
+    height: 250px;
+    max-width: clamp(300px, 100%, 450px);
 }
 
 .thumbnailImagesContainer {
-    max-width: clamp(300px, 100%, 700px);
+    max-width: clamp(300px, 100%, 450px);
 }
 
 
@@ -107,7 +138,6 @@
 }
 
 .thumbs-swiper .swiper-wrapper{
-    flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
 }
@@ -119,8 +149,8 @@
     border-radius: 6px;
     overflow: hidden;
     transition: opacity .3s;
-    width: 150px !important;
-    height: 100px !important;
+    width: 125px !important;
+    height: 75px !important;
 }
 
 .thumbs-swiper .swiper-slide-thumb-active {
