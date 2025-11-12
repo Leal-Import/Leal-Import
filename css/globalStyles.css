@@ -99,6 +99,13 @@
     cursor: pointer;
 }
 
+.btnSecondary {
+    border: 1px solid var(--danger-color);
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+    color: var(--danger-color);
+}
+
 .btnOpenModal {
     width: 7em;
     padding: 5px 0;
