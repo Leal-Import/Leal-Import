@@ -222,6 +222,16 @@
     cursor: pointer;
 }
 
+.statTitle {
+    font-size: var(--font-size-base);
+}
+
+
+.statValue {
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-title);
+}
+
 /* Utilidades */
 
 .show {

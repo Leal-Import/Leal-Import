@@ -29,9 +29,6 @@
     grid-template-rows: repeat(2, 1fr);
 }
 
-.statTitle {
-    font-size: var(--font-size-base);
-}
 
 .statItem {
     background-color: var(--card-bg);
@@ -43,11 +40,6 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-}
-
-.statValue {
-    font-weight: var(--font-weight-regular);
-    font-size: var(--font-size-title);
 }
 
 .totalSales {
@@ -268,6 +260,7 @@
 .previewImg {
     width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 
 .slideDeleteBtn {

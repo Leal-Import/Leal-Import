@@ -6,6 +6,11 @@
     gap: 0.5em;
 }
 
+.txtSearchData{
+    flex: 1;
+}
+
+
 .breadCrumbSection {
     margin-bottom: 1.5em;
 }
@@ -13,14 +18,13 @@
 .dataCardContainer {
     display: grid;
     gap: 15px;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
 }
 
 .statTitle {
     font-size: var(--font-size-base);
 }
-
 
 
 .filterSectionParts {
@@ -37,7 +41,7 @@
     margin-top: 15px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 1em;
 
 }
@@ -47,30 +51,12 @@
     gap: 5px;
 }
 
-.graphiData {
-    grid-column-start: span 1;
-    grid-row: span 2;
-}
 
 
 #idTotalCost {
     width: 320px !important;
     height: 80% !important;
     max-height: 500px !important;
-}
-
-.seccionCard.graphiData{
-    height: 100%;
-    display: flex;
-    padding: 15px;
-}
-
-.graphicContainer{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .seccionCard {
@@ -243,4 +229,66 @@
     width: 100%;
     justify-content: end;
     margin-top: 0.5em;
+}
+
+/* Seccion de cartas */
+
+.card{
+    display: flex;
+    flex-direction: column;
+}
+
+.headerCard{
+    display: flex;
+    padding: 7px;
+    justify-content: end;
+}
+
+.partPrice{
+    font-size: var(--font-size-lg);
+}
+
+.bodyCard{
+    flex: 1;
+}
+
+.containerImgSpare{
+    height: 150px;
+}
+
+.picturePart{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.infoPartContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 0 11px 11px 11px;
+    border-bottom: 1px solid var(--text-color-secondary);
+    width: 85%;
+    margin: auto;
+}
+
+.partName{
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-medium);
+}
+
+.partType{
+    font-size: var(--font-size-base);
+    color: var(--text-color-secondary);
+}
+
+.moreInfoContainer{
+    padding: 5px 15px;
+}
+
+.statusPart{
+    font-size: var(--font-size-lg);
+    padding: 5px 15px;
+    width: fit-content;
+    border: var(--border);
 }
