@@ -262,7 +262,6 @@ frmVehicles.addEventListener("submit", async (e) => {
   };
 
   if (currentId != null) {
-    vehicle.photosToDeleteIds = photosToDeleteIds;
     // 🧩 Validation for PUT (update)
     const slides = [...swiper.slides];
     const slidesWithImage = slides.filter(slide => slide.querySelector('.previewImg'));
@@ -273,8 +272,6 @@ frmVehicles.addEventListener("submit", async (e) => {
 
     const visibleImageCount = slidesWithImage.length;
     const newImageCount = slidesWithNewFile.length;
-    const deletedImageCount = photosToDeleteIds.length;
-    const originalImageCount = visibleImageCount + deletedImageCount;
 
     // 🔍 Rule: If all original images were deleted and no new image was added → show warning
     if (visibleImageCount === 0 && newImageCount === 0) {
@@ -283,6 +280,7 @@ frmVehicles.addEventListener("submit", async (e) => {
         'Imagen validación',
         'warning'
       );
+      photosToDeleteIds = [];
       return;
     }
   }
@@ -296,7 +294,6 @@ frmVehicles.addEventListener("submit", async (e) => {
 
   try {
     if (currentId != null) {
-
       await putVehicle(fd, currentId);
       showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
     } else {
