@@ -172,7 +172,8 @@ let editVehicle = (vehicle) => {
     txtBrand: vehicle.brand,
     txtYear: vehicle.year,
     txtCustomer: vehicle.fullName,
-    txtPrice: vehicle.price
+    txtPrice: vehicle.price,
+    txtSuggestedPrice: vehicle.suggestedPrice
   });
   loadImgs(vehicle.photos)
   if (vehicle.idCustomer != null) txtCustomers.dataset.id = vehicle.idCustomer;
@@ -240,7 +241,8 @@ frmVehicles.addEventListener("submit", async (e) => {
     txtCustomer,
     txtModel,
     txtPrice,
-    txtYear
+    txtYear,
+    txtSuggestedPrice
   } = formData;
 
   if (!txtVin || !txtModel || !txtPrice || !txtYear || !txtBrand) {
@@ -258,11 +260,11 @@ frmVehicles.addEventListener("submit", async (e) => {
     idCustomer: idCustomer,
     model: txtModel,
     price: txtPrice,
-    year: txtYear
+    year: txtYear,
+    suggestedPrice: txtSuggestedPrice
   };
 
   if (currentId != null) {
-    vehicle.photosToDeleteIds = photosToDeleteIds;
     // 🧩 Validation for PUT (update)
     const slides = [...swiper.slides];
     const slidesWithImage = slides.filter(slide => slide.querySelector('.previewImg'));
@@ -273,8 +275,6 @@ frmVehicles.addEventListener("submit", async (e) => {
 
     const visibleImageCount = slidesWithImage.length;
     const newImageCount = slidesWithNewFile.length;
-    const deletedImageCount = photosToDeleteIds.length;
-    const originalImageCount = visibleImageCount + deletedImageCount;
 
     // 🔍 Rule: If all original images were deleted and no new image was added → show warning
     if (visibleImageCount === 0 && newImageCount === 0) {
@@ -283,6 +283,7 @@ frmVehicles.addEventListener("submit", async (e) => {
         'Imagen validación',
         'warning'
       );
+      photosToDeleteIds = [];
       return;
     }
   }
@@ -296,7 +297,6 @@ frmVehicles.addEventListener("submit", async (e) => {
 
   try {
     if (currentId != null) {
-
       await putVehicle(fd, currentId);
       showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
     } else {
@@ -417,7 +417,7 @@ txtCustomers.addEventListener('input', async () => {
    CONFIGURACIÓN DEL SWIPER (CARRUSEL)
 =========================================== */
 
-let maxSlides = 4;
+let maxSlides = 12;
 
 let swiper = new Swiper(".vehicle-swiper", {
   navigation: {

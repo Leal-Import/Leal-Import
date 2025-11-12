@@ -1,6 +1,7 @@
 .mainContent {
     flex: 1;
     max-height: clamp(300px, 100%, 1200px);
+    max-width: clamp(300px, 100%, 1600px);
     margin: auto;
     border: var(--border);
 }
@@ -24,10 +25,19 @@
     flex-direction: column;
 }
 
-.vehicleImagesSection{
+.vehicleImagesSection {
     flex: 3;
+    min-width: 0;
+    overflow-y: auto;
+}
+
+.vehicleImagesSection>div {
+    height: 150%;
+    display: flex;
     justify-content: center;
+    flex-direction: column;
     gap: 15px;
+    align-items: center;
 }
 
 .headerInfoSection {
@@ -55,6 +65,15 @@
     flex: 1;
 }
 
+.rowSuggested {
+    align-self: end;
+    font-size: var(--font-size-lg);
+}
+
+#suggestedPrice {
+    color: var(--danger-color);
+}
+
 .titleInfoVehicle {
     font-size: var(--font-size-title);
     font-weight: var(--font-weight-medium);
@@ -65,29 +84,37 @@
     font-size: var(--font-size-title);
 }
 
-#mainSwiper{
+#mainSwiper {
     flex: 1;
-    max-height: clamp(300px, 100%, 500px)
+    min-height: 400px;
+    max-width: clamp(300px, 100%, 700px);
 }
+
+.thumbnailImagesContainer {
+    max-width: clamp(300px, 100%, 700px);
+}
+
 
 .swiper-slide,
 .swiper-wrapper {
     width: 100% !important;
 }
 
-.previewImg{
+.previewImg {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.thumbs-swiper {
-    margin: 0;
-    width: 100%;
+.thumbs-swiper .swiper-wrapper{
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
 }
 
 .thumbs-swiper .swiper-slide {
     opacity: 0.5;
+    flex: 0 0 auto;
     cursor: pointer;
     border-radius: 6px;
     overflow: hidden;
