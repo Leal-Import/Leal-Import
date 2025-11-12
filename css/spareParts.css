@@ -238,16 +238,6 @@
     flex-direction: column;
 }
 
-.headerCard{
-    display: flex;
-    padding: 7px;
-    justify-content: end;
-}
-
-.partPrice{
-    font-size: var(--font-size-lg);
-}
-
 .bodyCard{
     flex: 1;
 }
@@ -284,11 +274,48 @@
 
 .moreInfoContainer{
     padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.partPrice{
+    font-size: var(--font-size-title);
+    color: var(--danger-color);
 }
 
 .statusPart{
-    font-size: var(--font-size-lg);
-    padding: 5px 15px;
+    font-size: var(--font-size-base);
+    padding: 4px 10px;
     width: fit-content;
     border: var(--border);
+    border-radius: var(--border-radius-input);
+}
+
+.footerCard {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 15px;
+    flex: 1;
+}
+
+.newStatus{
+    color: var(--bg-color);
+    background-color: var(--success-color);
+}
+
+.stockPart{
+    font-size: var(--font-size-lg);
+    margin-top: 10px;
+    color: var(--text-color-secondary);
+}
+
+.footerCard .btnPrimary, .footerCard .btnSecondary {
+    padding: 5px 9px;
+    font-size: var(--font-size-sm);
+    border-radius: var(--border-radius-btn);
+    text-decoration: none;
 }
