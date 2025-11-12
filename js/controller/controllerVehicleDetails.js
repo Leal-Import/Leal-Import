@@ -7,6 +7,7 @@ const vin = document.getElementById("vin");
 const year = document.getElementById("year");
 const dui = document.getElementById("dui");
 const customerName = document.getElementById("customerName");
+const suggestedPrice = document.getElementById("suggestedPrice");
 const status = document.getElementById("status");
 const params = new URLSearchParams(window.location.search);
 
@@ -21,6 +22,7 @@ let loadVehicle = async () => {
 }
 
 let loadDataVehicle = (vehicle) => {
+    console.log(vehicle)
     brand.textContent = vehicle.brand;
     price.textContent = `$${vehicle.price}`;
     model.textContent = vehicle.model;
@@ -28,7 +30,10 @@ let loadDataVehicle = (vehicle) => {
     year.textContent = vehicle.year;
     customerName.textContent = vehicle.fullName;
     status.textContent = vehicle.nameStatus;
+    vehicle.suggestedPrice != null ? suggestedPrice.textContent = `$${vehicle.suggestedPrice}` : suggestedPrice.closest(".infoRow").classList.add("hide");
     dui.textContent = vehicle.dui
+
+    console.log(suggestedPrice)
     loadImgs(vehicle.photos)
 }
 

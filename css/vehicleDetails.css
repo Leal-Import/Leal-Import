@@ -55,6 +55,15 @@
     flex: 1;
 }
 
+.rowSuggested{
+    align-self: end;
+    font-size: var(--font-size-lg);
+}
+
+#suggestedPrice{
+    color: var(--danger-color);
+}
+
 .titleInfoVehicle {
     font-size: var(--font-size-title);
     font-weight: var(--font-weight-medium);

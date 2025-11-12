@@ -172,7 +172,8 @@ let editVehicle = (vehicle) => {
     txtBrand: vehicle.brand,
     txtYear: vehicle.year,
     txtCustomer: vehicle.fullName,
-    txtPrice: vehicle.price
+    txtPrice: vehicle.price,
+    txtSuggestedPrice: vehicle.suggestedPrice
   });
   loadImgs(vehicle.photos)
   if (vehicle.idCustomer != null) txtCustomers.dataset.id = vehicle.idCustomer;
@@ -240,7 +241,8 @@ frmVehicles.addEventListener("submit", async (e) => {
     txtCustomer,
     txtModel,
     txtPrice,
-    txtYear
+    txtYear,
+    txtSuggestedPrice
   } = formData;
 
   if (!txtVin || !txtModel || !txtPrice || !txtYear || !txtBrand) {
@@ -258,7 +260,8 @@ frmVehicles.addEventListener("submit", async (e) => {
     idCustomer: idCustomer,
     model: txtModel,
     price: txtPrice,
-    year: txtYear
+    year: txtYear,
+    suggestedPrice: txtSuggestedPrice
   };
 
   if (currentId != null) {
