@@ -27,7 +27,6 @@ export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, for
     });
     modal.addEventListener("click", e => {
         if (e.target === modal) {
-            console.log(modalSelector)
             if (modalSelector == "#modalVehicle") document.getElementById("txtCustomer").removeAttribute("data-id");
             toggleModal(modal, false);
             form.reset(); 4
@@ -89,13 +88,10 @@ export const showMessage = (title, message, type = 'info', isToast = false) => {
 /* Llenar formulario */
 export let fillForm = (formSelector, data) => {
     const form = document.querySelector(formSelector);
-    console.log(form);
     if (!form) return console.error(`No se encontró el formulario ${formSelector}`);
 
     Object.keys(data).forEach(key => {
         const field = document.getElementById(key);
-        console.log(field);
-        console.log(data[key]);
         if (!field) return; // Si no hay campo con ese nombre, lo salta
 
         const value = data[key];
