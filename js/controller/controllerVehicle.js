@@ -51,11 +51,14 @@ txtSearchYear.addEventListener("input", () => {
   txtSearchYear.value = txtSearchYear.value.replace(/\D/g, "");
 });
 
-txtSearchCustomer.addEventListener('input', async () => {
-  const yearQuery = txtSearchYear.value.trim();
-  const searchQuery = txtSearchCustomer.value.trim();
-  const statusQuery = selectSearStatus.value;
-  await loadVehicles(searchQuery, statusQuery, yearQuery);
+txtSearchCustomer.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(async () => {
+    const yearQuery = txtSearchYear.value.trim();
+    const searchQuery = txtSearchCustomer.value.trim();
+    const statusQuery = selectSearStatus.value;
+    await loadVehicles(searchQuery, statusQuery, yearQuery);
+  }, 1500);
 });
 
 txtSearchYear.addEventListener('input', async () => {
@@ -122,7 +125,7 @@ let insertVehicles = (vehicles) => {
       vinItem.innerHTML = `<div>Vin:</div> <span>${vehicle.vin}</span>`;
       yearItem.innerHTML = `<div>Año:</div> <span>${vehicle.year}</span>`;
       modelItem.innerHTML = `<div>Modelo:</div> <span>${vehicle.model}</span>`;
-      img.src = vehicle.photos[0].photoUrl || "";
+      img.src = vehicle.photos.length > 0 ? vehicle.photos[0].photoUrl : "";
       img.alt = `Imagen de ${vehicle.brand} ${vehicle.model}`;
       vehicleStatus.textContent = vehicle.nameStatus;
 
@@ -258,7 +261,31 @@ frmVehicles.addEventListener("submit", async (e) => {
     year: txtYear
   };
 
-  if (currentId != null) vehicle.photosToDeleteIds = photosToDeleteIds;
+  if (currentId != null) {
+    vehicle.photosToDeleteIds = photosToDeleteIds;
+    // 🧩 Validation for PUT (update)
+    const slides = [...swiper.slides];
+    const slidesWithImage = slides.filter(slide => slide.querySelector('.previewImg'));
+    const slidesWithNewFile = slides.filter(slide => {
+      const input = slide.querySelector('.inputFile');
+      return input && input.files && input.files.length > 0;
+    });
+
+    const visibleImageCount = slidesWithImage.length;
+    const newImageCount = slidesWithNewFile.length;
+    const deletedImageCount = photosToDeleteIds.length;
+    const originalImageCount = visibleImageCount + deletedImageCount;
+
+    // 🔍 Rule: If all original images were deleted and no new image was added → show warning
+    if (visibleImageCount === 0 && newImageCount === 0) {
+      showMessage(
+        'Debes de mantener al menos una imagen',
+        'Imagen validación',
+        'warning'
+      );
+      return;
+    }
+  }
 
   const fd = new FormData();
   files.forEach((file) => {
@@ -269,6 +296,7 @@ frmVehicles.addEventListener("submit", async (e) => {
 
   try {
     if (currentId != null) {
+
       await putVehicle(fd, currentId);
       showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
     } else {
@@ -357,7 +385,7 @@ new Chart(ctx, {
 
 txtCustomers.addEventListener('input', async () => {
   clearTimeout(searchTimeout);
-  setTimeout(async () => {
+  searchTimeout = setTimeout(async () => {
     const query = txtCustomers.value.trim();
     if (query == "") { boxCus.classList.replace("show", "hide"); return; }
     const data = await getCustomers(0, 15, query);
@@ -415,7 +443,8 @@ function emptySlideTemplate() {
 
 // ✅ TEMPLATE para slide con imagen (NO crea input nuevo)
 function renderImageOnSlide(slide, url) {
-  slide.querySelector(".containerFile").classList.remove("isEmpty");
+  const containerFile = slide.querySelector(".containerFile");
+  if (containerFile) containerFile.classList.remove("isEmpty");
   slide.innerHTML = `
     <button class="slideDeleteBtn" type="button">✖</button>
     <img class="previewImg" src="${url}">

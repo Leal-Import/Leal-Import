@@ -33,6 +33,7 @@ const selectSearchRoles = document.getElementById("cmbSearchByRole");
 setupModal("#OpenModalEmployees", "#modalEmployees", "#closeAddEmployee", "#frmEmployees", "Agregar empleado");
 
 let currentId = null;
+let searchTimeout = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     /* Eventos al cargar la pagina */
@@ -40,10 +41,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadRolesSelect();
 })
 
-txtSearchCustomer.addEventListener('input', async () => {
-    const searchQuery = txtSearchCustomer.value.trim();
-    const rolesQuery = selectSearchRoles.value;
-    await loadEmployees(searchQuery, rolesQuery);
+txtSearchCustomer.addEventListener('input', () => {
+    clearTimeout(searchTimeout)
+    searchTimeout = setTimeout( async () => {
+        const searchQuery = txtSearchCustomer.value.trim();
+        const rolesQuery = selectSearchRoles.value;
+        await loadEmployees(searchQuery, rolesQuery);
+    }, 1500);
 })
 
 selectSearchRoles.addEventListener('change', async () => {

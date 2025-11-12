@@ -26,6 +26,8 @@ const titleModal = modalCustomers?.querySelector('.titleModal');
 const txtCustomerDUI = document.getElementById("txtCustomerDUI");
 const txtSearchCustomer = document.getElementById("txtSearchData");
 
+let searchTimeout = null;
+
 txtCustomerDUI.addEventListener('input', () => {
     formatDUIInput(txtCustomerDUI);
 });
@@ -39,9 +41,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadCustomers();
 });
 
-txtSearchCustomer.addEventListener('input', async () =>{
-    const searchQuery = txtSearchCustomer.value.trim();
-    await loadCustomers(searchQuery);
+txtSearchCustomer.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        const searchQuery = txtSearchCustomer.value.trim();
+        await loadCustomers(searchQuery);
+    }, 1500)
 })
 
 let loadCustomers = async (search) => {
