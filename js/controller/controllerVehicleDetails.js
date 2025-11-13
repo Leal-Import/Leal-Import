@@ -1,90 +1,322 @@
-import { getVehicles } from '../service/serviceVehicle.js';
+import {
+    getVehicles,
+    postVehicle,
+    putVehicle
+} from '../service/serviceVehicleDetails.js';
 
-const brand = document.getElementById("brand");
-const price = document.getElementById("price");
-const model = document.getElementById("model");
-const vin = document.getElementById("vin");
-const year = document.getElementById("year");
-const dui = document.getElementById("dui");
-const customerName = document.getElementById("customerName");
-const suggestedPrice = document.getElementById("suggestedPrice");
-const status = document.getElementById("status");
+import {
+    showMessage,
+    toggleModal,
+    getInputsValues,
+    fillForm
+} from '../utils.js';
+
 const params = new URLSearchParams(window.location.search);
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadVehicle();
+let currentId = params.get("id");
+
+const frmVehicles = document.getElementById("frmVehicles");
+const btnLink = document.querySelector(".btnLink");
+const btnClose = document.querySelector(".btnClose");
+const btnSaveLink = document.getElementById("btnSaveLink")
+const modalLink = document.getElementById("modalLink");
+
+// imágenes máximas
+const MAX_IMAGES = 12;
+
+// Aquí guardaremos TODAS las imágenes (backend + nuevas)
+let images = [];
+
+// elementos DOM
+const mainSwiperWrapper = document.getElementById("mainSwiperWrapper");
+const thumbsWrapper = document.getElementById("thumbsWrapper");
+const imageInput = document.getElementById("imageInput");
+
+let mainSwiper = null;
+let thumbsSwiper = null;
+let photosToDeleteIds = [];
+
+btnLink.addEventListener("click", () => {
+    toggleModal(modalLink, true);
 })
 
+btnClose.addEventListener("click", () => {
+    toggleModal(modalLink, false);
+})
+
+btnSaveLink.addEventListener("click", () => {
+    toggleModal(modalLink, false)
+})
+
+document.addEventListener('DOMContentLoaded', async () => {
+    currentId ? await loadVehicle() : renderImages();
+});
+
 let loadVehicle = async () => {
-    const vehicle = await getVehicles(0, 15, params.get("id"));
-    console.log(vehicle)
-    loadDataVehicle(vehicle.content[0]);
-}
+    const vehicle = await getVehicles(0, 15, currentId);
+    const data = vehicle.content[0];
+    fillForm('#frmVehicles', {
+        txtVin: data.vin,
+        txtBrand: data.brand,
+        txtModel: data.model,
+        txtYear: data.year,
+        txtMileage: data.mileage,
+        txtLote: data.lote.numLote,
+        txtLink: data.lote.linkLote,
+        txtDescription: data.description,
+        txtBill: data.costs.bill,
+        txtTransfer: data.costs.transfer,
+        txtStorage: data.costs.storage,
+        txtTowTruck: data.costs.towTruck,
+        txtShip: data.costs.ship,
+        txtTaxes: data.costs.taxes,
+        txtIva: data.costs.iva,
+        txtPa: data.costs.pa,
+        txtTotal: data.costs.total
 
-let loadDataVehicle = (vehicle) => {
-    console.log(vehicle)
-    brand.textContent = vehicle.brand;
-    price.textContent = `$${vehicle.price}`;
-    model.textContent = vehicle.model;
-    vin.textContent = vehicle.vin;
-    year.textContent = vehicle.year;
-    customerName.textContent = vehicle.fullName;
-    status.textContent = vehicle.nameStatus;
-    vehicle.suggestedPrice != null ? suggestedPrice.textContent = `$${vehicle.suggestedPrice}` : suggestedPrice.closest(".infoRow").classList.add("hide");
-    dui.textContent = vehicle.dui
+    });
+    loadBackendImages(data.photos);
+};
 
-    console.log(suggestedPrice)
-    loadImgs(vehicle.photos)
-}
+let loadBackendImages = (photos = []) => {
+    images = photos.map(p => ({
+        id: p.id,
+        url: p.photoUrl,
+        file: null,
+        isNew: false
+    }));
+    renderImages();
+};
 
-let swiper = null;
-let thumbsSwiper = null;
+frmVehicles.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = getInputsValues(frmVehicles);
 
-let loadImgs = (photos = []) => {
+    const {
+        txtVin,
+        txtBrand,
+        txtModel,
+        txtYear,
+        txtMileage,
+        txtLote,
+        txtLink,
+        txtDescription,
+        txtBill,
+        txtTransfer,
+        txtStorage,
+        txtTowTruck,
+        txtShip,
+        txtTaxes,
+        txtIva,
+        txtPa
+    } = formData;
 
-    // Inicializar Swipers solo una vez
-    if (!swiper) {
-        thumbsSwiper = new Swiper("#thumbsSwiper", {
-            slidesPerView: 3,
-            spaceBetween: 10,
-        });
+    if (!txtVin || !txtModel || !txtMileage || !txtYear || !txtLote || !txtBill || !txtTransfer || !txtStorage || !txtTowTruck || !txtShip || !txtTaxes || !txtIva || !txtPa || !txtLink) {
+        showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
+        return;
+    }
+    console.log(txtLink)
 
-        swiper = new Swiper("#mainSwiper", {
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev"
-            },
-            thumbs: {
-                swiper: thumbsSwiper
-            },
-            lazy: true
-        });
+    const vehicle = {
+        vin: txtVin,
+        brand: txtBrand,
+        model: txtModel,
+        year: txtYear,
+        mileage: txtMileage,
+        description: txtDescription,
+        lote: {
+            linkLote: txtLink,
+            numLote: txtLote
+        },
+        idVehicleStatus: "4446257e-c0c5-11f0-9368-74d4dd6ecc40",
+        costs: {
+            bill: txtBill,
+            transfer: txtTransfer,
+            storage: txtStorage,
+            towTruck: txtTowTruck,
+            ship: txtShip,
+            taxes: txtTaxes,
+            iva: txtIva,
+            pa: txtPa,
+        }
     }
 
-    swiper.removeAllSlides();
-    thumbsSwiper.removeAllSlides();
+    const newFiles = images.filter(img => img.isNew).map(img => img.file);
 
-    if (photos.length === 0) {
-        swiper.addSlide(0, `
-            <div class="swiper-slide no-image">
+    const fd = new FormData();
+    newFiles.forEach(file => {
+        fd.append("photos", file);
+    });
+
+    fd.append('vehicleData', JSON.stringify(vehicle));
+
+    if (currentId != null) {
+        const newFiles = images.filter(img => img.isNew);
+        const remainingOld = images.filter(img => !img.isNew);
+        const totalFinal = newFiles.length + remainingOld.length;
+        if (totalFinal === 0) {
+            showMessage(
+                'Debes mantener al menos una imagen',
+                'Imagen validación',
+                'warning'
+            );
+            return;
+        }
+        if (totalFinal > MAX_IMAGES) {
+            showMessage(`Máximo ${MAX_IMAGES} imágenes`, "Imagen validación", "warning");
+            return;
+        }
+        vehicle.photosToDelete = photosToDeleteIds;
+    } else {
+        if (newFiles.length === 0) {
+            showMessage('Por favor, agregue al menos una imagen del vehículo.', 'Imagen requerida', 'warning');
+            return;
+        }
+    }
+
+    try {
+        if (currentId != null) {
+            await putVehicle(fd, currentId);
+            await showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
+            window.location.href = "../../pages/vehicle.html";
+        } else {
+            await postVehicle(fd);
+            await showMessage('Vehiculo agregado con éxito!', 'Exito', 'success');
+            window.location.href = "../../pages/vehicle.html";
+        }
+    } catch (error) {
+        console.error("Error al realizar la operación:", error);
+        const errorMessage = error.message || 'Error desconocido al registrar el vehiculo.';
+        showMessage(errorMessage, 'error', 'error');
+    }
+});
+
+
+
+function initSwipers() {
+    if (mainSwiper) mainSwiper.destroy(true, true);
+    if (thumbsSwiper) thumbsSwiper.destroy(true, true);
+
+    thumbsSwiper = new Swiper("#thumbsSwiper", {
+        slidesPerView: 4,
+        spaceBetween: 10,
+        watchSlidesProgress: true,
+    });
+
+    mainSwiper = new Swiper("#mainSwiper", {
+        spaceBetween: 10,
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        thumbs: {
+            swiper: thumbsSwiper,
+        },
+        lazy: true,
+    });
+}
+
+
+let deleteImage = (index) => {
+    const img = images[index];
+
+    // SI es imagen del backend → guardar su ID
+    if (!img.isNew && img.id) {
+        photosToDeleteIds.push(img.id);
+    }
+
+    images.splice(index, 1);
+    renderImages();
+};
+
+
+function createPlusButton() {
+    if (images.length >= MAX_IMAGES) return;
+
+    const addThumb = document.createElement("div");
+    addThumb.classList.add("swiper-slide", "thumb-add");
+    addThumb.textContent = "+";
+    addThumb.onclick = () => imageInput.click();
+
+    thumbsWrapper.appendChild(addThumb);
+}
+
+
+function renderImages() {
+    mainSwiperWrapper.innerHTML = "";
+    thumbsWrapper.innerHTML = "";
+
+    // No hay imágenes → placeholder
+    if (images.length === 0) {
+        mainSwiperWrapper.innerHTML = `
+        <div class="swiper-slide">
+            <div class="no-image-container">
+                <div class="no-image-icon">📷</div>
                 <p>No hay imágenes disponibles</p>
             </div>
-        `);
+        </div>
+        `;
+
+        createPlusButton();
+        initSwipers();
         return;
     }
 
-    photos.forEach(photo => {
-        const mainSlide = document.createElement("div");
-        mainSlide.classList.add("swiper-slide");
-        mainSlide.innerHTML = `<img src="${photo.photoUrl}" class="previewImg"/>`;
-        swiper.addSlide(swiper.slides.length, mainSlide);
+    // Renderizar imágenes
+    images.forEach((img, index) => {
+        // Slide principal
+        const slide = document.createElement("div");
+        slide.classList.add("swiper-slide");
+        slide.innerHTML = `<img src="${img.url}" class="previewImg">`;
+        mainSwiperWrapper.appendChild(slide);
 
-        const thumbSlide = document.createElement("div");
-        thumbSlide.classList.add("swiper-slide");
-        thumbSlide.innerHTML = `<img src="${photo.photoUrl}">`;
-        thumbsSwiper.addSlide(thumbsSwiper.slides.length, thumbSlide);
+        // Miniatura
+        const thumb = document.createElement("div");
+        thumb.classList.add("swiper-slide", "thumb-box");
+
+        thumb.innerHTML = `
+            <img src="${img.url}">
+            <div class="thumb-delete">×</div>
+        `;
+
+        // Botón de eliminar
+        const deleteBtn = thumb.querySelector(".thumb-delete");
+
+        deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            deleteImage(index);
+        });
+
+        thumbsWrapper.appendChild(thumb);
     });
 
-    thumbsSwiper.update();
-    swiper.update();
-};
+    // Botón "+"
+    createPlusButton();
+
+    // Reiniciar swipers
+    initSwipers();
+}
+
+imageInput.addEventListener("change", (e) => {
+    const files = [...e.target.files];
+
+    if (images.length + files.length > MAX_IMAGES) {
+        showMessage("Limite superado", `Máximo ${MAX_IMAGES} imágenes`, "warning");
+        return;
+    }
+
+    files.forEach(file => {
+        images.push({
+            id: null,
+            url: URL.createObjectURL(file),
+            file: file,
+            isNew: true
+        });
+    });
+
+
+    renderImages();
+    imageInput.value = "";
+});
+
+

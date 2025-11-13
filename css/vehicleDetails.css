@@ -1,9 +1,63 @@
+.content>div + div{
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 15px;
+}
+
+.breadcrumbSection{
+    display: inline-flex;
+    width: 100%;
+}
+
+.txtInputs {
+    padding: 10px !important;
+}
+
+fieldset {
+    border: var(--border);
+    padding: 10px;
+    border-radius: var(--border-radius-input);
+}
+
+textarea {
+    resize: none;
+}
+
+legend {
+    font-size: var(--font-size-lg);
+    color: #222;
+}
+
+.vehicleData {
+    grid-column: 1 / 5;
+    grid-row: 1 / 5
+}
+
+.imgData {
+    padding: 20px;
+    grid-column: 5 / 9;
+    grid-row: 1 / 5;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+    overflow-y: auto;
+    max-height: 450px;
+}
+
+
+.costsData {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    grid-column: 1 / 9;
+    grid-row: 5 / 8;
+}
+
 .mainContent {
     flex: 1;
     max-height: clamp(300px, 100%, 1200px);
     max-width: clamp(300px, 100%, 1600px);
     margin: auto;
-    border: var(--border);
 }
 
 .vehicleDetailsContainer {
@@ -13,22 +67,6 @@
 .vehicleDetailsBody {
     display: flex;
     height: 100%;
-}
-
-.vehicleImagesSection,
-.vehicleInfoSection {
-    flex: 2;
-    padding: 20px;
-    height: 100%;
-    border: var(--border);
-    display: flex;
-    flex-direction: column;
-}
-
-.vehicleImagesSection {
-    flex: 3;
-    min-width: 0;
-    overflow-y: auto;
 }
 
 .vehicleImagesSection>div {
@@ -84,14 +122,18 @@
     font-size: var(--font-size-title);
 }
 
+.infoLabel {
+    font-weight: var(--font-weight-semibold);
+}
+
 #mainSwiper {
-    flex: 1;
-    min-height: 400px;
-    max-width: clamp(300px, 100%, 700px);
+    height: 250px;
+    width: clamp(300px, 100%, 500px);
+    border: 2px solid var(--danger-color);
 }
 
 .thumbnailImagesContainer {
-    max-width: clamp(300px, 100%, 700px);
+    max-width: clamp(300px, 100%, 450px);
 }
 
 
@@ -106,9 +148,9 @@
     object-fit: cover;
 }
 
-.thumbs-swiper .swiper-wrapper{
-    flex-wrap: wrap;
+.thumbs-swiper .swiper-wrapper {
     gap: 10px;
+    flex-wrap: wrap;
     justify-content: center;
 }
 
@@ -119,8 +161,8 @@
     border-radius: 6px;
     overflow: hidden;
     transition: opacity .3s;
-    width: 150px !important;
-    height: 100px !important;
+    width: 125px !important;
+    height: 75px !important;
 }
 
 .thumbs-swiper .swiper-slide-thumb-active {
@@ -133,4 +175,115 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.thumb-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumb-add {
+    background: #fff;
+    color: #d33;
+    font-size: 36px;
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    transition: 0.2s ease;
+}
+
+.thumb-add:hover {
+    background: #ffe5e5;
+    border-color: #b00;
+    color: #b00;
+}
+
+
+.no-image-container {
+    width: 100%;
+    height: 100%;
+    background: #fafafa;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #777;
+    font-size: 18px;
+    gap: 10px;
+}
+
+.no-image-icon {
+    font-size: 50px;
+    color: #ccc;
+}
+
+.thumb-box {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.thumb-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 22px;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.2s ease;
+}
+
+.thumb-box:hover .thumb-delete {
+    opacity: 1;
+}
+
+.btnLink{
+    position: absolute;
+    right: 10px;
+    top: 53%;
+    margin: auto;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-input);
+}
+
+.modalAdd{
+    padding: 25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    z-index: 70;
+    height: 200px;
+    width: clamp(100px, 90%, 450px);
+    border-radius: var(--border-radius-input);
+}
+
+.titleModal{
+    text-align: left;
 }
