@@ -64,6 +64,15 @@
 .breadcrumb {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-breadcrumb);
+    color: var(--danger-color);
+}
+
+.breadcrumb[href] {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    position: relative;
+    color: gray;
 }
 
 .txtSearchData {

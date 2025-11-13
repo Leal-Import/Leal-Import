@@ -47,10 +47,11 @@ export const getInputsValues = (form) => {
             data[input.name] = input.value.trim();
         }
     });
+    console.log(data)
     return data;
 };
 
-export const showMessage = (title, message, type = 'info', isToast = false) => {
+export const showMessage = async (title, message, type = 'info', isToast = false) => {
     let config = {
         icon: type,
         title: title,
@@ -82,7 +83,7 @@ export const showMessage = (title, message, type = 'info', isToast = false) => {
         }
     }
 
-    Swal.fire(config);
+    await Swal.fire(config);
 };
 
 /* Llenar formulario */

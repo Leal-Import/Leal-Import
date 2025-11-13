@@ -11,181 +11,131 @@
 </head>
 
 <body>
-    <!--<div class="mainContent">
-    <div class="vehicleDetailsContainer">
-        <div class="vehicleDetailsBody">
-            <div class="vehicleImagesSection">
-                <div>
-                    <div class="swiper" id="mainSwiper">
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide">Slide 1</div>
-                            <div class="swiper-slide">Slide 2</div>
-                            <div class="swiper-slide">Slide 3</div>
-                        </div>
-                        <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
-                        <div class="swiper-button-next" style="color: var(--danger-color);"></div>
-                    </div>
-                    <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
-                         Miniaturas debajo 
-                        <div class="swiper thumbs-swiper" id="thumbsSwiper">
-                            <div class="swiper-wrapper">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="vehicleInfoSection">
-                <div class="headerInfoSection">
-                    <h2 class="brand" id="brand"></h2>
-                    <h3 class="price" id="price"></h3>
-                </div>
-                <div class="bodyInfoSection">
-                    <div class="infoRow">
-                        <span class="infoLabel">Modelo:</span>
-                        <span class="infoValue" id="model"></span>
-                    </div>
-                    <div class="infoRow">
-                        <span class="infoLabel">Vin:</span>
-                        <span class="infoValue" id="vin"></span>
-                    </div>
-                    <div class="infoRow">
-                        <span class="infoLabel">Año:</span>
-                        <span class="infoValue" id="year"></span>
-                    </div>
-                    <div class="infoRow">
-                        <span class="infoLabel">Estado:</span>
-                        <span class="infoValue" id="status"></span>
-                    </div>
-                    <div class="infoRow">
-                        <span class="infoLabel">Cliente:</span>
-                        <span class="infoValue" id="customerName"></span>
-                    </div>
-                    <div class="infoRow">
-                        <span class="infoLabel">Dui del cliente:</span>
-                        <span class="infoValue" id="dui"></span>
-                    </div>
-                </div>
-                <div class="infoRow rowSuggested">
-                    <span class="infoLabel">Precio sugerido:</span>
-                    <span class="infoValue" id="suggestedPrice"></span>
-                </div>
-            </div>
-        </div>
-    </div>
- </div>
--->
     <div class="bodyContent">
         <div id="sidebar"></div>
-        <form class="content">
-            <div class="vehicleData">
-                <div class="rowFields">
-                    <div class="formGroup">
-                        <label for="txtVin" class="lblInputs">Vin</label>
-                        <input type="text" class="txtInputs" id="txtVin">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtBrand" class="lblInputs">Marca</label>
-                        <input type="text" class="txtInputs" id="txtBrand">
-                    </div>
-                </div>
-                <div class="rowFields">
-                    <div class="formGroup">
-                        <label for="txtModel" class="lblInputs">Modelo</label>
-                        <input type="text" class="txtInputs" id="txtModel">
-                    </div>
-                </div>
-                <div class="rowFields">
-                    <div class="formGroup">
-                        <label for="txtYear" class="lblInputs">Año</label>
-                        <input type="text" class="txtInputs" id="txtYear" maxlength="4">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtMileage" class="lblInputs">Millaje</label>
-                        <input type="text" class="txtInputs" id="txtMileage">
-                    </div>
-                </div>
-                <div class="rowFields">
-                    <div class="formGroup">
-                        <label for="txtLote" class="lblInputs">Lote</label>
-                        <input type="text" class="txtInputs" id="txtLote">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtLote" class="lblInputs">s</label>
-                        <input type="text" placeholder="Enlace" class="txtInputs">
-                    </div>
-                </div>
-                <div class="formGroup">
-                    <label for="txtDescription" class="lblInputs">Descripción</label>
-                    <textarea type="text" class="txtInputs" id="txtDescription" rows="4"></textarea>
+        <form class="content" id="frmVehicles">
+            <div class="headerContent">
+                <div class="breadcrumbSection">
+                    <a href="vehicle.html" class="breadcrumb">Vehiculos ></a>
+                    <a class="breadcrumb">Agregar vehiculos</a>
                 </div>
             </div>
-            <div class="imgData">
-                <div class="vehicleImagesSection">
-                    <div>
-                        <div class="swiper" id="mainSwiper">
-                            <div class="swiper-wrapper">
-                                <div class="swiper-slide">Slide 1</div>
-                                <div class="swiper-slide">Slide 2</div>
-                                <div class="swiper-slide">Slide 3</div>
-                            </div>
-                            <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
-                            <div class="swiper-button-next" style="color: var(--danger-color);"></div>
+            <div>
+                <div class="modalAdd hide" id="modalLink">
+                    <button class="btnClose"type="button">
+                        <img src="../media/appMedia/closeIcon.svg" alt="">
+                    </button>
+                    <h2 class="titleModal">Agregar enlace del lote</h2>
+                    <input type="text" id="txtLink" class="txtInputs"
+                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45">
+                    <button class="btnPrimary btnSubmitData" id="btnSaveLink" type="button">Guardar enlace</button>
+                </div>
+                <fieldset class="vehicleData">
+                    <legend>Datos del vehiculo</legend>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtVin" class="lblInputs">Vin</label>
+                            <input type="text" class="txtInputs" id="txtVin">
                         </div>
-                        <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
-                            Miniaturas debajo
-                            <div class="swiper thumbs-swiper" id="thumbsSwiper">
-                                <div class="swiper-wrapper">
+                        <div class="formGroup">
+                            <label for="txtBrand" class="lblInputs">Marca</label>
+                            <input type="text" class="txtInputs" id="txtBrand">
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtModel" class="lblInputs">Modelo</label>
+                            <input type="text" class="txtInputs" id="txtModel">
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtYear" class="lblInputs">Año</label>
+                            <input type="text" class="txtInputs" id="txtYear" maxlength="4">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtMileage" class="lblInputs">Millaje</label>
+                            <input type="text" class="txtInputs" id="txtMileage">
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup" style="position: relative;">
+                            <label for="txtLote" class="lblInputs">Lote</label>
+                            <input type="text" class="txtInputs" id="txtLote">
+                            <button class="btnLink btnPrimary" type="button">Enlace</button>
+                        </div>
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtDescription" class="lblInputs">Descripción</label>
+                        <textarea type="text" class="txtInputs" id="txtDescription" rows="2"></textarea>
+                    </div>
+                </fieldset>
+                <div class="imgData">
+                    <div class="vehicleImagesSection">
+                        <div>
+                            <div class="swiper" id="mainSwiper">
+                                <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                                <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
+                                <div class="swiper-button-next" style="color: var(--danger-color);"></div>
+                            </div>
+
+                            <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                                <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                    <div class="swiper-wrapper" id="thumbsWrapper"></div>
                                 </div>
                             </div>
+
+                            <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
                         </div>
                     </div>
                 </div>
+                <fieldset class="costsData">
+                    <legend>Costos de importacion</legend>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtBill" class="lblInputs">Factura</label>
+                            <input type="text" class="txtInputs" id="txtBill">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtTransfer" class="lblInputs">Transferencia</label>
+                            <input type="text" class="txtInputs" id="txtTransfer">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtStorage" class="lblInputs">Almacenamiento</label>
+                            <input type="text" class="txtInputs" id="txtStorage">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtTowTruck" class="lblInputs">Transporte</label>
+                            <input type="text" class="txtInputs" id="txtTowTruck">
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtShip" class="lblInputs">Barco</label>
+                            <input type="text" class="txtInputs" id="txtShip">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtTaxes" class="lblInputs">Impuestos</label>
+                            <input type="text" class="txtInputs" id="txtTaxes">
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtIva" class="lblInputs">IVA</label>
+                            <input type="text" class="txtInputs" id="txtIva">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtPa" class="lblInputs">P.A</label>
+                            <input type="text" class="txtInputs" id="txtPa">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtTotal" class="lblInputs">Total</label>
+                            <input type="text" class="txtInputs" id="txtTotal" disabled>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
-            <fieldset class="costsData">
-                <legend>Costos de importacion</legend>
-                <div class="rowFields">
-                    <div class="formGroup">
-                        <label for="txtBill" class="lblInputs">Factura</label>
-                        <input type="text" class="txtInputs" id="txtBill">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtTransfer" class="lblInputs">Transferencia</label>
-                        <input type="text" class="txtInputs" id="txtTransfer">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtStorage" class="lblInputs">Almacenamiento</label>
-                        <input type="text" class="txtInputs" id="txtStorage">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtTowTruck" class="lblInputs">Transporte</label>
-                        <input type="text" class="txtInputs" id="txtTowTruck">
-                    </div>
-                </div>
-                <div class="rowFields">
-                    <div class="formGroup">
-                        <label for="txtShip" class="lblInputs">Barco</label>
-                        <input type="text" class="txtInputs" id="txtShip">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                        <input type="text" class="txtInputs" id="txtTaxes">
-                    </div>
-                </div>
-                <div class="rowFields">
-                    <div class="formGroup">
-                        <label for="txtIva" class="lblInputs">IVA</label>
-                        <input type="text" class="txtInputs" id="txtIva">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtPa" class="lblInputs">P.A</label>
-                        <input type="text" class="txtInputs" id="txtPa">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtTotal" class="lblInputs">Total</label>
-                        <input type="text" class="txtInputs" id="txtTotal">
-                    </div>
-                </div>
-            </fieldset>
+            <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" style="padding: 10px 40px;">
         </form>
         <script src="../js/sidebar.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
