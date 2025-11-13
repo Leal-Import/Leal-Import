@@ -76,9 +76,8 @@
 -->
     <div class="bodyContent">
         <div id="sidebar"></div>
-        <div class="content">
-            <fieldset class="vehicleData">
-                <legend>Datos del vehiculo</legend>
+        <form class="content">
+            <div class="vehicleData">
                 <div class="rowFields">
                     <div class="formGroup">
                         <label for="txtVin" class="lblInputs">Vin</label>
@@ -93,10 +92,6 @@
                     <div class="formGroup">
                         <label for="txtModel" class="lblInputs">Modelo</label>
                         <input type="text" class="txtInputs" id="txtModel">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtDescription" class="lblInputs">Descripción</label>
-                        <input type="text" class="txtInputs" id="txtDescription">
                     </div>
                 </div>
                 <div class="rowFields">
@@ -119,7 +114,11 @@
                         <input type="text" placeholder="Enlace" class="txtInputs">
                     </div>
                 </div>
-            </fieldset>
+                <div class="formGroup">
+                    <label for="txtDescription" class="lblInputs">Descripción</label>
+                    <textarea type="text" class="txtInputs" id="txtDescription" rows="4"></textarea>
+                </div>
+            </div>
             <div class="imgData">
                 <div class="vehicleImagesSection">
                     <div>
@@ -142,45 +141,52 @@
                     </div>
                 </div>
             </div>
-            <div class="costsData">
-                <div class="formGroup">
-                    <label for="txtBill" class="lblInputs">Factura</label>
-                    <input type="text" class="txtInputs" id="txtBill">
+            <fieldset class="costsData">
+                <legend>Costos de importacion</legend>
+                <div class="rowFields">
+                    <div class="formGroup">
+                        <label for="txtBill" class="lblInputs">Factura</label>
+                        <input type="text" class="txtInputs" id="txtBill">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtTransfer" class="lblInputs">Transferencia</label>
+                        <input type="text" class="txtInputs" id="txtTransfer">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtStorage" class="lblInputs">Almacenamiento</label>
+                        <input type="text" class="txtInputs" id="txtStorage">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtTowTruck" class="lblInputs">Transporte</label>
+                        <input type="text" class="txtInputs" id="txtTowTruck">
+                    </div>
                 </div>
-                <div class="formGroup">
-                    <label for="txtTransfer" class="lblInputs">Transferencia</label>
-                    <input type="text" class="txtInputs" id="txtTransfer">
+                <div class="rowFields">
+                    <div class="formGroup">
+                        <label for="txtShip" class="lblInputs">Barco</label>
+                        <input type="text" class="txtInputs" id="txtShip">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtTaxes" class="lblInputs">Impuestos</label>
+                        <input type="text" class="txtInputs" id="txtTaxes">
+                    </div>
                 </div>
-                <div class="formGroup">
-                    <label for="txtStorage" class="lblInputs">Almacenamiento</label>
-                    <input type="text" class="txtInputs" id="txtStorage">
+                <div class="rowFields">
+                    <div class="formGroup">
+                        <label for="txtIva" class="lblInputs">IVA</label>
+                        <input type="text" class="txtInputs" id="txtIva">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtPa" class="lblInputs">P.A</label>
+                        <input type="text" class="txtInputs" id="txtPa">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtTotal" class="lblInputs">Total</label>
+                        <input type="text" class="txtInputs" id="txtTotal">
+                    </div>
                 </div>
-                <div class="formGroup">
-                    <label for="txtTowTruck" class="lblInputs">Transporte</label>
-                    <input type="text" class="txtInputs" id="txtTowTruck">
-                </div>
-                <div class="formGroup">
-                    <label for="txtShip" class="lblInputs">Barco</label>
-                    <input type="text" class="txtInputs" id="txtShip">
-                </div>
-                <div class="formGroup">
-                    <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                    <input type="text" class="txtInputs" id="txtTaxes">
-                </div>
-                <div class="formGroup">
-                    <label for="txtIva" class="lblInputs">IVA</label>
-                    <input type="text" class="txtInputs" id="txtIva">
-                </div>
-                <div class="formGroup">
-                    <label for="txtPa" class="lblInputs">P.A</label>
-                    <input type="text" class="txtInputs" id="txtPa">
-                </div>
-                <div class="formGroup">
-                    <label for="txtTotal" class="lblInputs">Total</label>
-                    <input type="text" class="txtInputs" id="txtTotal">
-                </div>
-            </div>
-        </div>
+            </fieldset>
+        </form>
         <script src="../js/sidebar.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
