@@ -2,7 +2,7 @@ import {
     getVehicles,
     postVehicle,
     putVehicle
-} from '../service/serviceVehicle.js';
+} from '../service/serviceVehicleDetails.js';
 
 import {
     showMessage,

@@ -95,6 +95,7 @@ const loadVehicles = async (search, stateId, year) => {
 ============================== */
 
 let insertVehicles = (vehicles) => {
+  console.log(vehicles)
   const container = document.querySelector(".cardContainer");
   container.innerHTML = "";
 
@@ -130,11 +131,11 @@ let insertVehicles = (vehicles) => {
       vehicleBrand.textContent = vehicle.brand;
       btnView.textContent = "Ver más";
       btnEdit.textContent = "Editar";
-      vehiclePrice.textContent = `$${vehicle.costs.total}`;
+      vehiclePrice.textContent = `$${vehicle.total}`;
       vinItem.innerHTML = `<div>Vin:</div> <span>${vehicle.vin}</span>`;
       yearItem.innerHTML = `<div>Año:</div> <span>${vehicle.year}</span>`;
       modelItem.innerHTML = `<div>Modelo:</div> <span>${vehicle.model}</span>`;
-      img.src = vehicle.photos.length > 0 ? vehicle.photos[0].photoUrl : "";
+      img.src = vehicle.photoUrl ? vehicle.photoUrl : "";
       vehicleStatus.textContent = vehicle.nameStatus;
 
       // clases
@@ -181,7 +182,7 @@ let insertVehicles = (vehicles) => {
 /* ==============================
     SUGERENCIAS CLIENTES (solo búsqueda)
 ============================== */
-
+/*
 txtCustomers.addEventListener('input', async () => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
@@ -207,3 +208,4 @@ txtCustomers.addEventListener('input', async () => {
     boxCus.classList.replace('hide', 'show');
   }, 500);
 });
+*/

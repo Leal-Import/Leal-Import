@@ -129,6 +129,7 @@ legend {
 #mainSwiper {
     height: 250px;
     width: clamp(300px, 100%, 500px);
+    border: 2px solid var(--danger-color);
 }
 
 .thumbnailImagesContainer {
