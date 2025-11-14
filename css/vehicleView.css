@@ -36,6 +36,17 @@
     grid-row: 5 / 9;
 }
 
+.txtAreaSpecific{
+    height: auto;
+    border: none;
+    background-color: transparent;
+    resize: none;
+}
+
+.txtAreaSpecific:focus{
+    outline: none;
+}
+
 .headerData{
     padding: 10px;
     border: var(--border);

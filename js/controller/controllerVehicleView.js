@@ -27,6 +27,7 @@ const imageGrid = document.getElementById("imageGrid");
 
 let mainSwiper;
 
+
 // Obtener ID del vehículo desde el URL
 const params = new URLSearchParams(window.location.search);
 const idVehicle = params.get("id");
@@ -49,6 +50,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     status.textContent = vehicle.status;
     lote.href = vehicle.lote.linkLote;
     description.textContent = vehicle.description;
+
+    description.style.height = "auto";         // resetear para recalcular
+    description.style.height = description.scrollHeight + "px";
 
     bill.textContent = `$${vehicle.costs.bill}`;
     transfer.textContent = `$${vehicle.costs.transfer}`;
@@ -121,4 +125,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    description.readOnly = true;
 });
