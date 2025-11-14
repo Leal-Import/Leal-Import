@@ -41,7 +41,6 @@ legend {
     border: var(--border);
     border-radius: var(--border-radius-input);
     overflow-y: auto;
-    max-height: 450px;
 }
 
 
