@@ -105,7 +105,7 @@ let loadVehicle = async () => {
 
 let loadBackendImages = (photos = []) => {
     images = photos.map(p => ({
-        id: p.id,
+        id: p.idPhoto,
         url: p.photoUrl,
         file: null,
         isNew: false
@@ -140,7 +140,6 @@ frmVehicles.addEventListener("submit", async (e) => {
         showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
         return;
     }
-    console.log(txtLink)
 
     const vehicle = {
         vin: txtVin,
@@ -167,13 +166,6 @@ frmVehicles.addEventListener("submit", async (e) => {
 
     const newFiles = images.filter(img => img.isNew).map(img => img.file);
 
-    const fd = new FormData();
-    newFiles.forEach(file => {
-        fd.append("photos", file);
-    });
-
-    fd.append('vehicleData', JSON.stringify(vehicle));
-
     if (currentId != null) {
         const newFiles = images.filter(img => img.isNew);
         const remainingOld = images.filter(img => !img.isNew);
@@ -190,7 +182,7 @@ frmVehicles.addEventListener("submit", async (e) => {
             showMessage(`Máximo ${MAX_IMAGES} imágenes`, "Imagen validación", "warning");
             return;
         }
-        vehicle.photosToDelete = photosToDeleteIds;
+        vehicle.photosToDeleteIds = photosToDeleteIds;
     } else {
         if (newFiles.length === 0) {
             showMessage('Por favor, agregue al menos una imagen del vehículo.', 'Imagen requerida', 'warning');
@@ -198,6 +190,12 @@ frmVehicles.addEventListener("submit", async (e) => {
         }
     }
 
+    const fd = new FormData();
+    newFiles.forEach(file => {
+        fd.append("photos", file);
+    });
+
+    fd.append('vehicleData', JSON.stringify(vehicle));
     try {
         if (currentId != null) {
             await putVehicle(fd, currentId);
