@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     description.style.height = "auto";         // resetear para recalcular
     description.style.height = description.scrollHeight + "px";
+    description.readOnly = true;
 
     bill.textContent = `$${vehicle.costs.bill}`;
     transfer.textContent = `$${vehicle.costs.transfer}`;
@@ -125,5 +126,4 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    description.readOnly = true;
 });
