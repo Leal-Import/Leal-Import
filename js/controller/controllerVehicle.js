@@ -156,6 +156,7 @@ let insertVehicles = (vehicles) => {
 
       // botón ver más
       btnEdit.href = `vehicleDetails.html?id=${vehicle.vin}`;
+      btnView.href = `vehicleView.html?id=${vehicle.vin}`;
 
       containerInfoVehicle.appendChild(vinItem);
       containerInfoVehicle.appendChild(yearItem);

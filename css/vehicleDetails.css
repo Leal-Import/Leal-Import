@@ -133,7 +133,7 @@ legend {
 }
 
 .thumbnailImagesContainer {
-    max-width: clamp(300px, 100%, 450px);
+    width: clamp(300px, 100%, 500px);
 }
 
 
@@ -150,8 +150,9 @@ legend {
 
 .thumbs-swiper .swiper-wrapper {
     gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
 }
 
 .thumbs-swiper .swiper-slide {

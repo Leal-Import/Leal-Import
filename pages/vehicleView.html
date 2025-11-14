@@ -1,0 +1,159 @@
+<!-- ...existing code... -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="../css/vehicleView.css">
+    <title>Vehiculos</title>
+</head>
+
+<body>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <form class="content" id="frmVehicles">
+            <div class="headerContent">
+                <div class="breadcrumbSection">
+                    <a href="vehicle.html" class="breadcrumb">Vehiculos ></a>
+                    <a class="breadcrumb" id="typeAction">Ver vehiculo</a>
+                </div>
+            </div>
+            <div>
+                <div class="modalAdd hide" id="modalLink">
+                    <button class="btnClose" type="button">
+                        <img src="../media/appMedia/closeIcon.svg" alt="">
+                    </button>
+                    <h2 class="titleModal">Agregar enlace del lote</h2>
+                    <input type="text" id="txtLink" class="txtInputs"
+                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45">
+                    <button class="btnPrimary btnSubmitData" id="btnSaveLink" type="button">Guardar enlace</button>
+                </div>
+                <div class="vehicleData">
+                    <div class="headerData">
+                        <h2 class="titleData">Datos del vehiculo</h2>
+                    </div>
+                    <div class="bodyData">
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">Vin:</span>
+                                <span id="vin" class="values"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">Marca:</span>
+                                <span id="brand" class="values"></span>
+                            </div>
+                        </div>
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">Modelo:</span>
+                                <span id="model" class="values"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">Año:</span>
+                                <span id="year" class="values"></span>
+                            </div>
+                        </div>
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">Millaje:</span>
+                                <span id="mileage" class="values"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">Lote:</span>
+                                <a id="lote" target="_blank"></a>
+                            </div>
+                        </div>
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">Estado:</span>
+                                <span id="status" class="values"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">Fecha de compra:</span>
+                                 <span id="purchaseDate" class="values"></span>
+                            </div>
+                        </div>
+                        <div class="data">
+                            <span class="lblData">Descripción:</span>
+                            <span id="description" class="values"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="imgData">
+                    <div class="vehicleImagesSection">
+                        <!-- CARRUSEL -->
+                        <div class="swiper" id="mainSwiper">
+                            <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                            <div class="swiper-button-prev"></div>
+                            <div class="swiper-button-next"></div>
+                        </div>
+
+                        <!-- GRID DE IMÁGENES -->
+                        <div class="imageGrid" id="imageGrid"></div>
+                    </div>
+                </div>
+                <div class="costsData">
+                    <div class="headerData">
+                        <h2 class="titleData">Datos de importación</h2>
+                    </div>
+                    <div class="bodyData">
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">Factura:</span>
+                                <span id="bill" class="values"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">Transferencia:</span>
+                                <span id="transfer" class="values"></span>
+                            </div>
+                        </div>
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">Almacenamiento:</span>
+                                <span id="storage" class="values"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">Transporte:</span>
+                                <span id="transport" class="values"></span>
+                            </div>
+                        </div>
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">Barco:</span>
+                                <span id="ship" class="values"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">Impuestos:</span>
+                                <span id="taxes" class="values"></span>
+                            </div>
+                        </div>
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">IVA:</span>
+                                <span id="iva" class="values"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">P.A:</span>
+                                <span id="pa" class="values"></span>
+                            </div>
+                        </div>
+                        <div class="data">
+                            <span class="lblData">Total:</span>
+                            <span id="total" class="values"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <script src="../js/sidebar.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script type="module" src="../js/utils.js"></script>
+        <script type="module" src="../js/controller/controllerVehicleView.js"></script>
+        <script type="module" src="../js/service/serviceVehicleDetails.js"></script>
+</body>
+
+</html>
