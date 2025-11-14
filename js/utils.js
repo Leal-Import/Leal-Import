@@ -215,6 +215,35 @@ export let formatDUIInput = (inputElement) => {
     });
 }
 
+export let allowDecimal = (input) => {
+  input.addEventListener("input", () => {
+    let value = input.value;
+
+    // Solo números y un punto
+    value = value.replace(/[^0-9.]/g, "");
+
+    // Evita más de un punto decimal
+    const parts = value.split(".");
+    if (parts.length > 2) {
+      value = parts[0] + "." + parts.slice(1).join("");
+    }
+
+    // Limita a 2 decimales si existe el punto
+    if (parts[1]?.length > 2) {
+      value = parts[0] + "." + parts[1].substring(0, 2);
+    }
+
+    input.value = value;
+  });
+
+  // Evitar pegar texto inválido
+  input.addEventListener("paste", (e) => {
+    const text = e.clipboardData.getData("text");
+    if (!/^[0-9]*\.?[0-9]{0,2}$/.test(text)) {
+      e.preventDefault();
+    }
+  });
+}
 
 // Helpers para modo lectura / UI
 export function setFormReadOnly(frm, readOnly) {

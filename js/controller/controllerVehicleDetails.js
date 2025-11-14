@@ -8,7 +8,8 @@ import {
     showMessage,
     toggleModal,
     getInputsValues,
-    fillForm
+    fillForm,
+    allowDecimal
 } from '../utils.js';
 
 const params = new URLSearchParams(window.location.search);
@@ -20,6 +21,9 @@ const btnLink = document.querySelector(".btnLink");
 const btnClose = document.querySelector(".btnClose");
 const btnSaveLink = document.getElementById("btnSaveLink")
 const modalLink = document.getElementById("modalLink");
+
+const txtCosts = document.querySelectorAll(".txtCosts");
+const txtTotal = document.getElementById("txtTotal");
 
 // imágenes máximas
 const MAX_IMAGES = 12;
@@ -35,6 +39,26 @@ const imageInput = document.getElementById("imageInput");
 let mainSwiper = null;
 let thumbsSwiper = null;
 let photosToDeleteIds = [];
+
+txtCosts.forEach(input => {
+    allowDecimal(input);
+});
+
+function updateTotal() {
+    let total = 0;
+
+    txtCosts.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        total += value;
+    });
+
+    txtTotal.value = total.toFixed(2);
+}
+
+txtCosts.forEach(input => {
+    input.addEventListener("input", updateTotal);
+});
+
 
 btnLink.addEventListener("click", () => {
     toggleModal(modalLink, true);
@@ -53,6 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 let loadVehicle = async () => {
+    document.getElementById("typeAction").textContent = "Actualizar vehiculo"
     const vehicle = await getVehicles(0, 15, currentId);
     const data = vehicle.content[0];
     fillForm('#frmVehicles', {
