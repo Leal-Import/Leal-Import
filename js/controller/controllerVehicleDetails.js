@@ -153,7 +153,6 @@ frmVehicles.addEventListener("submit", async (e) => {
             linkLote: txtLink,
             numLote: txtLote
         },
-        idVehicleStatus: "4446257e-c0c5-11f0-9368-74d4dd6ecc40",
         costs: {
             bill: txtBill,
             transfer: txtTransfer,
