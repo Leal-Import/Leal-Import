@@ -27,7 +27,7 @@
                     </button>
                     <h2 class="titleModal">Agregar enlace del lote</h2>
                     <input type="text" id="txtLink" class="txtInputs"
-                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45">
+                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
                     <button class="btnPrimary btnSubmitData" id="btnSaveLink" type="button">Guardar enlace</button>
                 </div>
                 <fieldset class="vehicleData">
@@ -35,17 +35,17 @@
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtVin" class="lblInputs">Vin</label>
-                            <input type="text" class="txtInputs" id="txtVin">
+                            <input type="text" class="txtInputs" id="txtVin" maxlength="50">
                         </div>
                         <div class="formGroup">
                             <label for="txtBrand" class="lblInputs">Marca</label>
-                            <input type="text" class="txtInputs" id="txtBrand">
+                            <input type="text" class="txtInputs" id="txtBrand" maxlength="50">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtModel" class="lblInputs">Modelo</label>
-                            <input type="text" class="txtInputs" id="txtModel">
+                            <input type="text" class="txtInputs" id="txtModel" maxlength="50">
                         </div>
                     </div>
                     <div class="rowFields">
@@ -55,19 +55,19 @@
                         </div>
                         <div class="formGroup">
                             <label for="txtMileage" class="lblInputs">Millaje</label>
-                            <input type="text" class="txtInputs" id="txtMileage">
+                            <input type="text" class="txtInputs" id="txtMileage" maxlength="50">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup" style="position: relative;">
                             <label for="txtLote" class="lblInputs">Lote</label>
-                            <input type="text" class="txtInputs" id="txtLote">
+                            <input type="text" class="txtInputs" id="txtLote" maxlength="50">
                             <button class="btnLink btnPrimary" type="button">Enlace</button>
                         </div>
                     </div>
                     <div class="formGroup">
                         <label for="txtDescription" class="lblInputs">Descripción</label>
-                        <textarea type="text" class="txtInputs" id="txtDescription" rows="2"></textarea>
+                        <textarea type="text" class="txtInputs" id="txtDescription" rows="2" maxlength="1000"></textarea>
                     </div>
                 </fieldset>
                 <div class="imgData">
@@ -94,39 +94,39 @@
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtBill" class="lblInputs">Factura</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtBill">
+                            <input type="text" class="txtInputs txtCosts" id="txtBill" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTransfer" class="lblInputs">Transferencia</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTransfer">
+                            <input type="text" class="txtInputs txtCosts" id="txtTransfer" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtStorage" class="lblInputs">Almacenamiento</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtStorage">
+                            <input type="text" class="txtInputs txtCosts" id="txtStorage" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTowTruck" class="lblInputs">Transporte</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTowTruck">
+                            <input type="text" class="txtInputs txtCosts" id="txtTowTruck" maxlength="11">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtShip" class="lblInputs">Barco</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtShip">
+                            <input type="text" class="txtInputs txtCosts" id="txtShip" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTaxes">
+                            <input type="text" class="txtInputs txtCosts" id="txtTaxes" maxlength="11">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtIva" class="lblInputs">IVA</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtIva">
+                            <input type="text" class="txtInputs txtCosts" id="txtIva" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtPa" class="lblInputs">P.A</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtPa">
+                            <input type="text" class="txtInputs txtCosts" id="txtPa" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTotal" class="lblInputs">Total</label>
