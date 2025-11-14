@@ -1,7 +1,7 @@
 .content>div + div{
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
     gap: 15px;
 }
 
