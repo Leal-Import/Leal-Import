@@ -41,6 +41,7 @@
     border: none;
     background-color: transparent;
     resize: none;
+    max-height: 140px;
 }
 
 .txtAreaSpecific:focus{
