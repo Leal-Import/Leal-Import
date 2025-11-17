@@ -118,6 +118,51 @@ export let fillForm = (formSelector, data) => {
 /* Validaciones */
 
 /* Esto es para que se haga focus en el elemento q esta mal */
+
+export function allowMotoYear(input) {
+
+    const currentYear = new Date().getFullYear();
+    const maxYear = currentYear + 1;
+    const minYear = currentYear - 40;
+
+    input.addEventListener("input", () => {
+        let value = input.value;
+
+        // Solo números
+        value = value.replace(/[^0-9]/g, "");
+
+        // Máximo 4 dígitos
+        if (value.length > 4) {
+            value = value.substring(0, 4);
+        }
+
+        // Validar rango SOLO cuando llegue a 4 dígitos
+        if (value.length === 4) {
+            let num = parseInt(value);
+
+            if (num > maxYear) num = maxYear;
+            if (num < minYear) num = minYear;
+
+            value = num.toString();
+        }
+
+        input.value = value;
+    });
+
+    // Evitar pegar texto inválido
+    input.addEventListener("paste", (e) => {
+        const text = e.clipboardData.getData("text");
+        if (!/^\d{1,4}$/.test(text)) {
+            e.preventDefault();
+            return;
+        }
+
+        const num = parseInt(text);
+        if (num > maxYear || num < minYear) e.preventDefault();
+    });
+}
+
+
 export const highlightAndFocus = (element) => {
     element.classList.add('input-error');
     element.focus();
@@ -229,7 +274,7 @@ export function formatWithCommas(number) {
 
 export function cleanNumber(str) {
     if (!str) return "0";
-    return str.replace(/,/g, ""); 
+    return str.replace(/,/g, "");
 }
 
 export let allowDecimal = (input) => {

@@ -11,7 +11,8 @@ import {
     fillForm,
     allowDecimal,
     cleanNumber,
-    formatWithCommas
+    formatWithCommas,
+    allowMotoYear
 } from '../utils.js';
 
 const params = new URLSearchParams(window.location.search);
@@ -73,6 +74,8 @@ document.addEventListener("click", (e) => {
         if (!modalTaxes.classList.contains("hide")) toggleModal(modalTaxes, false)
     }
 })
+
+allowMotoYear(document.getElementById("txtYear"));
 
 function updateTotal() {
     let total = 0;

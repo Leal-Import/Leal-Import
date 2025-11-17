@@ -1,7 +1,8 @@
 import {
   showMessage,
   fillSelect,
-  formatWithCommas
+  formatWithCommas,
+  allowMotoYear
 } from '../utils.js';
 
 import { getCustomers } from '../service/serviceCustomers.js';
@@ -36,9 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     FILTROS
 ============================== */
 
-txtSearchYear.addEventListener("input", () => {
-  txtSearchYear.value = txtSearchYear.value.replace(/\D/g, "");
-});
+allowMotoYear(txtSearchYear);
 
 txtSearchCustomer.addEventListener('input', () => {
   clearTimeout(searchTimeout);
