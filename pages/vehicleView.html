@@ -103,7 +103,7 @@
                         <div class="infoRow">
                             <div class="data">
                                 <span class="lblData">Factura:</span>
-                                <span id="bill" class="values"></span>
+                                <a id="bill" class="values" target="_blank"></a>
                             </div>
                             <div class="data">
                                 <span class="lblData">Transferencia:</span>
@@ -117,17 +117,17 @@
                             </div>
                             <div class="data">
                                 <span class="lblData">Transporte:</span>
-                                <span id="transport" class="values"></span>
+                                <a id="transport" class="values" target="_blank"></a>
                             </div>
                         </div>
                         <div class="infoRow">
                             <div class="data">
                                 <span class="lblData">Barco:</span>
-                                <span id="ship" class="values"></span>
+                                <a id="ship" class="values"></a>
                             </div>
                             <div class="data">
                                 <span class="lblData">Impuestos:</span>
-                                <span id="taxes" class="values"></span>
+                                <a id="taxes" class="values" target="_blank"></a>
                             </div>
                         </div>
                         <div class="infoRow">
@@ -140,9 +140,15 @@
                                 <span id="pa" class="values"></span>
                             </div>
                         </div>
-                        <div class="data">
-                            <span class="lblData">Total:</span>
-                            <span id="total" class="values"></span>
+                        <div class="infoRow">
+                            <div class="data">
+                                <span class="lblData">Precio sugerido:</span>
+                                <span id="suggestedPrice" class="values" style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
+                            </div>
+                            <div class="data">
+                                <span class="lblData">Total:</span>
+                                <span id="total" class="values"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -155,4 +161,5 @@
         <script type="module" src="../js/controller/controllerVehicleView.js"></script>
         <script type="module" src="../js/service/serviceVehicleDetails.js"></script>
 </body>
+
 </html>
