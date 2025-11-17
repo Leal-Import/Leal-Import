@@ -85,7 +85,7 @@ function updateTotal() {
         total += value;
     });
 
-    txtTotal.value = total.toFixed(2);
+    txtTotal.value = formatWithCommas(total.toFixed(2));
 }
 
 
