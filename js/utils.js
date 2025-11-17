@@ -215,35 +215,83 @@ export let formatDUIInput = (inputElement) => {
     });
 }
 
-export let allowDecimal = (input) => {
-  input.addEventListener("input", () => {
-    let value = input.value;
+export function formatWithCommas(number) {
+    if (number === null || number === undefined || number === "") return "";
 
-    // Solo números y un punto
-    value = value.replace(/[^0-9.]/g, "");
+    const num = parseFloat(number);
+    if (isNaN(num)) return number;
 
-    // Evita más de un punto decimal
-    const parts = value.split(".");
-    if (parts.length > 2) {
-      value = parts[0] + "." + parts.slice(1).join("");
-    }
-
-    // Limita a 2 decimales si existe el punto
-    if (parts[1]?.length > 2) {
-      value = parts[0] + "." + parts[1].substring(0, 2);
-    }
-
-    input.value = value;
-  });
-
-  // Evitar pegar texto inválido
-  input.addEventListener("paste", (e) => {
-    const text = e.clipboardData.getData("text");
-    if (!/^[0-9]*\.?[0-9]{0,2}$/.test(text)) {
-      e.preventDefault();
-    }
-  });
+    return num.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 }
+
+export function cleanNumber(str) {
+    if (!str) return "0";
+    return str.replace(/,/g, ""); 
+}
+
+export let allowDecimal = (input) => {
+
+    // FORMATEO MIENTRAS ESCRIBES
+    input.addEventListener("input", () => {
+        let value = input.value;
+
+        // Quitar caracteres inválidos
+        value = value.replace(/[^0-9.]/g, "");
+
+        let parts = value.split(".");
+
+        // Evitar más de un punto
+        if (parts.length > 2) {
+            value = parts[0] + "." + parts.slice(1).join("");
+            parts = value.split(".");
+        }
+
+        // Limitar a 2 decimales
+        if (parts[1]?.length > 2) {
+            parts[1] = parts[1].slice(0, 2);
+        }
+
+        // Formatear miles en parte entera
+        let integer = parts[0].replace(/^0+(?=\d)/, "");
+        if (integer) {
+            integer = Number(integer).toLocaleString("en-US");
+        }
+
+        // Reconstruir
+        value = parts.length > 1 ? `${integer}.${parts[1] ?? ""}` : integer;
+
+        input.value = value;
+    });
+
+    // EVITAR PEGAR COSAS INVALIDAS
+    input.addEventListener("paste", (e) => {
+        const text = e.clipboardData.getData("text");
+        if (!/^[0-9,.]*\.?[0-9]{0,2}$/.test(text)) {
+            e.preventDefault();
+        }
+    });
+
+    // 🔥 FIX: AGREGAR CERO SI SOLO HAY 1 DECIMAL
+    input.addEventListener("blur", () => {
+        let value = input.value;
+
+        if (!value.includes(".")) return;
+
+        let parts = value.split(".");
+        let decimal = parts[1];
+
+        if (decimal.length === 1) {
+            // Agrega el cero faltante
+            parts[1] = decimal + "0";
+            input.value = parts.join(".");
+        }
+    });
+
+};
+
 
 // Helpers para modo lectura / UI
 export function setFormReadOnly(frm, readOnly) {
