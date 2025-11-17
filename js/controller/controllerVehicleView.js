@@ -20,6 +20,7 @@ const taxes = document.getElementById("taxes");
 const iva = document.getElementById("iva");
 const pa = document.getElementById("pa");
 const total = document.getElementById("total");
+const suggestedPrice = document.getElementById("suggestedPrice");
 
 // Imágenes
 const mainSwiperWrapper = document.getElementById("mainSwiperWrapper");
@@ -56,13 +57,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     description.readOnly = true;
 
     bill.textContent = `$${vehicle.costs.bill}`;
+    vehicle.costs.costPhoto.billPhoto != null ? bill.href = vehicle.costs.costPhoto.billPhoto : null; bill.style.color = "var(--danger-color)"
     transfer.textContent = `$${vehicle.costs.transfer}`;
     storage.textContent = `$${vehicle.costs.storage}`;
     transport.textContent = `$${vehicle.costs.towTruck}`;
+    vehicle.costs.costPhoto.shipPhoto != null ? transport.href = vehicle.costs.costPhoto.shipPhoto : transport; transport.style.color = "var(--danger-color)"
     ship.textContent = `$${vehicle.costs.ship}`;
+    vehicle.costs.costPhoto.shipPhoto != null ? ship.href = vehicle.costs.costPhoto.shipPhoto : null; ship.style.color = "var(--danger-color)"
     taxes.textContent = `$${vehicle.costs.taxes}`;
+    vehicle.costs.costPhoto.taxesPhoto != null ? taxes.href = vehicle.costs.costPhoto.taxesPhoto : null; taxes.style.color = "var(--danger-color)"
     iva.textContent = `$${vehicle.costs.iva}`;
     pa.textContent = `$${vehicle.costs.pa}`;
+    vehicle.costs.suggestedPrice != null ? suggestedPrice.textContent = `$${vehicle.costs.suggestedPrice}` : suggestedPrice.style.display = "none";
     total.textContent = `$${vehicle.costs.total}`;
 
     // -------------------------

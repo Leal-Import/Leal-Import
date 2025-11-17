@@ -136,7 +136,7 @@ let insertVehicles = (vehicles) => {
       yearItem.innerHTML = `<div>Año:</div> <span>${vehicle.year}</span>`;
       modelItem.innerHTML = `<div>Modelo:</div> <span>${vehicle.model}</span>`;
       img.src = vehicle.photoUrl ? vehicle.photoUrl : "";
-      vehicleStatus.textContent = vehicle.nameStatus;
+      vehicleStatus.textContent = vehicle.status;
 
       // clases
       card.classList.add("card");
