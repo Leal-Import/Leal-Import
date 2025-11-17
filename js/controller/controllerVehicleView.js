@@ -1,4 +1,5 @@
 import { getVehicles } from "../service/serviceVehicleDetails.js";
+import { formatWithCommas } from "../utils.js"
 
 // Contenedores HTML
 const vin = document.getElementById("vin");
@@ -56,20 +57,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     description.style.height = description.scrollHeight + "px";
     description.readOnly = true;
 
-    bill.textContent = `$${vehicle.costs.bill}`;
+    bill.textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
     vehicle.costs.costPhoto.billPhoto != null ? bill.href = vehicle.costs.costPhoto.billPhoto : null; bill.style.color = "var(--danger-color)"
-    transfer.textContent = `$${vehicle.costs.transfer}`;
-    storage.textContent = `$${vehicle.costs.storage}`;
-    transport.textContent = `$${vehicle.costs.towTruck}`;
+    transfer.textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
+    storage.textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
+    transport.textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
     vehicle.costs.costPhoto.shipPhoto != null ? transport.href = vehicle.costs.costPhoto.shipPhoto : transport; transport.style.color = "var(--danger-color)"
-    ship.textContent = `$${vehicle.costs.ship}`;
+    ship.textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
     vehicle.costs.costPhoto.shipPhoto != null ? ship.href = vehicle.costs.costPhoto.shipPhoto : null; ship.style.color = "var(--danger-color)"
-    taxes.textContent = `$${vehicle.costs.taxes}`;
+    taxes.textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
     vehicle.costs.costPhoto.taxesPhoto != null ? taxes.href = vehicle.costs.costPhoto.taxesPhoto : null; taxes.style.color = "var(--danger-color)"
-    iva.textContent = `$${vehicle.costs.iva}`;
-    pa.textContent = `$${vehicle.costs.pa}`;
+    iva.textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
+    pa.textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
     vehicle.costs.suggestedPrice != null ? suggestedPrice.textContent = `$${vehicle.costs.suggestedPrice}` : suggestedPrice.style.display = "none";
-    total.textContent = `$${vehicle.costs.total}`;
+    total.textContent = `$${formatWithCommas(vehicle.costs.total)}`;
 
     // -------------------------
     // Llenar imágenes

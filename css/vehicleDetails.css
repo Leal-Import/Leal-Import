@@ -130,6 +130,9 @@ legend {
 #mainSwiper {
     height: 250px;
     width: clamp(300px, 100%, 500px);
+}
+
+.mainSwiperUsed {
     border: 2px solid var(--danger-color);
 }
 

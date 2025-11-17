@@ -9,7 +9,9 @@ import {
     toggleModal,
     getInputsValues,
     fillForm,
-    allowDecimal
+    allowDecimal,
+    cleanNumber,
+    formatWithCommas
 } from '../utils.js';
 
 const params = new URLSearchParams(window.location.search);
@@ -76,16 +78,23 @@ function updateTotal() {
     let total = 0;
 
     txtCosts.forEach(input => {
-        const value = parseFloat(input.value) || 0;
+        // Quitar comas antes de convertir a número
+        const cleanValue = input.value.replace(/,/g, "");
+        const value = parseFloat(cleanValue) || 0;
+
         total += value;
     });
 
     txtTotal.value = total.toFixed(2);
 }
 
+
 txtCosts.forEach(input => {
     input.addEventListener("input", updateTotal);
+    allowDecimal(input);
 });
+
+allowDecimal(document.getElementById("txtSuggestedPrice"));
 
 
 btnLink.addEventListener("click", () => {
@@ -117,16 +126,16 @@ let loadVehicle = async () => {
         txtLote: data.lote.numLote,
         txtLink: data.lote.linkLote,
         txtDescription: data.description,
-        txtBill: data.costs.bill,
-        txtTransfer: data.costs.transfer,
-        txtStorage: data.costs.storage,
-        txtTowTruck: data.costs.towTruck,
-        txtShip: data.costs.ship,
-        txtTaxes: data.costs.taxes,
-        txtIva: data.costs.iva,
-        txtPa: data.costs.pa,
-        txtTotal: data.costs.total,
-        txtSuggestedPrice: data.costs.suggestedPrice
+        txtBill: formatWithCommas(data.costs.bill),
+        txtTransfer: formatWithCommas(data.costs.transfer),
+        txtStorage: formatWithCommas(data.costs.storage),
+        txtTowTruck: formatWithCommas(data.costs.towTruck),
+        txtShip: formatWithCommas(data.costs.ship),
+        txtTaxes: formatWithCommas(data.costs.taxes),
+        txtIva: formatWithCommas(data.costs.iva),
+        txtPa: formatWithCommas(data.costs.pa),
+        txtTotal: formatWithCommas(data.costs.total),
+        txtSuggestedPrice: formatWithCommas(data.costs.suggestedPrice)
     });
     billImageUrl = data.costs.costPhoto.billPhoto || null;
     taxImageUrl = data.costs.costPhoto.taxesPhoto || null;
@@ -190,15 +199,15 @@ frmVehicles.addEventListener("submit", async (e) => {
             numLote: txtLote
         },
         costs: {
-            bill: txtBill,
-            transfer: txtTransfer,
-            storage: txtStorage,
-            towTruck: txtTowTruck,
-            ship: txtShip,
-            taxes: txtTaxes,
-            iva: txtIva,
-            pa: txtPa,
-            suggestedPrice: txtSuggestedPrice
+            bill: cleanNumber(txtBill),
+            transfer: cleanNumber(txtTransfer),
+            storage: cleanNumber(txtStorage),
+            towTruck: cleanNumber(txtTowTruck),
+            ship: cleanNumber(txtShip),
+            taxes: cleanNumber(txtTaxes),
+            iva: cleanNumber(txtIva),
+            pa: cleanNumber(txtPa),
+            suggestedPrice: cleanNumber(txtSuggestedPrice)
         }
     }
 
@@ -314,13 +323,13 @@ function renderImages() {
     // No hay imágenes → placeholder
     if (images.length === 0) {
         mainSwiperWrapper.innerHTML = `
-        <div class="swiper-slide">
-            <div class="no-image-container">
-                <div class="no-image-icon">📷</div>
-                <p>No hay imágenes disponibles</p>
+            <div class="swiper-slide">
+                <div class="no-image-container">
+                    <div class="no-image-icon">📷</div>
+                    <p>No hay imágenes disponibles</p>
+                </div>
             </div>
-        </div>
-        `;
+            `;
 
         createPlusButton();
         initSwipers();
@@ -340,9 +349,9 @@ function renderImages() {
         thumb.classList.add("swiper-slide", "thumb-box");
 
         thumb.innerHTML = `
-            <img src="${img.url}">
-            <div class="thumb-delete">×</div>
-        `;
+                <img src="${img.url}">
+                <div class="thumb-delete">×</div>
+            `;
 
         // Botón de eliminar
         const deleteBtn = thumb.querySelector(".thumb-delete");
@@ -350,6 +359,7 @@ function renderImages() {
         deleteBtn.addEventListener("click", (e) => {
             e.stopPropagation();
             deleteImage(index);
+            document.querySelector("#mainSwiper .previewImg") ? document.getElementById("mainSwiper").classList.add("mainSwiperUsed") : document.getElementById("mainSwiper").classList.remove("mainSwiperUsed")
         });
 
         thumbsWrapper.appendChild(thumb);
@@ -381,6 +391,7 @@ imageInput.addEventListener("change", (e) => {
 
 
     renderImages();
+    document.querySelector("#mainSwiper .previewImg") ? document.getElementById("mainSwiper").classList.add("mainSwiperUsed") : document.getElementById("mainSwiper").classList.remove("mainSwiperUsed")
     imageInput.value = "";
 });
 
@@ -447,12 +458,12 @@ function setupCostModal({
 
 function updateCostPreview(area, file) {
     area.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <img src="${URL.createObjectURL(file)}" 
-                 style="width:120px;height:120px;object-fit:contain;border-radius:6px;">
-            <p style="font-weight:500">${file.name}</p>
-        </div>
-    `;
+            <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+                <img src="${URL.createObjectURL(file)}" 
+                    style="width:120px;height:120px;object-fit:contain;border-radius:6px;">
+                <p style="font-weight:500">${file.name}</p>
+            </div>
+        `;
 }
 
 function renderCostPreview(area, imgSource) {
@@ -464,11 +475,11 @@ function renderCostPreview(area, imgSource) {
         : URL.createObjectURL(imgSource);
 
     area.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <img src="${url}" class="imgModal">
-            <p style="font-weight:500">${typeof imgSource === "string" ? "Imagen cargada" : imgSource.name}</p>
-        </div>
-    `;
+            <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+                <img src="${url}" class="imgModal">
+                <p style="font-weight:500">${typeof imgSource === "string" ? "Imagen cargada" : imgSource.name}</p>
+            </div>
+        `;
 }
 
 

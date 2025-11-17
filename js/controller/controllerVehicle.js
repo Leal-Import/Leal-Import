@@ -1,6 +1,7 @@
 import {
   showMessage,
-  fillSelect
+  fillSelect,
+  formatWithCommas
 } from '../utils.js';
 
 import { getCustomers } from '../service/serviceCustomers.js';
@@ -131,7 +132,7 @@ let insertVehicles = (vehicles) => {
       vehicleBrand.textContent = vehicle.brand;
       btnView.textContent = "Ver más";
       btnEdit.textContent = "Editar";
-      vehiclePrice.textContent = `$${vehicle.total}`;
+      vehiclePrice.textContent = `$${formatWithCommas(vehicle.total)}`;
       vinItem.innerHTML = `<div>Vin:</div> <span>${vehicle.vin}</span>`;
       yearItem.innerHTML = `<div>Año:</div> <span>${vehicle.year}</span>`;
       modelItem.innerHTML = `<div>Modelo:</div> <span>${vehicle.model}</span>`;
