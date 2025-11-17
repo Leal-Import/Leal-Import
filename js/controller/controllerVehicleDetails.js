@@ -21,12 +21,35 @@ const btnLink = document.querySelector(".btnLink");
 const btnClose = document.querySelector(".btnClose");
 const btnSaveLink = document.getElementById("btnSaveLink")
 const modalLink = document.getElementById("modalLink");
+const btnBill = document.getElementById("btnBill");
+const modalBill = document.getElementById("modalBill");
+const modalShip = document.getElementById("modalShip");
+const modalTaxes = document.getElementById("modalTaxes");
+const dropArea = document.getElementById("dropArea");
+const btnTaxes = document.getElementById("btnTaxes");
+const fileUploadInput = document.getElementById("fileUploadInput");
+const btnSelectImage = document.querySelector("#modalBill .btnFullWidth");
+const btnsTransport = document.querySelectorAll(".btnsTransport");
+const dropAreaShip = document.getElementById("dropAreaShip");
+const fileUploadInputShip = document.getElementById("fileUploadInputShip");
+const btnSelectImageShip = document.querySelector("#modalShip .btnFullWidth");
+const dropAreaTaxes = document.getElementById("dropAreaTaxes");
+const fileUploadInputTaxes = document.getElementById("fileUploadInputTaxes");
+const btnSelectImageTaxes = document.querySelector("#modalTaxes .btnFullWidth");
 
 const txtCosts = document.querySelectorAll(".txtCosts");
 const txtTotal = document.getElementById("txtTotal");
 
 // imágenes máximas
 const MAX_IMAGES = 12;
+
+let shipImageFile = null;
+let taxImageFile = null;
+let billImageFile = null;
+
+let billImageUrl = null;
+let taxImageUrl = null;
+let shipImageUrl = null;
 
 // Aquí guardaremos TODAS las imágenes (backend + nuevas)
 let images = [];
@@ -40,9 +63,14 @@ let mainSwiper = null;
 let thumbsSwiper = null;
 let photosToDeleteIds = [];
 
-txtCosts.forEach(input => {
-    allowDecimal(input);
-});
+document.addEventListener("click", (e) => {
+    let target = e.target;
+    if (target.classList.contains("containerModal")) {
+        if (!modalBill.classList.contains("hide")) toggleModal(modalBill, false)
+        if (!modalShip.classList.contains("hide")) toggleModal(modalShip, false)
+        if (!modalTaxes.classList.contains("hide")) toggleModal(modalTaxes, false)
+    }
+})
 
 function updateTotal() {
     let total = 0;
@@ -97,9 +125,17 @@ let loadVehicle = async () => {
         txtTaxes: data.costs.taxes,
         txtIva: data.costs.iva,
         txtPa: data.costs.pa,
-        txtTotal: data.costs.total
-
+        txtTotal: data.costs.total,
+        txtSuggestedPrice: data.costs.suggestedPrice
     });
+    billImageUrl = data.costs.costPhoto.billPhoto || null;
+    taxImageUrl = data.costs.costPhoto.taxesPhoto || null;
+    shipImageUrl = data.costs.costPhoto.shipPhoto || null;
+    // Renderizar en los modales
+    renderCostPreview(dropArea, billImageUrl);
+    renderCostPreview(dropAreaTaxes, taxImageUrl);
+    renderCostPreview(dropAreaShip, shipImageUrl);
+
     loadBackendImages(data.photos);
 };
 
@@ -133,7 +169,8 @@ frmVehicles.addEventListener("submit", async (e) => {
         txtShip,
         txtTaxes,
         txtIva,
-        txtPa
+        txtPa,
+        txtSuggestedPrice
     } = formData;
 
     if (!txtVin || !txtModel || !txtMileage || !txtYear || !txtLote || !txtBill || !txtTransfer || !txtStorage || !txtTowTruck || !txtShip || !txtTaxes || !txtIva || !txtPa || !txtLink) {
@@ -161,6 +198,7 @@ frmVehicles.addEventListener("submit", async (e) => {
             taxes: txtTaxes,
             iva: txtIva,
             pa: txtPa,
+            suggestedPrice: txtSuggestedPrice
         }
     }
 
@@ -191,6 +229,11 @@ frmVehicles.addEventListener("submit", async (e) => {
     }
 
     const fd = new FormData();
+
+    if (billImageFile) fd.append("billPhoto", billImageFile);
+    if (taxImageFile) fd.append("taxesPhoto", taxImageFile);
+    if (shipImageFile) fd.append("TransferShipPhoto", shipImageFile);
+
     newFiles.forEach(file => {
         fd.append("photos", file);
     });
@@ -342,3 +385,127 @@ imageInput.addEventListener("change", (e) => {
 });
 
 
+
+/* Imagenes costos */
+function setupCostModal({
+    modal,
+    dropArea,
+    inputFile,
+    btnSelect,
+    btnOpen,
+    fileVariableName
+}) {
+    /* ABRIR */
+    if (btnOpen) btnOpen.addEventListener("click", () => toggleModal(modal, true));
+
+    /* CERRAR */
+    modal.querySelector(".btnClose").addEventListener("click", () => {
+        toggleModal(modal, false);
+    });
+
+    /* CLICK → seleccionar archivo */
+    dropArea.addEventListener("click", () => inputFile.click());
+    btnSelect.addEventListener("click", () => inputFile.click());
+
+    /* INPUT FILE */
+    inputFile.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        switch (fileVariableName) {
+            case "billImageFile": billImageFile = file;
+                break;
+            case "taxImageFile": taxImageFile = file;
+                break;
+            case "shipImageFile": shipImageFile = file;
+                break;
+        }
+        updateCostPreview(dropArea, file);
+    });
+
+    /* DRAG OVER */
+    dropArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropArea.style.borderColor = "var(--danger-color)";
+    });
+
+    dropArea.addEventListener("dragleave", (e) => {
+        e.preventDefault();
+        dropArea.style.borderColor = "#ccc";
+    });
+
+    dropArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropArea.style.borderColor = "#ccc";
+
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+
+        window[fileVariableName] = file;
+        updateCostPreview(dropArea, file);
+    });
+}
+
+function updateCostPreview(area, file) {
+    area.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <img src="${URL.createObjectURL(file)}" 
+                 style="width:120px;height:120px;object-fit:contain;border-radius:6px;">
+            <p style="font-weight:500">${file.name}</p>
+        </div>
+    `;
+}
+
+function renderCostPreview(area, imgSource) {
+    if (!imgSource) return;
+
+    // Si viene del backend es string, si es nueva imagen será File
+    const url = typeof imgSource === "string"
+        ? imgSource
+        : URL.createObjectURL(imgSource);
+
+    area.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <img src="${url}" class="imgModal">
+            <p style="font-weight:500">${typeof imgSource === "string" ? "Imagen cargada" : imgSource.name}</p>
+        </div>
+    `;
+}
+
+
+/* ================= FACTURA ================= */
+setupCostModal({
+    modal: modalBill,
+    dropArea: dropArea,
+    inputFile: fileUploadInput,
+    btnSelect: btnSelectImage,
+    btnOpen: btnBill,
+    fileVariableName: "billImageFile"
+});
+
+
+/* ================= IMPUESTOS ================= */
+setupCostModal({
+    modal: modalTaxes,
+    dropArea: dropAreaTaxes,
+    inputFile: fileUploadInputTaxes,
+    btnSelect: btnSelectImageTaxes,
+    btnOpen: btnTaxes,
+    fileVariableName: "taxImageFile"
+});
+
+
+/* ================= TRANSPORTE + BARCO ================= */
+/* Inicializar modal de transporte solo una vez */
+setupCostModal({
+    modal: modalShip,
+    dropArea: dropAreaShip,
+    inputFile: fileUploadInputShip,
+    btnSelect: btnSelectImageShip,
+    btnOpen: null,
+    fileVariableName: "shipImageFile"
+});
+
+/* Conectar ambos botones al modal */
+btnsTransport.forEach(btn => {
+    btn.addEventListener("click", () => toggleModal(modalShip, true));
+});

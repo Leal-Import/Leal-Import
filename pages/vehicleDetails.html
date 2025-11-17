@@ -22,13 +22,68 @@
             </div>
             <div>
                 <div class="modalAdd hide" id="modalLink">
-                    <button class="btnClose"type="button">
+                    <button class="btnClose" type="button">
                         <img src="../media/appMedia/closeIcon.svg" alt="">
                     </button>
                     <h2 class="titleModal">Agregar enlace del lote</h2>
                     <input type="text" id="txtLink" class="txtInputs"
                         placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
                     <button class="btnPrimary btnSubmitData" id="btnSaveLink" type="button">Guardar enlace</button>
+                </div>
+                <!-- MODAL DE SUBIDA DE IMAGEN -->
+                <div class="containerModal hide" id="modalBill">
+                    <div class="modalAdd">
+                        <button class="btnClose" type="button">
+                            <img src="../media/appMedia/closeIcon.svg" alt="">
+                        </button>
+                        <h2 class="titleModal">Añadir comprobante de la factura</h2>
+                        <div class="bodyModal">
+                            <div id="dropArea" class="dropArea">
+                                <div class="dropContent">
+                                    <span class="dropIcon">☁️</span>
+                                    <p>Arrastra el archivo aquí</p>
+                                </div>
+                                <input type="file" id="fileUploadInput" hidden>
+                            </div>
+                            <button type="button" class="btnPrimary btnFullWidth">Seleccionar archivo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="containerModal hide" id="modalShip">
+                    <div class="modalAdd">
+                        <button class="btnClose" type="button">
+                            <img src="../media/appMedia/closeIcon.svg" alt="">
+                        </button>
+                        <h2 class="titleModal">Añadir comprobante del transporte</h2>
+                        <div class="bodyModal">
+                            <div id="dropAreaShip" class="dropArea">
+                                <div class="dropContent">
+                                    <span class="dropIcon">☁️</span>
+                                    <p>Arrastra el archivo aquí</p>
+                                </div>
+                                <input type="file" id="fileUploadInputShip" hidden>
+                            </div>
+                            <button type="button" class="btnPrimary btnFullWidth">Seleccionar archivo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="containerModal hide" id="modalTaxes">
+                    <div class="modalAdd">
+                        <button class="btnClose" type="button">
+                            <img src="../media/appMedia/closeIcon.svg" alt="">
+                        </button>
+                        <h2 class="titleModal">Añadir comprobante de los impuestos</h2>
+                        <div class="bodyModal">
+                            <div id="dropAreaTaxes" class="dropArea">
+                                <div class="dropContent">
+                                    <span class="dropIcon">☁️</span>
+                                    <p>Arrastra el archivo aquí</p>
+                                </div>
+                                <input type="file" id="fileUploadInputTaxes" hidden>
+                            </div>
+                            <button type="button" class="btnPrimary btnFullWidth">Seleccionar archivo</button>
+                        </div>
+                    </div>
                 </div>
                 <fieldset class="vehicleData">
                     <legend>Datos del vehiculo</legend>
@@ -67,7 +122,8 @@
                     </div>
                     <div class="formGroup">
                         <label for="txtDescription" class="lblInputs">Descripción</label>
-                        <textarea type="text" class="txtInputs" id="txtDescription" rows="7" maxlength="1000" style="flex: 1"></textarea>
+                        <textarea type="text" class="txtInputs" id="txtDescription" rows="7" maxlength="1000"
+                            style="flex: 1"></textarea>
                     </div>
                 </fieldset>
                 <div class="imgData">
@@ -92,41 +148,49 @@
                 <fieldset class="costsData">
                     <legend>Costos de importacion</legend>
                     <div class="rowFields">
-                        <div class="formGroup">
+                        <div class="formGroup" style="position: relative;">
                             <label for="txtBill" class="lblInputs">Factura</label>
                             <input type="text" class="txtInputs txtCosts" id="txtBill" maxlength="11">
+                            <button type="button" class="btnImgs btnPrimary" id="btnBill">+</button>
+                        </div>
+                        <div class="formGroup" style="position: relative;">
+                            <label for="txtTaxes" class="lblInputs">Impuestos</label>
+                            <input type="text" class="txtInputs txtCosts" id="txtTaxes" maxlength="11">
+                            <button type="button" class="btnImgs btnPrimary" id="btnTaxes">+</button>
+                        </div>
+                        <div class="formGroup" style="position: relative;">
+                            <label for="txtShip" class="lblInputs">Barco</label>
+                            <input type="text" class="txtInputs txtCosts" id="txtShip" maxlength="11">
+                            <button type="button" class="btnImgs btnPrimary btnsTransport">+</button>
+                        </div>
+                        <div class="formGroup" style="position: relative;">
+                            <label for="txtTowTruck" class="lblInputs">Transporte</label>
+                            <input type="text" class="txtInputs txtCosts" id="txtTowTruck" maxlength="11">
+                            <button type="button" class="btnImgs btnPrimary btnsTransport">+</button>
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtStorage" class="lblInputs">Almacenamiento</label>
+                            <input type="text" class="txtInputs txtCosts" id="txtStorage" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTransfer" class="lblInputs">Transferencia</label>
                             <input type="text" class="txtInputs txtCosts" id="txtTransfer" maxlength="11">
                         </div>
                         <div class="formGroup">
-                            <label for="txtStorage" class="lblInputs">Almacenamiento</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtStorage" maxlength="11">
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtTowTruck" class="lblInputs">Transporte</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTowTruck" maxlength="11">
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtShip" class="lblInputs">Barco</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtShip" maxlength="11">
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTaxes" maxlength="11">
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
                             <label for="txtIva" class="lblInputs">IVA</label>
                             <input type="text" class="txtInputs txtCosts" id="txtIva" maxlength="11">
                         </div>
+                    </div>
+                    <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtPa" class="lblInputs">P.A</label>
                             <input type="text" class="txtInputs txtCosts" id="txtPa" maxlength="11">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
+                            <input type="text" class="txtInputs" id="txtSuggestedPrice" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTotal" class="lblInputs">Total</label>
@@ -141,8 +205,8 @@
         <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script type="module" src="../js/utils.js"></script>
-        <script type="module" src="../js/controller/controllerVehicleDetails.js"></script>
         <script type="module" src="../js/service/serviceVehicleDetails.js"></script>
+        <script type="module" src="../js/controller/controllerVehicleDetails.js"></script>
 </body>
 
 </html>

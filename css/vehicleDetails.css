@@ -1,11 +1,11 @@
-.content>div + div{
+.content>div+div {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(6, 1fr);
     gap: 15px;
 }
 
-.breadcrumbSection{
+.breadcrumbSection {
     display: inline-flex;
     width: 100%;
 }
@@ -245,7 +245,7 @@ legend {
     position: absolute;
     top: 4px;
     right: 4px;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     color: white;
     width: 22px;
     height: 22px;
@@ -263,7 +263,7 @@ legend {
     opacity: 1;
 }
 
-.btnLink{
+.btnLink {
     position: absolute;
     right: 10px;
     top: 53%;
@@ -272,7 +272,7 @@ legend {
     border-radius: var(--border-radius-input);
 }
 
-.modalAdd{
+.modalAdd {
     padding: 25px;
     position: absolute;
     top: 0;
@@ -286,6 +286,91 @@ legend {
     border-radius: var(--border-radius-input);
 }
 
-.titleModal{
+.titleModal {
     text-align: left;
+}
+
+.btnImgs {
+    position: absolute;
+    padding: 0 8px;
+    border-radius: 8px;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-lg);
+    top: 49%;
+    right: 5px;
+}
+
+.containerModal {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+.containerModal .modalAdd {
+    width: clamp(300px, 90%, 600px);
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+}
+
+.imgModal{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.containerModal .modalAdd .bodyModal {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.containerModal .btnPrimary {
+    padding: 10px;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--border-radius-input);
+}
+
+.dropArea {
+    border: 2px dashed #ccc;
+    border-radius: var(--border-radius-input);
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropArea:hover {
+    background-color: #fafafa;
+    border-color: var(--danger-color);
+}
+
+.dropContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.dropIcon {
+    font-size: 45px;
+    color: var(--danger-color);
+}
+
+.btnFullWidth {
+    padding: 12px;
+    border-radius: var(--border-radius-btn);
+    width: 100%;
+    font-size: var(--font-size-base);
+}
+
+.footerModal {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
 }

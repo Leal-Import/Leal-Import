@@ -238,6 +238,10 @@
     cursor: pointer;
 }
 
+.btnClose img{
+    pointer-events: none;
+}
+
 .statTitle {
     font-size: var(--font-size-base);
 }
