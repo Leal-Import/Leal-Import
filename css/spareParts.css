@@ -258,16 +258,14 @@
     align-items: start;
     padding: 0 11px 11px 11px;
     border-bottom: 1px solid var(--text-color-secondary);
-    width: 85%;
-    margin: auto;
 }
 
 .partName{
-    font-size: var(--font-size-title);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
 }
 
-.partType{
+.brandModel {
     font-size: var(--font-size-base);
     color: var(--text-color-secondary);
 }
@@ -284,13 +282,6 @@
     color: var(--danger-color);
 }
 
-.statusPart{
-    font-size: var(--font-size-base);
-    padding: 4px 10px;
-    width: fit-content;
-    border: var(--border);
-    border-radius: var(--border-radius-input);
-}
 
 .footerCard {
     display: flex;
@@ -302,12 +293,7 @@
     flex: 1;
 }
 
-.newStatus{
-    color: var(--bg-color);
-    background-color: var(--success-color);
-}
-
-.stockPart{
+.yearPart{
     font-size: var(--font-size-lg);
     margin-top: 10px;
     color: var(--text-color-secondary);
