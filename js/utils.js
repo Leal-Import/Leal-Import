@@ -47,7 +47,6 @@ export const getInputsValues = (form) => {
             data[input.name] = input.value.trim();
         }
     });
-    console.log(data)
     return data;
 };
 
