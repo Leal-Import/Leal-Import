@@ -14,6 +14,8 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <form class="content" id="frmSpareParts">
+            <input type="hidden" id="trackingId">
+            <input type="hidden" id="costId">
             <div class="headerContent">
                 <div class="breadcrumbSection">
                     <a href="spareParts.html" class="breadcrumb">Repuestos ></a>
@@ -21,23 +23,28 @@
                 </div>
             </div>
             <div>
-                <div class="modalAdd hide" id="modalLinkName">
-                    <button class="btnClose" type="button" id="btnCloseBill">
-                        <img src="../media/appMedia/closeIcon.svg" alt="">
-                    </button>
-                    <h2 class="titleModal">Agregar enlace de la factura</h2>
-                    <input type="text" id="txtLinkName" class="txtInputs"
-                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
-                    <button class="btnPrimary btnSubmitData" id="btnSaveBill" type="button">Guardar enlace</button>
+                <div class="containerModal hide" id="modalLinkName">
+                    <div class="modalAdd">
+                        <button class="btnClose" type="button" id="btnCloseBill">
+                            <img src="../media/appMedia/closeIcon.svg" alt="">
+                        </button>
+                        <h2 class="titleModal">Agregar enlace de la factura</h2>
+                        <input type="text" id="txtLinkName" class="txtInputs"
+                            placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
+                        <button class="btnPrimary btnSubmitData" id="btnSaveBill" type="button">Guardar enlace</button>
+                    </div>
                 </div>
-                <div class="modalAdd hide" id="modalLinkTracking">
-                    <button class="btnClose" type="button" id="btnCloseTracking">
-                        <img src="../media/appMedia/closeIcon.svg" alt="">
-                    </button>
-                    <h2 class="titleModal">Agregar enlace del tracking</h2>
-                    <input type="text" id="txtLinkTracking" class="txtInputs"
-                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
-                    <button class="btnPrimary btnSubmitData" id="btnSaveTracking" type="button">Guardar enlace</button>
+                <div class="containerModal hide" id="modalLinkTracking">
+                    <div class="modalAdd">
+                        <button class="btnClose" type="button" id="btnCloseTracking">
+                            <img src="../media/appMedia/closeIcon.svg" alt="">
+                        </button>
+                        <h2 class="titleModal">Agregar enlace del tracking</h2>
+                        <input type="text" id="txtLinkTracking" class="txtInputs"
+                            placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
+                        <button class="btnPrimary btnSubmitData" id="btnSaveTracking" type="button">Guardar
+                            enlace</button>
+                    </div>
                 </div>
                 <fieldset class="sparePartData">
                     <legend>Datos del repuesto</legend>

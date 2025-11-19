@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 let loadSpareParts = async () => {
     const data = await getSpareParts();
+    console.log(data)
     insertSpareParts(data.content);
 }
 
@@ -39,6 +40,15 @@ let insertSpareParts = (spareParts) => {
             const btnView = document.createElement("a")
             const btnEdit = document.createElement("a");
 
+            picturePart.setAttribute("src", sparePart.photoUrl)
+            partName.textContent = sparePart.nameSpareParts;
+            brandModel.textContent = `${sparePart.brand} ${sparePart.model}`;
+            statusPart.textContent = sparePart.state;
+            yearPart.textContent = sparePart.yearPart;
+            partPrice.textContent = `$${sparePart.totalCost}`;
+            btnEdit.textContent = "Editar";
+            btnView.textContent = "Ver mas";
+
             card.classList.add("card");
             bodyCard.classList.add("bodyCard");
             containerImgSpare.classList.add("containerImgSpare")
@@ -54,8 +64,20 @@ let insertSpareParts = (spareParts) => {
             footerCard.classList.add("footerCard");
             btnView.classList.add("btnPrimary");
             btnEdit.classList.add("btnSecondary");
-            btnEdit.href = `sparePartsDetails.html?id=${sparePart.idSparepart}`;
-            btnView.href = `sparePartsView.html?id=${sparePart.idSparepart}`;
+            btnEdit.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
+            btnView.href = `sparePartsView.html?id=${sparePart.idSparePart}`;
+
+            containerImgSpare.appendChild(picturePart);
+            infoPartContainer.append(partName, brandModel);
+            leftInfo.append(statusPart, yearPart);
+            moreInfoContainer.append(leftInfo, partPrice);
+            footerCard.append(btnView, btnEdit);
+            bodyCard.append(containerImgSpare, infoPartContainer, moreInfoContainer);
+            card.append(bodyCard, footerCard);
+
+            fragment.appendChild(card);
         });
     }
+
+    container.appendChild(fragment);
 }

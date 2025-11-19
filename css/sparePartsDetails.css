@@ -61,6 +61,13 @@ fieldset, .imgData {
     text-align: left;
 }
 
+.containerModal{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    backdrop-filter: none;
+}
+
 .modalAdd {
     padding: 25px;
     position: absolute;

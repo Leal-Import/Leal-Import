@@ -14,23 +14,29 @@ export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, for
 
     openBtn.addEventListener("click", () => {
         toggleModal(modal, true);
-        form.reset();
+        form?.reset();
         modal.querySelector('.titleModal').textContent = text;
-        modal.querySelector('input[type="submit"]').value = "Agregar";
-        enableFormUI(formId);
+        if (!modalSelector == "#modalLinkTracking" || !modalSelector == "#modalLinkName") {
+            modal.querySelector('input[type="submit"]').value = "Agregar";
+            enableFormUI(formId);
+        }
     });
     closeBtn.addEventListener("click", () => {
         if (modalSelector == "#modalVehicle") document.getElementById("txtCustomer").removeAttribute("data-id");
         toggleModal(modal, false);
-        form.reset();
-        enableFormUI(formId);
+        form?.reset();
+        if (!modalSelector == "#modalLinkTracking" || !modalSelector == "#modalLinkName") {
+            enableFormUI(formId);
+        }
     });
     modal.addEventListener("click", e => {
         if (e.target === modal) {
             if (modalSelector == "#modalVehicle") document.getElementById("txtCustomer").removeAttribute("data-id");
             toggleModal(modal, false);
-            form.reset(); 4
-            enableFormUI(formId);
+            form?.reset();
+            if (!modalSelector == "#modalLinkTracking" || !modalSelector == "#modalLinkName") {
+                enableFormUI(formId);
+            }
         }
     });
 };

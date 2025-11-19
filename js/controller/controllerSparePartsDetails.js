@@ -5,12 +5,16 @@ import {
     allowDecimal,
     formatWithCommas,
     toggleModal,
-    fillSelect
+    fillSelect,
+    setupModal,
+    fillForm
 } from "../utils.js";
 
 import {
     postSparePart,
-    getStatus
+    getStatus,
+    getSparePart,
+    putSparePart
 } from "../service/serviceSparePartsDetails.js";
 
 const dropZone = document.getElementById("dropZone");
@@ -25,12 +29,8 @@ const frmSpareParts = document.getElementById("frmSpareParts");
 const txtCosts = document.querySelectorAll(".txtCosts");
 const txtSuggestedPrice = document.getElementById("txtSuggestedPrice");
 const txtTotal = document.getElementById("txtTotalCost");
-const btnOpenModalTracking = document.getElementById("btnOpenLinkTracking")
 const modalTracking = document.getElementById("modalLinkTracking");
-const btnCloseTracking = document.getElementById("btnCloseTracking");
 const modalBill = document.getElementById("modalLinkName");
-const btnCloseBill = document.getElementById("btnCloseBill");
-const btnOpenModalBill = document.getElementById("btnOpenLinkBill");
 const btnSaveTracking = document.getElementById("btnSaveTracking");
 const btnSaveBill = document.getElementById("btnSaveBill");
 
@@ -40,27 +40,14 @@ let currentId;
 let selectedFile = null;
 params.get("id") ? currentId = params.get("id") : currentId = null;
 
-btnOpenModalTracking.addEventListener("click", () => {
-    toggleModal(modalTracking, true);
-});
-
-btnCloseTracking.addEventListener("click", () => {
-    toggleModal(modalTracking, false);
-})
+setupModal("#btnOpenLinkTracking", "#modalLinkTracking", "#btnCloseTracking", null, "Agregar enlace del tracking");
+setupModal("#btnOpenLinkBill", "#modalLinkName", "#btnCloseBill", null, "Agregar enlace de la factura");
 
 btnSaveTracking.addEventListener("click", () => {
     toggleModal(modalTracking, false);
 })
 
-btnOpenModalBill.addEventListener("click", () => {
-    toggleModal(modalBill, true);
-})
-
 btnSaveBill.addEventListener("click", () => {
-    toggleModal(modalBill, false);
-})
-
-btnCloseBill.addEventListener("click", () => {
     toggleModal(modalBill, false);
 })
 
@@ -93,20 +80,26 @@ allowDecimal(txtSuggestedPrice);
 
 let loadSparePart = async () => {
     document.getElementById("typeAction").textContent = "Actualizar repuesto"
-    const vehicle = await getSparePart(currentId);
-    const data = vehicle.content[0];
+    const data = await getSparePart(currentId);
+    console.log(data)
     fillForm('#frmSpareParts', {
         txtPartName: data.nameSpareParts,
+        txtLinkName: data.billUrl,
         txtPartBrand: data.brand,
         txtPartModel: data.model,
         txtPartYear: data.yearPart,
         cmbPartStatus: data.idPartsState,
-        txtTracking: data.sparePartsCosts.tracking, //falta
+        txtTracking: data.tracking.numTracking,
+        txtLinkTracking: data.tracking.linkTracking,
         txtPurchasePrice: formatWithCommas(data.sparePartsCosts.purchasePrice),
         txtTaxes: formatWithCommas(data.sparePartsCosts.taxes),
         txtSuggestedPrice: formatWithCommas(data.sparePartsCosts.suggestedPrice),
         txtTotalCost: formatWithCommas(data.sparePartsCosts.totalCost),
     });
+    
+    document.getElementById("trackingId").value = data.tracking.idTracking;
+    document.getElementById("costId").value = data.sparePartsCosts.idCostSparePart;
+
 
     if (data.photoUrl) {
         imgPart.src = data.photoUrl;
@@ -138,17 +131,23 @@ frmSpareParts.addEventListener("submit", async (e) => {
         txtLinkTracking
     } = formData;
 
+    // Validaciones
     if (!txtPartName || !txtPartBrand || !txtPartModel || !txtPartYear || !cmbPartStatus || !txtPurchasePrice || !txtTaxes || !txtSuggestedPrice) {
         showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
-        return
+        return;
     }
-    // Si estamos agregando: imagen obligatoria
+
+    // Si estamos agregando, la imagen es obligatoria
     if (!currentId && !selectedFile) {
         showMessage("Debe agregar una imagen del repuesto.", "Imagen faltante", "warning");
         return;
     }
 
-    console.log(cmbPartStatus)
+    // Leer el tracking ID si existe
+    const trackingId = document.getElementById("trackingId").value;
+    const costId = document.getElementById("costId").value;
+
+
     const sparePart = {
         nameSpareParts: txtPartName,
         brand: txtPartBrand,
@@ -165,29 +164,39 @@ frmSpareParts.addEventListener("submit", async (e) => {
             taxes: cleanNumber(txtTaxes),
             suggestedPrice: cleanNumber(txtSuggestedPrice)
         }
+    };
+
+    // 👉 SOLO enviamos idTracking si existe (editar)
+    if (trackingId && costId) {
+        sparePart.tracking.idTracking = trackingId;
+        sparePart.sparePartsCosts.idCostSparePart = costId;
     }
 
     const fd = new FormData();
-
     fd.append("SparePartData", JSON.stringify(sparePart));
-    fd.append("photo", selectedFile)
+
+    if (selectedFile) {
+        fd.append("photo", selectedFile);
+    }
 
     try {
         if (currentId != null) {
             await putSparePart(fd, currentId);
-            await showMessage('Repuesto actualizado con éxito!', 'Exito', 'success');
-            window.location.href = "../../pages/spareParts.html";
+            await showMessage('Repuesto actualizado con éxito!', 'Éxito', 'success');
         } else {
             await postSparePart(fd);
-            await showMessage('Repuesto agregado con éxito!', 'Exito', 'success');
-            window.location.href = "../../pages/spareParts.html";
+            await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
+
+        window.location.href = "../../pages/spareParts.html";
+
     } catch (error) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar el repuesto.';
         showMessage(errorMessage, 'error', 'error');
     }
-})
+});
+
 
 
 
