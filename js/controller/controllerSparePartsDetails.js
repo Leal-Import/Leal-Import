@@ -3,8 +3,15 @@ import {
     showMessage,
     cleanNumber,
     allowDecimal,
-    formatWithCommas
+    formatWithCommas,
+    toggleModal,
+    fillSelect
 } from "../utils.js";
+
+import {
+    postSparePart,
+    getStatus
+} from "../service/serviceSparePartsDetails.js";
 
 const dropZone = document.getElementById("dropZone");
 const placeholderMsg = document.getElementById("placeholderMsg");
@@ -18,6 +25,14 @@ const frmSpareParts = document.getElementById("frmSpareParts");
 const txtCosts = document.querySelectorAll(".txtCosts");
 const txtSuggestedPrice = document.getElementById("txtSuggestedPrice");
 const txtTotal = document.getElementById("txtTotalCost");
+const btnOpenModalTracking = document.getElementById("btnOpenLinkTracking")
+const modalTracking = document.getElementById("modalLinkTracking");
+const btnCloseTracking = document.getElementById("btnCloseTracking");
+const modalBill = document.getElementById("modalLinkName");
+const btnCloseBill = document.getElementById("btnCloseBill");
+const btnOpenModalBill = document.getElementById("btnOpenLinkBill");
+const btnSaveTracking = document.getElementById("btnSaveTracking");
+const btnSaveBill = document.getElementById("btnSaveBill");
 
 const params = new URLSearchParams(window.location.search);
 
@@ -25,7 +40,33 @@ let currentId;
 let selectedFile = null;
 params.get("id") ? currentId = params.get("id") : currentId = null;
 
+btnOpenModalTracking.addEventListener("click", () => {
+    toggleModal(modalTracking, true);
+});
+
+btnCloseTracking.addEventListener("click", () => {
+    toggleModal(modalTracking, false);
+})
+
+btnSaveTracking.addEventListener("click", () => {
+    toggleModal(modalTracking, false);
+})
+
+btnOpenModalBill.addEventListener("click", () => {
+    toggleModal(modalBill, true);
+})
+
+btnSaveBill.addEventListener("click", () => {
+    toggleModal(modalBill, false);
+})
+
+btnCloseBill.addEventListener("click", () => {
+    toggleModal(modalBill, false);
+})
+
 document.addEventListener('DOMContentLoaded', async () => {
+    const status = await getStatus();
+    fillSelect("cmbPartStatus", status, 'idPartsState', 'state')
     currentId ? await loadSparePart() : null;
 });
 
@@ -107,6 +148,7 @@ frmSpareParts.addEventListener("submit", async (e) => {
         return;
     }
 
+    console.log(cmbPartStatus)
     const sparePart = {
         nameSpareParts: txtPartName,
         brand: txtPartBrand,
@@ -114,10 +156,11 @@ frmSpareParts.addEventListener("submit", async (e) => {
         yearPart: txtPartYear,
         idPartsState: cmbPartStatus,
         billUrl: txtLinkName,
+        tracking: {
+            numTracking: txtTracking,
+            linkTracking: txtLinkTracking
+        },
         sparePartsCosts: {
-            tracking: {
-                //falta aca
-            },
             purchasePrice: cleanNumber(txtPurchasePrice),
             taxes: cleanNumber(txtTaxes),
             suggestedPrice: cleanNumber(txtSuggestedPrice)
@@ -126,8 +169,8 @@ frmSpareParts.addEventListener("submit", async (e) => {
 
     const fd = new FormData();
 
-    fd.append("dato de repuesto", JSON.stringify(sparePart));
-    fd.append("imagen repuesto", selectedFile)
+    fd.append("SparePartData", JSON.stringify(sparePart));
+    fd.append("photo", selectedFile)
 
     try {
         if (currentId != null) {

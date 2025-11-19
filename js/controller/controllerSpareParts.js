@@ -53,29 +53,9 @@ let insertSpareParts = (spareParts) => {
             partPrice.classList.add("partPrice");
             footerCard.classList.add("footerCard");
             btnView.classList.add("btnPrimary");
+            btnEdit.classList.add("btnSecondary");
+            btnEdit.href = `sparePartsDetails.html?id=${sparePart.idSparepart}`;
+            btnView.href = `sparePartsView.html?id=${sparePart.idSparepart}`;
         });
     }
 }
-<div class="card">
-    <div class="bodyCard">
-        <div class="containerImgSpare">
-            <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762542817/Leal%20Import/Vehicles/H38DJ2LS93KDJ387/file_2f93eddf-0239-47ba-a0c3-77620c00e530.png"
-                alt="" class="picturePart">
-        </div>
-        <div class="infoPartContainer">
-            <span class="partName">Escribos traseros</span>
-            <span class="brandModel">Kawasaki ZX638</span>
-        </div>
-        <div class="moreInfoContainer">
-            <div class="leftInfo">
-                <div class="statusPart">Comprado</div>
-                <div class="stockPart">2020-2024</div>
-            </div>
-            <span class="partPrice">$15.00</span>
-        </div>
-    </div>
-    <div class="footerCard">
-        <a class="btnPrimary" href="vehicleDetails.html?id=H38DJ2LS93KDJ384">Ver más</a>
-        <button class="btnSecondary">Editar</button>
-    </div>
-</div>

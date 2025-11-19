@@ -57,6 +57,33 @@ fieldset, .imgData {
     background: #ffecec;
 }
 
+.titleModal {
+    text-align: left;
+}
+
+.modalAdd {
+    padding: 25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    z-index: 70;
+    height: 200px;
+    width: clamp(100px, 90%, 450px);
+    border-radius: var(--border-radius-input);
+}
+
+.btnLink {
+    position: absolute;
+    right: 8px;
+    top: 52%;
+    margin: auto;
+    padding: 4px 8px;
+    border-radius: var(--border-radius-input);
+}
+
 /* Cuadro */
 #dropZone {
     border: 2px dashed #ccc;
