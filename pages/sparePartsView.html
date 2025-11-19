@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/sparePartsView.css">
+    <title>Repuestos</title>
+</head>
+
+<body>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <div class="content">
+            <div class="headerContent">
+                <div class="breadcrumbSection">
+                    <a href="vehicle.html" class="breadcrumb">Vehiculos ></a>
+                    <a class="breadcrumb" id="typeAction">Ver repuesto</a>
+                </div>
+            </div>
+            <div class="mainContainer">
+                <div class="pictureSection">
+                    <div class="containerImgSparePart">
+                        <img src="../media/appMedia/defaultImg.svg" alt="" id="pictureSparePart">
+                    </div>
+                </div>
+                <div class="dataSection">
+                    <div class="contentDataSection">
+                        <div class="sparePartData">
+                            <h2 class="titleData">Datos del repuesto</h2>
+                            <div class="sparePartDataBody">
+                                <div class="dataInfo">
+                                    <span class="label">Nombre:</span>
+                                    <a id="name" class="value redColor" target="_blank"></a>
+                                </div>
+                                <div class="dataInfo">
+                                    <span class="label">Marca:</span>
+                                    <span id="brand" class="value"></span>
+                                </div>
+                                <div class="dataInfo">
+                                    <span class="label">Modelo:</span>
+                                    <span id="model" class="value"></span>
+                                </div>
+                                <div class="dataInfo">
+                                    <span class="label">Año:</span>
+                                    <span id="year" class="value"></span>
+                                </div>
+                                <div class="dataInfo">
+                                    <span class="label">Estado:</span>
+                                    <span id="status" class="value"></span>
+                                </div>
+                                <div class="dataInfo">
+                                    <span class="label">Precio sugerido:</span>
+                                    <span id="suggestedPrice" class="value redColor" style="font-weight: var(--font-weight-medium);"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sparePartCost">
+                            <h2 class="titleData">Costos</h2>
+                            <div class="sparePartCostBody">
+                                <div class="dataInfo">
+                                    <span class="label">Tracking:</span>
+                                    <a id="tracking" class="value redColor" target="_blank"></a>
+                                </div>
+                                <div class="dataInfo">
+                                    <span class="label">Precio de compra:</span>
+                                    <span id="purchasePrice" class="value"></span>
+                                </div>
+                                <div class="dataInfo">
+                                    <span class="label">Impuestos:</span>
+                                    <span id="taxes" class="value"></span>
+                                </div>
+                                <div class="dataInfo">
+                                    <span class="label">Costo total:</span>
+                                    <span id="totalCost" class="value redColor" style="font-weight: var(--font-weight-medium);"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/sidebar.js"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/service/serviceSparePartsDetails.js"></script>
+    <script type="module" src="../js/controller/controllerSparePartsView.js"></script>
+</body>
+
+</html>

@@ -244,6 +244,7 @@
 
 .containerImgSpare{
     height: 150px;
+    border-bottom: var(--border);
 }
 
 .picturePart{
@@ -277,6 +278,11 @@
     justify-content: space-between;
 }
 
+.leftInfo{
+    display: flex;
+    flex-direction: column;
+}
+
 .partPrice{
     font-size: var(--font-size-title);
     color: var(--danger-color);
@@ -289,8 +295,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 0 15px;
-    flex: 1;
+    padding: 15px;
 }
 
 .yearPart{

@@ -140,6 +140,8 @@ let loadVehicle = async () => {
         txtTotal: formatWithCommas(data.costs.total),
         txtSuggestedPrice: formatWithCommas(data.costs.suggestedPrice)
     });
+    document.getElementById("loteId").value = data.lote.idLote;
+    document.getElementById("costId").value = data.costs.idCost;
     billImageUrl = data.costs.costPhoto.billPhoto || null;
     taxImageUrl = data.costs.costPhoto.taxesPhoto || null;
     shipImageUrl = data.costs.costPhoto.shipPhoto || null;
@@ -185,10 +187,12 @@ frmVehicles.addEventListener("submit", async (e) => {
         txtSuggestedPrice
     } = formData;
 
-    if (!txtVin || !txtModel || !txtMileage || !txtYear || !txtLote || !txtBill || !txtTransfer || !txtStorage || !txtTowTruck || !txtShip || !txtTaxes || !txtIva || !txtPa || !txtLink) {
+    if (!txtVin || !txtModel || !txtMileage || !txtYear || !txtLote || !txtBill || !txtTransfer || !txtStorage || !txtTowTruck || !txtShip || !txtTaxes || !txtIva || !txtPa) {
         showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
         return;
     }
+    const loteId = document.getElementById("loteId").value;
+    const costId = document.getElementById("costId").value;
 
     const vehicle = {
         vin: txtVin,
@@ -213,6 +217,11 @@ frmVehicles.addEventListener("submit", async (e) => {
             suggestedPrice: cleanNumber(txtSuggestedPrice)
         }
     }
+
+    if (loteId || costId) {
+        vehicle.lote.idLote = loteId
+        vehicle.costs.idCost = costId
+    };
 
     const newFiles = images.filter(img => img.isNew).map(img => img.file);
 
