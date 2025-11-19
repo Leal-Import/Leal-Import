@@ -22,20 +22,30 @@
             </div>
             <div>
                 <div class="modalAdd hide" id="modalLinkName">
-                    <button class="btnClose" type="button">
+                    <button class="btnClose" type="button" id="btnCloseBill">
                         <img src="../media/appMedia/closeIcon.svg" alt="">
                     </button>
-                    <h2 class="titleModal">Agregar enlace del lote</h2>
+                    <h2 class="titleModal">Agregar enlace de la factura</h2>
                     <input type="text" id="txtLinkName" class="txtInputs"
                         placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
-                    <button class="btnPrimary btnSubmitData" id="btnSaveLink" type="button">Guardar enlace</button>
+                    <button class="btnPrimary btnSubmitData" id="btnSaveBill" type="button">Guardar enlace</button>
+                </div>
+                <div class="modalAdd hide" id="modalLinkTracking">
+                    <button class="btnClose" type="button" id="btnCloseTracking">
+                        <img src="../media/appMedia/closeIcon.svg" alt="">
+                    </button>
+                    <h2 class="titleModal">Agregar enlace del tracking</h2>
+                    <input type="text" id="txtLinkTracking" class="txtInputs"
+                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
+                    <button class="btnPrimary btnSubmitData" id="btnSaveTracking" type="button">Guardar enlace</button>
                 </div>
                 <fieldset class="sparePartData">
                     <legend>Datos del repuesto</legend>
                     <div class="rowFields">
-                        <div class="formGroup">
+                        <div class="formGroup" style="position: relative;">
                             <label for="txtPartName" class="lblInputs">Nombre</label>
                             <input type="text" class="txtInputs" id="txtPartName" maxlength="250">
+                            <button class="btnLink btnPrimary" type="button" id="btnOpenLinkBill">Enlace</button>
                         </div>
                         <div class="formGroup">
                             <label for="txtPartBrand" class="lblInputs">Marca</label>
@@ -76,9 +86,10 @@
                 <fieldset class="costsData">
                     <legend>Costos de importacion</legend>
                     <div class="rowFields">
-                        <div class="formGroup">
+                        <div class="formGroup" style="position: relative;">
                             <label for="txtTracking" class="lblInputs">Tracking</label>
                             <input type="text" class="txtInputs" id="txtTracking" maxlength="11">
+                            <button class="btnLink btnPrimary" type="button" id="btnOpenLinkTracking">Enlace</button>
                         </div>
                         <div class="formGroup">
                             <label for="txtPurchasePrice" class="lblInputs">Precio de compra</label>
