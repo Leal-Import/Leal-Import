@@ -134,8 +134,6 @@
 .table {
     width: 100%;
     border-collapse: collapse;
-    box-shadow: 0 4px 4px #313A8D44;
-    border-radius: var(--border-radius-table);
     text-align: left;
     /*flex: 1;*/
 }
@@ -144,6 +142,12 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.containerTable {
+    box-shadow: 0 4px 4px #313A8D44;
+    border-radius: var(--border-radius-table);
+    flex: 1;
 }
 
 .table th,
@@ -238,7 +242,7 @@
     cursor: pointer;
 }
 
-.btnClose img{
+.btnClose img {
     pointer-events: none;
 }
 
