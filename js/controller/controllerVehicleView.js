@@ -36,8 +36,7 @@ const idVehicle = params.get("id");
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    let vehicle = await getVehicles(0, 15, idVehicle);
-    vehicle = vehicle.content[0];
+    let vehicle = await getVehicles(idVehicle);
 
     // -------------------------
     // Llenar información del vehículo

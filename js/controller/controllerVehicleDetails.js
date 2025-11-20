@@ -118,8 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 let loadVehicle = async () => {
     document.getElementById("typeAction").textContent = "Actualizar vehiculo"
-    const vehicle = await getVehicles(0, 15, currentId);
-    const data = vehicle.content[0];
+    const data = await getVehicles(currentId);
     fillForm('#frmVehicles', {
         txtVin: data.vin,
         txtBrand: data.brand,

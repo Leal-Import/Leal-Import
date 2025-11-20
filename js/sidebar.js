@@ -20,27 +20,31 @@ nav.innerHTML = ` <div class="btnNavbarContainer">
                                 <img src="../media/sidebarMedia/dashboard.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Inicio</span>
                             </a>
-                            <a href="../pages/employees.html" class="navbarItem itemNav" id="trnItem">
+                            <a href="../pages/employees.html" class="navbarItem itemNav" id="">
                                 <img src="../media/sidebarMedia/Empleados.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Empleados</span>
                             </a>
-                            <a href="../pages/customers.html" class="navbarItem itemNav" id="eppItem">
+                            <a href="../pages/customers.html" class="navbarItem itemNav" id="">
                                 <img src="../media/sidebarMedia/Clientes.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Clientes</span>
                             </a>
-                            <a href="../pages/vehicle.html" class="navbarItem itemNav" id="empItem">
+                            <a href="../pages/vehicle.html" class="navbarItem itemNav" id="">
                                 <img src="../media/sidebarMedia/Vehiculos.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Vehículos</span>
                             </a>
-                            <a href="../pages/spareParts.html" class="navbarItem itemNav" id="empItem">
+                            <a href="../pages/spareParts.html" class="navbarItem itemNav" id="">
                                 <img src="../media/sidebarMedia/Repuestos.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Repuestos</span>
                             </a>
-                            <a href="../pages/workOrders.html" class="navbarItem itemNav" id="accItem">
+                            <a href="../pages/sales.html" class="navbarItem itemNav" id="">
+                                <img src="../media/sidebarMedia/Ordenes.svg" alt="" class="navbarIcon">
+                                <span class="navbarText navTextVisible">Ventas</span>
+                            </a>
+                            <a href="../pages/workOrders.html" class="navbarItem itemNav" id="">
                                 <img src="../media/sidebarMedia/Ordenes.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Ordenes</span>
                             </a>
-                            <a href="../pages/configuration.html" class="navbarItem itemNav" id="accItem">
+                            <a href="../pages/configuration.html" class="navbarItem itemNav" id="">
                                 <img src="../media/sidebarMedia/Configuracion.svg" alt="" class="navbarIcon">
                                 <span class="navbarText navTextVisible">Configuración</span>
                             </a>

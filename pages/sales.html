@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/spareParts.css">
+    <title>Repuestos</title>
+</head>
+
+<body>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <div class="content">
+            <div class="headerContent">
+                <div class="breadCrumbSection">
+                    <a class="breadcrumb">Ventas</a>
+                </div>
+                <div class="dataCardContainer">
+                    <div class="seccionCard" id="Stock">
+                        <h2 class="statValue">10,000</h2>
+                        <p class="statTitle">En Stock</p>
+                    </div>
+                    <div class="seccionCard" id="Requested">
+                        <h2 class="statValue">5,565</h2>
+                        <p class="statTitle">Solicitado</p>
+                    </div>
+                    <div class="seccionCard" id="TotalCost">
+                        <h2 class="statValue">$4,360.20</h2>
+                        <p class="statTitle">Valor de inventario</p>
+                    </div>
+                    <div class="filterSectionParts">
+                        <div class="filterSection">
+                            <div class="filterContainer">
+                                <input type="text" id="txtSearchData" class="txtSearchData"
+                                    placeholder="Buscar por: marca, modelo o año">
+                                <select id="cmbSearchByType" class="cmbFilterData">
+                                    <option value="">Filtrar por tipo</option>
+                                </select>
+                                <select id="cmbSearchByStatus" class="cmbFilterData">
+                                    <option value="">Filtrar por estado</option>
+                                </select>
+                                <a href="sparePartsDetails.html" class="btnPrimary btnOpenModal"
+                                    style="display: grid; place-content: center; text-decoration: none;">Añadir</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cardContainer">
+                <div class="card">
+                    <div class="bodyCard">
+                        <div class="containerImgSpare">
+                            <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762542817/Leal%20Import/Vehicles/H38DJ2LS93KDJ387/file_2f93eddf-0239-47ba-a0c3-77620c00e530.png"
+                                alt="" class="picturePart">
+                        </div>
+                        <div class="infoPartContainer">
+                            <span class="partName">Escribos traseros</span>
+                            <span class="brandModel">Kawasaki ZX638</span>
+                        </div>
+                        <div class="moreInfoContainer">
+                            <div class="leftInfo">
+                                <div class="statusPart">Comprado</div>
+                                <div class="stockPart">2020-2024</div>
+                            </div>
+                            <span class="partPrice">$15.00</span>
+                        </div>
+                    </div>
+                    <div class="footerCard">
+                        <a class="btnPrimary" href="vehicleDetails.html?id=H38DJ2LS93KDJ384">Ver más</a>
+                        <button class="btnSecondary">Editar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerSpareParts.js"></script>
+    <script type="module" src="../js/service/serviceSpareParts.js"></script>
+</body>
+
+</html>
