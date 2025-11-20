@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 txtSearchCustomer.addEventListener('input', () => {
     clearTimeout(searchTimeout)
-    searchTimeout = setTimeout( async () => {
+    searchTimeout = setTimeout(async () => {
         const searchQuery = txtSearchCustomer.value.trim();
         const rolesQuery = selectSearchRoles.value;
         await loadEmployees(searchQuery, rolesQuery);
@@ -69,36 +69,52 @@ let insertEmployees = (employees) => {
     const fragment = document.createDocumentFragment();
     const container = document.getElementById("employeesTableBody");
     container.innerHTML = "";
-    employees.forEach(employee => {
+    if (employees.length == 0) {
         const tr = document.createElement("tr");
-        const tdName = document.createElement("td");
-        const tdEmail = document.createElement("td");
-        const tdPhone = document.createElement("td");
-        const tdRole = document.createElement("td");
-        const tdActions = document.createElement("td");
+        const td = document.createElement("td");
 
-        tdName.textContent = employee.fullName;
-        tdEmail.textContent = employee.email;
-        tdPhone.textContent = employee.phoneEmploye;
-        tdRole.textContent = employee.roleName || 'Error al cargar rol';
+        td.colSpan = 5; // Número de columnas de tu tabla
+        td.textContent = "No hay datos disponibles";
+        td.classList.add("no-data-message"); // opcional para estilos
+        td.style.textAlign = "center";
+        td.style.padding = "15px";
+        td.style.color = "#777";
 
-        const actionButton = document.createElement('button');
-        actionButton.textContent = '⋯';
-        actionButton.classList.add('actionButton');
-        tdActions.appendChild(actionButton);
-
-        actionButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            showFloatingMenu(event, [
-                { label: 'Editar empleado', onClick: () => editEmployee(employee), id: 'btnUpdateEmp' },
-                { label: 'Desactivar empleado', onClick: () => deleteEmployee(employee.idEmployee), id: 'btnDeleteEmp' },
-                { label: 'Ver detalles', onClick: () => viewEmployee(employee), id: 'btnViewEmp' }
-            ]);
-        });
-
-        tr.append(tdName, tdEmail, tdPhone, tdRole, tdActions);
+        tr.appendChild(td);
         fragment.appendChild(tr);
-    });
+        document.querySelector(".table").style.height = "100%";
+    } else {
+        employees.forEach(employee => {
+            const tr = document.createElement("tr");
+            const tdName = document.createElement("td");
+            const tdEmail = document.createElement("td");
+            const tdPhone = document.createElement("td");
+            const tdRole = document.createElement("td");
+            const tdActions = document.createElement("td");
+
+            tdName.textContent = employee.fullName;
+            tdEmail.textContent = employee.email;
+            tdPhone.textContent = employee.phoneEmploye;
+            tdRole.textContent = employee.roleName || 'Error al cargar rol';
+
+            const actionButton = document.createElement('button');
+            actionButton.textContent = '⋯';
+            actionButton.classList.add('actionButton');
+            tdActions.appendChild(actionButton);
+
+            actionButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                showFloatingMenu(event, [
+                    { label: 'Editar empleado', onClick: () => editEmployee(employee), id: 'btnUpdateEmp' },
+                    { label: 'Desactivar empleado', onClick: () => deleteEmployee(employee.idEmployee), id: 'btnDeleteEmp' },
+                    { label: 'Ver detalles', onClick: () => viewEmployee(employee), id: 'btnViewEmp' }
+                ]);
+            });
+
+            tr.append(tdName, tdEmail, tdPhone, tdRole, tdActions);
+            fragment.appendChild(tr);
+        });
+    }
     container.appendChild(fragment);
 }
 

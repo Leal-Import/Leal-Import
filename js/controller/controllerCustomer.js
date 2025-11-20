@@ -64,38 +64,54 @@ let insertCustomers = (customers) => {
     if (!container) return;
     container.innerHTML = "";
 
-    customers.forEach(customer => {
+    if (customers.length == 0) {
         const tr = document.createElement("tr");
-        const tdName = document.createElement("td");
-        const tdDui = document.createElement("td");
-        const tdPhone = document.createElement("td");
-        const tdActions = document.createElement("td");
+        const td = document.createElement("td");
 
-        tdName.textContent = customer.fullName;
-        tdDui.textContent = customer.dui;
-        tdPhone.textContent = customer.personalPhone;
+        td.colSpan = 5; // Número de columnas de tu tabla
+        td.textContent = "No hay datos disponibles";
+        td.classList.add("no-data-message"); // opcional para estilos
+        td.style.textAlign = "center";
+        td.style.padding = "15px";
+        td.style.color = "#777";
 
-        const actionButton = document.createElement('button');
-        actionButton.textContent = '⋯';
-        actionButton.classList.add('actionButton');
-        tdActions.appendChild(actionButton);
+        tr.appendChild(td);
+        fragment.appendChild(tr);
+        document.querySelector(".table").style.height = "100%";
+    } else {
+        customers.forEach(customer => {
+            const tr = document.createElement("tr");
+            const tdName = document.createElement("td");
+            const tdDui = document.createElement("td");
+            const tdPhone = document.createElement("td");
+            const tdActions = document.createElement("td");
 
-        const custId = customer.idClient ?? customer.id ?? Math.random().toString(36).slice(2);
+            tdName.textContent = customer.fullName;
+            tdDui.textContent = customer.dui;
+            tdPhone.textContent = customer.personalPhone;
 
-        actionButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            // showFloatingMenu en utils.js genera sufijo en ids, maneja posicion y limpieza
-            showFloatingMenu(event, [
-                { label: 'Editar cliente', onClick: () => editCustomer(customer), id: `btnUpdateCust-${custId}` },
-                { label: 'Desactivar cliente', onClick: () => deleteCustomer(customer.idClient), id: `btnDeleteCust-${custId}` },
-                { label: 'Ver detalles', onClick: () => viewCustomer(customer), id: `btnViewCust-${custId}` }
-            ]);
+            const actionButton = document.createElement('button');
+            actionButton.textContent = '⋯';
+            actionButton.classList.add('actionButton');
+            tdActions.appendChild(actionButton);
+
+            const custId = customer.idClient ?? customer.id ?? Math.random().toString(36).slice(2);
+
+            actionButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                // showFloatingMenu en utils.js genera sufijo en ids, maneja posicion y limpieza
+                showFloatingMenu(event, [
+                    { label: 'Editar cliente', onClick: () => editCustomer(customer), id: `btnUpdateCust-${custId}` },
+                    { label: 'Desactivar cliente', onClick: () => deleteCustomer(customer.idClient), id: `btnDeleteCust-${custId}` },
+                    { label: 'Ver detalles', onClick: () => viewCustomer(customer), id: `btnViewCust-${custId}` }
+                ]);
+            });
+
+            tr.append(tdName, tdDui, tdPhone, tdActions);
+            fragment.appendChild(tr);
         });
 
-        tr.append(tdName, tdDui, tdPhone, tdActions);
-        fragment.appendChild(tr);
-    });
-
+    }
     container.appendChild(fragment);
 };
 
