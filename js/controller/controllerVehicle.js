@@ -71,7 +71,7 @@ let loadStatusSelect = async () => {
   try {
     const status = await getStatus();
     statusList = status;
-    fillSelect('cmbSearchByStatus', statusList, 'idVehicleStatus', 'statusName');
+    fillSelect('cmbSearchByStatus', statusList, 'idStatus', 'statusName');
   } catch (error) {
     console.error('Error al cargar estados:', error);
   }
