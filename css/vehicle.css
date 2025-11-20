@@ -301,3 +301,10 @@
 .labelFileBtn:hover {
     background: var(--danger-color);
 }
+
+.btnSecondary{
+    padding: 3px 8px;
+    text-decoration: none;
+    text-decoration: none;
+    border-radius: var(--border-radius-btn);
+}

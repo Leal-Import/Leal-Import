@@ -151,7 +151,7 @@ let insertVehicles = (vehicles) => {
       yearItem.classList.add("infoVehicleItem");
       modelItem.classList.add("infoVehicleItem");
       btnView.classList.add("btnPrimary");
-      btnEdit.classList.add("btnPrimary")
+      btnEdit.classList.add("btnSecondary")
       containerButtons.classList.add("containerButtons");
 
       // botón ver más
