@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/spareParts.css">
-    <title>Repuestos</title>
+    <link rel="stylesheet" href="../css/sales.css">
+    <title>Ventas</title>
 </head>
 
 <body>
@@ -18,26 +18,25 @@
                     <a class="breadcrumb">Ventas</a>
                 </div>
                 <div class="dataCardContainer">
-                    <div class="seccionCard" id="Stock">
-                        <h2 class="statValue">10,000</h2>
-                        <p class="statTitle">En Stock</p>
+                    <div class="containerFilterType">
+                        <div class="filterType" id="all">
+                            <span>Todos</span>
+                            <div class="lineSelected selected"></div>
+                        </div>
+                        <div class="filterType" id="vehicles">
+                            <span>Vehiculos</span>
+                            <div class="lineSelected"></div>
+                        </div>
+                        <div class="filterType" id="spareParts">
+                            <span>Repuestos</span>
+                            <div class="lineSelected"></div>
+                        </div>
                     </div>
-                    <div class="seccionCard" id="Requested">
-                        <h2 class="statValue">5,565</h2>
-                        <p class="statTitle">Solicitado</p>
-                    </div>
-                    <div class="seccionCard" id="TotalCost">
-                        <h2 class="statValue">$4,360.20</h2>
-                        <p class="statTitle">Valor de inventario</p>
-                    </div>
-                    <div class="filterSectionParts">
+                    <div class="filterSectionSales">
                         <div class="filterSection">
                             <div class="filterContainer">
                                 <input type="text" id="txtSearchData" class="txtSearchData"
-                                    placeholder="Buscar por: marca, modelo o año">
-                                <select id="cmbSearchByType" class="cmbFilterData">
-                                    <option value="">Filtrar por tipo</option>
-                                </select>
+                                    placeholder="Buscar por: cliente o vendedor">
                                 <select id="cmbSearchByStatus" class="cmbFilterData">
                                     <option value="">Filtrar por estado</option>
                                 </select>
@@ -48,38 +47,110 @@
                     </div>
                 </div>
             </div>
-            <div class="cardContainer">
-                <div class="card">
-                    <div class="bodyCard">
-                        <div class="containerImgSpare">
-                            <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762542817/Leal%20Import/Vehicles/H38DJ2LS93KDJ387/file_2f93eddf-0239-47ba-a0c3-77620c00e530.png"
-                                alt="" class="picturePart">
-                        </div>
-                        <div class="infoPartContainer">
-                            <span class="partName">Escribos traseros</span>
-                            <span class="brandModel">Kawasaki ZX638</span>
-                        </div>
-                        <div class="moreInfoContainer">
-                            <div class="leftInfo">
-                                <div class="statusPart">Comprado</div>
-                                <div class="stockPart">2020-2024</div>
+            <div class="panelContainer">
+                <div class="panel">
+                    <div class="containerImgSale">
+                        <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1763959077/Leal%20Import/Vehicles/J81SC5IOA99KXXXOO/file_6b578eca-cd29-4730-a7a4-2f2771858e1a.jpg"
+                            alt="" class="imgSaleItem">
+                    </div>
+                    <div class="dataSaleContainer">
+                        <div class="leftDataSale">
+                            <div class="headerDataSale">
+                                <div class="dataSale productData">
+                                    <span class="nameVehicle">Kawasaki ninja 2024</span>
+                                </div>
+                                <div class="dataSale">
+                                    <span class="lbl">Fecha de venta:</span>
+                                    <span>10/09/2025</span>
+                                </div>
                             </div>
-                            <span class="partPrice">$15.00</span>
+                            <div class="bodyDataSale">
+                                <div class="downLeft">
+                                    <div class="dataSale">
+                                        <span class="lbl">Vin:</span>
+                                        <span>JD73HDJSLSJDIWKD</span>
+                                    </div>
+                                    <div class="dataSale">
+                                        <span class="lbl">Vendedor:</span>
+                                        <span>Byron Alejandro Gomez</span>
+                                    </div>
+                                    <div class="dataSale">
+                                        <span class="lbl">Cliente:</span>
+                                        <span>Christian Volodimir Zelinsky</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rightDataSale">
+                            <div class="dataSale amount">
+                                <span class="lbl">Monto total:</span>
+                                <span class="amountQuantity">$8,000</span>
+                            </div>
+                            <div class="dataSale amountDue">
+                                <span class="lbl">Deuda:</span>
+                                <span>$2,000</span>
+                            </div>
+                            <div class="containerButtonsData">
+                                <a href="" class="btnSecondary">Ver mas</a>
+                                <a href="" class="btnPrimary">Editar</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="footerCard">
-                        <a class="btnPrimary" href="vehicleDetails.html?id=H38DJ2LS93KDJ384">Ver más</a>
-                        <button class="btnSecondary">Editar</button>
+                </div>
+                <div class="panel">
+                    <div class="containerImgSale">
+                        <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1764020469/Leal%20Import/SpareParts/Filtro%20de%20Aceite/file_0f928020-2031-406d-9fa5-3745fc9e518c.jpg"
+                            alt="" class="imgSaleItem">
+                    </div>
+                    <div class="dataSaleContainer">
+                        <div class="leftDataSale">
+                            <div class="headerDataSale">
+                                <div class="dataSale productData">
+                                    <span class="sparePartName">Llave de moto ninja 2024</span>
+                                </div>
+                                <div class="dataSale">
+                                    <span class="lbl">Fecha de venta:</span>
+                                    <span>10/09/2025</span>
+                                </div>
+                            </div>
+                            <div class="bodyDataSale">
+                                <div class="downLeft">
+                                    <div class="dataSale">
+                                        <span class="lbl">Vendedor:</span>
+                                        <span>Byron Alejandro Gomez</span>
+                                    </div>
+                                    <div class="dataSale">
+                                        <span class="lbl">Cliente:</span>
+                                        <span>Christian Volodimir Zelinsky</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rightDataSale">
+                            <div class="dataSale amount">
+                                <span class="lbl">Monto total:</span>
+                                <span class="amountQuantity">$1,000</span>
+                            </div>
+                            <div class="dataSale amountDue">
+                                <span class="lbl">Deuda:</span>
+                                <span>$2,000</span>
+                            </div>
+                            <div class="containerButtonsData">
+                                <a href="" class="btnSecondary">Ver mas</a>
+                                <a href="" class="btnPrimary">Editar</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
     <script src="../js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../js/utils.js"></script>
-    <script type="module" src="../js/controller/controllerSpareParts.js"></script>
-    <script type="module" src="../js/service/serviceSpareParts.js"></script>
+    <script type="module" src="../js/controller/controllerSales.js"></script>
+    <script type="module" src="../js/service/serviceSales.js"></script>
 </body>
 
 </html>

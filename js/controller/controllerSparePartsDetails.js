@@ -171,6 +171,7 @@ frmSpareParts.addEventListener("submit", async (e) => {
         sparePart.tracking.idTracking = trackingId;
         sparePart.sparePartsCosts.idCostSparePart = costId;
     }
+    console.log(sparePart)
 
     const fd = new FormData();
     fd.append("SparePartData", JSON.stringify(sparePart));
