@@ -166,12 +166,10 @@ frmSpareParts.addEventListener("submit", async (e) => {
         }
     };
 
-    // 👉 SOLO enviamos idTracking si existe (editar)
     if (trackingId && costId) {
         sparePart.tracking.idTracking = trackingId;
         sparePart.sparePartsCosts.idCostSparePart = costId;
     }
-    console.log(sparePart)
 
     const fd = new FormData();
     fd.append("SparePartData", JSON.stringify(sparePart));
