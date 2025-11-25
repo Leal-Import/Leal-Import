@@ -1,0 +1,16 @@
+.breadCrumbSection{
+    display: inline-flex;
+}
+
+.filterSection{
+    gap: 15px;
+}
+
+.btnPrimary{
+    padding: 5px 12px;
+    font-size: 1em;
+    text-decoration: none;
+    width: auto;
+    display: grid;
+    place-content: center;
+}

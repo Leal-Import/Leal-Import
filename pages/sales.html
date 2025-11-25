@@ -10,6 +10,18 @@
 </head>
 
 <body>
+    <div class="containerModal hide" id="modalAskSale">
+        <div class="modalAdd">
+            <button id="btnCloseModalAsk" class="btnClose" type="button">
+                <img src="../media/appMedia/closeIcon.svg" alt="">
+            </button>
+            <h2 class="titleModal">¿Que deseas vender?</h2>
+            <div class="containerOptions">
+                <a href="addCustomerSale.html?type=vehicle" class="optionSale">Vehiculo</a>
+                <a href="addCustomerSale.html?type=sparePart" class="optionSale">Repuestos</a>
+            </div>
+        </div>
+    </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
@@ -40,8 +52,7 @@
                                 <select id="cmbSearchByStatus" class="cmbFilterData">
                                     <option value="">Filtrar por estado</option>
                                 </select>
-                                <a href="sparePartsDetails.html" class="btnPrimary btnOpenModal"
-                                    style="display: grid; place-content: center; text-decoration: none;">Añadir</a>
+                                <button class="btnPrimary btnOpenModal" id="btnAskSale">Añadir</button>
                             </div>
                         </div>
                     </div>
