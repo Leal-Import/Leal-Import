@@ -17,11 +17,11 @@
                 <div class="headerContent">
                     <div class="breadCrumbSection">
                         <a href="sales.html" class="breadcrumb">Ventas ></a>
-                        <a class="breadcrumb">Nombre del cliente</a>
+                        <a class="breadcrumb" id="customerName"></a>
                     </div>
                     <div class="filterSection">
                         <input type="text" id="txtSearchData" class="txtSearchData"
-                            placeholder="Buscar por: nombre, Dui o teléfono">
+                            placeholder="Buscar por: nombre, marca o modelo">
                         <a href="sparePartsDetails.html" class="btnPrimary btnOpenModal">Realizar encargo</a>
                     </div>
                 </div>
@@ -49,7 +49,11 @@
                                     <th class="finalPrice">Precio final</th>
                                 </tr>
                             </thead>
-                            <tbody id="tBodySelected"></tbody>
+                            <tbody id="tBodySelected">
+                                <tr class="rowNoData">
+                                    <td colspan="2" style="height: 100%;" class="noDataMessage">No hay repuestos seleccionados</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="containerTotal" id="containerTotal">

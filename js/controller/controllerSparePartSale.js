@@ -4,13 +4,15 @@ import {
     allowDecimal
 } from '../utils.js'
 
+const params = new URLSearchParams(window.location.search);
+
 let selectedIds = [];
-let amountIndexCounter = 1;
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSpareParts();
+    document.getElementById("customerName").textContent = params.get('customerName') || "Nombre del cliente";
     const firstAmount = document.querySelector('.amounts .amountInput');
-    console.log(firstAmount)
+    allowDecimal(firstAmount);
     if (firstAmount) {
         firstAmount.addEventListener("input", managePaymentsAndCalculateDebt);
         firstAmount.closest('.containerAmount').setAttribute('data-index', '1');
@@ -81,6 +83,7 @@ let insertSpareParts = (spareParts) => {
 }
 
 let createRowSparePart = (id, name, suggesredPrice) => {
+    const rowNoData = document.querySelector(".rowNoData");
     const container = document.getElementById("tBodySelected");
     const tr = document.createElement("tr");
     const partName = document.createElement("td");
@@ -92,6 +95,7 @@ let createRowSparePart = (id, name, suggesredPrice) => {
 
     partName.textContent = name;
     price.textContent = `$${formatWithCommas(suggesredPrice)}`;
+    if(rowNoData) rowNoData.remove();
 
     price.setAttribute("contenteditable", true)
     tr.setAttribute("data-id", id);
@@ -114,6 +118,16 @@ let createRowSparePart = (id, name, suggesredPrice) => {
         tr.remove();
         calculateTotal();
         await loadSpareParts();
+        if (container.children.length === 0) {
+            const trNoData = document.createElement("tr");
+            trNoData.classList.add("rowNoData");
+            const tdNoData = document.createElement("td");
+            tdNoData.classList.add("noDataMessage");
+            tdNoData.colSpan = 3;
+            tdNoData.textContent = "No hay repuestos seleccionados";
+            trNoData.appendChild(tdNoData);
+            container.appendChild(trNoData);
+        }
     })
     calculateTotal();
 }
@@ -190,6 +204,7 @@ let calculatePaid = () => {
 
     return totalPaid;
 }
+
 let managePaymentsAndCalculateDebt = () => {
     const amountContainer = document.querySelector(".amounts");
     let allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
@@ -264,6 +279,7 @@ function addNewPaymentField() {
     input.type = "text";
     input.placeholder = `Abono ${index}`;
     input.classList.add("txtInputs", "amountInput");
+    allowDecimal(input);
     input.addEventListener("input", managePaymentsAndCalculateDebt);
 
     const select = document.createElement("select");
