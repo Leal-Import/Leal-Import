@@ -5,12 +5,26 @@ import {
 } from '../utils.js'
 
 const params = new URLSearchParams(window.location.search);
+const customerName = params.get('customerName') || "Nombre del cliente";
+const customerId = params.get('idCustomer') || null;
+const newPartId = params.get('sparePartId') || null;
+const newPartName = params.get('sparePartName') || null;
+const suggestedPrice = params.get('suggestedPrice') || null;
+const saleKey = `saleState_cliente_${customerId}`;
+
+const btnAddPart = document.getElementById("btnAddPart");
+
 
 let selectedIds = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const saved = loadSaleState();
+    if (saved.selectedParts && saved.payments && saved.notes !== undefined) {
+        loadSavedData(saved.selectedParts, saved.payments, saved.notes);
+    }
+
     await loadSpareParts();
-    document.getElementById("customerName").textContent = params.get('customerName') || "Nombre del cliente";
+    document.getElementById("customerName").textContent = customerName;
     const firstAmount = document.querySelector('.amounts .amountInput');
     allowDecimal(firstAmount);
     if (firstAmount) {
@@ -18,6 +32,49 @@ document.addEventListener("DOMContentLoaded", async () => {
         firstAmount.closest('.containerAmount').setAttribute('data-index', '1');
     }
 })
+
+document.getElementById("txtNotes")?.addEventListener("input", saveSaleState);
+
+let loadSavedData = (parts, payments, notes) => {
+    selectedIds = parts.map(p => p.id);
+
+    parts.forEach(part => {
+        createRowSparePart(part.id, part.name, part.price);
+    });
+
+    if(newPartId && !selectedIds.includes(newPartId)) {
+        selectedIds.push(newPartId);
+        createRowSparePart(newPartId, newPartName, suggestedPrice);
+    }
+
+    const amountContainer = document.querySelector(".amounts");
+    amountContainer.innerHTML = "";
+    payments.forEach((payment, index) => {
+        const div = document.createElement("div");
+        div.classList.add("containerAmount");
+        div.setAttribute("data-index", index + 1);
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = `Abono ${index + 1}`;
+        input.classList.add("txtInputs", "amountInput");
+        input.value = payment > 0 ? `$${formatWithCommas(payment)}` : "";
+        allowDecimal(input);
+        input.addEventListener("input", managePaymentsAndCalculateDebt);
+        const select = document.createElement("select");
+        select.classList.add("txtInputs", "paymentTypeSelect");
+        div.append(input, select);
+        amountContainer.appendChild(div);
+    });
+    const notesInput = document.getElementById("txtNotes");
+    if (notesInput) notesInput.value = notes || "";
+    managePaymentsAndCalculateDebt();
+}
+
+btnAddPart.addEventListener("click", (e) => {
+    e.preventDefault();
+    saveSaleState();
+    window.location.href = `sparePartsDetails.html?sale=true&idCustomer=${customerId}&customerName=${encodeURIComponent(customerName)}`
+});
 
 let loadSpareParts = async () => {
     const spareParts = await getSpareParts();
@@ -73,9 +130,11 @@ let insertSpareParts = (spareParts) => {
 
             btnAddSparePart.addEventListener("click", () => {
                 selectedIds.push(sparePart.idSparePart);
-                createRowSparePart(sparePart.idSparePart, sparePart.nameSpareParts, sparePart.totalCost /* Por el momento esto es totalCost */);
+                createRowSparePart(sparePart.idSparePart, sparePart.nameSpareParts, sparePart.totalCost);
                 tr.remove();
+                saveSaleState();
             })
+
         });
     }
 
@@ -95,7 +154,7 @@ let createRowSparePart = (id, name, suggesredPrice) => {
 
     partName.textContent = name;
     price.textContent = `$${formatWithCommas(suggesredPrice)}`;
-    if(rowNoData) rowNoData.remove();
+    if (rowNoData) rowNoData.remove();
 
     price.setAttribute("contenteditable", true)
     tr.setAttribute("data-id", id);
@@ -118,6 +177,7 @@ let createRowSparePart = (id, name, suggesredPrice) => {
         tr.remove();
         calculateTotal();
         await loadSpareParts();
+        saveSaleState();
         if (container.children.length === 0) {
             const trNoData = document.createElement("tr");
             trNoData.classList.add("rowNoData");
@@ -287,4 +347,43 @@ function addNewPaymentField() {
 
     div.append(input, select);
     amountContainer.appendChild(div);
+    saveSaleState();
+}
+
+function loadSaleState() {
+    const raw = localStorage.getItem(saleKey);
+    if (!raw) return null;
+
+    return JSON.parse(raw);
+}
+
+
+function saveSaleState() {
+    const parts = [];
+
+    document.querySelectorAll("#tBodySelected tr[data-id]").forEach(tr => {
+        const id = tr.getAttribute("data-id");
+        const name = tr.querySelector(".sparePartName").textContent;
+
+        const priceText = tr.querySelector(".finalPrice").textContent.replace(/[$,]/g, "");
+        const price = parseFloat(priceText) || 0;
+
+        parts.push({ id, name, price });
+    });
+
+    selectedIds = parts.map(p => p.id);
+
+    const payments = [...document.querySelectorAll(".amountInput")].map(input =>
+        parseFloat(input.value.replace(/[$,]/g, "")) || 0
+    );
+
+    const notes = document.getElementById("txtNotes")?.value || "";
+
+    const state = {
+        selectedParts: parts,
+        payments,
+        notes
+    };
+
+    localStorage.setItem(saleKey, JSON.stringify(state));
 }

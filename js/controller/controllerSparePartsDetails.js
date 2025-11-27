@@ -37,6 +37,8 @@ const btnSaveBill = document.getElementById("btnSaveBill");
 const params = new URLSearchParams(window.location.search);
 
 let currentId;
+let sale = false;
+params.get("sale") ? sale = true : sale = false;
 let selectedFile = null;
 params.get("id") ? currentId = params.get("id") : currentId = null;
 
@@ -55,7 +57,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const status = await getStatus();
     fillSelect("cmbPartStatus", status, 'idPartsState', 'state')
     currentId ? await loadSparePart() : null;
+    sale ? loadSalePartData() : null;
 });
+
+let loadSalePartData = () => {
+    const titleBread = document.getElementById("titleBread");
+    titleBread.textContent = "Ventas >";
+    titleBread.href = `sparePartSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}`;
+    document.getElementById("typeAction").textContent = "Realizar encargo de repuesto";
+}
 
 function updateTotal() {
     let total = 0;
@@ -179,15 +189,20 @@ frmSpareParts.addEventListener("submit", async (e) => {
     }
 
     try {
+        let response;
         if (currentId != null) {
             await putSparePart(fd, currentId);
             await showMessage('Repuesto actualizado con éxito!', 'Éxito', 'success');
         } else {
-            await postSparePart(fd);
+            response = await postSparePart(fd);
             await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
 
-        window.location.href = "../../pages/spareParts.html";
+        if (sale) {
+            window.location.href = `sparePartSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&sparePartId=${response.data.idSparePart}&sparePartName=${response.data.nameSpareParts}&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}`;
+            return;
+        }
+        window.location.href = "spareParts.html";
 
     } catch (error) {
         console.error("Error al realizar la operación:", error);

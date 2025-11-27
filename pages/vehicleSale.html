@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/vehicleSale.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <title>Agregar venta</title>
+</head>
+
+<body>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <div class="content">
+            <div class="leftColumn">
+                <div class="headerContent">
+                    <div class="breadCrumbSection">
+                        <a href="sales.html" class="breadcrumb">Ventas ></a>
+                        <a class="breadcrumb" id="customerName"></a>
+                    </div>
+                </div>
+                <div class="bodyLeftPart">
+                    <div class="viewVechicleContainer hid">
+                        <div class="imagesSection">
+                            <div class="vehicleImagesSection">
+                                <div>
+                                    <div class="swiper" id="mainSwiper">
+                                        <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                                        <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
+                                        <div class="swiper-button-next" style="color: var(--danger-color);"></div>
+                                    </div>
+
+                                    <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                                        <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                            <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                                        </div>
+                                    </div>
+
+                                    <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vehicleInfo">
+                            <div class="infoItem">
+                                <span class="infoLabel">Vin:</span>
+                                <span id="vehicleVin" class="infoValue"></span>
+                            </div>
+                            <div class="infoItem">
+                                <span class="infoLabel">Marca:</span>
+                                <span id="vehicleBrand" class="infoValue"></span>
+                            </div>
+                            <div class="infoItem">
+                                <span class="infoLabel">Modelo:</span>
+                                <span id="vehicleModel" class="infoValue"></span>
+                            </div>
+                            <div class="infoItem">
+                                <span class="infoLabel">Año:</span>
+                                <span id="vehicleYear" class="infoValue"></span>
+                            </div>
+                            <div class="infoItem">
+                                <span class="infoLabel">Lote:</span>
+                                <a id="lote" class="infoValue"></a>
+                            </div>
+                            <div class="infoItem">
+                                <span class="infoLabel">Fecha de compra:</span>
+                                <span id="purchaseDate" class="infoValue"></span>
+                            </div>
+                            <div class="infoItem">
+                                <span class="lblData">Precio sugerido:</span>
+                                <span id="suggestedPrice" class="values"
+                                    style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
+                            </div>
+                            <div class="infoItem">
+                                <span class="lblData">Costo total:</span>
+                                <span id="total" class="values"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filterSection">
+                        <input type="text" id="txtSearchData" class="txtSearchData"
+                            placeholder="Buscar por: vin, marca o modelo">
+                        <a class="btnPrimary btnOpenModal" id="btnAddPart">Realizar encargo</a>
+                    </div>
+                    <div class="tableContainer">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Vin</th>
+                                    <th>Costo</th>
+                                    <th>P. sugerido</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tBodyInventory"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <form class="rightColumn">
+                <div class="bodyRightColumn">
+                    <h2>Abonos</h2>
+                    <div class="amounts">
+                        <div class="containerAmount">
+                            <input type="text" placeholder="Abono 1" class="txtInputs amountInput">
+                            <select id="" class="txtInputs"></select>
+                        </div>
+                    </div>
+                    <div class="containerAmountDue" id="containerAmountDue">
+                        <h3>Deuda:</h3>
+                        <span id="due"></span>
+                    </div>
+                </div>
+                <div class="footerRightColumn">
+                    <div class="formGroup">
+                        <label for="txtNotes" class="lbl">Notas adicionales</label>
+                        <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtComission" class="lbl">Comision</label>
+                        <input type="text" id="txtComission" class="txtInputs">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtTotal" class="lbl">Precio final del vehiculo</label>
+                        <input type="text" id="txtTotal" class="txtInputs">
+                    </div>
+                    <input type="submit" value="Guardar" class="btnPrimary btnSubmitData">
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerVehicleSale.js"></script>
+</body>
+
+</html>

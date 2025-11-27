@@ -35,7 +35,7 @@ let insertCustomers = (customers) => {
             const phone = document.createElement("phone");
 
             if (type == "sparePart") customerLink.href = `sparePartSale.html?idCustomer=${customer.idCustomer}&customerName=${customer.fullName}`;
-            else if (type == "vehicle") customerLink.href = `vehicleSale.html?idCustomer=${customer.idCustomer}`;
+            else if (type == "vehicle") customerLink.href = `vehicleSale.html?idCustomer=${customer.idCustomer}&customerName=${customer.fullName}`;
 
             customerLink.classList.add("customer");
             customerName.classList.add("customerName");

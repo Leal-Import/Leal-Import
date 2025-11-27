@@ -23,6 +23,7 @@
     flex-direction: column;
     gap: 5px;
     flex: 1 1 auto;
+    max-height: 40%;
     border-bottom: var(--border)
 }
 
@@ -56,15 +57,13 @@
 .containerTotal,
 .containerAmountDue {
     align-self: end;
-    display: flex;
     align-items: center;
     gap: 10px;
-    display: none;
+    display: none ;
 }
 
 .containerAmountDue {
     width: 100%;
-    display: flex;
     justify-content: space-between;
 }
 
@@ -110,6 +109,7 @@
 
 .headerRightColumn .tableContainer {
     height: 100%;
+    overflow-y: auto;
 }
 
 .headerRightColumn .table:has(.noDataMessage) {
@@ -176,8 +176,14 @@ textarea {
     border: var(--border);
 }
 
+.leftColumn .tableContainer{
+    max-height: 65dvh;
+    overflow-y: auto;
+}
+
 .leftColumn .table {
     border: var(--border);
+    max-height: 100%;
 }
 
 .tableRow {
