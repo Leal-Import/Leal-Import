@@ -19,10 +19,12 @@ let selectedIds = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     const saved = loadSaleState();
-    if (saved.selectedParts && saved.payments && saved.notes !== undefined) {
-        loadSavedData(saved.selectedParts, saved.payments, saved.notes);
+    if (saved) {
+        if (saved.selectedParts && saved.payments && saved.notes !== undefined) {
+            loadSavedData(saved.selectedParts, saved.payments, saved.notes);
+        }
     }
-
+    
     await loadSpareParts();
     document.getElementById("customerName").textContent = customerName;
     const firstAmount = document.querySelector('.amounts .amountInput');
@@ -42,7 +44,7 @@ let loadSavedData = (parts, payments, notes) => {
         createRowSparePart(part.id, part.name, part.price);
     });
 
-    if(newPartId && !selectedIds.includes(newPartId)) {
+    if (newPartId && !selectedIds.includes(newPartId)) {
         selectedIds.push(newPartId);
         createRowSparePart(newPartId, newPartName, suggestedPrice);
     }

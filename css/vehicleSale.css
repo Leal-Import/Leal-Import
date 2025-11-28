@@ -51,6 +51,7 @@
 
 .imagesSection{
     flex: 3;
+    border: solid 1px;
 }
 
 .vehicleInfo{
@@ -152,4 +153,39 @@
 
 textarea{
     resize: none;
+}
+
+/* Carrucel */
+
+#mainSwiper {
+    width: 100%;
+    height: 350px;
+    border: 1px solid #8884;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#mainSwiper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.thumbnailImagesContainer {
+    margin-top: 10px;
+}
+
+#thumbsSwiper {
+    height: 90px;
+}
+
+#thumbsSwiper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.swiper-slide-thumb-active img {
+    border: 2px solid var(--danger-color);
 }

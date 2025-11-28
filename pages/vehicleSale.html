@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="bodyLeftPart">
-                    <div class="viewVechicleContainer hid">
+                    <div class="viewVechicleContainer hide">
                         <div class="imagesSection">
                             <div class="vehicleImagesSection">
                                 <div>
@@ -43,38 +43,40 @@
                             </div>
                         </div>
                         <div class="vehicleInfo">
-                            <div class="infoItem">
-                                <span class="infoLabel">Vin:</span>
-                                <span id="vehicleVin" class="infoValue"></span>
+                            <div class="firstColumnInfo">
+                                <div class="infoItem">
+                                    <span class="infoLabel">Vin:</span>
+                                    <span id="vehicleVin" class="infoValue"></span>
+                                </div>
+                                <div class="infoItem">
+                                    <span class="infoLabel">Marca:</span>
+                                    <span id="vehicleBrand" class="infoValue"></span>
+                                </div>
+                                <div class="infoItem">
+                                    <span class="infoLabel">Modelo:</span>
+                                    <span id="vehicleModel" class="infoValue"></span>
+                                </div>
+                                <div class="infoItem">
+                                    <span class="infoLabel">Año:</span>
+                                    <span id="vehicleYear" class="infoValue"></span>
+                                </div>
+                                <div class="infoItem">
+                                    <span class="infoLabel">Lote:</span>
+                                    <a id="lote" class="infoValue"></a>
+                                </div>
+                                <div class="infoItem">
+                                    <span class="infoLabel">Factura:</span>
+                                    <span id="bill" class="infoValue"></span>
+                                </div>
                             </div>
                             <div class="infoItem">
-                                <span class="infoLabel">Marca:</span>
-                                <span id="vehicleBrand" class="infoValue"></span>
-                            </div>
-                            <div class="infoItem">
-                                <span class="infoLabel">Modelo:</span>
-                                <span id="vehicleModel" class="infoValue"></span>
-                            </div>
-                            <div class="infoItem">
-                                <span class="infoLabel">Año:</span>
-                                <span id="vehicleYear" class="infoValue"></span>
-                            </div>
-                            <div class="infoItem">
-                                <span class="infoLabel">Lote:</span>
-                                <a id="lote" class="infoValue"></a>
-                            </div>
-                            <div class="infoItem">
-                                <span class="infoLabel">Fecha de compra:</span>
-                                <span id="purchaseDate" class="infoValue"></span>
+                                <span class="lblData">Costo total:</span>
+                                <span id="total" class="values"></span>
                             </div>
                             <div class="infoItem">
                                 <span class="lblData">Precio sugerido:</span>
                                 <span id="suggestedPrice" class="values"
                                     style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
-                            </div>
-                            <div class="infoItem">
-                                <span class="lblData">Costo total:</span>
-                                <span id="total" class="values"></span>
                             </div>
                         </div>
                     </div>

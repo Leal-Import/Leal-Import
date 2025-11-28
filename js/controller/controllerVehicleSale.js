@@ -1,6 +1,7 @@
 import {
     getVehicles
 } from '../service/serviceVehicle.js'
+import { getVehicles as getVehicleByVin } from '../service/serviceVehicleDetails.js'
 import {
     formatWithCommas,
     allowDecimal
@@ -77,9 +78,9 @@ let insertVehicles = (vehicles) => {
             tr.append(tdImage, vin, cost, suggesredPrice, btnAddVehicle);
             fragment.appendChild(tr);
 
-            btnAddVehicle.addEventListener("click", () => {
+            btnAddVehicle.addEventListener("click", async () => {
                 vehicleId = vehicle.vin;
-                tr.remove();
+                await loadVehicle(vehicle.vin);
                 saveSaleState();
             })
 
@@ -87,6 +88,25 @@ let insertVehicles = (vehicles) => {
     }
 
     container.appendChild(fragment);
+}
+
+let loadVehicle = async (vin) => {
+    const vehicle = await getVehicleByVin(vin);
+    // Mostrar contenedor de visualización
+    document.querySelector(".viewVechicleContainer").classList.remove("hide");
+
+    // Cargar datos del vehículo
+    document.getElementById("vehicleVin").textContent = vehicle.vin;
+    document.getElementById("vehicleBrand").textContent = vehicle.brand;
+    document.getElementById("vehicleModel").textContent = vehicle.model;
+    document.getElementById("vehicleYear").textContent = vehicle.year;
+    document.getElementById("lote").textContent = vehicle.lote;
+    document.getElementById("bill").textContent = vehicle.billNumber;
+    document.getElementById("total").textContent = `$${formatWithCommas(vehicle.total)}`;
+    document.getElementById("suggestedPrice").textContent = `$${formatWithCommas(vehicle.suggestedPrice)}`;
+
+    console.log(vehicle.photos);
+    loadVehicleImages(vehicle.photos);
 }
 
 let managePaymentsAndCalculateDebt = () => {
@@ -189,4 +209,54 @@ function saveSaleState() {
     };
 
     localStorage.setItem(saleKey, JSON.stringify(state));
+}
+
+// =====================================
+//     CONFIGURAR CARRUSEL DE IMÁGENES
+// =====================================
+
+let mainSwiper;
+let thumbsSwiper;
+
+function loadVehicleImages(imagesArray) {
+    const mainWrapper = document.getElementById("mainSwiperWrapper");
+    const thumbsWrapper = document.getElementById("thumbsWrapper");
+
+    mainWrapper.innerHTML = "";
+    thumbsWrapper.innerHTML = "";
+
+    imagesArray.forEach(img => {
+        mainWrapper.innerHTML += `
+            <div class="swiper-slide">
+                <img src="${img.photoUrl}" class="mainImage" alt="vehicle image">
+            </div>
+        `;
+
+        thumbsWrapper.innerHTML += `
+            <div class="swiper-slide">
+                <img src="${img.photoUrl}" class="thumbImage" alt="thumbnail">
+            </div>
+        `;
+    });
+
+    if (thumbsSwiper) thumbsSwiper.destroy();
+    if (mainSwiper) mainSwiper.destroy();
+
+    thumbsSwiper = new Swiper("#thumbsSwiper", {
+        spaceBetween: 10,
+        slidesPerView: 6,
+        freeMode: true,
+        watchSlidesProgress: true,
+    });
+
+    mainSwiper = new Swiper("#mainSwiper", {
+        spaceBetween: 10,
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        thumbs: {
+            swiper: thumbsSwiper,
+        },
+    });
 }
