@@ -2,13 +2,20 @@
     flex-direction: row;
 }
 
-.breadCrumbSection{
+.breadCrumbSection {
     display: inline-flex;
     margin-bottom: 1em;
 }
 
 .rightColumn {
     flex: 2;
+    max-width: 450px;
+    position: sticky;
+    top: 0;
+}
+
+.formRightColumn {
+    height: 100%;
     background-color: #f9f9f9;
     border-radius: 10px;
     border: var(--border);
@@ -16,7 +23,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-width: 450px;
 }
 
 .leftColumn {
@@ -25,17 +31,18 @@
     flex: 3;
 }
 
-.filterSection{
+.filterSection {
     margin-top: 6px;
     padding-right: 5px;
 }
 
-.bodyLeftPart{
+.bodyLeftPart {
     position: relative;
     flex: 1;
+    height: fit-content;
 }
 
-.viewVechicleContainer{
+.viewVechicleContainer {
     position: absolute;
     border-radius: 10px;
     top: 0;
@@ -46,19 +53,73 @@
     z-index: 10;
     display: flex;
     flex-direction: column;
+    height: fit-content;
     gap: 10px;
+    border: var(--border);
 }
 
-.imagesSection{
-    flex: 3;
-    border: solid 1px;
-}
-
-.vehicleInfo{
+.vehicleInfo {
     flex: 2;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 150px));
+    display: flex;
+    flex-direction: column;
+}
+
+.mainInfoContainer {
+    display: flex;
+}
+
+.mainInfoContainer>div {
+    flex: 1;
+}
+
+.btnCancelVehicle {
+    padding: 5px 15px;
+    font-size: var(--font-size-lg);
+    border-radius: 10px;
+    align-self: end;
+    margin: 10px;
+}
+
+.columnInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2px;
+    border: var(--border);
+}
+
+.bodyDataInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.infoRow {
+    display: flex;
+}
+
+.columnInfo h2 {
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    font-size: var(--font-size-lg);
+}
+
+.priceColumn {
+    justify-content: start;
+}
+
+.infoItem {
+    flex: 1;
+    padding: 5px;
+    border: var(--border);
+    display: flex;
     align-items: center;
+    gap: 5px;
+    font-size: var(--font-size-sm);
+}
+
+.infoItem .infoLabel {
+    font-weight: var(--font-weight-medium);
 }
 
 .btnPrimary {
@@ -111,6 +172,16 @@
     font-size: 1.2em;
 }
 
+.btnVoucher {
+    padding: 3px 10px;
+    font-size: 1.2em;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
 .amounts {
     display: flex;
     flex-direction: column;
@@ -120,10 +191,11 @@
 
 .containerAmount {
     display: flex;
+    align-items: center;
     gap: 5px;
 }
 
-.containerAmountDue{
+.containerAmountDue {
     display: flex;
     justify-content: space-between;
 }
@@ -145,30 +217,61 @@
     background-color: #fafafa;
 }
 
-.footerRightColumn{
+.footerRightColumn {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-textarea{
+textarea {
     resize: none;
+}
+
+/* Modal */
+
+.modalAdd{
+    max-width: 600px;
+    width: 90%;
+}
+
+#btnSelectFile{
+    border-radius: var(--border-radius-input);
+}
+
+#modalPreviewArea {
+    min-height: 150px;
+    border: 3px dashed #888;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.containerModal h2{
+    text-align: center;
+    font-weight: var(--font-weight-medium);
 }
 
 /* Carrucel */
 
 #mainSwiper {
     width: 100%;
-    height: 350px;
+    max-height: 250px;
     border: 1px solid #8884;
     border-radius: 8px;
     overflow: hidden;
 }
 
+#mainSwiper .swiper-slide {
+    height: 250px;
+}
+
 #mainSwiper img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .thumbnailImagesContainer {
@@ -176,16 +279,17 @@ textarea{
 }
 
 #thumbsSwiper {
-    height: 90px;
+    height: 70px;
 }
 
 #thumbsSwiper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border: solid 1px #888;
     border-radius: 6px;
 }
 
 .swiper-slide-thumb-active img {
-    border: 2px solid var(--danger-color);
+    border: 2px solid var(--danger-color) !important;
 }

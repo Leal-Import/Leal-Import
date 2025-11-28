@@ -11,6 +11,25 @@
 </head>
 
 <body>
+    <div class="containerModal hide">
+        <div class="modalVoucher modalAdd">
+            <button id="closeVoucherModal" class="btnClose" type="button">
+                <img src="../media/appMedia/closeIcon.svg" alt="Cerrar">
+            </button>
+            <h2>
+                Comprobante de abono
+                <span id="modalAbonoTitle" style="font-weight: 400; font-size: 0.9em; color: #777;"></span>
+            </h2>
+            <div id="modalPreviewArea" class="preview-area"></div>
+            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btnSelectFile" class="btnPrimary" type="button">Seleccionar comprobante</button>
+                <button id="btnClearFile" class="btnDanger hide" type="button">
+                    Eliminar Comprobante
+                </button>
+            </div>
+            <input type="hidden" id="currentReceiptInputId">
+        </div>
+    </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
@@ -43,41 +62,93 @@
                             </div>
                         </div>
                         <div class="vehicleInfo">
-                            <div class="firstColumnInfo">
-                                <div class="infoItem">
-                                    <span class="infoLabel">Vin:</span>
-                                    <span id="vehicleVin" class="infoValue"></span>
+                            <div class="mainInfoContainer">
+                                <div class="columnInfo">
+                                    <h2>Vehiculo</h2>
+                                    <div class="bodyDataInfo">
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Vin:</span>
+                                            <span id="vehicleVin" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Marca:</span>
+                                            <span id="vehicleBrand" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Fecha compra:</span>
+                                            <span id="purchaseDate" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Modelo:</span>
+                                            <span id="vehicleModel" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Lote:</span>
+                                            <a id="lote" class="infoValue" target="_blank"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Año:</span>
+                                            <span id="vehicleYear" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Millaje:</span>
+                                            <span id="mileaje" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Estado:</span>
+                                            <span id="status" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Precio sugerido:</span>
+                                            <span id="suggestedPrice" class="values"
+                                                style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="infoItem">
-                                    <span class="infoLabel">Marca:</span>
-                                    <span id="vehicleBrand" class="infoValue"></span>
-                                </div>
-                                <div class="infoItem">
-                                    <span class="infoLabel">Modelo:</span>
-                                    <span id="vehicleModel" class="infoValue"></span>
-                                </div>
-                                <div class="infoItem">
-                                    <span class="infoLabel">Año:</span>
-                                    <span id="vehicleYear" class="infoValue"></span>
-                                </div>
-                                <div class="infoItem">
-                                    <span class="infoLabel">Lote:</span>
-                                    <a id="lote" class="infoValue"></a>
-                                </div>
-                                <div class="infoItem">
-                                    <span class="infoLabel">Factura:</span>
-                                    <span id="bill" class="infoValue"></span>
+                                <div class="columnInfo">
+                                    <h2>Costos</h2>
+                                    <div class="bodyDataInfo">
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Factura:</span>
+                                            <a id="bill" class="infoValue"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Impuestos:</span>
+                                            <a id="taxes" class="infoValue"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Barco:</span>
+                                            <a id="ship" class="infoValue"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Transporte:</span>
+                                            <a id="towTruck" class="infoValue"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Almacen:</span>
+                                            <span id="stotage" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Transfer:</span>
+                                            <span id="transfer" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Iva:</span>
+                                            <span id="iva" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">P.A:</span>
+                                            <span id="pa" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Costo total:</span>
+                                            <span id="total" class="values"
+                                                style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="infoItem">
-                                <span class="lblData">Costo total:</span>
-                                <span id="total" class="values"></span>
-                            </div>
-                            <div class="infoItem">
-                                <span class="lblData">Precio sugerido:</span>
-                                <span id="suggestedPrice" class="values"
-                                    style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
-                            </div>
+                            <button class="btnSecondary btnCancelVehicle">Cancelar</button>
                         </div>
                     </div>
                     <div class="filterSection">
@@ -100,36 +171,38 @@
                     </div>
                 </div>
             </div>
-            <form class="rightColumn">
-                <div class="bodyRightColumn">
-                    <h2>Abonos</h2>
-                    <div class="amounts">
-                        <div class="containerAmount">
-                            <input type="text" placeholder="Abono 1" class="txtInputs amountInput">
-                            <select id="" class="txtInputs"></select>
+            <div class="rightColumn">
+                <form class="formRightColumn">
+                    <div class="bodyRightColumn">
+                        <h2>Abonos</h2>
+                        <div class="amounts">
+                            <div class="containerAmount">
+                                <input type="text" placeholder="Abono 1" class="txtInputs amountInput">
+                                <select id="" class="txtInputs"></select>
+                            </div>
+                        </div>
+                        <div class="containerAmountDue" id="containerAmountDue">
+                            <h3>Deuda:</h3>
+                            <span id="due"></span>
                         </div>
                     </div>
-                    <div class="containerAmountDue" id="containerAmountDue">
-                        <h3>Deuda:</h3>
-                        <span id="due"></span>
+                    <div class="footerRightColumn">
+                        <div class="formGroup">
+                            <label for="txtNotes" class="lbl">Notas adicionales</label>
+                            <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtCommission" class="lbl">Comision</label>
+                            <input type="text" id="txtCommission" class="txtInputs">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtTotal" class="lbl">Precio final del vehiculo</label>
+                            <input type="text" id="txtTotal" class="txtInputs">
+                        </div>
+                        <input type="submit" value="Guardar" class="btnPrimary btnSubmitData">
                     </div>
-                </div>
-                <div class="footerRightColumn">
-                    <div class="formGroup">
-                        <label for="txtNotes" class="lbl">Notas adicionales</label>
-                        <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtComission" class="lbl">Comision</label>
-                        <input type="text" id="txtComission" class="txtInputs">
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtTotal" class="lbl">Precio final del vehiculo</label>
-                        <input type="text" id="txtTotal" class="txtInputs">
-                    </div>
-                    <input type="submit" value="Guardar" class="btnPrimary btnSubmitData">
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>

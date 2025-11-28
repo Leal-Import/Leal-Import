@@ -361,7 +361,7 @@ export function enableFormUI(frm) {
 }
 
 /* Llenar select */
-export const fillSelect = (selectId, data, valueKey, textKey) => {
+export const fillSelect = (selectId, data, valueKey, textKey, defaultText = 'Seleccione una opción') => {
     const select = document.getElementById(selectId);
     if (!select) return;
 
@@ -372,7 +372,7 @@ export const fillSelect = (selectId, data, valueKey, textKey) => {
 
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
-    defaultOption.textContent = 'Seleccione una opción';
+    defaultOption.textContent = defaultText;
     select.appendChild(defaultOption);
 
     data.forEach(item => {
