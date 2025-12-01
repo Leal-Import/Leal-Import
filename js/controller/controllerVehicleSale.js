@@ -3,10 +3,15 @@ import {
     getVehicles
 } from '../service/serviceVehicle.js'
 import { getVehicles as getVehicleByVin } from '../service/serviceVehicleDetails.js'
+import { postVehicle } from '../service/serviceVehicleSale.js'
 import {
     formatWithCommas,
     allowDecimal,
-    fillSelect
+    fillSelect,
+    getInputsValues,
+    highlightAndFocus,
+    cleanNumber,
+    showMessage
 } from '../utils.js'
 
 const params = new URLSearchParams(window.location.search);
@@ -16,11 +21,20 @@ const saleKey = `saleState_cliente_${customerId}`;
 
 const txtTotal = document.getElementById("txtTotal");
 const txtCommission = document.getElementById("txtCommission");
+const frmVehicleSale = document.getElementById("frmVehicleSale");
 
-let vehicleId = null;
+let vehicleId = params.get('vin') || null;
+let currentId = null;
 
 allowDecimal(txtTotal);
 allowDecimal(txtCommission);
+
+document.addEventListener("click", (e) => {
+    if (e.target && e.target.classList.contains("containerModal")) {
+        e.target.classList.add("hide");
+        e.target.classList.remove("show");
+    }
+});
 
 let paymentMethodsList = [];
 let loadPayMethods = async () => {
@@ -32,10 +46,115 @@ let loadPayMethods = async () => {
     }
 }
 
+frmVehicleSale.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = getInputsValues(frmVehicleSale);
+
+    const {
+        txtTotal,
+        txtCommission,
+        txtNotes
+    } = formData;
+
+    if (!vehicleId) {
+        showMessage('Por favor, seleccione un vehículo para la venta.', 'Vehículo no seleccionado', 'warning');
+        return;
+    }
+
+    if (!txtTotal) {
+        highlightAndFocus(document.getElementById('txtTotal'));
+        showMessage('Por favor, ingrese el precio total de la venta.', 'Precio total requerido', 'warning');
+        return;
+    }
+
+    const firstAmount = document.getElementById("amountInput1");
+    if (firstAmount.value.trim() == "") {
+        highlightAndFocus(firstAmount);
+        showMessage('Por favor, ingrese al menos un abono para la venta.', 'Abono requerido', 'warning');
+        return;
+    }
+    const amountData = [];
+    const imagesAmounts = [];
+
+    const amounts = document.querySelectorAll('.containerAmount');
+
+    for (let i = 0; i < amounts.length - 1; i++) {
+        const amountInput = amounts[i].querySelector('.amountInput');
+        const paymentTypeSelect = amounts[i].querySelector('.paymentTypeSelect');
+        const receiptInput = amounts[i].querySelector('.receiptInput');
+        const amountValue = parseFloat(amountInput.value.replace(/[$,]/g, ""));
+
+        if (isNaN(amountValue) || amountValue <= 0) {
+            highlightAndFocus(amountInput);
+            showMessage(`Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'Monto inválido', 'warning');
+            return;
+        }
+        amountData.push({
+            amount: amountValue,
+            idPaymentMethod: paymentTypeSelect.value,
+            idEmployee: "63433493-d660-4fd6-bcda-e57a8ba0f26b" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        });
+        if (receiptInput.files.length == 0) {
+            highlightAndFocus(amountInput);
+            showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
+            return;
+        }
+        if (paymentTypeSelect.value == "") {
+            highlightAndFocus(paymentTypeSelect);
+            showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
+            return;
+        }
+        imagesAmounts.push(receiptInput.files[0] || null);
+    }
+
+    const fd = new FormData();
+
+    const saleData = {
+        salePrice: txtTotal.replace(/[$,]/g, ""),
+        idCustomer: customerId,
+        commission: cleanNumber(txtCommission) || 0,
+        notes: txtNotes || "",
+        idEmployee: "63433493-d660-4fd6-bcda-e57a8ba0f26b", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        payments: amountData
+    }
+
+    fd.append("vehicleData", JSON.stringify(saleData));
+
+    imagesAmounts.forEach(file => {
+        fd.append("paymentImages", file);
+    });
+
+    try {
+        if (currentId != null) {
+
+        } else {
+            await postVehicle(fd, vehicleId);
+            showMessage('Venta registrada con éxito.', 'Éxito', 'success');
+            cancelVehicleSelection();
+        }
+    } catch (error) {
+        console.error("Error al realizar la operación:", error);
+        const errorMessage = error.message || 'Error desconocido al registrar la venta.';
+        showMessage(errorMessage, 'error', 'error');
+    }
+});
+
+let loadLinkAddVehicle = () => {
+    const customerId = params.get('idCustomer') || null;
+    const customerName = params.get('customerName') || null;
+    const btnAddPart = document.getElementById("btnAddPart");
+    btnAddPart.href = `vehicleDetails.html?sale=true&idCustomer=${customerId}&customerName=${customerName}`;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     await loadVehicles();
     await loadPayMethods();
+    loadLinkAddVehicle();
     setupModalListeners();
+
+    if (vehicleId) {
+        await loadVehicle(vehicleId);
+    }
 
     txtTotal.addEventListener("input", managePaymentsAndCalculateDebt);
     txtCommission.addEventListener("input", saveSaleState);
@@ -106,7 +225,6 @@ let insertVehicles = (vehicles) => {
             btnAddVehicle.addEventListener("click", async () => {
                 vehicleId = vehicle.vin;
                 await loadVehicle(vehicle.vin);
-                txtTotal.value = `$${formatWithCommas(vehicle.total)}`; /* Aca por defecto va a ir el precio sugerido */
                 saveSaleState();
             })
 
@@ -147,6 +265,8 @@ let loadVehicle = async (vin) => {
     document.getElementById("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
     document.getElementById("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
 
+    txtTotal.value = `$${formatWithCommas(vehicle.costs.total)}`; /* Aca por defecto va a ir el precio sugerido */
+
     loadVehicleImages(vehicle.photos);
 }
 
@@ -168,7 +288,6 @@ let loadSaleState = async () => {
     if (state.vehicleId) {
         vehicleId = state.vehicleId;
         await loadVehicle(vehicleId);
-
         // Restaurar el precio final si fue modificado
         if (state.finalPrice) {
             txtTotal.value = `$${formatWithCommas(state.finalPrice)}`;
@@ -188,20 +307,20 @@ let loadSaleState = async () => {
         // 3. Restaurar los campos de abonos
         let lastValueWasZero = false;
         state.payments.forEach((payment, index) => {
-             // 🔑 LÓGICA CLAVE: Solo restauramos si es una URL remota completa.
-             const receiptRef = payment.receiptUrl && payment.receiptUrl.startsWith('http') ? payment.receiptUrl : null;
-             
-             // Aquí pasamos la URL remota (o null)
-             createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef); 
-             
-             if (payment.amount === 0) lastValueWasZero = true; else lastValueWasZero = false;
+            // 🔑 LÓGICA CLAVE: Solo restauramos si es una URL remota completa.
+            const receiptRef = payment.receiptUrl && payment.receiptUrl.startsWith('http') ? payment.receiptUrl : null;
+
+            // Aquí pasamos la URL remota (o null)
+            createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef);
+
+            if (payment.amount === 0) lastValueWasZero = true; else lastValueWasZero = false;
         });
 
         // 4. Asegurar un campo vacío al final si el último abono guardado tenía valor
         if (state.payments.length > 0 && !lastValueWasZero) {
             createInitialPaymentField(0, null, null); // Campo vacío para el siguiente abono
         }
-        
+
     } else {
         // Si no hay vehículo, limpiamos la venta guardada en localStorage
         localStorage.removeItem(saleKey);
@@ -280,11 +399,11 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     receiptButton.innerHTML = `<span class="icon">+</span>`; // Ícono de clip (Añadir/Cambiar)
 
     // === LISTENERS ===
-    
+
     // El botón principal AHORA abre tu función de modal
     receiptButton.addEventListener("click", (e) => {
         e.preventDefault();
-        openReceiptModal(receiptInput, receiptButton); 
+        openReceiptModal(receiptInput, receiptButton);
     });
 
     // 🔑 Ya no necesitamos el listener 'change' aquí. El modal lo gestionará.
@@ -319,27 +438,27 @@ function updateModalContent(inputElement, buttonElement) {
     const previewArea = document.getElementById('modalPreviewArea');
     const btnClear = document.getElementById('btnClearFile');
     const placeholder = document.getElementById('previewPlaceholder'); // Referencia al elemento existente
-    
+
     // Asumimos que la URL remota está en el data-receipt-url del botón clip
     const remoteUrl = buttonElement.getAttribute('data-receipt-url');
 
     const hasLocalFile = inputElement.files.length > 0;
     const hasRemoteUrl = remoteUrl && remoteUrl.startsWith('http');
     const isLoaded = hasLocalFile || hasRemoteUrl;
-    
+
     // Limpiamos el contenido del preview area antes de decidir qué mostrar
     previewArea.innerHTML = '';
 
     if (isLoaded) {
         btnClear.classList.remove('hide');
-        
-        let urlToPreview = hasLocalFile 
-            ? URL.createObjectURL(inputElement.files[0]) 
+
+        let urlToPreview = hasLocalFile
+            ? URL.createObjectURL(inputElement.files[0])
             : remoteUrl;
-            
+
         // 2. Inyectar el elemento de previsualización
         const previewElement = document.createElement(urlToPreview.endsWith('.pdf') ? 'embed' : 'img');
-        
+
         if (previewElement.tagName === 'IMG') {
             previewElement.src = urlToPreview;
             previewElement.style.maxWidth = '100%';
@@ -356,7 +475,7 @@ function updateModalContent(inputElement, buttonElement) {
     } else {
         // Nada cargado: Añadir el placeholder existente
         btnClear.classList.add('hide');
-        
+
         // 🔑 CORRECCIÓN: Volvemos a añadir el placeholder al área de preview
         if (placeholder) {
             previewArea.appendChild(placeholder);
@@ -384,34 +503,34 @@ function setupModalListeners() {
     // Función para cerrar el modal y limpiar el control
     const closeModalAndClean = () => {
         modalContainer.classList.add('hide');
-        inputIdField.value = ''; 
+        inputIdField.value = '';
     };
 
     // --- 1. Cerrar Modal ---
     btnClose.onclick = closeModalAndClean;
-    
+
     // --- 2. Acción: SELECCIONAR/CAMBIAR ---
     btnSelectFile.onclick = () => {
         const inputElement = document.getElementById(inputIdField.value);
         if (inputElement) {
             // Limpiamos el valor para forzar el evento 'change' si selecciona el mismo archivo
-            inputElement.value = ''; 
+            inputElement.value = '';
             inputElement.click(); // Abre el selector de archivos
         }
     };
-    
+
     // --- 3. Acción: ELIMINAR ---
     btnClearFile.onclick = () => {
         const inputElement = document.getElementById(inputIdField.value);
         if (inputElement) {
             // A. Limpiar el archivo del navegador
-            inputElement.value = ''; 
-            
+            inputElement.value = '';
+
             // B. Actualizar visuales del botón clip (buscar por el ID)
-            const clipButton = document.querySelector(`#${inputElement.id}`).nextElementSibling; 
+            const clipButton = document.querySelector(`#${inputElement.id}`).nextElementSibling;
             clipButton.classList.remove("receipt-loaded");
             clipButton.removeAttribute("data-receipt-url");
-            
+
             // C. Guardar estado (sin archivo) y cerrar modal
             saveSaleState();
             closeModalAndClean();
@@ -424,19 +543,19 @@ function setupModalListeners() {
         if (e.target.classList.contains('receiptInput')) {
             const inputElement = e.target;
             const clipButton = inputElement.nextElementSibling;
-            
+
             if (inputElement.files.length > 0) {
                 // Hay archivo: Marcar el clip como cargado y guardar referencia temporal
                 clipButton.classList.add("receipt-loaded");
-                clipButton.setAttribute("data-receipt-url", inputElement.files[0].name); 
+                clipButton.setAttribute("data-receipt-url", inputElement.files[0].name);
             } else {
-                 // Cancelación: Limpiar visuales
-                 clipButton.classList.remove("receipt-loaded");
-                 clipButton.removeAttribute("data-receipt-url");
+                // Cancelación: Limpiar visuales
+                clipButton.classList.remove("receipt-loaded");
+                clipButton.removeAttribute("data-receipt-url");
             }
-            
-            saveSaleState(); 
-            
+
+            saveSaleState();
+
             // Si el modal estaba abierto para ESTE input, actualizamos la previsualización
             if (!modalContainer.classList.contains('hide') && inputElement.id === inputIdField.value) {
                 // Re-ejecutamos la lógica de visualización del modal
@@ -546,11 +665,11 @@ function saveSaleState() {
 
     const notes = document.getElementById("txtNotes")?.value || "";
     const commission = parseFloat(document.getElementById("txtCommission")?.value.replace(/[$,]/g, "")) || 0;
-    const finalPrice = parseFloat(document.getElementById("txtTotal")?.value.replace(/[$,]/g, "")) || 0; 
+    const finalPrice = parseFloat(document.getElementById("txtTotal")?.value.replace(/[$,]/g, "")) || 0;
 
     const state = {
         vehicleId,
-        payments, 
+        payments,
         notes,
         commission,
         finalPrice
