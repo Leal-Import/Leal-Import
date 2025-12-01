@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/addWorkOrder.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <title>Crear orden</title>
+</head>
+
+<body>
+    <div class="containerModal hide">
+        <div class="modalVoucher modalAdd">
+            <button id="closeVoucherModal" class="btnClose" type="button">
+                <img src="../media/appMedia/closeIcon.svg" alt="Cerrar">
+            </button>
+            <h2>
+                Comprobante de abono
+                <span id="modalAbonoTitle" style="font-weight: 400; font-size: 0.9em; color: #777;"></span>
+            </h2>
+            <div id="modalPreviewArea" class="preview-area"></div>
+            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btnSelectFile" class="btnPrimary" type="button">Seleccionar comprobante</button>
+                <button id="btnClearFile" class="btnDanger hide" type="button">
+                    Eliminar Comprobante
+                </button>
+            </div>
+            <input type="hidden" id="currentReceiptInputId">
+        </div>
+    </div>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <div class="content">
+            <div class="leftColumn">
+                <div class="headerContent">
+                    <div class="breadCrumbSection">
+                        <a href="sales.html" class="breadcrumb">Ventas ></a>
+                        <a class="breadcrumb">Presupuesto</a>
+                    </div>
+                </div>
+                <div class="bodyLeftPart">
+                    <div class="moreDataContainer">
+                        <div class="rowInfo">
+                            <div class="dataInfo">
+                                <span class="lblInfo">Vin: </span>
+                                <span class="valueInfo" id="vin"></span>
+                            </div>
+                            <div class="dataInfo">
+                                <span class="lblInfo">Marca: </span>
+                                <span class="valueInfo" id="brand">KAWASAKI</span>
+                            </div>
+                            <div class="dataInfo">
+                                <span class="lblInfo">Modelo: </span>
+                                <span class="valueInfo" id="model">ZX4</span>
+                            </div>
+                            <div class="dataInfo">
+                                <span class="lblInfo">Año: </span>
+                                <span class="valueInfo" id="year">2023</span>
+                            </div>
+                        </div>
+                        <div class="rowInfo">
+                            <div class="dataInfo">
+                                <span class="lblInfo">Precio de vehiculo: </span>
+                                <span class="valueInfo" id="vehiclePrice"></span>
+                            </div>
+                            <div class="dataInfo">
+                                <span class="lblInfo">Costos de reparación: </span>
+                                <span class="valueInfo">$2,000</span>
+                            </div>
+                        </div>
+                        <div class="dataInfo">
+                            <span class="lblInfo">Total reparada: </span>
+                            <span class="valueInfo">$14,000</span>
+                        </div>
+                    </div>
+                    <div class="tablesDataContainer">
+                        <div class="containerTables">
+                            <div class="tableContainer">
+                                <div class="containerInput">
+                                    <input type="text" id="txtSearchSparePart" class="txtInputs"
+                                        placeholder="Buscar repuestos">
+                                </div>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Repuesto</th>
+                                            <th>Precio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tBodySpareParts" class="tBodyData"></tbody>
+                                </table>
+                                <div class="dataInfo">
+                                    <span class="lblInfoTotals">Total repuestos: </span>
+                                    <span class="valueInfo">$14,000</span>
+                                </div>
+                            </div>
+                            <div class="tableContainer">
+                                <div class="containerInput">
+                                    <input type="text" id="txtAddService" class="txtInputs"
+                                        placeholder="Añadir servicios">
+                                </div>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Servicio</th>
+                                            <th>Precio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tBodyServices" class="tBodyData"></tbody>
+                                </table>
+                                <div class="dataInfo">
+                                    <span class="lblInfoTotals">Total servicios: </span>
+                                    <span class="valueInfo">$14,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="infoRow">
+                        </div>
+                        <div class="dataInfo">
+                            <span class="lblInfoTotals">Total: </span>
+                            <span class="valueInfo">$14,000</span>
+                        </div>
+                    </div>
+                    <div class="downInfo">
+
+                    </div>
+                </div>
+            </div>
+            <div class="rightColumn">
+                <form class="formRightColumn" id="frmVehicleSale">
+                    <div class="bodyRightColumn">
+                        <h2>Abonos</h2>
+                        <div class="amounts"></div>
+                        <div class="containerAmountDue" id="containerAmountDue">
+                            <h3>Deuda:</h3>
+                            <span id="due"></span>
+                        </div>
+                    </div>
+                    <div class="footerRightColumn">
+                        <div class="formGroup">
+                            <label for="txtNotes" class="lbl">Notas adicionales</label>
+                            <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
+                        </div>
+                        <div class="formGroup">
+                            <label for="dtEstimated" class="lbl">Fecha estimada</label>
+                            <input type="date" id="dtEstimated" class="txtInputs">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtTotal" class="lbl">Precio de la orden</label>
+                            <input type="text" id="txtTotal" class="txtInputs" disabled>
+                        </div>
+                        <div class="containerButtons">
+                            <input type="submit" value="Crear orden" class="btnPrimary btnSubmitData">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerAddWorkOrder.js"></script>
+    <script type="module" src="../js/service/serviceAddWorkOrder.js"></script>
+</body>
+
+</html>

@@ -22,6 +22,7 @@ const saleKey = `saleState_cliente_${customerId}`;
 const txtTotal = document.getElementById("txtTotal");
 const txtCommission = document.getElementById("txtCommission");
 const frmVehicleSale = document.getElementById("frmVehicleSale");
+const btnCreateOrder = document.getElementById("btnCreateOrder");
 
 let vehicleId = params.get('vin') || null;
 let currentId = null;
@@ -36,6 +37,14 @@ document.addEventListener("click", (e) => {
     }
 });
 
+btnCreateOrder.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const data = await createNewSale();
+    if (data) {
+        window.location.href = `addWorkOrder.html?vehicleSale=true&customerName=${customerName}&vin=${data.vin}&idCustomer=${customerId}&totalPrice=${data.price}`;
+    }
+})
+
 let paymentMethodsList = [];
 let loadPayMethods = async () => {
     try {
@@ -48,6 +57,11 @@ let loadPayMethods = async () => {
 
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
+    await createNewSale();
+    window.location.href = "sales.html"
+});
+
+let createNewSale = async () => {
     const formData = getInputsValues(frmVehicleSale);
 
     const {
@@ -64,6 +78,12 @@ frmVehicleSale.addEventListener("submit", async (e) => {
     if (!txtTotal) {
         highlightAndFocus(document.getElementById('txtTotal'));
         showMessage('Por favor, ingrese el precio total de la venta.', 'Precio total requerido', 'warning');
+        return;
+    }
+
+    if (!txtCommission) {
+        highlightAndFocus(document.getElementById('txtCommission'));
+        showMessage('Por favor, ingrese la comision de la venta.', 'Comisión requerida', 'warning');
         return;
     }
 
@@ -92,7 +112,7 @@ frmVehicleSale.addEventListener("submit", async (e) => {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "63433493-d660-4fd6-bcda-e57a8ba0f26b" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "490250a0-d247-4b7a-b862-3f38b79d798b" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         });
         if (receiptInput.files.length == 0) {
             highlightAndFocus(amountInput);
@@ -114,7 +134,7 @@ frmVehicleSale.addEventListener("submit", async (e) => {
         idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "63433493-d660-4fd6-bcda-e57a8ba0f26b", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "490250a0-d247-4b7a-b862-3f38b79d798b", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData
     }
 
@@ -126,18 +146,21 @@ frmVehicleSale.addEventListener("submit", async (e) => {
 
     try {
         if (currentId != null) {
-
         } else {
-            await postVehicle(fd, vehicleId);
-            showMessage('Venta registrada con éxito.', 'Éxito', 'success');
+            let response = await postVehicle(fd, vehicleId);
+            await showMessage('Venta registrada con éxito.', 'Éxito', 'success');
             cancelVehicleSelection();
+            return {
+                vin: response.data.vin,
+                price: response.data.salePrice
+            };
         }
     } catch (error) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar la venta.';
         showMessage(errorMessage, 'error', 'error');
     }
-});
+}
 
 let loadLinkAddVehicle = () => {
     const customerId = params.get('idCustomer') || null;
@@ -249,7 +272,7 @@ let loadVehicle = async (vin) => {
     document.getElementById("lote").textContent = vehicle.lote.numLote;
     document.getElementById("lote").href = vehicle.lote.linkLote;
     document.getElementById("status").textContent = vehicle.status;
-    document.getElementById("suggestedPrice").textContent = `$${formatWithCommas(vehicle.costs.total)}`; // Por el momento es costo total
+    document.getElementById("suggestedPrice").textContent = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; // Por el momento es costo total
 
     document.getElementById("bill").textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
     document.getElementById("bill").href = vehicle.costs.costPhoto.billPhoto;
@@ -265,7 +288,7 @@ let loadVehicle = async (vin) => {
     document.getElementById("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
     document.getElementById("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
 
-    txtTotal.value = `$${formatWithCommas(vehicle.costs.total)}`; /* Aca por defecto va a ir el precio sugerido */
+    txtTotal.value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
 
     loadVehicleImages(vehicle.photos);
 }
@@ -331,28 +354,6 @@ let loadSaleState = async () => {
     managePaymentsAndCalculateDebt();
 };
 
-function viewReceipt(receiptInput, remoteUrl) {
-    let url = null;
-    console.log(remoteUrl)
-    // 1. Prioridad: URL remota (si el estado fue cargado/restaurado y es una URL completa)
-    if (remoteUrl && remoteUrl.startsWith('http')) {
-        url = remoteUrl;
-    }
-    else if (receiptInput.files.length > 0) {
-        try {
-            url = URL.createObjectURL(receiptInput.files[0]);
-        } catch (e) {
-            console.error("Error al crear URL local:", e);
-        }
-    }
-
-    if (url) {
-        window.open(url, '_blank');
-    } else {
-        alert("No se pudo visualizar el comprobante. Si el archivo fue seleccionado localmente, la visualización solo es posible en la misma sesión antes de recargar la página.");
-    }
-}
-
 function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
     const amountContainer = document.querySelector(".amounts");
 
@@ -379,6 +380,8 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     const select = document.createElement("select");
     select.classList.add("txtInputs", "paymentTypeSelect");
     select.id = `paymentTypeSelect${index}`;
+
+    select.addEventListener("change", saveSaleState);
 
     // === ELEMENTOS PARA EL COMPROBANTE ===
     const receiptContainer = document.createElement("div");
