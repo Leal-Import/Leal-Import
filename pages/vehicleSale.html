@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/vehicleSale.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <title>Agregar venta</title>
+</head>
+
+<body>
+    <div class="containerModal hide">
+        <div class="modalVoucher modalAdd">
+            <button id="closeVoucherModal" class="btnClose" type="button">
+                <img src="../media/appMedia/closeIcon.svg" alt="Cerrar">
+            </button>
+            <h2>
+                Comprobante de abono
+                <span id="modalAbonoTitle" style="font-weight: 400; font-size: 0.9em; color: #777;"></span>
+            </h2>
+            <div id="modalPreviewArea" class="preview-area"></div>
+            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btnSelectFile" class="btnPrimary" type="button">Seleccionar comprobante</button>
+                <button id="btnClearFile" class="btnDanger hide" type="button">
+                    Eliminar Comprobante
+                </button>
+            </div>
+            <input type="hidden" id="currentReceiptInputId">
+        </div>
+    </div>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <div class="content">
+            <div class="leftColumn">
+                <div class="headerContent">
+                    <div class="breadCrumbSection">
+                        <a href="sales.html" class="breadcrumb">Ventas ></a>
+                        <a class="breadcrumb" id="customerName"></a>
+                    </div>
+                </div>
+                <div class="bodyLeftPart">
+                    <div class="viewVechicleContainer hide">
+                        <div class="imagesSection">
+                            <div class="vehicleImagesSection">
+                                <div>
+                                    <div class="swiper" id="mainSwiper">
+                                        <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                                        <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
+                                        <div class="swiper-button-next" style="color: var(--danger-color);"></div>
+                                    </div>
+
+                                    <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                                        <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                            <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                                        </div>
+                                    </div>
+
+                                    <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vehicleInfo">
+                            <div class="mainInfoContainer">
+                                <div class="columnInfo">
+                                    <h2>Vehiculo</h2>
+                                    <div class="bodyDataInfo">
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Fecha compra:</span>
+                                            <span id="purchaseDate" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Vin:</span>
+                                            <span id="vehicleVin" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Año:</span>
+                                            <span id="vehicleYear" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Lote:</span>
+                                            <a id="lote" class="infoValue" target="_blank"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Marca:</span>
+                                            <span id="vehicleBrand" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Modelo:</span>
+                                            <span id="vehicleModel" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Millaje:</span>
+                                            <span id="mileaje" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Estado:</span>
+                                            <span id="status" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Precio sugerido:</span>
+                                            <span id="suggestedPrice" class="values"
+                                                style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columnInfo">
+                                    <h2>Costos</h2>
+                                    <div class="bodyDataInfo">
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Factura:</span>
+                                            <a id="bill" class="infoValue"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Impuestos:</span>
+                                            <a id="taxes" class="infoValue"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Barco:</span>
+                                            <a id="ship" class="infoValue"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Transporte:</span>
+                                            <a id="towTruck" class="infoValue"></a>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Almacen:</span>
+                                            <span id="stotage" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Transfer:</span>
+                                            <span id="transfer" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Iva:</span>
+                                            <span id="iva" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">P.A:</span>
+                                            <span id="pa" class="infoValue"></span>
+                                        </div>
+                                        <div class="infoItem">
+                                            <span class="infoLabel">Costo total:</span>
+                                            <span id="total" class="values"
+                                                style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btnSecondary btnCancelVehicle">Cancelar</button>
+                        </div>
+                    </div>
+                    <div class="filterSection">
+                        <input type="text" id="txtSearchData" class="txtSearchData"
+                            placeholder="Buscar por: vin, marca o modelo">
+                        <a class="btnPrimary btnOpenModal" id="btnAddPart">Realizar encargo</a>
+                    </div>
+                    <div class="tableContainer">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Vin</th>
+                                    <th>Costo</th>
+                                    <th>P. sugerido</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tBodyInventory"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="rightColumn">
+                <form class="formRightColumn" id="frmVehicleSale">
+                    <div class="bodyRightColumn">
+                        <h2>Abonos</h2>
+                        <div class="amounts">
+                            <div class="containerAmount">
+                                <input type="text" placeholder="Abono 1" class="txtInputs amountInput">
+                                <select id="" class="txtInputs"></select>
+                            </div>
+                        </div>
+                        <div class="containerAmountDue" id="containerAmountDue">
+                            <h3>Deuda:</h3>
+                            <span id="due"></span>
+                        </div>
+                    </div>
+                    <div class="footerRightColumn">
+                        <div class="formGroup">
+                            <label for="txtNotes" class="lbl">Notas adicionales</label>
+                            <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtCommission" class="lbl">Comision</label>
+                            <input type="text" id="txtCommission" class="txtInputs">
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtTotal" class="lbl">Precio final del vehiculo</label>
+                            <input type="text" id="txtTotal" class="txtInputs">
+                        </div>
+                        <input type="submit" value="Guardar" class="btnPrimary btnSubmitData">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerVehicleSale.js"></script>
+</body>
+
+</html>

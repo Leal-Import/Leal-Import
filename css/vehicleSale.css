@@ -1,0 +1,295 @@
+.content {
+    flex-direction: row;
+}
+
+.breadCrumbSection {
+    display: inline-flex;
+    margin-bottom: 1em;
+}
+
+.rightColumn {
+    flex: 2;
+    max-width: 450px;
+    position: sticky;
+    top: 0;
+}
+
+.formRightColumn {
+    height: 100%;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    border: var(--border);
+    padding: 5px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.leftColumn {
+    display: flex;
+    flex-direction: column;
+    flex: 3;
+}
+
+.filterSection {
+    margin-top: 6px;
+    padding-right: 5px;
+}
+
+.bodyLeftPart {
+    position: relative;
+    flex: 1;
+    height: fit-content;
+}
+
+.viewVechicleContainer {
+    position: absolute;
+    border-radius: 10px;
+    top: 0;
+    right: 0;
+    background-color: #f9f9f9;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    gap: 10px;
+    border: var(--border);
+}
+
+.vehicleInfo {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainInfoContainer {
+    display: flex;
+}
+
+.mainInfoContainer>div {
+    flex: 1;
+}
+
+.btnCancelVehicle {
+    padding: 5px 15px;
+    font-size: var(--font-size-lg);
+    border-radius: 10px;
+    align-self: end;
+    margin: 10px;
+}
+
+.columnInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2px;
+    border: var(--border);
+}
+
+.bodyDataInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.infoRow {
+    display: flex;
+}
+
+.columnInfo h2 {
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    font-size: var(--font-size-lg);
+}
+
+.priceColumn {
+    justify-content: start;
+}
+
+.infoItem {
+    flex: 1;
+    padding: 5px;
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--font-size-sm);
+}
+
+.infoItem .infoLabel {
+    font-weight: var(--font-weight-medium);
+}
+
+.btnPrimary {
+    padding: 5px 12px;
+    font-size: 1em;
+    text-decoration: none;
+    width: auto;
+    display: grid;
+    place-content: center;
+}
+
+.imgVehicleTable {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: var(--border);
+}
+
+.tableRow {
+    position: relative;
+}
+
+.btnAddVehicle {
+    position: absolute;
+    top: 25%;
+    right: 10px;
+    border-radius: 50%;
+    padding: 0px 10px !important;
+    font-size: var(--font-size-title) !important;
+}
+
+.leftColumn .table {
+    border: var(--border);
+    max-height: 100%;
+}
+
+.bodyRightColumn {
+    flex: 0 1 auto;
+    max-height: 50%;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: var(--border);
+}
+
+.bodyRightColumn h2 {
+    font-weight: var(--font-weight-medium);
+    font-size: 1.2em;
+}
+
+.btnVoucher {
+    padding: 3px 10px;
+    font-size: 1.2em;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.amounts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.containerAmount {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.containerAmountDue {
+    display: flex;
+    justify-content: space-between;
+}
+
+#due {
+    font-size: 1.4em;
+    color: var(--danger-color);
+    font-weight: var(--font-weight-semibold);
+}
+
+.containerAmountDue h3 {
+    font-weight: var(--font-weight-medium);
+    font-size: 1.4em;
+}
+
+.containerAmount .txtInputs {
+    flex: 1;
+    border-radius: 3px;
+    background-color: #fafafa;
+}
+
+.footerRightColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+textarea {
+    resize: none;
+}
+
+/* Modal */
+
+.modalAdd{
+    max-width: 600px;
+    width: 90%;
+}
+
+#btnSelectFile{
+    border-radius: var(--border-radius-input);
+}
+
+#modalPreviewArea {
+    min-height: 150px;
+    border: 3px dashed #888;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.containerModal h2{
+    text-align: center;
+    font-weight: var(--font-weight-medium);
+}
+
+/* Carrucel */
+
+#mainSwiper {
+    width: 100%;
+    max-height: 250px;
+    border: 1px solid #8884;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#mainSwiper .swiper-slide {
+    height: 250px;
+}
+
+#mainSwiper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumbnailImagesContainer {
+    margin-top: 10px;
+}
+
+#thumbsSwiper {
+    height: 70px;
+}
+
+#thumbsSwiper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: solid 1px #888;
+    border-radius: 6px;
+}
+
+.swiper-slide-thumb-active img {
+    border: 2px solid var(--danger-color) !important;
+}

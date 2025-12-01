@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/sparePartSale.css">
+    <title>Agregar venta</title>
+</head>
+
+<body>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <div class="content">
+            <div class="leftColumn">
+                <div class="headerContent">
+                    <div class="breadCrumbSection">
+                        <a href="sales.html" class="breadcrumb">Ventas ></a>
+                        <a class="breadcrumb" id="customerName"></a>
+                    </div>
+                    <div class="filterSection">
+                        <input type="text" id="txtSearchData" class="txtSearchData"
+                            placeholder="Buscar por: nombre, marca o modelo">
+                        <a class="btnPrimary btnOpenModal" id="btnAddPart">Realizar encargo</a>
+                    </div>
+                </div>
+                <div class="tableContainer">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Repuesto</th>
+                                <th>Costo</th>
+                                <th>P. sugerido</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBodyInventory"></tbody>
+                    </table>
+                </div>
+            </div>
+            <form class="rightColumn">
+                <div class="headerRightColumn">
+                    <div class="tableContainer">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="sparePartName">Repuesto</th>
+                                    <th class="finalPrice">Precio final</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tBodySelected">
+                                <tr class="rowNoData">
+                                    <td colspan="2" style="height: 100%;" class="noDataMessage">No hay repuestos seleccionados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="containerTotal" id="containerTotal">
+                        <h3>Total:</h3>
+                        <span id="total"></span>
+                    </div>
+                </div>
+                <div class="bodyRightColumn">
+                    <h2>Abonos</h2>
+                    <div class="amounts">
+                        <div class="containerAmount">
+                            <input type="text" placeholder="Abono 1" class="txtInputs amountInput">
+                            <select id="" class="txtInputs"></select>
+                        </div>
+                    </div>
+                    <div class="containerAmountDue" id="containerAmountDue">
+                        <h3>Deuda:</h3>
+                        <span id="due"></span>
+                    </div>
+                </div>
+                <div class="footerRightColumn">
+                    <div class="formGroup">
+                        <label for="txtNotes" class="lbl">Notas adicionales</label>
+                        <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
+                    </div>
+                    <input type="submit" value="Guardar" class="btnPrimary btnSubmitData">
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerSparePartSale.js"></script>
+</body>
+
+</html>

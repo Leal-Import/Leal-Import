@@ -18,6 +18,7 @@ import {
 const params = new URLSearchParams(window.location.search);
 
 let currentId = params.get("id");
+let sale = params.get("sale") || false;
 
 const frmVehicles = document.getElementById("frmVehicles");
 const btnLink = document.querySelector(".btnLink");
@@ -260,15 +261,21 @@ frmVehicles.addEventListener("submit", async (e) => {
 
     fd.append('vehicleData', JSON.stringify(vehicle));
     try {
+        let response;
         if (currentId != null) {
-            await putVehicle(fd, currentId);
+            response = await putVehicle(fd, currentId);
             await showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
-            window.location.href = "../../pages/vehicle.html";
         } else {
-            await postVehicle(fd);
+            response = await postVehicle(fd);
             await showMessage('Vehiculo agregado con éxito!', 'Exito', 'success');
-            window.location.href = "../../pages/vehicle.html";
         }
+
+        if (sale) {
+            window.location.href = `vehicleSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&vin=${response.data.vin}`;
+            return;
+        }
+
+        window.location.href = "vehicle.html";
     } catch (error) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar el vehiculo.';

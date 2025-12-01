@@ -82,7 +82,6 @@ let insertEmployees = (employees) => {
 
         tr.appendChild(td);
         fragment.appendChild(tr);
-        document.querySelector(".table").style.height = "100%";
     } else {
         employees.forEach(employee => {
             const tr = document.createElement("tr");

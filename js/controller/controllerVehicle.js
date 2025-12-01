@@ -140,6 +140,7 @@ let insertVehicles = (vehicles) => {
 
       // clases
       card.classList.add("card");
+      vehicleBrand.classList.add("truncate");
       headerCard.classList.add("headerCard");
       containerImgVehicle.classList.add("containerImgVehicle");
       footerCard.classList.add("footerCard");
