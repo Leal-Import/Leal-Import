@@ -1,9 +1,9 @@
 import { getPaymentMethods } from '../service/serviceConfiguration.js'
-import {
-    getVehicles
-} from '../service/serviceVehicle.js'
 import { getVehicles as getVehicleByVin } from '../service/serviceVehicleDetails.js'
-import { postVehicle } from '../service/serviceVehicleSale.js'
+import {
+    postVehicle,
+    getVehiclesAviable
+} from '../service/serviceVehicleSale.js'
 import {
     formatWithCommas,
     allowDecimal,
@@ -39,7 +39,7 @@ document.addEventListener("click", (e) => {
 
 btnCreateOrder.addEventListener("click", async (e) => {
     e.preventDefault();
-    const data = await createNewSale();
+    const data = await createNewSale(true);
     if (data) {
         window.location.href = `addWorkOrder.html?vehicleSale=true&customerName=${customerName}&vin=${data.vin}&idCustomer=${customerId}&totalPrice=${data.price}`;
     }
@@ -57,11 +57,14 @@ let loadPayMethods = async () => {
 
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
-    await createNewSale();
-    window.location.href = "sales.html"
+    let success = await createNewSale();
+    if (success) {
+        window.location.href = "sales.html";
+    }
+
 });
 
-let createNewSale = async () => {
+let createNewSale = async (isWO) => {
     const formData = getInputsValues(frmVehicleSale);
 
     const {
@@ -72,26 +75,26 @@ let createNewSale = async () => {
 
     if (!vehicleId) {
         showMessage('Por favor, seleccione un vehículo para la venta.', 'Vehículo no seleccionado', 'warning');
-        return;
+        return false;
     }
 
     if (!txtTotal) {
         highlightAndFocus(document.getElementById('txtTotal'));
         showMessage('Por favor, ingrese el precio total de la venta.', 'Precio total requerido', 'warning');
-        return;
+        return false;
     }
 
     if (!txtCommission) {
         highlightAndFocus(document.getElementById('txtCommission'));
         showMessage('Por favor, ingrese la comision de la venta.', 'Comisión requerida', 'warning');
-        return;
+        return false;
     }
 
     const firstAmount = document.getElementById("amountInput1");
     if (firstAmount.value.trim() == "") {
         highlightAndFocus(firstAmount);
         showMessage('Por favor, ingrese al menos un abono para la venta.', 'Abono requerido', 'warning');
-        return;
+        return false;
     }
     const amountData = [];
     const imagesAmounts = [];
@@ -107,7 +110,7 @@ let createNewSale = async () => {
         if (isNaN(amountValue) || amountValue <= 0) {
             highlightAndFocus(amountInput);
             showMessage(`Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'Monto inválido', 'warning');
-            return;
+            return false;
         }
         amountData.push({
             amount: amountValue,
@@ -117,12 +120,12 @@ let createNewSale = async () => {
         if (receiptInput.files.length == 0) {
             highlightAndFocus(amountInput);
             showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
-            return;
+            return false;
         }
         if (paymentTypeSelect.value == "") {
             highlightAndFocus(paymentTypeSelect);
             showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
-            return;
+            return false;
         }
         imagesAmounts.push(receiptInput.files[0] || null);
     }
@@ -150,10 +153,14 @@ let createNewSale = async () => {
             let response = await postVehicle(fd, vehicleId);
             await showMessage('Venta registrada con éxito.', 'Éxito', 'success');
             cancelVehicleSelection();
-            return {
-                vin: response.data.vin,
-                price: response.data.salePrice
-            };
+            if (isWO) {
+                return {
+                    vin: response.data.vin,
+                    price: response.data.salePrice
+                };
+            } else {
+                return true;
+            }
         }
     } catch (error) {
         console.error("Error al realizar la operación:", error);
@@ -194,7 +201,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 let loadVehicles = async () => {
-    const vehicles = await getVehicles();
+    const vehicles = await getVehiclesAviable();
     insertVehicles(vehicles.content);
 }
 
@@ -232,7 +239,7 @@ let insertVehicles = (vehicles) => {
             image.src = vehicle.photoUrl;
             vin.textContent = vehicle.vin;
             cost.textContent = `$${formatWithCommas(vehicle.total)}`;
-            suggesredPrice.textContent = `$${formatWithCommas(vehicle.total)}`; /* Por el momento es costo total */
+            suggesredPrice.textContent = `$${formatWithCommas(vehicle.suggestedPrice)}`; /* Por el momento es costo total */
 
             tr.classList.add("tableRow");
             btnAddVehicle.classList.add("btnPrimary", "btnAddVehicle");

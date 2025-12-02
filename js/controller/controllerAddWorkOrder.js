@@ -2,9 +2,11 @@ import { getPaymentMethods } from '../service/serviceConfiguration.js'
 import {
     formatWithCommas,
     allowDecimal,
-    fillSelect
+    fillSelect,
+    showMessage
 } from '../utils.js';
 
+const txtAddService = document.getElementById("txtAddService");
 
 const params = new URLSearchParams(window.location.search);
 let customerName = params.get("customerName") || null;
@@ -13,6 +15,8 @@ let idCustomer = params.get("idCustomer") || null;
 let vehiclePrice = params.get("totalPrice");
 let vehicleSale = params.get("vehicleSale");
 
+let rowsServices = 0;
+
 document.addEventListener("DOMContentLoaded", async () => {
     loadDataVehicle()
     await loadPayMethods();
@@ -20,11 +24,270 @@ document.addEventListener("DOMContentLoaded", async () => {
     createInitialPaymentField()
 })
 
+txtAddService.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        const serviceValue = e.target.value.trim();
+
+        if (serviceValue !== "") {
+            addNewService(serviceValue);
+            // 4. Limpiar el input después de agregar
+            e.target.value = "";
+        }
+    }
+});
+
+let addNewService = (value) => {
+    const rows = document.querySelectorAll("#tBodyServices tr");
+
+    // Asumiendo que 'rowsServices' es un índice numérico válido (ej. 0, 1, 2)
+    const currentRow = rows[rowsServices];
+    //const 
+
+    if (!currentRow) {
+        console.error(`Error: No se encontró la fila con el índice ${rowsServices}.`);
+        // Aquí podrías llamar a una función para *crear* una nueva fila si no existe.
+        return;
+    }
+
+    // 2. CORRECCIÓN: Usar .textContent para asignar el valor
+    const nameCell = currentRow.querySelector(".tdName");
+    const priceCell = currentRow.querySelector(".tdPrice");
+
+    if (nameCell && priceCell) {
+        const btnTrash = document.createElement("button");
+        const buttonIcon = document.createElement("img");
+        buttonIcon.src = "../../media/appMedia/trashIcon.png";
+        btnTrash.classList.add("btnTrash");
+        btnTrash.appendChild(buttonIcon);
+        nameCell.textContent = value;
+        priceCell.textContent = "0";
+        priceCell.setAttribute("contenteditable", "true");
+        btnTrash.addEventListener("click", () => {
+            nameCell.textContent = "";
+            priceCell.textContent = "";
+            priceCell.removeAttribute("contenteditable");
+            btnTrash.remove()
+            calculateTotalService();
+        })
+        priceCell.addEventListener("input", (e) => {
+            restrictToDecimal(e);
+            calculateTotalService();
+        });
+        currentRow.appendChild(btnTrash)
+        // 3. Opcional: Aumentar el índice si tienes más filas preexistentes
+        rowsServices++;
+    } else {
+        showMessage("Error", "No se encontraron las celdas .tdName o .tdPrice en la fila.", "error");
+    }
+}
+
+let calculateRepairCost = () => {
+    const totalRepairCost = document.getElementById("totalRepairCost");
+    const totalValueService = document.getElementById("totalValueService");
+    const totalValueSpareParts = document.getElementById("totalValueSpareParts");
+    const totalValueSparePartsDown = document.getElementById("totalValueSparePartsDown");
+
+    const totalservices = parseFloat(totalValueService.textContent.replace(/[$,\s]/g, '').trim());
+    const totalSpareParts = parseFloat(totalValueSpareParts.textContent.replace(/[$,\s]/g, '').trim());
+
+    totalRepairCost.textContent = `$${formatWithCommas(totalservices + totalSpareParts)}`;
+    totalValueSparePartsDown.textContent = `$${formatWithCommas(totalservices + totalSpareParts)}`;
+
+    calculateTotal();
+}
+
+let calculateTotal = () => {
+    const totalCost = document.getElementById("totalCost");
+    const totalRepairCost = document.getElementById("totalRepairCost");
+    const vehiclePrice = document.getElementById("vehiclePrice");
+
+    const totalR = parseFloat(totalRepairCost.textContent.replace(/[$,\s]/g, '').trim());
+    const totalV = parseFloat(vehiclePrice.textContent.replace(/[$,\s]/g, '').trim());
+
+    totalCost.textContent = `$${formatWithCommas(totalR + totalV)}`;
+}
+
+let calculateTotalService = () => {
+    const tdPrices = document.querySelectorAll("#tBodyServices tr .tdPrice");
+
+    const totalValueService = document.getElementById("totalValueService");
+    let total = 0;
+
+    tdPrices.forEach(tdPrice => {
+        // 2. Limpiar el texto: Eliminar $, comas (,), y espacios.
+        const cleanedValue = tdPrice.textContent.replace(/[$,\s]/g, '').trim();
+
+        // 3. Convertir el valor limpio a un número
+        let value = parseFloat(cleanedValue);
+
+        // 4. Asegurar que el valor es un número válido antes de sumar
+        if (!isNaN(value)) {
+            total += value;
+        }
+        // Nota: Si el valor está vacío o es '0', parseFloat(cleanedValue) será 0, lo cual es correcto.
+    });
+
+    // 5. Mostrar el total formateado
+    totalValueService.textContent = `$${formatWithCommas(total)}`;
+
+    calculateRepairCost();
+}
+
+// =========================================================
+// Funciones Auxiliares para el Cursor (NECESARIAS)
+// =========================================================
+
+// Guarda la posición del cursor (cuántos caracteres hay antes de él)
+function saveCursorPosition(element) {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return 0;
+    const range = selection.getRangeAt(0);
+    const preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(element);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+    return preCaretRange.toString().length;
+}
+
+// Restaura la posición del cursor
+function restoreCursorPosition(element, caretPos) {
+    let range = document.createRange();
+    let selection = window.getSelection();
+    let found = false;
+
+    element.childNodes.forEach(node => {
+        if (node.nodeType === 3) { // TEXT_NODE
+            let nodeLength = node.nodeValue.length;
+            if (caretPos <= nodeLength) {
+                range.setStart(node, caretPos);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                found = true;
+                return;
+            } else {
+                caretPos -= nodeLength;
+            }
+        }
+    });
+
+    // Fallback: si no se encuentra, ir al final
+    if (!found) {
+        range.selectNodeContents(element);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+}
+
+function restrictToDecimal(event) {
+    const element = event.target;
+
+    // 1. Guardar posición del cursor antes de cualquier modificación
+    const originalCaretPos = saveCursorPosition(element);
+
+    let value = element.textContent;
+    let cleanedValue = value.replace(/[^0-9.]/g, '');
+    
+    // El valor que usaremos para calcular el ajuste del cursor
+    const previousLength = value.length; 
+
+    // ----------------------------------------------------------------------------------
+    // 2. Controlar ceros a la izquierda y múltiples puntos (Anti-Zero)
+    // ----------------------------------------------------------------------------------
+
+    let parts = cleanedValue.split('.');
+    let integerPart = parts[0];
+    let decimalPart = parts[1] || '';
+
+    // A. Eliminar ceros a la izquierda si son seguidos por otro dígito.
+    integerPart = integerPart.replace(/^0+(?=\d)/, '');
+
+    // B. CORRECCIÓN: Si el valor está totalmente vacío después de limpiar ('', '.', '0.'), 
+    // lo forzamos a '0' o '0.', pero no llamamos al cálculo aquí.
+    if (integerPart === '') {
+        // Si el valor era solo un punto (ej: '.', parts.length > 1), lo tratamos como '0.'
+        if (parts.length > 1) { 
+            integerPart = '0';
+        } else {
+            integerPart = '0';
+        }
+    }
+    
+    // Reconstruir cleanedValue con el punto y la parte decimal
+    cleanedValue = integerPart;
+    if (parts.length > 1) {
+        cleanedValue += '.';
+        cleanedValue += decimalPart;
+    }
+
+    // Si el valor resultante está vacío (porque borraron todo), forzamos el textContent a vacío y salimos limpio.
+    if (cleanedValue === '') {
+        element.textContent = '';
+        // No hay return, permitiendo que el listener llame a calculateTotalService().
+        return; 
+    }
+
+    // Volver a dividir para la parte decimal, ya que se modificó la parte entera
+    parts = cleanedValue.split('.');
+    integerPart = parts[0];
+    decimalPart = parts[1] || '';
+
+    // ----------------------------------------------------------------------------------
+    // 3. Restringir a un máximo de dos decimales (Truncamiento y No Salto)
+    // ----------------------------------------------------------------------------------
+
+    let truncatedValue = cleanedValue;
+
+    if (parts.length > 1 && decimalPart.length > 2) {
+        
+        const expectedCaretPosForThirdDigit = integerPart.length + 1 + 3; 
+        
+        if (originalCaretPos === expectedCaretPosForThirdDigit) {
+            // Caso A: El usuario acaba de escribir el tercer dígito. TRUNCA y EVITA SALTO.
+            truncatedValue = integerPart + '.' + decimalPart.substring(0, 2);
+            
+            if (element.textContent !== truncatedValue) {
+                element.textContent = truncatedValue;
+            }
+            
+            // ELIMINAMOS EL RETURN: El navegador mantiene el cursor en la posición de fallo, 
+            // y el listener llama a calculateTotalService().
+        } else {
+            // Caso B: Truncamiento por pegado o edición interna
+            truncatedValue = integerPart + '.' + decimalPart.substring(0, 2);
+        }
+    }
+
+    // ----------------------------------------------------------------------------------
+    // 4. Aplicar el valor limpio y restaurar el cursor
+    // ----------------------------------------------------------------------------------
+    
+    if (element.textContent !== truncatedValue) {
+        element.textContent = truncatedValue;
+
+        // Calcular el cambio en la longitud total
+        const newLength = element.textContent.length;
+        const lengthDifference = previousLength - newLength;
+
+        // Ajustar la posición: Si eliminamos N caracteres *antes* del cursor, movemos el cursor N posiciones atrás.
+        let newCaretPos = originalCaretPos - lengthDifference;
+
+        // Asegurar límites
+        newCaretPos = Math.max(0, Math.min(newCaretPos, newLength));
+
+        // Ejecutar de forma asíncrona para asegurar la restauración
+        setTimeout(() => {
+            restoreCursorPosition(element, newCaretPos);
+        }, 0);
+    }
+}
+
 let loadRowsTables = () => {
     const tBodys = document.querySelectorAll(".tBodyData");
     tBodys.forEach(tBody => {
         const fragment = document.createDocumentFragment();
-        for (let i = 0; i <= 10; i++) {
+        for (let i = 0; i <= 6; i++) {
             let tr = document.createElement("tr");
             let name = document.createElement("td");
             let price = document.createElement("td");

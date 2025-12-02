@@ -252,7 +252,7 @@ body:not(.sidebar-ready) {
 }
 
 .navbarOpen {
-    width: 350px;
+    width: 300px;
     left: 0;
 }
 
