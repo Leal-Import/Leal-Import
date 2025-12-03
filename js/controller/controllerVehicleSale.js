@@ -41,7 +41,7 @@ btnCreateOrder.addEventListener("click", async (e) => {
     e.preventDefault();
     const data = await createNewSale(true);
     if (data) {
-        window.location.href = `addWorkOrder.html?vehicleSale=true&customerName=${customerName}&vin=${data.vin}&idCustomer=${customerId}&totalPrice=${data.price}`;
+        window.location.href = `addWorkOrder.html?idSale=${data.idSale}&customerName=${customerName}&vin=${data.vin}&idCustomer=${customerId}&totalPrice=${data.price}`;
     }
 })
 
@@ -156,7 +156,8 @@ let createNewSale = async (isWO) => {
             if (isWO) {
                 return {
                     vin: response.data.vin,
-                    price: response.data.salePrice
+                    price: response.data.salePrice,
+                    idSale: response.data.idSale
                 };
             } else {
                 return true;

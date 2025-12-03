@@ -18,8 +18,6 @@ import {
 const txtSearchCustomer = document.getElementById("txtSearchData");
 const txtSearchYear = document.getElementById("txtSearchYear");
 const selectSearStatus = document.getElementById("cmbSearchByStatus");
-const txtCustomers = document.getElementById("txtCustomer");
-const boxCus = document.getElementById('suggestDataContainer');
 
 let searchTimeout = null;
 let statusList = [];
@@ -179,35 +177,3 @@ let insertVehicles = (vehicles) => {
 
   container.appendChild(fragment);
 };
-
-
-/* ==============================
-    SUGERENCIAS CLIENTES (solo búsqueda)
-============================== */
-/*
-txtCustomers.addEventListener('input', async () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(async () => {
-    const query = txtCustomers.value.trim();
-    if (query === "") { 
-      boxCus.classList.replace("show", "hide"); 
-      return; 
-    }
-
-    const data = await getCustomers(0, 15, query);
-    const filtered = data.content;
-
-    boxCus.innerHTML = '';
-    filtered.forEach(cus => {
-      const div = document.createElement('div');
-      div.className = 'suggestionItem';
-      div.innerHTML = `
-        <span class="customerName">${cus.fullName}</span>
-        <span class="clientDui">${cus.dui}</span>`;
-      boxCus.appendChild(div);
-    });
-
-    boxCus.classList.replace('hide', 'show');
-  }, 500);
-});
-*/

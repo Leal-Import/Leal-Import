@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <div class="containerModal hide">
+    <div class="containerModal hide" id="modalVoucher">
         <div class="modalVoucher modalAdd">
             <button id="closeVoucherModal" class="btnClose" type="button">
                 <img src="../media/appMedia/closeIcon.svg" alt="Cerrar">
@@ -67,12 +67,12 @@
                             </div>
                             <div class="dataInfo">
                                 <span class="lblInfo">Costos de reparación: </span>
-                                <span class="valueInfo" id="totalRepairCost">$2,000</span>
+                                <span class="valueInfo" id="totalRepairCost">$0.00</span>
                             </div>
                         </div>
                         <div class="dataInfo">
                             <span class="lblInfo">Total reparada: </span>
-                            <span class="valueInfo" id="totalCost"></span>
+                            <span class="valueInfo" id="totalCost">$0.00</span>
                         </div>
                     </div>
                     <div class="tablesDataContainer">
@@ -81,6 +81,10 @@
                                 <div class="containerInput">
                                     <input type="text" id="txtSearchSparePart" class="txtInputs"
                                         placeholder="Buscar repuestos">
+                                    <div class="suggestions hide" id="suggestionsSpareParts"></div>
+                                    <button class="btnVoucher btnOpenModalSp">
+                                        <span class="icon">+</span>
+                                    </button>
                                 </div>
                                 <table class="table">
                                     <thead>
@@ -93,13 +97,14 @@
                                 </table>
                                 <div class="dataInfo">
                                     <span class="lblInfoTotals">Total repuestos: </span>
-                                    <span class="valueInfo" id="totalValueSpareParts">$14,000</span>
+                                    <span class="valueInfo" id="totalValueSpareParts">$0.00</span>
                                 </div>
                             </div>
                             <div class="tableContainer">
                                 <div class="containerInput">
                                     <input type="text" id="txtAddService" class="txtInputs"
                                         placeholder="Añadir servicios">
+                                    <div class="suggestions hide" id="suggestionsService"></div>
                                 </div>
                                 <table class="table">
                                     <thead>
@@ -118,13 +123,13 @@
                         </div>
                         <div class="dataInfo">
                             <span class="lblInfoTotals">Total: </span>
-                            <span class="valueInfo" id="totalValueSparePartsDown">$14,000</span>
+                            <span class="valueInfo" id="totalValueSparePartsDown">$0.00</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="rightColumn">
-                <form class="formRightColumn" id="frmVehicleSale">
+                <form class="formRightColumn" id="frmWorkOrder">
                     <div class="bodyRightColumn">
                         <h2>Abonos</h2>
                         <div class="amounts"></div>

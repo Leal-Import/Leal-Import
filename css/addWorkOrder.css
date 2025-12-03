@@ -83,6 +83,7 @@ td{
 
 .containerInput{
     margin-bottom: 10px;
+    position: relative;
 }
 
 .containerInput input{
@@ -204,6 +205,17 @@ textarea{
     color: white;
     border: none;
     cursor: pointer;
+}
+
+.btnOpenModalSp{
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 0;
+    border-bottom-right-radius: var(--border-radius-input);
+    border-top-right-radius: var(--border-radius-input);
+
 }
 
 /* Modal */

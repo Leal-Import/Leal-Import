@@ -1,540 +1,730 @@
+// ordenes_trabajo.rewrite.js
+// Reescritura completa - módulo Órdenes de Trabajo
+// Mantén los imports tal como los usas en tu proyecto:
 import { getPaymentMethods } from '../service/serviceConfiguration.js'
+import { getServices, postWorkOrder } from '../service/serviceAddWorkOrder.js'
+import { getSpareParts } from '../service/serviceSpareParts.js'
 import {
     formatWithCommas,
     allowDecimal,
     fillSelect,
-    showMessage
+    showMessage,
+    getInputsValues,
+    highlightAndFocus
 } from '../utils.js';
 
-const txtAddService = document.getElementById("txtAddService");
+/*
+  Resumen:
+  - Módulo modular, validaciones, DOM dinámico para servicios/repuestos/abonos,
+  - Modal para comprobantes, FormData con imágenes y POST a postWorkOrder.
+*/
 
+// ---------- Selectores y estado ----------
+const txtAddService = document.getElementById("txtAddService");
+const boxServ = document.getElementById("suggestionsService");
+
+const txtAddSparePart = document.getElementById("txtSearchSparePart");
+const boxSparePart = document.getElementById("suggestionsSpareParts");
+
+const frmAddWorkOrder = document.getElementById("frmWorkOrder");
+
+// URL params
 const params = new URLSearchParams(window.location.search);
 let customerName = params.get("customerName") || null;
 let vin = params.get("vin") || null;
 let idCustomer = params.get("idCustomer") || null;
-let vehiclePrice = params.get("totalPrice");
-let vehicleSale = params.get("vehicleSale");
+let vehiclePrice = params.get("totalPrice") || 0;
+let idSale = params.get("idSale") || null;
 
+// Local state
+const selectedServices = []; // { id|null, name, price }
+const selectedSpareParts = []; // { id, name, unitPrice, quantity }
+let paymentMethodsList = [];
 let rowsServices = 0;
+let rowsSpareParts = 0;
 
-document.addEventListener("DOMContentLoaded", async () => {
-    loadDataVehicle()
+// ---------- Init ----------
+document.addEventListener('DOMContentLoaded', async () => {
+    initStaticRows();
     await loadPayMethods();
-    loadRowsTables();
-    createInitialPaymentField()
-})
-
-txtAddService.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        e.preventDefault();
-        const serviceValue = e.target.value.trim();
-
-        if (serviceValue !== "") {
-            addNewService(serviceValue);
-            // 4. Limpiar el input después de agregar
-            e.target.value = "";
-        }
-    }
+    setupModalListeners();
+    bindEvents();
+    loadDataVehicle();
+    createInitialPaymentField(); // crea el primer campo de abono
+    calculateAllTotals();
 });
 
-let addNewService = (value) => {
-    const rows = document.querySelectorAll("#tBodyServices tr");
+// ---------- Utilities ----------
+const $ = id => document.getElementById(id);
+const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
-    // Asumiendo que 'rowsServices' es un índice numérico válido (ej. 0, 1, 2)
-    const currentRow = rows[rowsServices];
-    //const 
-
-    if (!currentRow) {
-        console.error(`Error: No se encontró la fila con el índice ${rowsServices}.`);
-        // Aquí podrías llamar a una función para *crear* una nueva fila si no existe.
-        return;
-    }
-
-    // 2. CORRECCIÓN: Usar .textContent para asignar el valor
-    const nameCell = currentRow.querySelector(".tdName");
-    const priceCell = currentRow.querySelector(".tdPrice");
-
-    if (nameCell && priceCell) {
-        const btnTrash = document.createElement("button");
-        const buttonIcon = document.createElement("img");
-        buttonIcon.src = "../../media/appMedia/trashIcon.png";
-        btnTrash.classList.add("btnTrash");
-        btnTrash.appendChild(buttonIcon);
-        nameCell.textContent = value;
-        priceCell.textContent = "0";
-        priceCell.setAttribute("contenteditable", "true");
-        btnTrash.addEventListener("click", () => {
-            nameCell.textContent = "";
-            priceCell.textContent = "";
-            priceCell.removeAttribute("contenteditable");
-            btnTrash.remove()
-            calculateTotalService();
-        })
-        priceCell.addEventListener("input", (e) => {
-            restrictToDecimal(e);
-            calculateTotalService();
-        });
-        currentRow.appendChild(btnTrash)
-        // 3. Opcional: Aumentar el índice si tienes más filas preexistentes
-        rowsServices++;
-    } else {
-        showMessage("Error", "No se encontraron las celdas .tdName o .tdPrice en la fila.", "error");
+// ---------- Load helpers ----------
+async function loadPayMethods() {
+    try {
+        const data = await getPaymentMethods();
+        paymentMethodsList = data || [];
+    } catch (err) {
+        console.error('loadPayMethods', err);
     }
 }
 
-let calculateRepairCost = () => {
-    const totalRepairCost = document.getElementById("totalRepairCost");
-    const totalValueService = document.getElementById("totalValueService");
-    const totalValueSpareParts = document.getElementById("totalValueSpareParts");
-    const totalValueSparePartsDown = document.getElementById("totalValueSparePartsDown");
-
-    const totalservices = parseFloat(totalValueService.textContent.replace(/[$,\s]/g, '').trim());
-    const totalSpareParts = parseFloat(totalValueSpareParts.textContent.replace(/[$,\s]/g, '').trim());
-
-    totalRepairCost.textContent = `$${formatWithCommas(totalservices + totalSpareParts)}`;
-    totalValueSparePartsDown.textContent = `$${formatWithCommas(totalservices + totalSpareParts)}`;
-
-    calculateTotal();
+function loadDataVehicle() {
+    if ($('vin')) $('vin').textContent = vin || '-';
+    if ($('vehiclePrice')) $('vehiclePrice').textContent = `$${formatWithCommas(vehiclePrice || 0)}`;
 }
 
-let calculateTotal = () => {
-    const totalCost = document.getElementById("totalCost");
-    const totalRepairCost = document.getElementById("totalRepairCost");
-    const vehiclePrice = document.getElementById("vehiclePrice");
-
-    const totalR = parseFloat(totalRepairCost.textContent.replace(/[$,\s]/g, '').trim());
-    const totalV = parseFloat(vehiclePrice.textContent.replace(/[$,\s]/g, '').trim());
-
-    totalCost.textContent = `$${formatWithCommas(totalR + totalV)}`;
-}
-
-let calculateTotalService = () => {
-    const tdPrices = document.querySelectorAll("#tBodyServices tr .tdPrice");
-
-    const totalValueService = document.getElementById("totalValueService");
-    let total = 0;
-
-    tdPrices.forEach(tdPrice => {
-        // 2. Limpiar el texto: Eliminar $, comas (,), y espacios.
-        const cleanedValue = tdPrice.textContent.replace(/[$,\s]/g, '').trim();
-
-        // 3. Convertir el valor limpio a un número
-        let value = parseFloat(cleanedValue);
-
-        // 4. Asegurar que el valor es un número válido antes de sumar
-        if (!isNaN(value)) {
-            total += value;
+// ---------- Build static rows (si tu html requiere filas vacías) ----------
+function initStaticRows() {
+    const tBodys = qsa('.tBodyData');
+    tBodys.forEach(tBody => {
+        // Si ya tiene filas suficientes, no duplicar
+        if (tBody.querySelectorAll('tr').length >= 7) return;
+        const frag = document.createDocumentFragment();
+        for (let i = 0; i < 7; i++) {
+            const tr = document.createElement('tr');
+            const tdName = document.createElement('td'); tdName.className = 'tdName';
+            const tdPrice = document.createElement('td'); tdPrice.className = 'tdPrice';
+            tr.append(tdName, tdPrice);
+            frag.appendChild(tr);
         }
-        // Nota: Si el valor está vacío o es '0', parseFloat(cleanedValue) será 0, lo cual es correcto.
+        tBody.appendChild(frag);
+    });
+}
+
+// ---------- Events binding ----------
+function bindEvents() {
+    // Servicios - búsqueda
+    txtAddService?.addEventListener('input', debounce(async (e) => {
+        const q = e.target.value.trim();
+        if (!q) { hideElement(boxServ); return; }
+        try {
+            const res = await getServices(q);
+            renderServiceSuggestions(res.content || []);
+        } catch (err) { console.error(err); }
+    }, 350));
+
+    txtAddService?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const val = e.target.value.trim();
+            if (!val) return;
+            addService({ id: null, name: val, price: 0 });
+            e.target.value = '';
+            hideElement(boxServ);
+        }
     });
 
-    // 5. Mostrar el total formateado
-    totalValueService.textContent = `$${formatWithCommas(total)}`;
+    // Repuestos - búsqueda
+    txtAddSparePart?.addEventListener('input', debounce(async (e) => {
+        const q = e.target.value.trim();
+        if (!q) { hideElement(boxSparePart); return; }
+        try {
+            const res = await getSpareParts(q);
+            renderSparePartSuggestions(res.content || []);
+        } catch (err) { console.error(err); }
+    }, 350));
 
+    // Click global para cerrar suggestions/modal
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#suggestionsService')) hideElement(boxServ);
+        if (!e.target.closest('#suggestionsSpareParts')) hideElement(boxSparePart);
+        if (e.target && e.target.classList && e.target.classList.contains('containerModal')) {
+            e.target.classList.add('hide'); e.target.classList.remove('show');
+        }
+    });
+
+    // Submit
+    frmAddWorkOrder?.addEventListener('submit', handleSubmit);
+}
+
+// ---------- Suggestions render ----------
+function renderServiceSuggestions(list) {
+    if (!boxServ) return;
+    boxServ.innerHTML = '';
+    list.forEach(s => {
+        if (selectedServices.some(x => x.id && x.id === s.idService)) return;
+        const div = document.createElement('div'); div.className = 'suggestionItem';
+        div.textContent = s.nameService;
+        div.addEventListener('click', () => addService({ id: s.idService, name: s.nameService, price: 0 }));
+        boxServ.appendChild(div);
+    });
+    showElement(boxServ);
+}
+
+function renderSparePartSuggestions(list) {
+    if (!boxSparePart) return;
+    boxSparePart.innerHTML = '';
+    list.forEach(p => {
+        if (selectedSpareParts.some(x => x.id === p.idSparePart)) return;
+        const div = document.createElement('div'); div.className = 'suggestionItem';
+        div.innerHTML = `${p.nameSpareParts} - $${formatWithCommas(p.suggestedPrice)}`;
+        div.addEventListener('click', () => addSparePart({ id: p.idSparePart, name: p.nameSpareParts, unitPrice: p.suggestedPrice }));
+        boxSparePart.appendChild(div);
+    });
+    showElement(boxSparePart);
+}
+
+// ---------- Small UI helpers ----------
+function showElement(el) { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); }
+function hideElement(el) { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); }
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), ms); }; }
+
+// ---------- Servicios logic ----------
+function addService(service) {
+    // validar duplicados por id o nombre
+    if (service.id && selectedServices.some(s => s.id === service.id)) { showMessage('warning', 'El servicio ya fue añadido'); return; }
+    if (!service.id && selectedServices.some(s => s.name.toLowerCase() === service.name.toLowerCase())) { showMessage('warning', 'El servicio ya fue añadido'); return; }
+
+    const obj = { id: service.id || null, name: service.name, price: service.price || 0 };
+    if (!appendServiceToDOM(obj)) return;
+    selectedServices.push(obj);
+    txtAddService.value = '';
+    hideElement(boxServ);
+    calculateTotalService();
+}
+
+function appendServiceToDOM(service) {
+    const tBody = $('tBodyServices'); if (!tBody) return false;
+    const emptyRow = qsa('#tBodyServices tr').find(r => r.querySelector('.tdName').textContent.trim() === '');
+    if (!emptyRow) { showMessage('warning', 'No hay filas disponibles para agregar servicios.'); return false; }
+
+    const index = rowsServices;
+    const nameCell = emptyRow.querySelector('.tdName');
+    const priceCell = emptyRow.querySelector('.tdPrice');
+
+    nameCell.textContent = service.name;
+    priceCell.textContent = (service.price || 0).toFixed(2);
+    priceCell.setAttribute('contenteditable', 'true');
+
+    // limpiar inputs ocultos previos
+    emptyRow.querySelectorAll('input[type=hidden]').forEach(i => i.remove());
+
+    if (service.id) {
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = `servicios[${index}].id`;
+        inp.value = service.id;
+        inp.classList.add('hidden-service-id');
+        emptyRow.appendChild(inp);
+    } else {
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = `servicios[${index}].name`;
+        inp.value = service.name;
+        inp.classList.add('hidden-service-name');
+        emptyRow.appendChild(inp);
+    }
+
+    const inpPrice = document.createElement('input');
+    inpPrice.type = 'hidden';
+    inpPrice.name = `servicios[${index}].price`;
+    inpPrice.value = (service.price || 0);
+    inpPrice.classList.add('hidden-service-price');
+    emptyRow.appendChild(inpPrice);
+
+    // boton eliminar
+    const btn = document.createElement('button'); btn.className = 'btnTrash'; btn.type = 'button';
+    const img = document.createElement('img');
+    img.src = '../../media/appMedia/trashIcon.png';
+    btn.appendChild(img);
+    btn.addEventListener('click', () => {
+        nameCell.textContent = ''; priceCell.textContent = ''; priceCell.removeAttribute('contenteditable');
+        inpPrice.remove(); emptyRow.querySelectorAll('.hidden-service-id, .hidden-service-name').forEach(i => i.remove()); btn.remove();
+        const key = service.id || service.name;
+        const idx = selectedServices.findIndex(s => (s.id === key || s.name === key));
+        if (idx > -1) selectedServices.splice(idx, 1);
+        reindexServices();
+        calculateTotalService();
+    });
+    emptyRow.appendChild(btn);
+
+    // listener para editar precio (preservando cursor)
+    priceCell.addEventListener('input', (e) => {
+        restrictToDecimal(e);
+        const v = safeParseFloat(priceCell.textContent);
+        inpPrice.value = v;
+        calculateTotalService();
+    });
+
+    rowsServices++;
+    reindexServices();
+    return true;
+}
+
+function reindexServices() {
+    const rows = qsa('#tBodyServices tr');
+    let idx = 0; const active = []; const empty = [];
+    rows.forEach(r => {
+        const nameCell = r.querySelector('.tdName');
+        if (nameCell && nameCell.textContent.trim() !== '') {
+            const hidId = r.querySelector('.hidden-service-id'); if (hidId) hidId.name = `servicios[${idx}].id`;
+            const hidName = r.querySelector('.hidden-service-name'); if (hidName) hidName.name = `servicios[${idx}].name`;
+            const hidPrice = r.querySelector('.hidden-service-price'); if (hidPrice) hidPrice.name = `servicios[${idx}].price`;
+            active.push(r); idx++;
+        } else empty.push(r);
+    });
+    const frag = document.createDocumentFragment(); active.forEach(r => frag.appendChild(r)); empty.forEach(r => frag.appendChild(r));
+    const tbody = $('tBodyServices'); tbody.innerHTML = ''; tbody.appendChild(frag);
+    rowsServices = idx;
+}
+
+function calculateTotalService() {
+    const tds = qsa('#tBodyServices tr .tdPrice');
+    let total = 0;
+    tds.forEach(td => { const v = safeParseFloat(td.textContent); if (!isNaN(v)) total += v; });
+    const el = $('totalValueService'); if (el) el.textContent = `$${formatWithCommas(total)}`;
     calculateRepairCost();
 }
 
-// =========================================================
-// Funciones Auxiliares para el Cursor (NECESARIAS)
-// =========================================================
-
-// Guarda la posición del cursor (cuántos caracteres hay antes de él)
-function saveCursorPosition(element) {
-    const selection = window.getSelection();
-    if (selection.rangeCount === 0) return 0;
-    const range = selection.getRangeAt(0);
-    const preCaretRange = range.cloneRange();
-    preCaretRange.selectNodeContents(element);
-    preCaretRange.setEnd(range.endContainer, range.endOffset);
-    return preCaretRange.toString().length;
+// ---------- Repuestos logic ----------
+function addSparePart(p) {
+    if (selectedSpareParts.some(x => x.id === p.id)) { showMessage('warning', 'El repuesto ya fue añadido'); return; }
+    const data = { id: p.id, name: p.name, unitPrice: p.unitPrice || 0, quantity: 1 };
+    if (!appendSparePartToDOM(data)) return;
+    selectedSpareParts.push(data);
+    txtAddSparePart.value = '';
+    hideElement(boxSparePart);
+    calculateTotalSpareParts();
 }
 
-// Restaura la posición del cursor
-function restoreCursorPosition(element, caretPos) {
-    let range = document.createRange();
-    let selection = window.getSelection();
-    let found = false;
+function appendSparePartToDOM(part) {
+    const tBody = $('tBodySpareParts'); if (!tBody) return false;
+    const emptyRow = qsa('#tBodySpareParts tr').find(r => r.querySelector('.tdName').textContent.trim() === '');
+    if (!emptyRow) { showMessage('warning', 'No hay filas disponibles para repuestos.'); return false; }
 
+    const index = rowsSpareParts;
+    const nameCell = emptyRow.querySelector('.tdName');
+    const priceCell = emptyRow.querySelector('.tdPrice');
+
+    nameCell.textContent = part.name;
+    priceCell.setAttribute("contenteditable", "true");
+    priceCell.textContent = `$${formatWithCommas(part.unitPrice.toFixed(2))}`;
+
+    emptyRow.querySelectorAll('input[type=hidden]').forEach(i => i.remove());
+
+    const inpId = document.createElement('input');
+    inpId.type = 'hidden';
+    inpId.name = `repuestos[${index}].id`;
+    inpId.value = part.id;
+    inpId.classList.add('hidden-part-id');
+    emptyRow.appendChild(inpId);
+    const inpUnit = document.createElement('input');
+    inpUnit.type = 'hidden';
+    inpUnit.name = `repuestos[${index}].unitPrice`;
+    inpUnit.value = part.unitPrice;
+    inpUnit.classList.add('hidden-part-unitPrice');
+    emptyRow.appendChild(inpUnit);
+
+    // boton eliminar
+    const btn = document.createElement('button');
+    btn.className = 'btnTrash';
+    btn.type = 'button';
+    const img = document.createElement('img');
+    img.src = '../../media/appMedia/trashIcon.png';
+    btn.appendChild(img);
+    btn.addEventListener('click', () => {
+        nameCell.textContent = '';
+        priceCell.textContent = '';
+        inpId.remove();
+        inpUnit.remove();
+        btn.remove();
+        const idx = selectedSpareParts.findIndex(s => s.id === part.id); if (idx > -1) selectedSpareParts.splice(idx, 1);
+        reindexSpareParts();
+        calculateTotalSpareParts();
+    });
+    priceCell.addEventListener("input", (e) => {
+        restrictToDecimal(e);
+        const v = safeParseFloat(priceCell.textContent);
+        inpUnit.value = v;
+        calculateTotalSpareParts();
+    })
+    emptyRow.appendChild(btn);
+
+    rowsSpareParts++;
+    reindexSpareParts();
+    return true;
+}
+
+function reindexSpareParts() {
+    const rows = qsa('#tBodySpareParts tr');
+    let idx = 0; const active = []; const empty = [];
+    rows.forEach(r => {
+        const name = r.querySelector('.tdName');
+        if (name && name.textContent.trim() !== '') {
+            const hidId = r.querySelector('.hidden-part-id'); if (hidId) hidId.name = `repuestos[${idx}].id`;
+            const hidUnit = r.querySelector('.hidden-part-unitPrice'); if (hidUnit) hidUnit.name = `repuestos[${idx}].unitPrice`;
+            active.push(r); idx++;
+        } else empty.push(r);
+    });
+    const frag = document.createDocumentFragment(); active.forEach(r => frag.appendChild(r)); empty.forEach(r => frag.appendChild(r));
+    const tbody = $('tBodySpareParts'); tbody.innerHTML = ''; tbody.appendChild(frag);
+    rowsSpareParts = idx;
+}
+
+function calculateTotalSpareParts() {
+    const prices = qsa('#tBodySpareParts tr .tdPrice');
+    let total = 0;
+    prices.forEach(p => { const v = safeParseFloat(p.textContent); if (!isNaN(v)) total += v; });
+    const el = $('totalValueSpareParts'); if (el) el.textContent = `$${formatWithCommas(total)}`;
+    calculateRepairCost();
+}
+
+// ---------- Totales ----------
+function calculateRepairCost() {
+    const totalValueService = safeParseFloat(($('totalValueService') || {}).textContent);
+    const totalValueSpareParts = safeParseFloat(($('totalValueSpareParts') || {}).textContent);
+    const sum = totalValueService + totalValueSpareParts;
+    if ($('totalRepairCost')) $('totalRepairCost').textContent = `$${formatWithCommas(sum)}`;
+    if ($('totalValueSparePartsDown')) $('totalValueSparePartsDown').textContent = `$${formatWithCommas(sum)}`;
+    if ($('txtTotal')) $('txtTotal').value = `$${formatWithCommas(sum)}`;
+    calculateTotal();
+}
+
+function calculateTotal() {
+    const totalRepairCost = safeParseFloat(($('totalRepairCost') || {}).textContent);
+    const vehiclePriceEl = safeParseFloat(($('vehiclePrice') || {}).textContent);
+    if ($('totalCost')) $('totalCost').textContent = `$${formatWithCommas(totalRepairCost + vehiclePriceEl)}`;
+}
+
+function calculateAllTotals() { calculateTotalService(); calculateTotalSpareParts(); calculateRepairCost(); calculateTotal(); }
+
+// ---------- Cursor / decimal preserve ----------
+function saveCursorPosition(element) {
+    const sel = window.getSelection();
+    if (sel.rangeCount === 0) return 0;
+    const range = sel.getRangeAt(0);
+    const pre = range.cloneRange();
+    pre.selectNodeContents(element);
+    pre.setEnd(range.endContainer, range.endOffset);
+    return pre.toString().length;
+}
+function restoreCursorPosition(element, caretPos) {
+    const range = document.createRange();
+    const sel = window.getSelection();
+    let found = false;
     element.childNodes.forEach(node => {
-        if (node.nodeType === 3) { // TEXT_NODE
-            let nodeLength = node.nodeValue.length;
-            if (caretPos <= nodeLength) {
+        if (found) return;
+        if (node.nodeType === 3) {
+            const ln = node.nodeValue.length;
+            if (caretPos <= ln) {
                 range.setStart(node, caretPos);
                 range.collapse(true);
-                selection.removeAllRanges();
-                selection.addRange(range);
+                sel.removeAllRanges();
+                sel.addRange(range);
                 found = true;
-                return;
-            } else {
-                caretPos -= nodeLength;
-            }
+            } else caretPos -= ln;
         }
     });
-
-    // Fallback: si no se encuentra, ir al final
     if (!found) {
         range.selectNodeContents(element);
         range.collapse(false);
-        selection.removeAllRanges();
-        selection.addRange(range);
+        sel.removeAllRanges();
+        sel.addRange(range);
     }
 }
-
 function restrictToDecimal(event) {
-    const element = event.target;
+    const el = event.target;
+    const originalCaret = saveCursorPosition(el);
+    let value = el.textContent;
+    let cleaned = value.replace(/[^0-9.]/g, '');
+    const prevLen = value.length;
 
-    // 1. Guardar posición del cursor antes de cualquier modificación
-    const originalCaretPos = saveCursorPosition(element);
+    const parts = cleaned.split('.');
+    let intPart = parts[0].replace(/^0+(?=\d)/, '') || '0';
+    let decPart = parts[1] || '';
+    cleaned = intPart + (parts.length > 1 ? '.' + decPart : '');
 
-    let value = element.textContent;
-    let cleanedValue = value.replace(/[^0-9.]/g, '');
-    
-    // El valor que usaremos para calcular el ajuste del cursor
-    const previousLength = value.length; 
+    if (parts.length > 1 && decPart.length > 2) cleaned = intPart + '.' + decPart.substring(0, 2);
 
-    // ----------------------------------------------------------------------------------
-    // 2. Controlar ceros a la izquierda y múltiples puntos (Anti-Zero)
-    // ----------------------------------------------------------------------------------
-
-    let parts = cleanedValue.split('.');
-    let integerPart = parts[0];
-    let decimalPart = parts[1] || '';
-
-    // A. Eliminar ceros a la izquierda si son seguidos por otro dígito.
-    integerPart = integerPart.replace(/^0+(?=\d)/, '');
-
-    // B. CORRECCIÓN: Si el valor está totalmente vacío después de limpiar ('', '.', '0.'), 
-    // lo forzamos a '0' o '0.', pero no llamamos al cálculo aquí.
-    if (integerPart === '') {
-        // Si el valor era solo un punto (ej: '.', parts.length > 1), lo tratamos como '0.'
-        if (parts.length > 1) { 
-            integerPart = '0';
-        } else {
-            integerPart = '0';
-        }
-    }
-    
-    // Reconstruir cleanedValue con el punto y la parte decimal
-    cleanedValue = integerPart;
-    if (parts.length > 1) {
-        cleanedValue += '.';
-        cleanedValue += decimalPart;
-    }
-
-    // Si el valor resultante está vacío (porque borraron todo), forzamos el textContent a vacío y salimos limpio.
-    if (cleanedValue === '') {
-        element.textContent = '';
-        // No hay return, permitiendo que el listener llame a calculateTotalService().
-        return; 
-    }
-
-    // Volver a dividir para la parte decimal, ya que se modificó la parte entera
-    parts = cleanedValue.split('.');
-    integerPart = parts[0];
-    decimalPart = parts[1] || '';
-
-    // ----------------------------------------------------------------------------------
-    // 3. Restringir a un máximo de dos decimales (Truncamiento y No Salto)
-    // ----------------------------------------------------------------------------------
-
-    let truncatedValue = cleanedValue;
-
-    if (parts.length > 1 && decimalPart.length > 2) {
-        
-        const expectedCaretPosForThirdDigit = integerPart.length + 1 + 3; 
-        
-        if (originalCaretPos === expectedCaretPosForThirdDigit) {
-            // Caso A: El usuario acaba de escribir el tercer dígito. TRUNCA y EVITA SALTO.
-            truncatedValue = integerPart + '.' + decimalPart.substring(0, 2);
-            
-            if (element.textContent !== truncatedValue) {
-                element.textContent = truncatedValue;
-            }
-            
-            // ELIMINAMOS EL RETURN: El navegador mantiene el cursor en la posición de fallo, 
-            // y el listener llama a calculateTotalService().
-        } else {
-            // Caso B: Truncamiento por pegado o edición interna
-            truncatedValue = integerPart + '.' + decimalPart.substring(0, 2);
-        }
-    }
-
-    // ----------------------------------------------------------------------------------
-    // 4. Aplicar el valor limpio y restaurar el cursor
-    // ----------------------------------------------------------------------------------
-    
-    if (element.textContent !== truncatedValue) {
-        element.textContent = truncatedValue;
-
-        // Calcular el cambio en la longitud total
-        const newLength = element.textContent.length;
-        const lengthDifference = previousLength - newLength;
-
-        // Ajustar la posición: Si eliminamos N caracteres *antes* del cursor, movemos el cursor N posiciones atrás.
-        let newCaretPos = originalCaretPos - lengthDifference;
-
-        // Asegurar límites
-        newCaretPos = Math.max(0, Math.min(newCaretPos, newLength));
-
-        // Ejecutar de forma asíncrona para asegurar la restauración
-        setTimeout(() => {
-            restoreCursorPosition(element, newCaretPos);
-        }, 0);
+    if (el.textContent !== cleaned) {
+        el.textContent = cleaned;
+        const newLen = cleaned.length;
+        const diff = prevLen - newLen;
+        let newCaret = Math.max(0, Math.min(originalCaret - diff, newLen));
+        setTimeout(() => restoreCursorPosition(el, newCaret), 0);
     }
 }
 
-let loadRowsTables = () => {
-    const tBodys = document.querySelectorAll(".tBodyData");
-    tBodys.forEach(tBody => {
-        const fragment = document.createDocumentFragment();
-        for (let i = 0; i <= 6; i++) {
-            let tr = document.createElement("tr");
-            let name = document.createElement("td");
-            let price = document.createElement("td");
-            name.classList.add("tdName");
-            price.classList.add("tdPrice");
-            tr.append(name, price);
-            fragment.appendChild(tr)
-        }
-        tBody.appendChild(fragment);
-        console.log(tBody)
-    });
-}
-
-document.addEventListener("click", (e) => {
-    if (e.target && e.target.classList.contains("containerModal")) {
-        e.target.classList.add("hide");
-        e.target.classList.remove("show");
-    }
-});
-
-let paymentMethodsList = [];
-let loadPayMethods = async () => {
-    try {
-        const roles = await getPaymentMethods();
-        paymentMethodsList = roles; // Guardamos para mapear luego
-    } catch (error) {
-        console.error('Error al cargar roles en el select:', error);
-    }
-}
-
-let loadDataVehicle = () => {
-    document.getElementById("vin").textContent = vin;
-    document.getElementById("vehiclePrice").textContent = `$${formatWithCommas(vehiclePrice)}`
-}
-
+// ---------- Pagos dinámicos ----------
 function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
-    const amountContainer = document.querySelector(".amounts");
-
-    // 1. Crear elementos
+    const amountContainer = document.querySelector('.amounts');
+    if (!amountContainer) return;
     const index = amountContainer.children.length + 1;
 
-    const div = document.createElement("div");
-    div.classList.add("containerAmount");
-    div.setAttribute("data-index", index);
-
-    const input = document.createElement("input");
-    input.type = "text";
+    const div = document.createElement('div');
+    div.className = 'containerAmount';
+    div.setAttribute('data-index', index);
+    const input = document.createElement('input');
+    input.type = 'text';
     input.placeholder = `Abono ${index}`;
-    input.classList.add("txtInputs", "amountInput");
+    input.className = 'txtInputs amountInput';
     input.id = `amountInput${index}`;
+    if (amount > 0) input.value = formatWithCommas(amount);
+    allowDecimal(input); input.addEventListener('input', managePaymentsAndCalculateDebt);
 
-    if (amount > 0) {
-        input.value = formatWithCommas(amount);
-    }
-
-    allowDecimal(input);
-    input.addEventListener("input", managePaymentsAndCalculateDebt);
-
-    const select = document.createElement("select");
-    select.classList.add("txtInputs", "paymentTypeSelect");
+    const select = document.createElement('select');
+    select.className = 'txtInputs paymentTypeSelect';
     select.id = `paymentTypeSelect${index}`;
 
-    // === ELEMENTOS PARA EL COMPROBANTE ===
-    const receiptContainer = document.createElement("div");
-    receiptContainer.classList.add("receiptContainer");
-
-    // Input de archivo oculto (Se usará por el modal para seleccionar el archivo)
-    const receiptInput = document.createElement("input");
-    receiptInput.type = "file";
-    receiptInput.accept = "image/*, application/pdf";
-    receiptInput.classList.add("receiptInput");
+    const receiptContainer = document.createElement('div');
+    receiptContainer.className = 'receiptContainer';
+    const receiptInput = document.createElement('input');
+    receiptInput.type = 'file'; receiptInput.accept = 'image/*,application/pdf';
+    receiptInput.className = 'receiptInput';
     receiptInput.id = `receiptInput${index}`;
-    receiptInput.setAttribute("hidden", "true");
+    receiptInput.hidden = true;
+    const receiptButton = document.createElement('button');
+    receiptButton.type = 'button';
+    receiptButton.className = 'btnVoucher';
+    receiptButton.innerHTML = `<span class="icon">+</span>`;
 
-    // Botón principal (Ahora abre el MODAL)
-    const receiptButton = document.createElement("button");
-    receiptButton.type = "button";
-    receiptButton.classList.add("btnVoucher");
-    receiptButton.innerHTML = `<span class="icon">+</span>`; // Ícono de clip (Añadir/Cambiar)
-
-    // === LISTENERS ===
-
-    // El botón principal AHORA abre tu función de modal
-    receiptButton.addEventListener("click", (e) => {
-        e.preventDefault();
-        openReceiptModal(receiptInput, receiptButton);
-    });
-
-    // 🔑 Ya no necesitamos el listener 'change' aquí. El modal lo gestionará.
+    receiptButton.addEventListener('click', (e) => { e.preventDefault(); openReceiptModal(receiptInput, receiptButton); });
 
     receiptContainer.append(receiptInput, receiptButton);
-
-    if (receiptUrl && receiptUrl.startsWith('http')) {
-        // Asumimos que si hay una URL remota, el botón debe verse como 'cargado'
-        receiptButton.classList.add("receipt-loaded");
-        receiptButton.setAttribute("data-receipt-url", receiptUrl);
-    }
-
-
-    // === Ensamblar ===
     div.append(input, select, receiptContainer);
     amountContainer.appendChild(div);
 
-    // 2. Llenar el Select
-    fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
-
-    // 3. Restaurar el método de pago seleccionado
-    if (paymentMethodId) {
-        select.value = paymentMethodId;
+    // llenar select con métodos
+    fillSelect(select.id, paymentMethodsList, 'idPaymentMethod', 'methodName', 'Metodo de pago');
+    if (paymentMethodId) select.value = paymentMethodId;
+    if (receiptUrl && receiptUrl.startsWith('http')) {
+        receiptButton.classList.add('receipt-loaded');
+        receiptButton.setAttribute('data-receipt-url', receiptUrl);
     }
+}
+
+function managePaymentsAndCalculateDebt() {
+    const amountContainer = document.querySelector('.amounts');
+    if (!amountContainer) return;
+    let payments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
+
+    // eliminar campos vacíos excepto el primero
+    payments.forEach((p, idx) => {
+        const input = p.querySelector('.amountInput');
+        const val = safeParseFloat(input.value);
+        if (idx > 0 && val === 0) p.remove();
+    });
+
+    payments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
+    payments.forEach((p, i) => {
+        p.setAttribute('data-index', i + 1);
+        const inp = p.querySelector('.amountInput'); inp.placeholder = `Abono ${i + 1}`;
+        p.querySelector('.paymentTypeSelect').id = `paymentTypeSelect${i + 1}`;
+        p.querySelector('.receiptInput').id = `receiptInput${i + 1}`;
+    });
+
+    let totalPaid = 0;
+    payments.forEach(p => totalPaid += safeParseFloat(p.querySelector('.amountInput').value));
+
+    const txtTotal = safeParseFloat(($('txtTotal') || {}).value);
+    const debt = txtTotal - totalPaid;
+    const dueText = $('due');
+    if (dueText) { dueText.textContent = `$${formatWithCommas(debt)}`; dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)'; }
+
+    const last = payments[payments.length - 1];
+    if (last) {
+        const lastVal = safeParseFloat(last.querySelector('.amountInput').value);
+        if (lastVal > 0) createInitialPaymentField();
+    }
+}
+
+// ---------- Modal comprobantes ----------
+function setupModalListeners() {
+    const modalContainer = document.querySelector('.containerModal');
+    const btnClose = document.getElementById('closeVoucherModal');
+    const btnSelectFile = document.getElementById('btnSelectFile');
+    const btnClearFile = document.getElementById('btnClearFile');
+    const inputIdField = document.getElementById('currentReceiptInputId');
+
+    const closeModalAndClean = () => {
+        if (modalContainer) modalContainer.classList.add('hide');
+        if (inputIdField) inputIdField.value = '';
+    };
+    btnClose?.addEventListener('click', closeModalAndClean);
+
+    btnSelectFile?.addEventListener('click', () => {
+        const inputElement = document.getElementById(inputIdField.value);
+        if (inputElement) { inputElement.value = ''; inputElement.click(); }
+    });
+
+    btnClearFile?.addEventListener('click', () => {
+        const inputElement = document.getElementById(inputIdField.value);
+        if (inputElement) {
+            inputElement.value = '';
+            const clipButton = inputElement.nextElementSibling;
+            clipButton.classList.remove('receipt-loaded');
+            clipButton.removeAttribute('data-receipt-url');
+            // si tienes función saveSaleState, llámala aquí
+            closeModalAndClean();
+        }
+    });
+
+    document.body.addEventListener('change', (e) => {
+        if (e.target && e.target.classList && e.target.classList.contains('receiptInput')) {
+            const inputElement = e.target;
+            const clipButton = inputElement.nextElementSibling;
+            if (inputElement.files && inputElement.files.length > 0) {
+                clipButton.classList.add('receipt-loaded');
+                clipButton.setAttribute('data-receipt-url', inputElement.files[0].name);
+            } else {
+                clipButton.classList.remove('receipt-loaded');
+                clipButton.removeAttribute('data-receipt-url');
+            }
+            if (modalContainer && !modalContainer.classList.contains('hide') && inputElement.id === (document.getElementById('currentReceiptInputId') || {}).value) updateModalContent(inputElement, clipButton);
+        }
+    });
 }
 
 function openReceiptModal(inputElement, buttonElement) {
-    const modalContainer = document.querySelector('.containerModal'); // Usa la clase o ID del contenedor
-    const inputIdField = document.getElementById('currentReceiptInputId');
-    const abonoIndex = inputElement.closest('.containerAmount').getAttribute('data-index');
-
-    // 1. CONEXIÓN: Guardar el ID del input dinámico al que hace referencia el modal
-    inputIdField.value = inputElement.id;
+    const modalContainer = document.getElementById('modalVoucher'); if (!modalContainer) return;
+    const inputIdField = document.getElementById('currentReceiptInputId'); inputIdField.value = inputElement.id;
+    const abonoIndex = inputElement.closest('.containerAmount')?.getAttribute('data-index') || '?';
     document.getElementById('modalAbonoTitle').textContent = `(Abono ${abonoIndex})`;
-
-    // 2. ACTUALIZAR VISUALES del modal (Muestra el archivo actual o el placeholder)
     updateModalContent(inputElement, buttonElement);
-
-    // 3. Mostrar el modal
     modalContainer.classList.remove('hide');
 }
 
-let managePaymentsAndCalculateDebt = () => {
-    const amountContainer = document.querySelector(".amounts");
-    let allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-
-    const totalSale = document.getElementById("txtTotal").value.replace(/[$,]/g, "") || 0;
-    let totalPaid = 0;
-
-    // 1. Eliminar abonos vacíos excepto el primero
-    allPayments.forEach((payment, idx) => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat(input.value.replace(/[$,]/g, "")) || 0;
-
-        if (idx > 0 && value === 0) {
-            payment.remove();
-        }
-    });
-
-    // Refrescar nodos
-    allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-
-    // 2. Renumerar correctamente
-    allPayments.forEach((payment, i) => {
-        const number = i + 1;
-        payment.setAttribute("data-index", number);
-
-        const input = payment.querySelector(".amountInput");
-        input.placeholder = `Abono ${number}`;
-    });
-
-    // 3. Volver a calcular total pagado
-    allPayments.forEach(payment => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat(input.value.replace(/[$,]/g, "")) || 0;
-        totalPaid += value;
-    });
-
-    // 4. Si el último abono tiene valor → crear otro
-    const lastPayment = allPayments[allPayments.length - 1];
-    const lastInput = lastPayment.querySelector(".amountInput");
-    const lastValue = parseFloat(lastInput.value.replace(/[$,]/g, "")) || 0;
-
-    if (lastValue > 0) {
-        addNewPaymentField();
-    }
-
-    // 5. Calcular deuda
-    const debt = totalSale - totalPaid;
-    const dueText = document.getElementById("due");
-
-    dueText.textContent = `$${formatWithCommas(debt)}`;
-    dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
-};
-
-function addNewPaymentField() {
-    const amountContainer = document.querySelector(".amounts");
-
-    // Si el último campo está vacío → NO crear otro
-    const lastInput = amountContainer.lastElementChild.querySelector(".amountInput");
-    const lastValue = parseFloat(lastInput.value.replace(/[$,]/g, "")) || 0;
-
-    if (lastValue === 0) return;
-
-    // 🔑 Usamos la función auxiliar que asegura el ID y llena el select
-    createInitialPaymentField();
-
-}
-
 function updateModalContent(inputElement, buttonElement) {
-    // 🔑 CORRECCIÓN: Obtener las referencias fuera del if/else
     const previewArea = document.getElementById('modalPreviewArea');
     const btnClear = document.getElementById('btnClearFile');
-    const placeholder = document.getElementById('previewPlaceholder'); // Referencia al elemento existente
-
-    // Asumimos que la URL remota está en el data-receipt-url del botón clip
+    const placeholder = document.getElementById('previewPlaceholder');
     const remoteUrl = buttonElement.getAttribute('data-receipt-url');
-
-    const hasLocalFile = inputElement.files.length > 0;
+    const hasLocalFile = inputElement && inputElement.files && inputElement.files.length > 0;
     const hasRemoteUrl = remoteUrl && remoteUrl.startsWith('http');
-    const isLoaded = hasLocalFile || hasRemoteUrl;
 
-    // Limpiamos el contenido del preview area antes de decidir qué mostrar
     previewArea.innerHTML = '';
-
-    if (isLoaded) {
+    if (hasLocalFile || hasRemoteUrl) {
         btnClear.classList.remove('hide');
-
-        let urlToPreview = hasLocalFile
-            ? URL.createObjectURL(inputElement.files[0])
-            : remoteUrl;
-
-        // 2. Inyectar el elemento de previsualización
-        const previewElement = document.createElement(urlToPreview.endsWith('.pdf') ? 'embed' : 'img');
-
-        if (previewElement.tagName === 'IMG') {
-            previewElement.src = urlToPreview;
-            previewElement.style.maxWidth = '100%';
-            previewElement.style.maxHeight = '400px';
-        } else {
-            // Para PDF o documentos, usar embed
-            previewElement.src = urlToPreview;
-            previewElement.style.width = '100%';
-            previewElement.style.height = '400px';
-            previewElement.type = 'application/pdf';
-        }
-        previewArea.appendChild(previewElement);
-
+        const urlToPreview = hasLocalFile ? URL.createObjectURL(inputElement.files[0]) : remoteUrl;
+        const isPdf = urlToPreview.toLowerCase().endsWith('.pdf');
+        const el = document.createElement(isPdf ? 'embed' : 'img');
+        el.src = urlToPreview;
+        if (!isPdf) { el.style.maxWidth = '100%'; el.style.maxHeight = '400px'; }
+        else { el.type = 'application/pdf'; el.style.width = '100%'; el.style.height = '400px'; }
+        previewArea.appendChild(el);
     } else {
-        // Nada cargado: Añadir el placeholder existente
         btnClear.classList.add('hide');
-
-        // 🔑 CORRECCIÓN: Volvemos a añadir el placeholder al área de preview
-        if (placeholder) {
-            previewArea.appendChild(placeholder);
-        } else {
-            // Caso de fallback, si el placeholder fue eliminado del DOM
-            let noImageMessage = document.createElement('p');
-            noImageMessage.textContent = "No hay comprobante cargado.";
-            noImageMessage.id = "previewPlaceholder";
-            previewArea.appendChild(noImageMessage);
+        if (placeholder) previewArea.appendChild(placeholder);
+        else {
+            const p = document.createElement('p');
+            p.id = 'previewPlaceholder';
+            p.textContent = 'No hay comprobante cargado.';
+            previewArea.appendChild(p);
         }
+    }
+}
+
+// ---------- Submit (FormData + POST) ----------
+async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!vin) { showMessage('warning', 'Por favor, seleccione un vehículo para la orden.'); return; }
+
+    const formValues = getInputsValues(frmAddWorkOrder);
+    const { dtEstimated, txtNotes } = formValues;
+    if (!dtEstimated) {
+        highlightAndFocus(document.getElementById('dtEstimated'));
+        showMessage('warning', 'Por favor, ingrese la fecha estimada de la orden');
+        return;
+    }
+
+    // recolectar pagos
+    const amountContainers = Array.from(document.querySelectorAll('.containerAmount'));
+    const amountData = [];
+    const imagesAmounts = [];
+
+    for (let i = 0; i < amountContainers.length - 1; i++) {
+        const amountInput = amountContainers[i].querySelector('.amountInput');
+        const paymentTypeSelect = amountContainers[i].querySelector('.paymentTypeSelect');
+        const receiptInput = amountContainers[i].querySelector('.receiptInput');
+
+        const amountValue = safeParseFloat(amountInput.value);
+        if (amountValue <= 0) {
+            highlightAndFocus(amountInput);
+            showMessage('warning', `Por favor, ingrese un monto válido para el abono ${i + 1}.`);
+            return;
+        }
+        if (!paymentTypeSelect.value) {
+            highlightAndFocus(paymentTypeSelect);
+            showMessage('warning', `Por favor, seleccione un método de pago para el abono ${i + 1}.`);
+            return;
+        }
+        if (!receiptInput || (receiptInput.files && receiptInput.files.length === 0)) {
+            highlightAndFocus(receiptInput);
+            showMessage('warning', `Por favor, seleccione un comprobante para el abono ${i + 1}.`);
+            return;
+        }
+
+        amountData.push({
+            amount: amountValue,
+            idPaymentMethod: paymentTypeSelect.value,
+            idEmployee: '490250a0-d247-4b7a-b862-3f38b79d798b'
+        });
+        imagesAmounts.push(receiptInput.files[0] || null);
+    }
+
+    // servicios
+    const services = [];
+    const tBodyServices = $('tBodyServices');
+    const activeServices = tBodyServices ? Array.from(tBodyServices.querySelectorAll('tr')).filter(r => r.querySelector('.tdName').textContent.trim() !== '') : [];
+    for (const r of activeServices) {
+        const idInput = r.querySelector('.hidden-service-id');
+        const nameInput = r.querySelector('.hidden-service-name');
+        const priceInput = r.querySelector('.hidden-service-price');
+
+        if ((idInput || nameInput) && priceInput) {
+            const obj = {
+                idService: idInput ? idInput.value : null,
+                nameService: nameInput ? nameInput.value : r.querySelector('.tdName').textContent.trim(),
+                priceApplied: safeParseFloat(priceInput.value)
+            };
+            if (obj.priceApplied < 0) { showMessage('warning', `El precio del servicio '${obj.nameService}' es inválido.`); return; }
+            services.push(obj);
+        }
+    }
+
+    // repuestos
+    const spareParts = [];
+    const tBodyParts = $('tBodySpareParts');
+    const activeParts = tBodyParts ? Array.from(tBodyParts.querySelectorAll('tr')).filter(r => r.querySelector('.tdName').textContent.trim() !== '') : [];
+    for (const r of activeParts) {
+        const idInput = r.querySelector('.hidden-part-id');
+        const unitPriceInput = r.querySelector('.hidden-part-unitPrice');
+        if (idInput && unitPriceInput) spareParts.push({
+            idSparePart: idInput.value,
+            priceApplied: safeParseFloat(unitPriceInput.value)
+        });
+    }
+
+    // construir FormData
+    const fd = new FormData();
+    const totalSalePrice = ($('totalCost')?.textContent || '0').replace(/[$,\s]/g, '');
+    const workOrderData = {
+        idOrderType: 'fb067db1-cec4-11f0-b459-94bb4356b639',
+        salePrice: totalSalePrice,
+        idCustomer,
+        notes: txtNotes || '',
+        estimatedDate: dtEstimated,
+        services,
+        spareParts,
+        idEmployee: '490250a0-d247-4b7a-b862-3f38b79d798b',
+        payments: amountData
+    };
+    fd.append('workOrderData', JSON.stringify(workOrderData));
+    imagesAmounts.forEach(file => fd.append('paymentImages', file));
+
+    try {
+        let response = await postWorkOrder(fd, vin, idSale);
+        await showMessage('success', 'Orden de trabajo registrada con éxito.', "success");
+        if (response && idSale) {
+            window.location.href = "sales.html";
+        } else {
+            window.location.href = "workOrders.html";
+        }
+        // opcional: limpiar o redirigir
+    } catch (err) {
+        console.error('postWorkOrder', err);
+        showMessage('error', err?.message || 'Error al registrar la orden');
     }
 }
