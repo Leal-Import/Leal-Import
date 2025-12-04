@@ -207,6 +207,10 @@ textarea{
     cursor: pointer;
 }
 
+#btnClearFile{
+    padding: 3px 5px;
+}
+
 .btnOpenModalSp{
     position: absolute;
     right: 0;

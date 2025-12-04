@@ -146,7 +146,11 @@ function renderServiceSuggestions(list) {
         if (selectedServices.some(x => x.id && x.id === s.idService)) return;
         const div = document.createElement('div'); div.className = 'suggestionItem';
         div.textContent = s.nameService;
-        div.addEventListener('click', () => addService({ id: s.idService, name: s.nameService, price: 0 }));
+        div.addEventListener('click', () => addService({
+            id: s.idService,
+            name: s.nameService,
+            price: 0
+        }));
         boxServ.appendChild(div);
     });
     showElement(boxServ);
@@ -159,7 +163,11 @@ function renderSparePartSuggestions(list) {
         if (selectedSpareParts.some(x => x.id === p.idSparePart)) return;
         const div = document.createElement('div'); div.className = 'suggestionItem';
         div.innerHTML = `${p.nameSpareParts} - $${formatWithCommas(p.suggestedPrice)}`;
-        div.addEventListener('click', () => addSparePart({ id: p.idSparePart, name: p.nameSpareParts, unitPrice: p.suggestedPrice }));
+        div.addEventListener('click', () => addSparePart({
+            id: p.idSparePart,
+            name: p.nameSpareParts,
+            unitPrice: p.suggestedPrice
+        }));
         boxSparePart.appendChild(div);
     });
     showElement(boxSparePart);
@@ -245,11 +253,71 @@ function appendServiceToDOM(service) {
         const v = safeParseFloat(priceCell.textContent);
         inpPrice.value = v;
         calculateTotalService();
+        calculateAmountDue();
     });
+
+    priceCell.addEventListener("focus", formatOnFocus)
+    priceCell.addEventListener("blur", formatOnBlur);
 
     rowsServices++;
     reindexServices();
     return true;
+}
+
+// Funciones Corregidas
+
+function formatOnFocus(event, isInput) {
+    const element = event.target;
+    let value;
+    if (isInput) {
+        value = element.value;
+        let cleanValue = value.replace('$', '').replace(/,/g, '');
+        element.value = cleanValue;
+    }
+    else {
+        value = element.innerText;
+        let cleanValue = value.replace('$', '').replace(/,/g, '');
+        element.textContent = cleanValue;
+    }
+}
+
+function formatOnBlur(event, isInput) {
+    const element = event.target;
+    let value
+    if (isInput) {
+        value = element.value;
+        let number = safeParseFloat(value);
+        // 2. Formatear el número como moneda
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+        });
+        // 3. Actualizar el contenido con el valor formateado
+        element.value = formatter.format(number);
+    } else {
+        value = element.textContent
+        let number = safeParseFloat(value);
+        // 2. Formatear el número como moneda
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+        });
+        // 3. Actualizar el contenido con el valor formateado
+        element.textContent = formatter.format(number);
+    }
+
+
+    // 4. Se llama a calculateTotalService/calculateTotalSpareParts automáticamente desde el 'input' listener,
+    // pero si estás usando el blur para el formato, deberías asegurar que el cálculo se haga también.
+    // Aunque tu lógica actual lo hace en el 'input' listener, es bueno asegurarlo aquí si se requiere:
+    // **NOTA:** Tu listener 'input' ya está manejando el cálculo y la actualización del input hidden.
+    // Solo necesitamos asegurarnos de que la lógica de limpieza y formato se ejecute.
+    // No es necesario llamar a calculateTotalService/SpareParts de nuevo aquí si el listener de 'input' ya se encargó.
+
+    // Si necesitas actualizar el cálculo después del formateo, llama a la función correspondiente:
+    // element.closest('#tBodyServices') ? calculateTotalService() : calculateTotalSpareParts(); 
 }
 
 function reindexServices() {
@@ -279,19 +347,31 @@ function calculateTotalService() {
 
 // ---------- Repuestos logic ----------
 function addSparePart(p) {
-    if (selectedSpareParts.some(x => x.id === p.id)) { showMessage('warning', 'El repuesto ya fue añadido'); return; }
-    const data = { id: p.id, name: p.name, unitPrice: p.unitPrice || 0, quantity: 1 };
+    if (selectedSpareParts.some(x => x.id === p.id)) {
+        showMessage('warning', 'El repuesto ya fue añadido');
+        return;
+    }
+    const data = {
+        id: p.id,
+        name: p.name,
+        unitPrice: p.unitPrice || 0,
+        quantity: 1
+    };
     if (!appendSparePartToDOM(data)) return;
     selectedSpareParts.push(data);
     txtAddSparePart.value = '';
     hideElement(boxSparePart);
     calculateTotalSpareParts();
+    calculateAmountDue();
 }
 
 function appendSparePartToDOM(part) {
     const tBody = $('tBodySpareParts'); if (!tBody) return false;
     const emptyRow = qsa('#tBodySpareParts tr').find(r => r.querySelector('.tdName').textContent.trim() === '');
-    if (!emptyRow) { showMessage('warning', 'No hay filas disponibles para repuestos.'); return false; }
+    if (!emptyRow) {
+        showMessage('warning', 'No hay filas disponibles para repuestos.');
+        return false;
+    }
 
     const index = rowsSpareParts;
     const nameCell = emptyRow.querySelector('.tdName');
@@ -329,7 +409,8 @@ function appendSparePartToDOM(part) {
         inpId.remove();
         inpUnit.remove();
         btn.remove();
-        const idx = selectedSpareParts.findIndex(s => s.id === part.id); if (idx > -1) selectedSpareParts.splice(idx, 1);
+        const idx = selectedSpareParts.findIndex(s => s.id === part.id);
+        if (idx > -1) selectedSpareParts.splice(idx, 1);
         reindexSpareParts();
         calculateTotalSpareParts();
     });
@@ -338,7 +419,10 @@ function appendSparePartToDOM(part) {
         const v = safeParseFloat(priceCell.textContent);
         inpUnit.value = v;
         calculateTotalSpareParts();
+        calculateAmountDue()
     })
+    priceCell.addEventListener("focus", formatOnFocus);
+    priceCell.addEventListener("blur", formatOnBlur);
     emptyRow.appendChild(btn);
 
     rowsSpareParts++;
@@ -461,7 +545,14 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     input.className = 'txtInputs amountInput';
     input.id = `amountInput${index}`;
     if (amount > 0) input.value = formatWithCommas(amount);
-    allowDecimal(input); input.addEventListener('input', managePaymentsAndCalculateDebt);
+    allowDecimal(input);
+    input.addEventListener("focus", (e) => {
+        formatOnFocus(e, true);
+    });
+    input.addEventListener("blur", (e) => {
+        formatOnBlur(e, true);
+    })
+    input.addEventListener('input', managePaymentsAndCalculateDebt);
 
     const select = document.createElement('select');
     select.className = 'txtInputs paymentTypeSelect';
@@ -479,7 +570,10 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     receiptButton.className = 'btnVoucher';
     receiptButton.innerHTML = `<span class="icon">+</span>`;
 
-    receiptButton.addEventListener('click', (e) => { e.preventDefault(); openReceiptModal(receiptInput, receiptButton); });
+    receiptButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        openReceiptModal(receiptInput, receiptButton);
+    });
 
     receiptContainer.append(receiptInput, receiptButton);
     div.append(input, select, receiptContainer);
@@ -509,25 +603,33 @@ function managePaymentsAndCalculateDebt() {
     payments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
     payments.forEach((p, i) => {
         p.setAttribute('data-index', i + 1);
-        const inp = p.querySelector('.amountInput'); inp.placeholder = `Abono ${i + 1}`;
+        const inp = p.querySelector('.amountInput');
+        inp.placeholder = `Abono ${i + 1}`;
         p.querySelector('.paymentTypeSelect').id = `paymentTypeSelect${i + 1}`;
         p.querySelector('.receiptInput').id = `receiptInput${i + 1}`;
     });
-
-    let totalPaid = 0;
-    payments.forEach(p => totalPaid += safeParseFloat(p.querySelector('.amountInput').value));
-
-    const txtTotal = safeParseFloat(($('txtTotal') || {}).value);
-    const debt = txtTotal - totalPaid;
-    const dueText = $('due');
-    if (dueText) { dueText.textContent = `$${formatWithCommas(debt)}`; dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)'; }
-
+    calculateAmountDue();
     const last = payments[payments.length - 1];
     if (last) {
         const lastVal = safeParseFloat(last.querySelector('.amountInput').value);
         if (lastVal > 0) createInitialPaymentField();
     }
 }
+
+let calculateAmountDue = () => {
+    const amountContainer = document.querySelector('.amounts');
+    let payments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
+    let totalPaid = 0;
+    payments.forEach(p => totalPaid += safeParseFloat(p.querySelector('.amountInput').value));
+
+    const txtTotal = safeParseFloat(($('txtTotal') || {}).value);
+    const debt = txtTotal - totalPaid;
+    const dueText = $('due');
+    if (dueText) {
+        dueText.textContent = `$${formatWithCommas(debt)}`; dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
+    }
+}
+
 
 // ---------- Modal comprobantes ----------
 function setupModalListeners() {
@@ -545,7 +647,10 @@ function setupModalListeners() {
 
     btnSelectFile?.addEventListener('click', () => {
         const inputElement = document.getElementById(inputIdField.value);
-        if (inputElement) { inputElement.value = ''; inputElement.click(); }
+        if (inputElement) {
+            inputElement.value = '';
+            inputElement.click();
+        }
     });
 
     btnClearFile?.addEventListener('click', () => {
@@ -622,10 +727,13 @@ async function handleSubmit(e) {
     if (!vin) { showMessage('warning', 'Por favor, seleccione un vehículo para la orden.'); return; }
 
     const formValues = getInputsValues(frmAddWorkOrder);
-    const { dtEstimated, txtNotes } = formValues;
+    const {
+        dtEstimated,
+        txtNotes
+    } = formValues;
     if (!dtEstimated) {
-        highlightAndFocus(document.getElementById('dtEstimated'));
-        showMessage('warning', 'Por favor, ingrese la fecha estimada de la orden');
+        highlightAndFocus($('dtEstimated'));
+        showMessage('Fecha estimada faltante', 'Por favor, ingrese la fecha estimada de la orden', 'warning');
         return;
     }
 
@@ -642,17 +750,16 @@ async function handleSubmit(e) {
         const amountValue = safeParseFloat(amountInput.value);
         if (amountValue <= 0) {
             highlightAndFocus(amountInput);
-            showMessage('warning', `Por favor, ingrese un monto válido para el abono ${i + 1}.`);
+            showMessage('Monto no valido', `Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'warning');
             return;
         }
         if (!paymentTypeSelect.value) {
             highlightAndFocus(paymentTypeSelect);
-            showMessage('warning', `Por favor, seleccione un método de pago para el abono ${i + 1}.`);
+            showMessage('Metodo de pago faltante', `Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'warning');
             return;
         }
         if (!receiptInput || (receiptInput.files && receiptInput.files.length === 0)) {
-            highlightAndFocus(receiptInput);
-            showMessage('warning', `Por favor, seleccione un comprobante para el abono ${i + 1}.`);
+            showMessage('Comprobante faltante', `Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'warning');
             return;
         }
 
@@ -662,6 +769,11 @@ async function handleSubmit(e) {
             idEmployee: '490250a0-d247-4b7a-b862-3f38b79d798b'
         });
         imagesAmounts.push(receiptInput.files[0] || null);
+    }
+
+    if (amountData.length == 0) {
+        showMessage('Ningun abono registrado', 'Por favor, registrar al menos un abono', 'warning');
+        return;
     }
 
     // servicios
@@ -697,12 +809,15 @@ async function handleSubmit(e) {
         });
     }
 
+    if (spareParts.length == 0 && services.length == 0) {
+        showMessage('Ningun servicio ni repuesto seleccionado', 'Por favor, seleccionar al menos un servicio o un repuesto', 'warning');
+        return;
+    }
+
     // construir FormData
     const fd = new FormData();
-    const totalSalePrice = ($('totalCost')?.textContent || '0').replace(/[$,\s]/g, '');
     const workOrderData = {
         idOrderType: 'fb067db1-cec4-11f0-b459-94bb4356b639',
-        salePrice: totalSalePrice,
         idCustomer,
         notes: txtNotes || '',
         estimatedDate: dtEstimated,
@@ -716,7 +831,7 @@ async function handleSubmit(e) {
 
     try {
         let response = await postWorkOrder(fd, vin, idSale);
-        await showMessage('success', 'Orden de trabajo registrada con éxito.', "success");
+        await showMessage('Orden registrada', 'Orden de trabajo registrada con éxito.', "success");
         if (response && idSale) {
             window.location.href = "sales.html";
         } else {

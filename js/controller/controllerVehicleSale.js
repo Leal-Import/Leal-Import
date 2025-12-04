@@ -26,6 +26,7 @@ const btnCreateOrder = document.getElementById("btnCreateOrder");
 
 let vehicleId = params.get('vin') || null;
 let currentId = null;
+function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
 allowDecimal(txtTotal);
 allowDecimal(txtCommission);
@@ -112,6 +113,11 @@ let createNewSale = async (isWO) => {
             showMessage(`Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'Monto inválido', 'warning');
             return false;
         }
+        if (paymentTypeSelect.value == "") {
+            highlightAndFocus(paymentTypeSelect);
+            showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
+            return false;
+        }
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
@@ -120,11 +126,6 @@ let createNewSale = async (isWO) => {
         if (receiptInput.files.length == 0) {
             highlightAndFocus(amountInput);
             showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
-            return false;
-        }
-        if (paymentTypeSelect.value == "") {
-            highlightAndFocus(paymentTypeSelect);
-            showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
             return false;
         }
         imagesAmounts.push(receiptInput.files[0] || null);
@@ -278,19 +279,19 @@ let loadVehicle = async (vin) => {
     document.getElementById("purchaseDate").textContent = vehicle.purchaseDate;
     document.getElementById("mileaje").textContent = vehicle.mileage;
     document.getElementById("lote").textContent = vehicle.lote.numLote;
-    document.getElementById("lote").href = vehicle.lote.linkLote;
+    vehicle.lote.linkLote != null ? document.getElementById("lote").href = vehicle.lote.linkLote : null;
     document.getElementById("status").textContent = vehicle.status;
     document.getElementById("suggestedPrice").textContent = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; // Por el momento es costo total
 
     document.getElementById("bill").textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
-    document.getElementById("bill").href = vehicle.costs.costPhoto.billPhoto;
+    vehicle.costs.costPhoto.billPhoto != null ? document.getElementById("bill").href = vehicle.costs.costPhoto.billPhoto : null;
     document.getElementById("ship").textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
-    document.getElementById("ship").href = vehicle.costs.costPhoto.shipPhoto;
+    vehicle.costs.costPhoto.shipPhoto != null ? document.getElementById("ship").href = vehicle.costs.costPhoto.shipPhoto : null;
     document.getElementById("towTruck").textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
-    document.getElementById("towTruck").href = vehicle.costs.costPhoto.shipPhoto;
+    vehicle.costs.costPhoto.shipPhoto != null ? document.getElementById("towTruck").href = vehicle.costs.costPhoto.shipPhoto : null;
     document.getElementById("iva").textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
     document.getElementById("taxes").textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
-    document.getElementById("taxes").href = vehicle.costs.costPhoto.taxesPhoto;
+    vehicle.costs.costPhoto.taxesPhoto != null ? document.getElementById("taxes").href = vehicle.costs.costPhoto.taxesPhoto : null;
     document.getElementById("transfer").textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
     document.getElementById("pa").textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
     document.getElementById("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
@@ -299,6 +300,41 @@ let loadVehicle = async (vin) => {
     txtTotal.value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
 
     loadVehicleImages(vehicle.photos);
+}
+
+
+function formatOnFocus(event) {
+    const element = event.target;
+    let value = element.value;
+    let cleanValue = value.replace('$', '').replace(/,/g, '');
+    element.value = cleanValue;
+}
+
+function formatOnBlur(event, isInput) {
+    const element = isInput ? event : event.target;
+    let value = element.value;
+
+    let number = safeParseFloat(value);
+    // 2. Formatear el número como moneda
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+    });
+    // 3. Actualizar el contenido con el valor formateado
+    element.value = formatter.format(number);
+
+
+
+    // 4. Se llama a calculateTotalService/calculateTotalSpareParts automáticamente desde el 'input' listener,
+    // pero si estás usando el blur para el formato, deberías asegurar que el cálculo se haga también.
+    // Aunque tu lógica actual lo hace en el 'input' listener, es bueno asegurarlo aquí si se requiere:
+    // **NOTA:** Tu listener 'input' ya está manejando el cálculo y la actualización del input hidden.
+    // Solo necesitamos asegurarnos de que la lógica de limpieza y formato se ejecute.
+    // No es necesario llamar a calculateTotalService/SpareParts de nuevo aquí si el listener de 'input' ya se encargó.
+
+    // Si necesitas actualizar el cálculo después del formateo, llama a la función correspondiente:
+    // element.closest('#tBodyServices') ? calculateTotalService() : calculateTotalSpareParts(); 
 }
 
 let loadSaleState = async () => {
@@ -344,7 +380,8 @@ let loadSaleState = async () => {
             // Aquí pasamos la URL remota (o null)
             createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef);
 
-            if (payment.amount === 0) lastValueWasZero = true; else lastValueWasZero = false;
+            if (payment.amount === 0) lastValueWasZero = true;
+            else lastValueWasZero = false;
         });
 
         // 4. Asegurar un campo vacío al final si el último abono guardado tenía valor
@@ -379,10 +416,13 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     input.id = `amountInput${index}`;
 
     if (amount > 0) {
-        input.value = formatWithCommas(amount);
+        input.value = amount;
+        formatOnBlur(input, true);
     }
 
     allowDecimal(input);
+    input.addEventListener("focus", formatOnFocus)
+    input.addEventListener("blur", formatOnBlur)
     input.addEventListener("input", managePaymentsAndCalculateDebt);
 
     const select = document.createElement("select");
