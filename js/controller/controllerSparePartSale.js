@@ -160,11 +160,10 @@ function insertSpareParts(spareParts) {
         if (tableEl) tableEl.style.height = "100%";
     } else {
         spareParts.forEach(sparePart => {
-            let idSelected
+            let idSelected;
             selectedIds.forEach(id => {
                 if (id == sparePart.idSpareParts) idSelected = true;
             });
-            console.log(selectedIds, idSelected, sparePart.idSpareParts)
             if (idSelected) return;
 
             const tr = document.createElement("tr");
@@ -615,8 +614,6 @@ function loadSavedData(parts, payments, notes) {
 }
 
 let cleanWindow = () => {
-    // 1. Ocultar la Ficha del Vehículo (Columna Izquierda)
-    document.querySelector(".viewVechicleContainer").classList.add("hide");
 
     // 2. Limpiar variables y estado local
     localStorage.removeItem(saleKey);
