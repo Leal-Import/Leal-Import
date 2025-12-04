@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         firstAmount.addEventListener("input", managePaymentsAndCalculateDebt);
         firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
     }
-
+    verifySelects();
     // input notas guarda estado
     document.getElementById("txtNotes")?.addEventListener("input", saveSaleState);
 });
@@ -417,6 +417,20 @@ function calculatePaid() {
     return totalPaid;
 }
 
+let verifySelects = () => {
+    const amounts = document.querySelectorAll(".amounts .containerAmount");
+    amounts.forEach(amount => {
+        const amountInput = amount.querySelector(".amountInput");
+        const amountSelect = amount.querySelector(".paymentTypeSelect");
+
+        if (amountInput.value.trim() == "") {
+            amountSelect.disabled = true;
+        } else {
+            amountSelect.disabled = false;
+        }
+    })
+}
+
 /* ---------------------------
    Manejo de abonos dinámicos
    --------------------------- */
@@ -431,7 +445,7 @@ function managePaymentsAndCalculateDebt() {
         const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
         if (idx > 0 && value === 0) payment.remove();
     });
-
+    verifySelects();
     // Refrescar nodos y renumerar
     allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
     allPayments.forEach((payment, i) => {
@@ -530,7 +544,6 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     }
 
     allowDecimal(input);
-    input.addEventListener("input", managePaymentsAndCalculateDebt);
 
     // Select metodo pago
     const select = document.createElement("select");
@@ -549,6 +562,11 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     if (amount > 0 && input.value && !input.value.startsWith('$')) {
         input.value = `$${formatWithCommas(parseCurrencyStringToNumber(input.value))}`;
     }
+
+    input.addEventListener("input", (e) => {
+        managePaymentsAndCalculateDebt(e, select);
+    }
+    );
 }
 
 /* ---------------------------
