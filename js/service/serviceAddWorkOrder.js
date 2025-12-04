@@ -1,15 +1,31 @@
-const API_URL = "http://127.0.0.1:8080/api/VehicleSale";
-const API_URLVeh = "http://127.0.0.1:8080/api/Vehicle";
+const API_URL = "http://127.0.0.1:8080/api/WorkOrder";
 
-export let postVehicle = async (sale, vin) => {
+export let getServices = async (search) => {
     try {
-        const request = await fetch(`${API_URL}/postVehicleSale/${vin}`, {
-            method: 'POST',
-            body: sale,
+        const request = await fetch(`${API_URL}/getService?search=${search}`, {
             credentials: 'include'
         });
         if (!request.ok) {
-            let errorMessage = `Error al ingresar la venta. Código: ${request.status}.`;
+            const errorBody = await request.text();
+            throw new Error(`Error ${request.status}: No se pudo obtener la lista de los servicios. Detalle: ${errorBody.substring(0, 100)}`);
+        }
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en getServices:", error);
+        throw new Error("Fallo al conectar con el servicio de servicios.");
+    }
+};
+
+export let postWorkOrder = async (workOrderData, vin, idSale) => {
+    try {
+        const request = await fetch(`${API_URL}/postWorkOrder/${vin}?idSale=${idSale}`, {
+            method: 'POST',
+            body: workOrderData,
+            credentials: 'include'
+        });
+        if (!request.ok) {
+            let errorMessage = `Error al crear la orden. Código: ${request.status}.`;
 
             try {
                 const errorData = await request.json();
@@ -39,22 +55,5 @@ export let postVehicle = async (sale, vin) => {
         }
 
         throw error;
-    }
-};
-
-export let getVehiclesAviable = async () => {
-    try {
-        const request = await fetch(`${API_URLVeh}/getSaleSummary`, {
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener la lista de vehiculos. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en getVehicles:", error);
-        throw new Error("Fallo al conectar con el servicio de vehiculos.");
     }
 };

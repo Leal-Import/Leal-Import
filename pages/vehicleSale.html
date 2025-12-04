@@ -23,7 +23,7 @@
             <div id="modalPreviewArea" class="preview-area"></div>
             <div class="modal-actions" style="display: flex; gap: 10px; justify-content: center;">
                 <button id="btnSelectFile" class="btnPrimary" type="button">Seleccionar comprobante</button>
-                <button id="btnClearFile" class="btnDanger hide" type="button">
+                <button id="btnClearFile" class="btnSecondary hide" type="button">
                     Eliminar Comprobante
                 </button>
             </div>
@@ -199,7 +199,10 @@
                             <label for="txtTotal" class="lbl">Precio final del vehiculo</label>
                             <input type="text" id="txtTotal" class="txtInputs">
                         </div>
-                        <input type="submit" value="Guardar" class="btnPrimary btnSubmitData">
+                        <div class="containerButtons">
+                            <a class="btnSecondary btnCreateWO" id="btnCreateOrder">Vender y crear orden</a>
+                            <input type="submit" value="Vender" class="btnPrimary btnSubmitData">
+                        </div>
                     </div>
                 </form>
             </div>

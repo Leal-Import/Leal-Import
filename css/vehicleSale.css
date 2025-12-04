@@ -31,6 +31,10 @@
     flex: 3;
 }
 
+.viewVechicleContainer a[href]{
+    color: var(--danger-color);
+}
+
 .filterSection {
     margin-top: 6px;
     padding-right: 5px;
@@ -66,6 +70,7 @@
 
 .mainInfoContainer {
     display: flex;
+    border: var(--border);
 }
 
 .mainInfoContainer>div {
@@ -85,7 +90,6 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 2px;
-    border: var(--border);
 }
 
 .bodyDataInfo {
@@ -189,6 +193,10 @@
     overflow-y: auto;
 }
 
+#btnClearFile{
+    padding: 3px 5px;
+}
+
 .containerAmount {
     display: flex;
     align-items: center;
@@ -222,6 +230,21 @@
     flex-direction: column;
     gap: 10px;
 }
+
+.containerButtons{
+    display: flex;
+    justify-content: space-between;
+}
+
+.btnCreateWO{
+    padding: 5px 12px;
+    font-size: 1em;
+    text-decoration: none;
+    width: auto;
+    display: grid;
+    place-content: center;
+    background-color: var(--secondary-color);
+    border-radius: var(--border-radius-input);}
 
 textarea {
     resize: none;

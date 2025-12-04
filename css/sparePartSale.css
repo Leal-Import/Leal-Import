@@ -40,6 +40,8 @@
     right: 10px;
     top: 20%;
     border-radius: 50%;
+    border: none;
+    background-color: transparent;
 }
 
 .btnTrash img {

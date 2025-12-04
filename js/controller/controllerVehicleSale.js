@@ -1,9 +1,9 @@
 import { getPaymentMethods } from '../service/serviceConfiguration.js'
-import {
-    getVehicles
-} from '../service/serviceVehicle.js'
 import { getVehicles as getVehicleByVin } from '../service/serviceVehicleDetails.js'
-import { postVehicle } from '../service/serviceVehicleSale.js'
+import {
+    postVehicle,
+    getVehiclesAviable
+} from '../service/serviceVehicleSale.js'
 import {
     formatWithCommas,
     allowDecimal,
@@ -22,9 +22,11 @@ const saleKey = `saleState_cliente_${customerId}`;
 const txtTotal = document.getElementById("txtTotal");
 const txtCommission = document.getElementById("txtCommission");
 const frmVehicleSale = document.getElementById("frmVehicleSale");
+const btnCreateOrder = document.getElementById("btnCreateOrder");
 
 let vehicleId = params.get('vin') || null;
 let currentId = null;
+function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
 allowDecimal(txtTotal);
 allowDecimal(txtCommission);
@@ -35,6 +37,14 @@ document.addEventListener("click", (e) => {
         e.target.classList.remove("show");
     }
 });
+
+btnCreateOrder.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const data = await createNewSale(true);
+    if (data) {
+        window.location.href = `addWorkOrder.html?idSale=${data.idSale}&customerName=${customerName}&vin=${data.vin}&idCustomer=${customerId}&totalPrice=${data.price}`;
+    }
+})
 
 let paymentMethodsList = [];
 let loadPayMethods = async () => {
@@ -48,6 +58,14 @@ let loadPayMethods = async () => {
 
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
+    let success = await createNewSale();
+    if (success) {
+        window.location.href = "sales.html";
+    }
+
+});
+
+let createNewSale = async (isWO) => {
     const formData = getInputsValues(frmVehicleSale);
 
     const {
@@ -58,20 +76,26 @@ frmVehicleSale.addEventListener("submit", async (e) => {
 
     if (!vehicleId) {
         showMessage('Por favor, seleccione un vehículo para la venta.', 'Vehículo no seleccionado', 'warning');
-        return;
+        return false;
     }
 
     if (!txtTotal) {
         highlightAndFocus(document.getElementById('txtTotal'));
         showMessage('Por favor, ingrese el precio total de la venta.', 'Precio total requerido', 'warning');
-        return;
+        return false;
+    }
+
+    if (!txtCommission) {
+        highlightAndFocus(document.getElementById('txtCommission'));
+        showMessage('Por favor, ingrese la comision de la venta.', 'Comisión requerida', 'warning');
+        return false;
     }
 
     const firstAmount = document.getElementById("amountInput1");
     if (firstAmount.value.trim() == "") {
         highlightAndFocus(firstAmount);
         showMessage('Por favor, ingrese al menos un abono para la venta.', 'Abono requerido', 'warning');
-        return;
+        return false;
     }
     const amountData = [];
     const imagesAmounts = [];
@@ -87,22 +111,22 @@ frmVehicleSale.addEventListener("submit", async (e) => {
         if (isNaN(amountValue) || amountValue <= 0) {
             highlightAndFocus(amountInput);
             showMessage(`Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'Monto inválido', 'warning');
-            return;
-        }
-        amountData.push({
-            amount: amountValue,
-            idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "63433493-d660-4fd6-bcda-e57a8ba0f26b" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
-        });
-        if (receiptInput.files.length == 0) {
-            highlightAndFocus(amountInput);
-            showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
-            return;
+            return false;
         }
         if (paymentTypeSelect.value == "") {
             highlightAndFocus(paymentTypeSelect);
             showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
-            return;
+            return false;
+        }
+        amountData.push({
+            amount: amountValue,
+            idPaymentMethod: paymentTypeSelect.value,
+            idEmployee: "490250a0-d247-4b7a-b862-3f38b79d798b" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        });
+        if (receiptInput.files.length == 0) {
+            highlightAndFocus(amountInput);
+            showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
+            return false;
         }
         imagesAmounts.push(receiptInput.files[0] || null);
     }
@@ -114,7 +138,7 @@ frmVehicleSale.addEventListener("submit", async (e) => {
         idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "63433493-d660-4fd6-bcda-e57a8ba0f26b", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "490250a0-d247-4b7a-b862-3f38b79d798b", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData
     }
 
@@ -126,18 +150,26 @@ frmVehicleSale.addEventListener("submit", async (e) => {
 
     try {
         if (currentId != null) {
-
         } else {
-            await postVehicle(fd, vehicleId);
-            showMessage('Venta registrada con éxito.', 'Éxito', 'success');
+            let response = await postVehicle(fd, vehicleId);
+            await showMessage('Venta registrada con éxito.', 'Éxito', 'success');
             cancelVehicleSelection();
+            if (isWO) {
+                return {
+                    vin: response.data.vin,
+                    price: response.data.salePrice,
+                    idSale: response.data.idSale
+                };
+            } else {
+                return true;
+            }
         }
     } catch (error) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar la venta.';
         showMessage(errorMessage, 'error', 'error');
     }
-});
+}
 
 let loadLinkAddVehicle = () => {
     const customerId = params.get('idCustomer') || null;
@@ -171,7 +203,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 let loadVehicles = async () => {
-    const vehicles = await getVehicles();
+    const vehicles = await getVehiclesAviable();
     insertVehicles(vehicles.content);
 }
 
@@ -209,7 +241,7 @@ let insertVehicles = (vehicles) => {
             image.src = vehicle.photoUrl;
             vin.textContent = vehicle.vin;
             cost.textContent = `$${formatWithCommas(vehicle.total)}`;
-            suggesredPrice.textContent = `$${formatWithCommas(vehicle.total)}`; /* Por el momento es costo total */
+            suggesredPrice.textContent = `$${formatWithCommas(vehicle.suggestedPrice)}`; /* Por el momento es costo total */
 
             tr.classList.add("tableRow");
             btnAddVehicle.classList.add("btnPrimary", "btnAddVehicle");
@@ -247,27 +279,62 @@ let loadVehicle = async (vin) => {
     document.getElementById("purchaseDate").textContent = vehicle.purchaseDate;
     document.getElementById("mileaje").textContent = vehicle.mileage;
     document.getElementById("lote").textContent = vehicle.lote.numLote;
-    document.getElementById("lote").href = vehicle.lote.linkLote;
+    vehicle.lote.linkLote != null ? document.getElementById("lote").href = vehicle.lote.linkLote : null;
     document.getElementById("status").textContent = vehicle.status;
-    document.getElementById("suggestedPrice").textContent = `$${formatWithCommas(vehicle.costs.total)}`; // Por el momento es costo total
+    document.getElementById("suggestedPrice").textContent = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; // Por el momento es costo total
 
     document.getElementById("bill").textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
-    document.getElementById("bill").href = vehicle.costs.costPhoto.billPhoto;
+    vehicle.costs.costPhoto.billPhoto != null ? document.getElementById("bill").href = vehicle.costs.costPhoto.billPhoto : null;
     document.getElementById("ship").textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
-    document.getElementById("ship").href = vehicle.costs.costPhoto.shipPhoto;
+    vehicle.costs.costPhoto.shipPhoto != null ? document.getElementById("ship").href = vehicle.costs.costPhoto.shipPhoto : null;
     document.getElementById("towTruck").textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
-    document.getElementById("towTruck").href = vehicle.costs.costPhoto.shipPhoto;
+    vehicle.costs.costPhoto.shipPhoto != null ? document.getElementById("towTruck").href = vehicle.costs.costPhoto.shipPhoto : null;
     document.getElementById("iva").textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
     document.getElementById("taxes").textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
-    document.getElementById("taxes").href = vehicle.costs.costPhoto.taxesPhoto;
+    vehicle.costs.costPhoto.taxesPhoto != null ? document.getElementById("taxes").href = vehicle.costs.costPhoto.taxesPhoto : null;
     document.getElementById("transfer").textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
     document.getElementById("pa").textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
     document.getElementById("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
     document.getElementById("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
 
-    txtTotal.value = `$${formatWithCommas(vehicle.costs.total)}`; /* Aca por defecto va a ir el precio sugerido */
+    txtTotal.value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
 
     loadVehicleImages(vehicle.photos);
+}
+
+
+function formatOnFocus(event) {
+    const element = event.target;
+    let value = element.value;
+    let cleanValue = value.replace('$', '').replace(/,/g, '');
+    element.value = cleanValue;
+}
+
+function formatOnBlur(event, isInput) {
+    const element = isInput ? event : event.target;
+    let value = element.value;
+
+    let number = safeParseFloat(value);
+    // 2. Formatear el número como moneda
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+    });
+    // 3. Actualizar el contenido con el valor formateado
+    element.value = formatter.format(number);
+
+
+
+    // 4. Se llama a calculateTotalService/calculateTotalSpareParts automáticamente desde el 'input' listener,
+    // pero si estás usando el blur para el formato, deberías asegurar que el cálculo se haga también.
+    // Aunque tu lógica actual lo hace en el 'input' listener, es bueno asegurarlo aquí si se requiere:
+    // **NOTA:** Tu listener 'input' ya está manejando el cálculo y la actualización del input hidden.
+    // Solo necesitamos asegurarnos de que la lógica de limpieza y formato se ejecute.
+    // No es necesario llamar a calculateTotalService/SpareParts de nuevo aquí si el listener de 'input' ya se encargó.
+
+    // Si necesitas actualizar el cálculo después del formateo, llama a la función correspondiente:
+    // element.closest('#tBodyServices') ? calculateTotalService() : calculateTotalSpareParts(); 
 }
 
 let loadSaleState = async () => {
@@ -313,7 +380,8 @@ let loadSaleState = async () => {
             // Aquí pasamos la URL remota (o null)
             createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef);
 
-            if (payment.amount === 0) lastValueWasZero = true; else lastValueWasZero = false;
+            if (payment.amount === 0) lastValueWasZero = true;
+            else lastValueWasZero = false;
         });
 
         // 4. Asegurar un campo vacío al final si el último abono guardado tenía valor
@@ -330,28 +398,6 @@ let loadSaleState = async () => {
     // 5. Recalcular la deuda para actualizar 'due'
     managePaymentsAndCalculateDebt();
 };
-
-function viewReceipt(receiptInput, remoteUrl) {
-    let url = null;
-    console.log(remoteUrl)
-    // 1. Prioridad: URL remota (si el estado fue cargado/restaurado y es una URL completa)
-    if (remoteUrl && remoteUrl.startsWith('http')) {
-        url = remoteUrl;
-    }
-    else if (receiptInput.files.length > 0) {
-        try {
-            url = URL.createObjectURL(receiptInput.files[0]);
-        } catch (e) {
-            console.error("Error al crear URL local:", e);
-        }
-    }
-
-    if (url) {
-        window.open(url, '_blank');
-    } else {
-        alert("No se pudo visualizar el comprobante. Si el archivo fue seleccionado localmente, la visualización solo es posible en la misma sesión antes de recargar la página.");
-    }
-}
 
 function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
     const amountContainer = document.querySelector(".amounts");
@@ -370,15 +416,20 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     input.id = `amountInput${index}`;
 
     if (amount > 0) {
-        input.value = formatWithCommas(amount);
+        input.value = amount;
+        formatOnBlur(input, true);
     }
 
     allowDecimal(input);
+    input.addEventListener("focus", formatOnFocus)
+    input.addEventListener("blur", formatOnBlur)
     input.addEventListener("input", managePaymentsAndCalculateDebt);
 
     const select = document.createElement("select");
     select.classList.add("txtInputs", "paymentTypeSelect");
     select.id = `paymentTypeSelect${index}`;
+
+    select.addEventListener("change", saveSaleState);
 
     // === ELEMENTOS PARA EL COMPROBANTE ===
     const receiptContainer = document.createElement("div");

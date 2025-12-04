@@ -1,0 +1,260 @@
+.content{
+    flex-direction: row;
+}
+
+.leftColumn{
+    flex: 1;
+}
+
+.breadCrumbSection {
+    display: inline-flex;
+    margin-bottom: 2em;
+}
+
+.moreDataContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.containerDataInfo{
+    display: flex;
+}
+
+.containerDataInfo>div{
+    flex: 1;
+}
+
+.dataInfo{
+    display: flex;
+    flex: 1;
+}
+
+.lblInfo{
+    background-color: var(--danger-color);
+    color: var(--bg-color);
+    font-weight: var(--font-weight-semibold);
+    padding: 2px 10px;
+}
+
+.valueInfo{
+    border-bottom: 1px solid var(--danger-color);
+    flex: 1;
+    padding: 0 3px;
+}
+
+.rowInfo{
+    display: flex;
+}
+
+.bodyLeftPart {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tablesDataContainer{
+    display: flex;
+    flex-direction: column;
+}
+
+.containerTables{
+    display: flex;
+    gap: 10px
+}
+
+.lblInfoTotals, th{
+    font-weight: var(--font-weight-semibold);
+    padding: 2px 5px;
+}
+
+.lblInfoTotals{
+    background-color: #f8f8f8;
+    border: var(--border);
+}
+
+th{
+    padding: 5px !important;
+}
+
+td{
+    font-size: var(--font-size-sm);
+}
+
+.containerInput{
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.containerInput input{
+    width: 100%;
+}
+
+.tableContainer{
+    flex: 1;
+}
+
+.tableContainer table{
+    border: var(--border);
+}
+
+tr{
+    height: 36.4px;
+    position: relative;
+}
+
+.btnTrash {
+    position: absolute;
+    border: none;
+    height: 24px;
+    width: 24px;
+    right: 10px;
+    top: 20%;
+    background-color: transparent;
+}
+
+.btnTrash img {
+    width: 100%;
+    height: 100%;
+}
+
+.rightColumn {
+    flex: 2;
+    max-width: 425px;
+    position: sticky;
+    top: 0;
+}
+
+.formRightColumn {
+    height: 100%;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    border: var(--border);
+    padding: 5px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+} 
+
+.bodyRightColumn {
+    flex: 0 1 auto;
+    max-height: 50%;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: var(--border);
+}
+
+.footerRightColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bodyRightColumn h2 {
+    font-weight: var(--font-weight-medium);
+    font-size: 1.2em;
+}
+
+textarea{
+    resize: none;
+}
+
+.amounts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.containerAmount {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.containerAmount .txtInputs {
+    flex: 1;
+    border-radius: 3px;
+    background-color: #fafafa;
+}
+
+.containerAmountDue {
+    display: flex;
+    justify-content: space-between;
+}
+
+.containerAmountDue h3 {
+    font-weight: var(--font-weight-medium);
+    font-size: 1.4em;
+}
+
+#due {
+    font-size: 1.4em;
+    color: var(--danger-color);
+    font-weight: var(--font-weight-semibold);
+}
+
+.btnVoucher {
+    padding: 3px 10px;
+    font-size: 1.2em;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#btnClearFile{
+    padding: 3px 5px;
+}
+
+.btnOpenModalSp{
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 0;
+    border-bottom-right-radius: var(--border-radius-input);
+    border-top-right-radius: var(--border-radius-input);
+
+}
+
+/* Modal */
+
+.modalAdd {
+    max-width: 600px;
+    width: 90%;
+}
+
+.containerModal h2 {
+    text-align: center;
+    font-weight: var(--font-weight-medium);
+}
+
+
+#modalPreviewArea {
+    min-height: 150px;
+    border: 3px dashed rgb(136, 136, 136);
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#btnSelectFile {
+    border-radius: var(--border-radius-input);
+}   
+
+.btnPrimary {
+    padding: 5px 12px;
+    font-size: 1em;
+    text-decoration: none;
+    width: auto;
+    display: grid;
+    place-content: center;
+}
