@@ -420,16 +420,23 @@ function calculatePaid() {
 let verifySelects = () => {
     const amounts = document.querySelectorAll(".amounts .containerAmount");
     amounts.forEach(amount => {
-        const amountInput = amount.querySelector(".amountInput");
-        const amountSelect = amount.querySelector(".paymentTypeSelect");
+        const input = amount.querySelector(".amountInput");
+        const select = amount.querySelector(".paymentTypeSelect");
 
-        if (amountInput.value.trim() == "") {
-            amountSelect.disabled = true;
+        if (!input || !select) return;
+
+        const rawValue = (input.value || "").trim();
+        const numeric = parseFloat(rawValue.replace(/[$,]/g, "")) || 0;
+
+        if (numeric === 0) {
+            select.disabled = true;
+            select.value = ""; // evita selects colgados
         } else {
-            amountSelect.disabled = false;
+            select.disabled = false;
         }
-    })
-}
+    });
+};
+
 
 /* ---------------------------
    Manejo de abonos dinámicos
@@ -445,7 +452,6 @@ function managePaymentsAndCalculateDebt() {
         const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
         if (idx > 0 && value === 0) payment.remove();
     });
-    verifySelects();
     // Refrescar nodos y renumerar
     allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
     allPayments.forEach((payment, i) => {
@@ -489,6 +495,8 @@ function managePaymentsAndCalculateDebt() {
         dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     }
 
+    verifySelects();
+
     saveSaleState();
 }
 
@@ -506,6 +514,7 @@ function addNewPaymentField() {
 
     const index = amountContainer.children.length + 1;
     // crear field usando la función que centraliza comportamiento
+    verifySelects();
     createInitialPaymentField(0, null, null);
     saveSaleState();
 }

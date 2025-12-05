@@ -361,6 +361,11 @@
     padding: 8px 12px;
     cursor: pointer;
     width: 100%;
+    border-bottom: var(--border);
+}
+
+.suggestionItem:nth-child(2n){
+    background-color: #f3f3f3;
 }
 
 .suggestionItem:hover {
