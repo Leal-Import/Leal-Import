@@ -2,7 +2,7 @@ const API_URL = "http://127.0.0.1:8080/api/Vehicle";
 
 export let getVehicles = async (id) => {
     try {
-        const request = await fetch(`${API_URL}/getVehicleByVin/${id}`, {
+        const request = await fetch(`${API_URL}/getVehicleById/${id}`, {
             credentials: 'include'
         });
         if (!request.ok) {

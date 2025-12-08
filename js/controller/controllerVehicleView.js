@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     lote.textContent = vehicle.lote.numLote;
     purchaseDate.textContent = vehicle.purchaseDate;
     status.textContent = vehicle.status;
-    lote.href = vehicle.lote.linkLote;
+    vehicle.lote.linkLote != null ? lote.href = vehicle.lote.linkLote : null;
     description.textContent = vehicle.description;
 
     description.style.height = "auto";         // resetear para recalcular
@@ -57,15 +57,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     description.readOnly = true;
 
     bill.textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
-    vehicle.costs.costPhoto.billPhoto != null ? bill.href = vehicle.costs.costPhoto.billPhoto : null; bill.style.color = "var(--danger-color)"
+    vehicle.costs.costPhoto.billPhoto != null ? bill.href = vehicle.costs.costPhoto.billPhoto : null;
     transfer.textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
     storage.textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
     transport.textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
-    vehicle.costs.costPhoto.shipPhoto != null ? transport.href = vehicle.costs.costPhoto.shipPhoto : transport; transport.style.color = "var(--danger-color)"
+    vehicle.costs.costPhoto.shipPhoto != null ? transport.href = vehicle.costs.costPhoto.shipPhoto : transport;
     ship.textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
-    vehicle.costs.costPhoto.shipPhoto != null ? ship.href = vehicle.costs.costPhoto.shipPhoto : null; ship.style.color = "var(--danger-color)"
+    vehicle.costs.costPhoto.shipPhoto != null ? ship.href = vehicle.costs.costPhoto.shipPhoto : null;
     taxes.textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
-    vehicle.costs.costPhoto.taxesPhoto != null ? taxes.href = vehicle.costs.costPhoto.taxesPhoto : null; taxes.style.color = "var(--danger-color)"
+    vehicle.costs.costPhoto.taxesPhoto != null ? taxes.href = vehicle.costs.costPhoto.taxesPhoto : null;
     iva.textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
     pa.textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
     vehicle.costs.suggestedPrice != null ? suggestedPrice.textContent = `$${vehicle.costs.suggestedPrice}` : suggestedPrice.style.display = "none";

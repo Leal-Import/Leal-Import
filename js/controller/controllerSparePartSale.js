@@ -11,8 +11,8 @@ import {
 } from '../utils.js'
 
 /* ---------------------------
-   Parámetros y constantes
-   --------------------------- */
+Parámetros y constantes
+--------------------------- */
 const params = new URLSearchParams(window.location.search);
 const customerName = params.get('customerName') || "Nombre del cliente";
 const customerId = params.get('idCustomer') || null;
@@ -32,19 +32,54 @@ let selectedIds = [];
 let paymentMethodsList = [];
 
 /* ---------------------------
-   Helpers
-   --------------------------- */
+Helpers
+--------------------------- */
 function sanitizeParam(param) {
     return param === null || param === "null" || param === "undefined" ? null : param;
 }
+function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
-function setCursorToEnd(element) {
-    const range = document.createRange();
-    const sel = window.getSelection();
-    range.selectNodeContents(element);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
+function formatOnBlur(event, isInput) {
+    const element = event.target;
+    let value
+    if (isInput) {
+        value = element.value;
+        let number = safeParseFloat(value);
+        // 2. Formatear el número como moneda
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+        });
+        // 3. Actualizar el contenido con el valor formateado
+        element.value = formatter.format(number);
+    } else {
+        value = element.textContent
+        let number = safeParseFloat(value);
+        // 2. Formatear el número como moneda
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+        });
+        // 3. Actualizar el contenido con el valor formateado
+        element.textContent = formatter.format(number);
+    }
+}
+
+function formatOnFocus(event, isInput) {
+    const element = event.target;
+    let value;
+    if (isInput) {
+        value = element.value;
+        let cleanValue = value.replace('$', '').replace(/,/g, '');
+        element.value = cleanValue;
+    }
+    else {
+        value = element.innerText;
+        let cleanValue = value.replace('$', '').replace(/,/g, '');
+        element.textContent = cleanValue;
+    }
 }
 
 function parseCurrencyStringToNumber(text) {
@@ -78,8 +113,8 @@ function fillPaymentSelect(selectElement, selectedValue = null) {
 }
 
 /* ---------------------------
-   Cargar métodos de pago
-   --------------------------- */
+Cargar métodos de pago
+--------------------------- */
 async function loadPayMethods() {
     try {
         const roles = await getPaymentMethods();
@@ -92,8 +127,8 @@ async function loadPayMethods() {
 }
 
 /* ---------------------------
-   DOMContentLoaded
-   --------------------------- */
+DOMContentLoaded
+--------------------------- */
 document.addEventListener("DOMContentLoaded", async () => {
     await loadPayMethods();
 
@@ -126,8 +161,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ---------------------------
-   Cargar repuestos e insertarlos
-   --------------------------- */
+Cargar repuestos e insertarlos
+--------------------------- */
 async function loadSpareParts() {
     try {
         const spareParts = await getSpareParts();
@@ -231,7 +266,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "490250a0-d247-4b7a-b862-3f38b79d798b" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         });
     }
 
@@ -259,7 +294,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
     const saleData = {
         idCustomer: customerId,
         notes: txtNotes || "",
-        idEmployee: "490250a0-d247-4b7a-b862-3f38b79d798b", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData,
         sparePartItems
     }
@@ -283,8 +318,8 @@ frmSparePartSale.addEventListener("submit", async (e) => {
 })
 
 /* ---------------------------
-   Crear fila de repuesto seleccionado
-   --------------------------- */
+Crear fila de repuesto seleccionado
+--------------------------- */
 function createRowSparePart(id, name, suggestedPrice) {
     const container = document.getElementById("tBodySelected");
     if (!container) return;
@@ -302,7 +337,7 @@ function createRowSparePart(id, name, suggestedPrice) {
     iconImg.src = "../../media/appMedia/trashIcon.png";
 
     partName.textContent = name;
-    price.textContent = `$${formatWithCommas(suggestedPrice)}`;
+    price.textContent = "$" + formatWithCommas(suggestedPrice);
     price.setAttribute("contenteditable", true);
 
     tr.setAttribute("data-id", id);
@@ -311,8 +346,13 @@ function createRowSparePart(id, name, suggestedPrice) {
     btnTrash.classList.add("btnTrash");
     tr.classList.add("tableRow");
 
-    price.addEventListener("input", formatAndRestrictPrice);
-
+    price.addEventListener("input", (e) => {
+        restrictToDecimal(e);
+        calculateTotal();
+        saveSaleState();
+    });
+    price.addEventListener("focus", formatOnFocus);
+    price.addEventListener("blur", formatOnBlur);
     btnTrash.appendChild(iconImg);
     tr.append(partName, price, btnTrash);
     container.appendChild(tr);
@@ -340,38 +380,66 @@ function createRowSparePart(id, name, suggestedPrice) {
     calculateTotal();
 }
 
-/* ---------------------------
-   Formateo y restricción de precio (contenteditable)
-   --------------------------- */
-function formatAndRestrictPrice(event) {
-    const element = event.target;
-    let value = element.textContent.replace(/[$,]/g, '').trim();
+function restrictToDecimal(event) {
+    const el = event.target;
+    const originalCaret = saveCursorPosition(el);
+    let value = el.textContent;
+    let cleaned = value.replace(/[^0-9.]/g, '');
+    const prevLen = value.length;
 
-    if (value.length > 11) value = value.substring(0, 11);
-    if (value.match(/[^\d.]/g)) value = value.replace(/[^\d.]/g, '');
+    const parts = cleaned.split('.');
+    let intPart = parts[0].replace(/^0+(?=\d)/, '') || '0';
+    let decPart = parts[1] || '';
+    cleaned = intPart + (parts.length > 1 ? '.' + decPart : '');
 
-    const parts = value.split('.');
-    if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+    if (parts.length > 1 && decPart.length > 2) cleaned = intPart + '.' + decPart.substring(0, 2);
 
-    if (value === '' || value === '.') {
-        element.textContent = '';
-        calculateTotal();
-        return;
+    if (el.textContent !== cleaned) {
+        el.textContent = cleaned;
+        const newLen = cleaned.length;
+        const diff = prevLen - newLen;
+        let newCaret = Math.max(0, Math.min(originalCaret - diff, newLen));
+        setTimeout(() => restoreCursorPosition(el, newCaret), 0);
     }
+}
 
-    const numericValue = parseFloat(value);
-    if (!isNaN(numericValue)) {
-        element.textContent = `$${formatWithCommas(numericValue)}`;
+function saveCursorPosition(element) {
+    const sel = window.getSelection();
+    if (sel.rangeCount === 0) return 0;
+    const range = sel.getRangeAt(0);
+    const pre = range.cloneRange();
+    pre.selectNodeContents(element);
+    pre.setEnd(range.endContainer, range.endOffset);
+    return pre.toString().length;
+}
+function restoreCursorPosition(element, caretPos) {
+    const range = document.createRange();
+    const sel = window.getSelection();
+    let found = false;
+    element.childNodes.forEach(node => {
+        if (found) return;
+        if (node.nodeType === 3) {
+            const ln = node.nodeValue.length;
+            if (caretPos <= ln) {
+                range.setStart(node, caretPos);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                found = true;
+            } else caretPos -= ln;
+        }
+    });
+    if (!found) {
+        range.selectNodeContents(element);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
     }
-
-    calculateTotal();
-    setCursorToEnd(element);
-    saveSaleState();
 }
 
 /* ---------------------------
-   Cálculos: total, pagado, deuda
-   --------------------------- */
+Cálculos: total, pagado, deuda
+--------------------------- */
 function calculateTotal() {
     let total = 0;
     const containerTotal = document.getElementById("containerTotal");
@@ -439,8 +507,8 @@ let verifySelects = () => {
 
 
 /* ---------------------------
-   Manejo de abonos dinámicos
-   --------------------------- */
+Manejo de abonos dinámicos
+--------------------------- */
 function managePaymentsAndCalculateDebt() {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
@@ -529,8 +597,8 @@ function ensureInitialPaymentField() {
 }
 
 /* ---------------------------
-   Crear campo de abono (input + select + comprobante botón)
-   --------------------------- */
+Crear campo de abono (input + select + comprobante botón)
+--------------------------- */
 function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
@@ -571,6 +639,12 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     if (amount > 0 && input.value && !input.value.startsWith('$')) {
         input.value = `$${formatWithCommas(parseCurrencyStringToNumber(input.value))}`;
     }
+    input.addEventListener("focus", (e) => {
+        formatOnFocus(e, true);
+    });
+    input.addEventListener("blur", (e) => {
+        formatOnBlur(e, true);
+    })
 
     input.addEventListener("input", (e) => {
         managePaymentsAndCalculateDebt(e, select);
@@ -579,8 +653,8 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
 }
 
 /* ---------------------------
-   Guardar / Cargar estado en localStorage
-   --------------------------- */
+Guardar / Cargar estado en localStorage
+--------------------------- */
 function loadSaleState() {
     const raw = localStorage.getItem(saleKey);
     if (!raw) return null;
@@ -696,8 +770,8 @@ function saveSaleState() {
 }
 
 /* ---------------------------
-   Botón agregar repuesto (redirección)
-   --------------------------- */
+Botón agregar repuesto (redirección)
+--------------------------- */
 if (btnAddPart) {
     btnAddPart.addEventListener("click", (e) => {
         e.preventDefault();
@@ -707,8 +781,8 @@ if (btnAddPart) {
 }
 
 /* ---------------------------
-   Inicializar row 'No hay repuestos seleccionados' si aplica
-   --------------------------- */
+Inicializar row 'No hay repuestos seleccionados' si aplica
+--------------------------- */
 (function ensureNoDataRow() {
     const container = document.getElementById("tBodySelected");
     if (!container) return;
@@ -725,6 +799,6 @@ if (btnAddPart) {
 })();
 
 /* ---------------------------
-   Export (si necesitas exponer funciones)
-   --------------------------- */
+Export (si necesitas exponer funciones)
+--------------------------- */
 // export { saveSaleState, loadSaleState } // descomenta si se importan desde otro módulo

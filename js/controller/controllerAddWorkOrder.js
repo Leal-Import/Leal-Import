@@ -940,7 +940,6 @@ async function handleSubmit(e) {
     // construir FormData
     const fd = new FormData();
     const workOrderData = {
-        idOrderType: 'fb067db1-cec4-11f0-b459-94bb4356b639',
         idCustomer,
         notes: txtNotes || '',
         estimatedDate: dtEstimated,
