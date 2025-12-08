@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         firstAmount.addEventListener("input", managePaymentsAndCalculateDebt);
         firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
     }
-
+    verifySelects();
     // input notas guarda estado
     document.getElementById("txtNotes")?.addEventListener("input", saveSaleState);
 });
@@ -160,11 +160,10 @@ function insertSpareParts(spareParts) {
         if (tableEl) tableEl.style.height = "100%";
     } else {
         spareParts.forEach(sparePart => {
-            let idSelected
+            let idSelected;
             selectedIds.forEach(id => {
                 if (id == sparePart.idSpareParts) idSelected = true;
             });
-            console.log(selectedIds, idSelected, sparePart.idSpareParts)
             if (idSelected) return;
 
             const tr = document.createElement("tr");
@@ -418,6 +417,27 @@ function calculatePaid() {
     return totalPaid;
 }
 
+let verifySelects = () => {
+    const amounts = document.querySelectorAll(".amounts .containerAmount");
+    amounts.forEach(amount => {
+        const input = amount.querySelector(".amountInput");
+        const select = amount.querySelector(".paymentTypeSelect");
+
+        if (!input || !select) return;
+
+        const rawValue = (input.value || "").trim();
+        const numeric = parseFloat(rawValue.replace(/[$,]/g, "")) || 0;
+
+        if (numeric === 0) {
+            select.disabled = true;
+            select.value = ""; // evita selects colgados
+        } else {
+            select.disabled = false;
+        }
+    });
+};
+
+
 /* ---------------------------
    Manejo de abonos dinámicos
    --------------------------- */
@@ -432,7 +452,6 @@ function managePaymentsAndCalculateDebt() {
         const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
         if (idx > 0 && value === 0) payment.remove();
     });
-
     // Refrescar nodos y renumerar
     allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
     allPayments.forEach((payment, i) => {
@@ -476,6 +495,8 @@ function managePaymentsAndCalculateDebt() {
         dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     }
 
+    verifySelects();
+
     saveSaleState();
 }
 
@@ -493,6 +514,7 @@ function addNewPaymentField() {
 
     const index = amountContainer.children.length + 1;
     // crear field usando la función que centraliza comportamiento
+    verifySelects();
     createInitialPaymentField(0, null, null);
     saveSaleState();
 }
@@ -531,7 +553,6 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     }
 
     allowDecimal(input);
-    input.addEventListener("input", managePaymentsAndCalculateDebt);
 
     // Select metodo pago
     const select = document.createElement("select");
@@ -550,6 +571,11 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     if (amount > 0 && input.value && !input.value.startsWith('$')) {
         input.value = `$${formatWithCommas(parseCurrencyStringToNumber(input.value))}`;
     }
+
+    input.addEventListener("input", (e) => {
+        managePaymentsAndCalculateDebt(e, select);
+    }
+    );
 }
 
 /* ---------------------------
@@ -615,8 +641,6 @@ function loadSavedData(parts, payments, notes) {
 }
 
 let cleanWindow = () => {
-    // 1. Ocultar la Ficha del Vehículo (Columna Izquierda)
-    document.querySelector(".viewVechicleContainer").classList.add("hide");
 
     // 2. Limpiar variables y estado local
     localStorage.removeItem(saleKey);

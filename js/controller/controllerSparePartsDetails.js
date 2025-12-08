@@ -38,7 +38,9 @@ const params = new URLSearchParams(window.location.search);
 
 let currentId;
 let sale = false;
+let workOrder = false;
 params.get("sale") ? sale = true : sale = false;
+params.get("workOrder") ? workOrder = true : workOrder = false;
 let selectedFile = null;
 params.get("id") ? currentId = params.get("id") : currentId = null;
 
@@ -106,7 +108,7 @@ let loadSparePart = async () => {
         txtSuggestedPrice: formatWithCommas(data.sparePartsCosts.suggestedPrice),
         txtTotalCost: formatWithCommas(data.sparePartsCosts.totalCost),
     });
-    
+
     document.getElementById("trackingId").value = data.tracking.idTracking;
     document.getElementById("costId").value = data.sparePartsCosts.idCostSparePart;
 
@@ -201,6 +203,20 @@ frmSpareParts.addEventListener("submit", async (e) => {
         if (sale) {
             window.location.href = `sparePartSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&sparePartId=${response.data.idSparePart}&sparePartName=${response.data.nameSpareParts}&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}`;
             return;
+        }
+        if (workOrder) {
+            const paramsOrder = new URLSearchParams({
+                isNewPart: true,
+                idSale: params.get("idSale") || null,
+                customerName: params.get("customerName"),
+                vin: params.get("vin"),
+                idCustomer: params.get("idCustomer"),
+                totalPrice: params.get("totalPrice"),
+                newSparePartId: response.data.idSparePart,
+                newSparePartName: response.data.nameSpareParts,
+                newSuggestedPrice : response.data.sparePartsCosts.suggestedPrice
+            })
+            window.location.href = `addWorkOrder.html?${paramsOrder.toString()}`;
         }
         window.location.href = "spareParts.html";
 

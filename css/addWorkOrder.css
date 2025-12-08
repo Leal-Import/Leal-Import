@@ -207,6 +207,41 @@ textarea{
     cursor: pointer;
 }
 
+.containerImgSuggest{
+    height: 40px;
+    width: 40px;
+}
+
+.containerImgSuggest img{
+    width: 100%;
+    height: 100%;
+}
+
+.suggestionPart{
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.containerImgNameSuggest{
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.btnImport{
+    position: absolute;
+    right: 5px;
+    top: 8px;
+    background-color: var(--danger-color);
+    color: var(--bg-color);
+    font-size: .7em;
+    border: none;
+    padding: 1px 5px;
+    font-weight: var(--font-weight-medium);
+    border-radius: 3px;
+}
+
 #btnClearFile{
     padding: 3px 5px;
 }

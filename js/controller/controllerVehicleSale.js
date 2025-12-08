@@ -200,6 +200,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btnCancel) {
         btnCancel.addEventListener("click", cancelVehicleSelection);
     }
+    verifySelects();
 });
 
 let loadVehicles = async () => {
@@ -683,6 +684,8 @@ let managePaymentsAndCalculateDebt = () => {
 
     dueText.textContent = `$${formatWithCommas(debt)}`;
     dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
+
+    verifySelects();
 };
 
 function addNewPaymentField() {
@@ -697,6 +700,7 @@ function addNewPaymentField() {
     // 🔑 Usamos la función auxiliar que asegura el ID y llena el select
     createInitialPaymentField();
 
+    verifySelects();
     saveSaleState();
 }
 
@@ -778,6 +782,26 @@ function loadVehicleImages(imagesArray) {
         },
     });
 }
+
+let verifySelects = () => {
+    const amounts = document.querySelectorAll(".amounts .containerAmount");
+    amounts.forEach(amount => {
+        const input = amount.querySelector(".amountInput");
+        const select = amount.querySelector(".paymentTypeSelect");
+
+        if (!input || !select) return;
+
+        const rawValue = (input.value || "").trim();
+        const numeric = parseFloat(rawValue.replace(/[$,]/g, "")) || 0;
+
+        if (numeric === 0) {
+            select.disabled = true;
+            select.value = ""; // evita selects colgados
+        } else {
+            select.disabled = false;
+        }
+    });
+};
 
 let cancelVehicleSelection = () => {
     // 1. Ocultar la Ficha del Vehículo (Columna Izquierda)
