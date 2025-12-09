@@ -38,6 +38,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 allowMotoYear(txtSearchYear);
 
 txtSearchCustomer.addEventListener('input', () => {
+  filterData();
+});
+
+let filterData = async () => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
     const yearQuery = txtSearchYear.value.trim();
@@ -45,20 +49,14 @@ txtSearchCustomer.addEventListener('input', () => {
     const statusQuery = selectSearStatus.value;
     await loadVehicles(searchQuery, statusQuery, yearQuery);
   }, 500);
-});
+}
 
 txtSearchYear.addEventListener('input', async () => {
-  const yearQuery = txtSearchYear.value.trim();
-  const searchQuery = txtSearchCustomer.value.trim();
-  const statusQuery = selectSearStatus.value;
-  await loadVehicles(searchQuery, statusQuery, yearQuery);
+  filterData();
 });
 
 selectSearStatus.addEventListener('change', () => {
-  const yearQuery = txtSearchYear.value.trim();
-  const searchQuery = txtSearchCustomer.value.trim();
-  const statusQuery = selectSearStatus.value;
-  loadVehicles(searchQuery, statusQuery, yearQuery);
+  filterData();
 });
 
 /* ==============================
@@ -98,7 +96,7 @@ let insertVehicles = (vehicles) => {
   container.innerHTML = "";
 
   const fragment = document.createDocumentFragment();
-  
+
   if (vehicles.length === 0) {
     const noDataDiv = document.createElement("div");
     noDataDiv.textContent = "No hay vehículos disponibles.";

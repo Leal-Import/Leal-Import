@@ -266,7 +266,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         });
     }
 
@@ -294,7 +294,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
     const saleData = {
         idCustomer: customerId,
         notes: txtNotes || "",
-        idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData,
         sparePartItems
     }

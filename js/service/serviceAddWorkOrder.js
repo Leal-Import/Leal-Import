@@ -1,4 +1,6 @@
 const API_URL = "http://127.0.0.1:8080/api/WorkOrder";
+const API_URLVE = "http://127.0.0.1:8080/api/Vehicle";
+
 
 export let getServices = async (search) => {
     try {
@@ -14,6 +16,23 @@ export let getServices = async (search) => {
     } catch (error) {
         console.error("Error en getServices:", error);
         throw new Error("Fallo al conectar con el servicio de servicios.");
+    }
+};
+
+export let getDataVehicleById = async (id) => {
+    try {
+        const request = await fetch(`${API_URLVE}/getWorkOrderVehicle/${id}`, {
+            credentials: 'include'
+        });
+        if (!request.ok) {
+            const errorBody = await request.text();
+            throw new Error(`Error ${request.status}: No se pudueron obtener los datos del vehiculo. Detalle: ${errorBody.substring(0, 100)}`);
+        }
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en getDataVehicleById:", error);
+        throw new Error("Fallo al conectar con el servicio de vehiculos.");
     }
 };
 

@@ -2,7 +2,11 @@
 // Reescritura completa - módulo Órdenes de Trabajo
 // Mantén los imports tal como los usas en tu proyecto:
 import { getPaymentMethods } from '../service/serviceConfiguration.js'
-import { getServices, postWorkOrder } from '../service/serviceAddWorkOrder.js'
+import {
+    getServices,
+    postWorkOrder,
+    getDataVehicleById
+} from '../service/serviceAddWorkOrder.js'
 import { getSpareParts } from '../service/serviceSpareParts.js'
 import {
     formatWithCommas,
@@ -31,7 +35,7 @@ const frmAddWorkOrder = document.getElementById("frmWorkOrder");
 // URL params
 const params = new URLSearchParams(window.location.search);
 let customerName = params.get("customerName") || null;
-let vin = params.get("vin") || null;
+let idVehicle = params.get("idVehicle") || null;
 let idCustomer = params.get("idCustomer") || null;
 let vehiclePrice = params.get("totalPrice") || 0;
 let idSale = params.get("idSale") || null;
@@ -84,9 +88,14 @@ async function loadPayMethods() {
     }
 }
 
-function loadDataVehicle() {
-    if ($('vin')) $('vin').textContent = vin || '-';
+let loadDataVehicle = async () => {
+    const vehicleData = await getDataVehicleById(idVehicle)
+    if ($('vin')) $('vin').textContent = vehicleData.vin || '-';
     if ($('vehiclePrice')) $('vehiclePrice').textContent = `$${formatWithCommas(vehiclePrice || 0)}`;
+    if ($('model')) $('model').textContent = vehicleData.model;
+    if ($('brand')) $('brand').textContent = vehicleData.brand;
+    if ($('year')) $('year').textContent = vehicleData.year
+
 }
 
 // ---------- Build static rows (si tu html requiere filas vacías) ----------
@@ -248,7 +257,7 @@ function updateImportButtonPosition() {
                     workOrder: true,
                     idSale,
                     customerName,
-                    vin,
+                    idVehicle,
                     idCustomer,
                     totalPrice: vehiclePrice
                 })
@@ -847,7 +856,7 @@ function updateModalContent(inputElement, buttonElement) {
 async function handleSubmit(e) {
     e.preventDefault();
 
-    if (!vin) { showMessage('warning', 'Por favor, seleccione un vehículo para la orden.'); return; }
+    if (!idVehicle) { showMessage('warning', 'Por favor, seleccione un vehículo para la orden.'); return; }
 
     const formValues = getInputsValues(frmAddWorkOrder);
     const {
@@ -889,7 +898,7 @@ async function handleSubmit(e) {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: '490250a0-d247-4b7a-b862-3f38b79d798b'
+            idEmployee: '955b7a1a-182e-42fe-8d49-34988e7d18ef'
         });
         imagesAmounts.push(receiptInput.files[0] || null);
     }
@@ -945,14 +954,14 @@ async function handleSubmit(e) {
         estimatedDate: dtEstimated,
         services,
         spareParts,
-        idEmployee: '490250a0-d247-4b7a-b862-3f38b79d798b',
+        idEmployee: '955b7a1a-182e-42fe-8d49-34988e7d18ef',
         payments: amountData
     };
     fd.append('workOrderData', JSON.stringify(workOrderData));
     imagesAmounts.forEach(file => fd.append('paymentImages', file));
 
     try {
-        let response = await postWorkOrder(fd, vin, idSale);
+        let response = await postWorkOrder(fd, idVehicle, idSale);
         await showMessage('Orden registrada', 'Orden de trabajo registrada con éxito.', "success");
         if (response && idSale) {
             window.location.href = "sales.html";

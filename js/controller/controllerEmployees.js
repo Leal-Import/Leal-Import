@@ -26,7 +26,7 @@ const frmEmployees = document.getElementById("frmEmployees");
 const txtPhone = document.getElementById("txtEmployeePhone");
 const btnAddEmployee = document.getElementById("btnAddEmployee");
 const titleModal = document.querySelector(".titleModal");
-const txtSearchCustomer = document.getElementById("txtSearchData");
+const txtSearchData = document.getElementById("txtSearchData");
 const selectSearchRoles = document.getElementById("cmbSearchByRole");
 
 // Configurar el modal para agregar empleados
@@ -41,17 +41,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadRolesSelect();
 })
 
-txtSearchCustomer.addEventListener('input', () => {
+txtSearchData.addEventListener('input', () => {
     clearTimeout(searchTimeout)
     searchTimeout = setTimeout(async () => {
-        const searchQuery = txtSearchCustomer.value.trim();
+        const searchQuery = txtSearchData.value.trim();
         const rolesQuery = selectSearchRoles.value;
         await loadEmployees(searchQuery, rolesQuery);
     }, 1500);
 })
 
 selectSearchRoles.addEventListener('change', async () => {
-    const searchQuery = txtSearchCustomer.value.trim();
+    const searchQuery = txtSearchData.value.trim();
     const rolesQuery = selectSearchRoles.value;
     await loadEmployees(searchQuery, rolesQuery);
 })

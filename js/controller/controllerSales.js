@@ -4,6 +4,18 @@ import { getSales } from '../service/serviceSales.js'
 setupModal("#btnAskSale", "#modalAskSale", "#btnCloseModalAsk", null, "¿Que deseas vender?");
 
 const filterLinesButtons = document.querySelectorAll(".filterType");
+const txtSearchData = document.getElementById("txtSearchData");
+
+let searchTimeout = null;
+
+console.log(txtSearchData)
+txtSearchData.addEventListener('input', () => {
+    clearTimeout(searchTimeout)
+    searchTimeout = setTimeout(async () => {
+        const searchQuery = txtSearchData.value.trim();
+        await loadSales(searchQuery);
+    }, 1500);
+})
 
 document.addEventListener("DOMContentLoaded", async () => {
     filterLinesButtons.forEach(button => {
@@ -17,8 +29,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadSales();
 });
 
-let loadSales = async () => {
-    const sales = await getSales();
+let loadSales = async (search) => {
+    const sales = await getSales(search);
     insertSales(sales.content)
 }
 

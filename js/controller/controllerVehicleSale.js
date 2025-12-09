@@ -30,6 +30,8 @@ let vehicleId = params.get('idVehicle') || null;
 let idSale = params.get('idSale') || null;
 function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
+const paymentsToDelete = [];
+
 allowDecimal(txtTotal);
 allowDecimal(txtCommission);
 
@@ -127,7 +129,7 @@ let createNewSale = async (isWO) => {
         }
         if (amounts[i].dataset.id && idSale) obj.idPayment = amounts[i].dataset.id;
         amountData.push(obj);
-        if(!idSale){
+        if (!idSale) {
             if (receiptInput.files.length == 0) {
                 highlightAndFocus(amountInput);
                 showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
@@ -154,7 +156,7 @@ let createNewSale = async (isWO) => {
     const amountNew = [];
     if (idSale) {
         amountData.forEach(amount => {
-            if(amount.idPayment){
+            if (amount.idPayment) {
                 amountOld.push(amount)
             } else {
                 amountNew.push(amount)
@@ -162,15 +164,16 @@ let createNewSale = async (isWO) => {
             saleData.paymentsToUpdate = amountOld;
             saleData.newPayments = amountNew;
         })
+        saleData.paymentsToDelete = paymentsToDelete;
     } else {
         saleData.payments = amountData;
     }
     fd.append("vehicleData", JSON.stringify(saleData));
     console.log(amountData)
     imagesAmounts.forEach(objFile => {
-        if(idSale){
-            if(objFile.isOld){
-                if(objFile.file == undefined) return;
+        if (idSale) {
+            if (objFile.isOld) {
+                if (objFile.file == undefined) return;
                 fd.append("updateImages", objFile.file);
             } else {
                 fd.append("newPaymentImages", objFile.file);
@@ -215,6 +218,10 @@ let loadLinkAddVehicle = () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadPayMethods();
+    txtTotal.addEventListener("input", managePaymentsAndCalculateDebt);
+    txtCommission.addEventListener("input", saveSaleState);
+    document.getElementById("txtNotes").addEventListener("input", saveSaleState);
+
     if (idSale) {
         await loadSale();
     } else {
@@ -228,13 +235,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         await loadVehicle(vehicleId);
     }
 
-
-    txtTotal.addEventListener("input", managePaymentsAndCalculateDebt);
-    txtCommission.addEventListener("input", saveSaleState);
-    document.getElementById("txtNotes").addEventListener("input", saveSaleState);
-
-
     document.getElementById("customerName").textContent = customerName;
+
 
     const btnCancel = document.querySelector(".btnCancelVehicle");
     if (btnCancel) {
@@ -254,14 +256,17 @@ let loadSale = async () => {
 }
 
 let insertSale = (sale) => {
+    console.log(sale)
     document.getElementById("txtNotes").value = sale.notes;
     document.getElementById("txtCommission").value = sale.commission;
-    document.getElementById("due").textContent = `$${formatWithCommas(sale.amountDue)}`;
     document.querySelector(".amounts").innerHTML = '';
     sale.payments.forEach(payment => {
         createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment);
     })
     managePaymentsAndCalculateDebt();
+    document.getElementById("due").textContent = `$${formatWithCommas(sale.amountDue)}`;
+    document.getElementById("due").style.color = sale.amountDue > 0 ? 'var(--danger-color)' : 'var(--success-color)';
+    txtTotal.value = `$${formatWithCommas(sale.fullTotalCost)}`;
 }
 
 let loadVehicles = async () => {
@@ -359,7 +364,7 @@ let loadVehicle = async (id) => {
     document.getElementById("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
     document.getElementById("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
 
-    txtTotal.value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
+    if(!idSale) txtTotal.value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
 
     loadVehicleImages(vehicle.photos);
 }
@@ -696,6 +701,7 @@ let managePaymentsAndCalculateDebt = () => {
         const value = parseFloat(input.value.replace(/[$,]/g, "")) || 0;
 
         if (idx > 0 && value === 0) {
+            if (payment.dataset.id) paymentsToDelete.push(payment.dataset.id);
             payment.remove();
         }
     });

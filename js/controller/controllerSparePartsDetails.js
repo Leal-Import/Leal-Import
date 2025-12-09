@@ -209,7 +209,7 @@ frmSpareParts.addEventListener("submit", async (e) => {
                 isNewPart: true,
                 idSale: params.get("idSale") || null,
                 customerName: params.get("customerName"),
-                vin: params.get("vin"),
+                idVehicle: params.get("idVehicle"),
                 idCustomer: params.get("idCustomer"),
                 totalPrice: params.get("totalPrice"),
                 newSparePartId: response.data.idSparePart,
@@ -217,8 +217,9 @@ frmSpareParts.addEventListener("submit", async (e) => {
                 newSuggestedPrice : response.data.sparePartsCosts.suggestedPrice
             })
             window.location.href = `addWorkOrder.html?${paramsOrder.toString()}`;
+        } else {
+            window.location.href = "spareParts.html";
         }
-        window.location.href = "spareParts.html";
 
     } catch (error) {
         console.error("Error al realizar la operación:", error);
