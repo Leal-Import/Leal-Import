@@ -67,9 +67,14 @@
 .data{
     flex: 1;
     display: flex;
+    align-items: center;
     border: var(--border);
     padding: 10px;
     gap: 10px;
+}
+
+.bodyData .infoRow{
+    flex: 1;
 }
 
 .lblData{
@@ -83,6 +88,7 @@
 .values{
     color: #666;
 }
+
 
 /* Carrucel */
 

@@ -24,7 +24,7 @@ const txtCommission = document.getElementById("txtCommission");
 const frmVehicleSale = document.getElementById("frmVehicleSale");
 const btnCreateOrder = document.getElementById("btnCreateOrder");
 
-let vehicleId = params.get('vin') || null;
+let vehicleId = params.get('idVehicle') || null;
 let currentId = null;
 function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
@@ -42,7 +42,7 @@ btnCreateOrder.addEventListener("click", async (e) => {
     e.preventDefault();
     const data = await createNewSale(true);
     if (data) {
-        window.location.href = `addWorkOrder.html?idSale=${data.idSale}&customerName=${customerName}&vin=${data.vin}&idCustomer=${customerId}&totalPrice=${data.price}`;
+        window.location.href = `addWorkOrder.html?idSale=${data.idSale}&customerName=${customerName}&idVehicle=${data.idVehicle}&idCustomer=${customerId}&totalPrice=${data.price}`;
     }
 })
 
@@ -121,7 +121,7 @@ let createNewSale = async (isWO) => {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "490250a0-d247-4b7a-b862-3f38b79d798b" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         });
         if (receiptInput.files.length == 0) {
             highlightAndFocus(amountInput);
@@ -138,7 +138,7 @@ let createNewSale = async (isWO) => {
         idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "490250a0-d247-4b7a-b862-3f38b79d798b", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData
     }
 
@@ -156,7 +156,7 @@ let createNewSale = async (isWO) => {
             cancelVehicleSelection();
             if (isWO) {
                 return {
-                    vin: response.data.vin,
+                    idVehicle: response.data.idVehicle,
                     price: response.data.salePrice,
                     idSale: response.data.idSale
                 };
@@ -256,8 +256,8 @@ let insertVehicles = (vehicles) => {
             fragment.appendChild(tr);
 
             btnAddVehicle.addEventListener("click", async () => {
-                vehicleId = vehicle.vin;
-                await loadVehicle(vehicle.vin);
+                vehicleId = vehicle.idVehicle;
+                await loadVehicle(vehicle.idVehicle);
                 saveSaleState();
             })
 
@@ -267,8 +267,8 @@ let insertVehicles = (vehicles) => {
     container.appendChild(fragment);
 }
 
-let loadVehicle = async (vin) => {
-    const vehicle = await getVehicleByVin(vin);
+let loadVehicle = async (id) => {
+    const vehicle = await getVehicleByVin(id);
     // Mostrar contenedor de visualización
     document.querySelector(".viewVechicleContainer").classList.remove("hide");
 
@@ -325,17 +325,6 @@ function formatOnBlur(event, isInput) {
     // 3. Actualizar el contenido con el valor formateado
     element.value = formatter.format(number);
 
-
-
-    // 4. Se llama a calculateTotalService/calculateTotalSpareParts automáticamente desde el 'input' listener,
-    // pero si estás usando el blur para el formato, deberías asegurar que el cálculo se haga también.
-    // Aunque tu lógica actual lo hace en el 'input' listener, es bueno asegurarlo aquí si se requiere:
-    // **NOTA:** Tu listener 'input' ya está manejando el cálculo y la actualización del input hidden.
-    // Solo necesitamos asegurarnos de que la lógica de limpieza y formato se ejecute.
-    // No es necesario llamar a calculateTotalService/SpareParts de nuevo aquí si el listener de 'input' ya se encargó.
-
-    // Si necesitas actualizar el cálculo después del formateo, llama a la función correspondiente:
-    // element.closest('#tBodyServices') ? calculateTotalService() : calculateTotalSpareParts(); 
 }
 
 let loadSaleState = async () => {

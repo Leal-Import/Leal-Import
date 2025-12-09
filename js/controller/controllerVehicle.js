@@ -154,8 +154,8 @@ let insertVehicles = (vehicles) => {
       containerButtons.classList.add("containerButtons");
 
       // botón ver más
-      btnEdit.href = `vehicleDetails.html?id=${vehicle.vin}`;
-      btnView.href = `vehicleView.html?id=${vehicle.vin}`;
+      btnEdit.href = `vehicleDetails.html?id=${vehicle.idVehicle}`;
+      btnView.href = `vehicleView.html?id=${vehicle.idVehicle}`;
 
       containerInfoVehicle.appendChild(vinItem);
       containerInfoVehicle.appendChild(yearItem);

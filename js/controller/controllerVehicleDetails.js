@@ -271,7 +271,7 @@ frmVehicles.addEventListener("submit", async (e) => {
         }
 
         if (sale) {
-            window.location.href = `vehicleSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&vin=${response.data.vin}`;
+            window.location.href = `vehicleSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&idVehicle=${response.data.idVehicle}`;
             return;
         }
 

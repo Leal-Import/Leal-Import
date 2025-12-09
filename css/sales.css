@@ -13,6 +13,7 @@
     flex: 1;
     display: grid;
     place-content: center;
+    cursor: pointer;
 }
 
 .filterType span {
@@ -29,6 +30,7 @@
     background-color: #444;
     position: absolute;
     opacity: 0;
+    transition: .5s;
 }
 
 .selected {
@@ -62,13 +64,14 @@
     box-shadow: 0 4px 15px #5552;
     display: flex;
     gap: 10px;
-    max-height: 200px;
+    height: 190px;
     border-radius: 15px;
     position: relative;
 }
 
 .containerImgSale {
     height: 100%;
+    width: 200px;
     padding: 10px;
 }
 
@@ -88,6 +91,7 @@
 
 .dataSale{
     display: flex;
+    align-items: center;
     gap: 5px
 }
 
@@ -95,19 +99,50 @@
     font-weight: var(--font-weight-medium);
 }
 
+.moreParts{
+    font-size: var(--font-size-sm);
+    color: var(--danger-color);
+}
+
 .typeSale{
     position: absolute;
-    padding: 10px 15px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-content: center;
     border: var(--border);
-    border-radius: var(--border-radius-input);
+    border-radius: 50%;
     top: 10px;
     right: 20px;
     font-weight: var(--font-weight-medium);
+    transition: .3s;
+}
+
+.vehicleType{
+    color: var(--bg-color);
+    background-color: var(--danger-color);
+}
+
+.partType{
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.partType:hover{
+    background-color: var(--danger-color);
+    color: var(--bg-color);
+    border-color: var(--danger-color);
 }
 
 .vehicleSale{
     background-color: var(--danger-color);
     color: var(--bg-color);
+}
+
+.vehicleType:hover{
+    background-color: var(--bg-color);
+    color: var(--danger-color);
+    border-color: var(--danger-color);
 }
 
 .actionButton{
