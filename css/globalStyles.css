@@ -334,6 +334,10 @@
     width: 100%;
 }
 
+textarea{
+    resize: none;
+}
+
 /* Estilos de cuadro de sugerencias*/
 
 .suggestions {

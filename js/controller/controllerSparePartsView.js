@@ -22,17 +22,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 let loadData = (sparePart) => {
-    console.log(sparePart)
     pictureSparePart.src = sparePart.photoUrl;
     name.textContent = sparePart.nameSpareParts;
-    name.href = sparePart.billUrl;
+    sparePart.billUrl ? name.href = sparePart.billUrl : null;
     brand.textContent = sparePart.brand;
     model.textContent = sparePart.model;
     year.textContent = sparePart.yearPart;
     status.textContent = sparePart.state;
     suggestedPrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.suggestedPrice)}`;
     tracking.textContent = sparePart.tracking.numTracking;
-    tracking.href = sparePart.tracking.linkTracking;
+    sparePart.tracking.linkTracking ?tracking.href = sparePart.tracking.linkTracking : null;
     purchasePrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.purchasePrice)}`;
     taxes.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.taxes)}`;
     totalCost.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.totalCost)}`;

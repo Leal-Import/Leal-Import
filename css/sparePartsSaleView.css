@@ -1,0 +1,52 @@
+.content{
+    flex-direction: row;
+}
+
+.breadCrumbSection {
+    display: inline-flex;
+    margin-bottom: 4em;
+}
+
+.leftColumn{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.leftColumn .table {
+    border: var(--border);
+    max-height: 100%;
+}
+
+.saleGenInfoSec{
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9f9;
+    border: var(--border);
+}
+
+.saleGenInfoSec .infoItem{
+    padding: 10px;
+    border: var(--border);
+}
+
+.infoRow{
+    display: flex;
+}
+
+.itemLarge{
+    flex: 2;
+}
+
+.lbl{
+    font-weight: var(--font-weight-medium);
+}
+
+.leftColumn .infoItem + .infoItem{
+    width: 35%;
+}
+
+.footerRightColumn{
+    flex: 1;
+}
