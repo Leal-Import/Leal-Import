@@ -41,7 +41,7 @@ export function managePaymentsAndCalculateDebt(savedState, createBtnUrl, calcula
 
         // Asegurar que los selects estén llenos
         if (select && !select.dataset.filled) {
-            fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName");
+            fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
             select.dataset.filled = true;
         }
     });
@@ -148,7 +148,7 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     // Llenar select con métodos de pago cargados
     div.append(input, select);
     amountContainer.appendChild(div);
-    fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName");
+    fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
     select.dataset.filled = true;
     saveState ? select.addEventListener("change", saveState) : null;
     if (createBtnUrl) {

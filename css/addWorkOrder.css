@@ -136,12 +136,6 @@ tr{
     gap: 5px;
 }
 
-.containerAmount .txtInputs {
-    flex: 1;
-    border-radius: 3px;
-    background-color: #fafafa;
-}
-
 .containerAmountDue {
     display: flex;
     justify-content: space-between;

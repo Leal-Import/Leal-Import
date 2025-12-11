@@ -1,7 +1,8 @@
 // ordenes_trabajo.rewrite.js
 // Reescritura completa - módulo Órdenes de Trabajo
 // Mantén los imports tal como los usas en tu proyecto:
-import { getPaymentMethods } from '../service/serviceConfiguration.js'
+import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
+import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMethods, verifySelects} from '../controller/salesHelpers/payments.js'
 import {
     getServices,
     postWorkOrder,
@@ -48,7 +49,6 @@ const newSuggestedPrice = params.get("newSuggestedPrice");
 // Local state
 const selectedServices = []; // { id|null, name, price }
 const selectedSpareParts = []; // { id, name, unitPrice, quantity }
-let paymentMethodsList = [];
 let rowsServices = 0;
 let rowsSpareParts = 0;
 
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupModalListeners();
     bindEvents();
     loadDataVehicle();
-    createInitialPaymentField(); // crea el primer campo de abono
+    createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
     calculateAllTotals();
     // ejecutar verifySelects inicialmente y también está atento a cambios dinámicos
     verifySelects();
@@ -78,15 +78,6 @@ const $ = id => document.getElementById(id);
 const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
-// ---------- Load helpers ----------
-async function loadPayMethods() {
-    try {
-        const data = await getPaymentMethods();
-        paymentMethodsList = data || [];
-    } catch (err) {
-        console.error('loadPayMethods', err);
-    }
-}
 
 let loadDataVehicle = async () => {
     const vehicleData = await getDataVehicleById(idVehicle)
@@ -579,6 +570,7 @@ function calculateRepairCost() {
     if ($('totalValueSparePartsDown')) $('totalValueSparePartsDown').textContent = `$${formatWithCommas(sum)}`;
     if ($('txtTotal')) $('txtTotal').value = `$${formatWithCommas(sum)}`;
     calculateTotal();
+    return sum;
 }
 
 function calculateTotal() {
@@ -646,98 +638,6 @@ function restrictToDecimal(event) {
     }
 }
 
-// ---------- Pagos dinámicos ----------
-function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
-    const amountContainer = document.querySelector('.amounts');
-    if (!amountContainer) return;
-    const index = amountContainer.children.length + 1;
-
-    const div = document.createElement('div');
-    div.className = 'containerAmount';
-    div.setAttribute('data-index', index);
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = `Abono ${index}`;
-    input.className = 'txtInputs amountInput';
-    input.id = `amountInput${index}`;
-    if (amount > 0) input.value = formatWithCommas(amount);
-    allowDecimal(input);
-    input.addEventListener("focus", (e) => {
-        formatOnFocus(e, true);
-    });
-    input.addEventListener("blur", (e) => {
-        formatOnBlur(e, true);
-    })
-    input.addEventListener('input', managePaymentsAndCalculateDebt);
-
-    const select = document.createElement('select');
-    select.className = 'txtInputs paymentTypeSelect';
-    select.id = `paymentTypeSelect${index}`;
-
-    const receiptContainer = document.createElement('div');
-    receiptContainer.className = 'receiptContainer';
-    const receiptInput = document.createElement('input');
-    receiptInput.type = 'file'; receiptInput.accept = 'image/*,application/pdf';
-    receiptInput.className = 'receiptInput';
-    receiptInput.id = `receiptInput${index}`;
-    receiptInput.hidden = true;
-    const receiptButton = document.createElement('button');
-    receiptButton.type = 'button';
-    receiptButton.className = 'btnVoucher';
-    receiptButton.innerHTML = `<span class="icon">+</span>`;
-
-    receiptButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        openReceiptModal(receiptInput, receiptButton);
-    });
-
-    receiptContainer.append(receiptInput, receiptButton);
-    div.append(input, select, receiptContainer);
-    amountContainer.appendChild(div);
-
-    // llenar select con métodos
-    fillSelect(select.id, paymentMethodsList, 'idPaymentMethod', 'methodName', 'Metodo de pago');
-    if (paymentMethodId) select.value = paymentMethodId;
-    if (receiptUrl && receiptUrl.startsWith('http')) {
-        receiptButton.classList.add('receipt-loaded');
-        receiptButton.setAttribute('data-receipt-url', receiptUrl);
-    }
-
-    // after adding field, ensure verifySelects runs
-    verifySelects();
-}
-
-function managePaymentsAndCalculateDebt() {
-    const amountContainer = document.querySelector('.amounts');
-    if (!amountContainer) return;
-    let payments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-
-    // eliminar campos vacíos excepto el primero
-    payments.forEach((p, idx) => {
-        const input = p.querySelector('.amountInput');
-        const val = safeParseFloat(input.value);
-        if (idx > 0 && val === 0) p.remove();
-    });
-
-    payments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-    payments.forEach((p, i) => {
-        p.setAttribute('data-index', i + 1);
-        const inp = p.querySelector('.amountInput');
-        inp.placeholder = `Abono ${i + 1}`;
-        const sel = p.querySelector('.paymentTypeSelect');
-        if (sel) sel.id = `paymentTypeSelect${i + 1}`;
-        const rInput = p.querySelector('.receiptInput');
-        if (rInput) rInput.id = `receiptInput${i + 1}`;
-    });
-    calculateAmountDue();
-    const last = payments[payments.length - 1];
-    if (last) {
-        const lastVal = safeParseFloat(last.querySelector('.amountInput').value);
-        if (lastVal > 0) createInitialPaymentField();
-    }
-
-    verifySelects();
-}
 
 let calculateAmountDue = () => {
     const amountContainer = document.querySelector('.amounts');
@@ -762,94 +662,6 @@ function observeAmountsContainer() {
     });
     observer.observe(container, { childList: true, subtree: true });
     window.__amountsObserver = observer;
-}
-
-// ---------- Modal comprobantes ----------
-function setupModalListeners() {
-    const modalContainer = document.querySelector('.containerModal');
-    const btnClose = document.getElementById('closeVoucherModal');
-    const btnSelectFile = document.getElementById('btnSelectFile');
-    const btnClearFile = document.getElementById('btnClearFile');
-    const inputIdField = document.getElementById('currentReceiptInputId');
-
-    const closeModalAndClean = () => {
-        if (modalContainer) modalContainer.classList.add('hide');
-        if (inputIdField) inputIdField.value = '';
-    };
-    btnClose?.addEventListener('click', closeModalAndClean);
-
-    btnSelectFile?.addEventListener('click', () => {
-        const inputElement = document.getElementById(inputIdField.value);
-        if (inputElement) {
-            inputElement.value = '';
-            inputElement.click();
-        }
-    });
-
-    btnClearFile?.addEventListener('click', () => {
-        const inputElement = document.getElementById(inputIdField.value);
-        if (inputElement) {
-            inputElement.value = '';
-            const clipButton = inputElement.nextElementSibling;
-            clipButton.classList.remove('receipt-loaded');
-            clipButton.removeAttribute('data-receipt-url');
-            closeModalAndClean();
-        }
-    });
-
-    document.body.addEventListener('change', (e) => {
-        if (e.target && e.target.classList && e.target.classList.contains('receiptInput')) {
-            const inputElement = e.target;
-            const clipButton = inputElement.nextElementSibling;
-            if (inputElement.files && inputElement.files.length > 0) {
-                clipButton.classList.add('receipt-loaded');
-                clipButton.setAttribute('data-receipt-url', inputElement.files[0].name);
-            } else {
-                clipButton.classList.remove('receipt-loaded');
-                clipButton.removeAttribute('data-receipt-url');
-            }
-            if (modalContainer && !modalContainer.classList.contains('hide') && inputElement.id === (document.getElementById('currentReceiptInputId') || {}).value) updateModalContent(inputElement, clipButton);
-        }
-    });
-}
-
-function openReceiptModal(inputElement, buttonElement) {
-    const modalContainer = document.getElementById('modalVoucher'); if (!modalContainer) return;
-    const inputIdField = document.getElementById('currentReceiptInputId'); inputIdField.value = inputElement.id;
-    const abonoIndex = inputElement.closest('.containerAmount')?.getAttribute('data-index') || '?';
-    document.getElementById('modalAbonoTitle').textContent = `(Abono ${abonoIndex})`;
-    updateModalContent(inputElement, buttonElement);
-    modalContainer.classList.remove('hide');
-}
-
-function updateModalContent(inputElement, buttonElement) {
-    const previewArea = document.getElementById('modalPreviewArea');
-    const btnClear = document.getElementById('btnClearFile');
-    const placeholder = document.getElementById('previewPlaceholder');
-    const remoteUrl = buttonElement.getAttribute('data-receipt-url');
-    const hasLocalFile = inputElement && inputElement.files && inputElement.files.length > 0;
-    const hasRemoteUrl = remoteUrl && remoteUrl.startsWith('http');
-
-    previewArea.innerHTML = '';
-    if (hasLocalFile || hasRemoteUrl) {
-        btnClear.classList.remove('hide');
-        const urlToPreview = hasLocalFile ? URL.createObjectURL(inputElement.files[0]) : remoteUrl;
-        const isPdf = urlToPreview.toLowerCase().endsWith('.pdf');
-        const el = document.createElement(isPdf ? 'embed' : 'img');
-        el.src = urlToPreview;
-        if (!isPdf) { el.style.maxWidth = '100%'; el.style.maxHeight = '400px'; }
-        else { el.type = 'application/pdf'; el.style.width = '100%'; el.style.height = '400px'; }
-        previewArea.appendChild(el);
-    } else {
-        btnClear.classList.add('hide');
-        if (placeholder) previewArea.appendChild(placeholder);
-        else {
-            const p = document.createElement('p');
-            p.id = 'previewPlaceholder';
-            p.textContent = 'No hay comprobante cargado.';
-            previewArea.appendChild(p);
-        }
-    }
 }
 
 // ---------- Submit (FormData + POST) ----------
@@ -974,27 +786,6 @@ async function handleSubmit(e) {
         showMessage('error', err?.message || 'Error al registrar la orden');
     }
 }
-
-// ---------- verifySelects mejorado ----------
-let verifySelects = () => {
-    const amounts = document.querySelectorAll(".amounts .containerAmount");
-    amounts.forEach(amount => {
-        const input = amount.querySelector(".amountInput");
-        const select = amount.querySelector(".paymentTypeSelect");
-
-        if (!input || !select) return;
-
-        const rawValue = (input.value || "").trim();
-        const numeric = parseFloat(rawValue.replace(/[$,]/g, "")) || 0;
-
-        if (numeric === 0) {
-            select.disabled = true;
-            select.value = ""; // evita selects colgados
-        } else {
-            select.disabled = false;
-        }
-    });
-};
 
 // ---------- Detectar repuesto agregado desde otra página ----------
 function tryAddSpareFromUrl() {
@@ -1213,7 +1004,7 @@ function loadSavedAmounts(amountsArray) {
     container.innerHTML = '';
     // Si no hay amounts guardados, crear el campo inicial vacío
     if (!Array.isArray(amountsArray) || amountsArray.length === 0) {
-        createInitialPaymentField();
+        createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost);
         verifySelects();
         return;
     }
@@ -1225,7 +1016,7 @@ function loadSavedAmounts(amountsArray) {
         const amt = safeParseFloat(a.amount || a.value || a.amountValue || 0);
         const method = a.method || a.paymentMethodId || a.idPaymentMethod || null;
 
-        createInitialPaymentField(amt, method);
+        createInitialPaymentField(amt, method, null, null, null, createBtnUrl, calculateRepairCost);
 
         // si existiera una URL de comprobante en 'a.receiptUrl' podríamos marcar el botón:
         const lastIndex = container.children.length;
@@ -1248,13 +1039,13 @@ function loadSavedAmounts(amountsArray) {
         if (!lastVal || lastVal === 0) {
             // aseguramos que siempre exista un campo vacío al final
             // (createInitialPaymentField dentro del loop habrá creado uno con valor; aquí agregamos vacía)
-            createInitialPaymentField();
+            createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost);
         }
     } else {
-        createInitialPaymentField();
+        createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost);
     }
 
     // Recalcular y verificar
-    managePaymentsAndCalculateDebt();
+    managePaymentsAndCalculateDebt(null, createBtnUrl, calculateRepairCost);
     verifySelects();
 }

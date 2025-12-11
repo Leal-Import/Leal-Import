@@ -100,12 +100,6 @@ textarea {
     gap: 5px;
 }
 
-.containerAmount .txtInputs {
-    flex: 1;
-    border-radius: 3px;
-    background-color: #fafafa;
-}
-
 .breadCrumbSection {
     display: inline-flex;
     margin-bottom: 4em;

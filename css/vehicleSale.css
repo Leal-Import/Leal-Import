@@ -200,12 +200,6 @@
     font-size: 1.4em;
 }
 
-.containerAmount .txtInputs {
-    flex: 1;
-    border-radius: 3px;
-    background-color: #fafafa;
-}
-
 .containerButtons{
     display: flex;
     justify-content: space-between;
@@ -220,14 +214,6 @@
     place-content: center;
     background-color: var(--secondary-color);
     border-radius: var(--border-radius-input);
-}
-
-/*Columna derecha estilos extra*/
-
-.bodyRightColumn {
-    max-height: 50%;
-    min-height: 0;
-    height: 100%;
 }
 
 /* Modal */
