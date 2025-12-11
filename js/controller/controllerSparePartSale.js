@@ -65,8 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (firstAmount) {
         allowDecimal(firstAmount);
         firstAmount.addEventListener("input", () => {
-            managePaymentsAndCalculateDebt();
-            saveSaleState();
+            managePaymentsAndCalculateDebt(saveSaleState);
         });
         firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
     }
@@ -139,7 +138,6 @@ function insertSpareParts(spareParts) {
             fragment.appendChild(tr);
 
             btnAddSparePart.addEventListener("click", () => {
-                console.log(sparePart.idSparePart, sparePart.idSpareParts)
                 selectedIds.push(sparePart.idSpareParts);
                 createRowSparePart(sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice);
                 tr.remove();
@@ -425,7 +423,7 @@ function ensureInitialPaymentField() {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
     if (amountContainer.children.length === 0) {
-        createInitialPaymentField(0, null, null);
+        createInitialPaymentField(0, null, null, saveSaleState);
     }
 }
 
@@ -446,50 +444,46 @@ function loadSaleState() {
 function loadSavedData(parts, payments, notes) {
     // parts: [{id,name,price}], payments: [{amount, paymentMethodId, receiptUrl}], notes: string
     selectedIds = parts.map(p => p.id);
-
     // Restaurar repuestos seleccionados
     parts.forEach(part => {
         createRowSparePart(part.id, part.name, part.price);
     });
-
+    
     // Si hay nuevo repuesto por param
     if (newPartId && !selectedIds.includes(newPartId)) {
         selectedIds.push(newPartId);
         createRowSparePart(newPartId, newPartName, suggestedPrice || 0);
     }
-
+    
     // Restaurar abonos
     const amountContainer = document.querySelector(".amounts");
     amountContainer.innerHTML = "";
-
     // payments puede venir como array de números (compatibilidad) o como objetos
     const paymentsNormalized = (payments || []).map(p => {
-        if (typeof p === 'number') return { amount: p, paymentMethodId: null, receiptUrl: null };
         return {
             amount: p.amount || 0,
-            paymentMethodId: p.paymentMethodId || p.paymentMethod || null,
+            paymentMethodId: p.paymentMethodId,
             receiptUrl: p.receiptUrl || null
         };
     });
 
     if (paymentsNormalized.length === 0) {
-        createInitialPaymentField(0, null, null);
+        createInitialPaymentField(0, null, null, saveSaleState);
     } else {
         let lastValueWasZero = false;
         paymentsNormalized.forEach((payment, index) => {
-            createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl);
+            createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, saveSaleState);
             lastValueWasZero = (payment.amount === 0);
         });
         // Si el último abono tiene valor, añadimos un campo vacío extra
-        if (!lastValueWasZero) createInitialPaymentField(0, null, null);
+        if (!lastValueWasZero) createInitialPaymentField(0, null, null, saveSaleState);
     }
 
     // Restaurar notas
     const notesInput = document.getElementById("txtNotes");
     if (notesInput) notesInput.value = notes || "";
 
-    managePaymentsAndCalculateDebt();
-    saveSaleState();
+    managePaymentsAndCalculateDebt(saveSaleState);
 }
 
 let cleanWindow = () => {
@@ -504,7 +498,7 @@ let cleanWindow = () => {
     amountContainer.innerHTML = ''; // Elimina todos los abonos
 
     // 5. 🔑 Crear el primer campo de abono vacío usando la función auxiliar
-    createInitialPaymentField();
+    createInitialPaymentField(0, null, null, saveSaleState);
 
     // 6. Restablecer la deuda a cero
     document.getElementById("due").textContent = "$0";
@@ -537,7 +531,6 @@ function saveSaleState() {
     });
 
     const notes = document.getElementById("txtNotes")?.value || "";
-
     const state = {
         selectedParts: parts,
         payments,

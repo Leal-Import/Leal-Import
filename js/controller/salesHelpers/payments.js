@@ -15,7 +15,7 @@ export async function loadPayMethods() {
     }
 }
 
-export function managePaymentsAndCalculateDebt() {
+export function managePaymentsAndCalculateDebt(savedState) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -32,10 +32,14 @@ export function managePaymentsAndCalculateDebt() {
         const number = i + 1;
         payment.setAttribute("data-index", number);
         const input = payment.querySelector(".amountInput");
-        if (input) input.placeholder = `Abono ${number}`;
+        const select = payment.querySelector(".paymentTypeSelect");
+        if (input && select) {
+            input.placeholder = `Abono ${number}`
+            input.id = `amountInput${number}`
+            select.id = `paymentTypeSelect${number};`
+        };
 
         // Asegurar que los selects estén llenos
-        const select = payment.querySelector(".paymentTypeSelect");
         if (select && !select.dataset.filled) {
             fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName");
             select.dataset.filled = true;
@@ -55,10 +59,10 @@ export function managePaymentsAndCalculateDebt() {
     if (lastPayment) {
         const lastInput = lastPayment.querySelector(".amountInput");
         const lastValue = parseFloat((lastInput?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (lastValue > 0) addNewPaymentField();
+        if (lastValue > 0) addNewPaymentField(savedState);
     } else {
         // No hay campos, crear uno
-        createInitialPaymentField();
+        createInitialPaymentField(0, null, null, savedState);
     }
 
     // Calcular deuda y actualizar UI
@@ -71,9 +75,10 @@ export function managePaymentsAndCalculateDebt() {
     }
 
     verifySelects();
+    savedState ? savedState() : null;
 }
 
-function addNewPaymentField() {
+function addNewPaymentField(savedState) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -86,7 +91,7 @@ function addNewPaymentField() {
 
     // crear field usando la función que centraliza comportamiento
     verifySelects();
-    createInitialPaymentField(0, null, null);
+    createInitialPaymentField(0, null, null, savedState);
 }
 
 let verifySelects = () => {
@@ -110,7 +115,7 @@ let verifySelects = () => {
 };
 
 
-export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
+export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, saveState) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -143,13 +148,13 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     amountContainer.appendChild(div);
     fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName");
     select.dataset.filled = true;
-
-    // Ensamblar
+    saveState ? select.addEventListener("change", saveState) : null;
 
     // Si vino con amount sin formato, formatearlo
     if (amount > 0 && input.value && !input.value.startsWith('$')) {
         input.value = `$${formatWithCommas(parseCurrencyStringToNumber(input.value))}`;
     }
+    if(paymentMethodId) select.value = paymentMethodId;
     input.addEventListener("focus", (e) => {
         formatOnFocus(e, true);
     });
@@ -158,10 +163,10 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     })
 
     input.addEventListener("input", (e) => {
-        managePaymentsAndCalculateDebt(e, select);
+        managePaymentsAndCalculateDebt();
     }
     );
-    
+
 }
 
 function calculateTotal() {
