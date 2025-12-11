@@ -2,6 +2,10 @@
     flex-direction: row;
 }
 
+.rightColumn{
+    width: 475px !important;
+}
+
 .breadCrumbSection {
     display: inline-flex;
     margin-bottom: 1em;
