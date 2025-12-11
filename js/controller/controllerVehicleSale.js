@@ -1,5 +1,5 @@
 import { loadVehicle } from '../controller/salesHelpers/loadInfoVehicle.js'
-import { getPaymentMethods } from '../service/serviceConfiguration.js'
+import { verifySelects, managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField } from '../controller/salesHelpers/payments.js'
 import {
     postVehicle,
     getVehiclesAviable,
@@ -9,7 +9,6 @@ import {
 import {
     formatWithCommas,
     allowDecimal,
-    fillSelect,
     getInputsValues,
     highlightAndFocus,
     cleanNumber,
@@ -35,6 +34,46 @@ const paymentsToDelete = [];
 allowDecimal(txtTotal);
 allowDecimal(txtCommission);
 
+let createBtnUrl = (index, receiptUrl) => {
+        // === ELEMENTOS PARA EL COMPROBANTE ===
+    const receiptContainer = document.createElement("div");
+    receiptContainer.classList.add("receiptContainer");
+
+    // Input de archivo oculto (Se usará por el modal para seleccionar el archivo)
+    const receiptInput = document.createElement("input");
+    receiptInput.type = "file";
+    receiptInput.accept = "image/*, application/pdf";
+    receiptInput.classList.add("receiptInput");
+    receiptInput.id = `receiptInput${index}`;
+    receiptInput.setAttribute("hidden", "true");
+
+    // Botón principal (Ahora abre el MODAL)
+    const receiptButton = document.createElement("button");
+    receiptButton.type = "button";
+    receiptButton.classList.add("btnVoucher");
+    receiptButton.innerHTML = `<span class="icon">+</span>`; // Ícono de clip (Añadir/Cambiar)
+
+    // === LISTENERS ===
+
+    // El botón principal AHORA abre tu función de modal
+    receiptButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        openReceiptModal(receiptInput, receiptButton);
+    });
+
+    // 🔑 Ya no necesitamos el listener 'change' aquí. El modal lo gestionará.
+
+    receiptContainer.append(receiptInput, receiptButton);
+
+    if (receiptUrl && receiptUrl.startsWith('http')) {
+        // Asumimos que si hay una URL remota, el botón debe verse como 'cargado'
+        receiptButton.classList.add("receipt-loaded");
+        receiptButton.setAttribute("data-receipt-url", receiptUrl);
+    }
+
+    return receiptContainer;
+}
+
 document.addEventListener("click", (e) => {
     if (e.target && e.target.classList.contains("containerModal")) {
         e.target.classList.add("hide");
@@ -49,16 +88,6 @@ btnCreateOrder.addEventListener("click", async (e) => {
         window.location.href = `addWorkOrder.html?idSale=${data.idSale}&customerName=${customerName}&idVehicle=${data.idVehicle}&idCustomer=${customerId}&totalPrice=${data.price}`;
     }
 })
-
-let paymentMethodsList = [];
-let loadPayMethods = async () => {
-    try {
-        const roles = await getPaymentMethods();
-        paymentMethodsList = roles; // Guardamos para mapear luego
-    } catch (error) {
-        console.error('Error al cargar roles en el select:', error);
-    }
-}
 
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -216,9 +245,16 @@ let loadLinkAddVehicle = () => {
     btnAddPart.href = `vehicleDetails.html?sale=true&idCustomer=${customerId}&customerName=${customerName}`;
 }
 
+let getTotal = () => {
+    const total = safeParseFloat(txtTotal.value);
+    return total;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     await loadPayMethods();
-    txtTotal.addEventListener("input", managePaymentsAndCalculateDebt);
+    txtTotal.addEventListener("input", () => {
+        managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal)
+    });
     txtCommission.addEventListener("input", saveSaleState);
     document.getElementById("txtNotes").addEventListener("input", saveSaleState);
 
@@ -261,9 +297,9 @@ let insertSale = (sale) => {
     document.getElementById("txtCommission").value = sale.commission;
     document.querySelector(".amounts").innerHTML = '';
     sale.payments.forEach(payment => {
-        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment);
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, saveSaleState, createBtnUrl, getTotal);
     })
-    managePaymentsAndCalculateDebt();
+    managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal());
     document.getElementById("due").textContent = `$${formatWithCommas(sale.amountDue)}`;
     document.getElementById("due").style.color = sale.amountDue > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     txtTotal.value = `$${formatWithCommas(sale.fullTotalCost)}`;
@@ -333,36 +369,12 @@ let insertVehicles = (vehicles) => {
     container.appendChild(fragment);
 }
 
-
-function formatOnFocus(event) {
-    const element = event.target;
-    let value = element.value;
-    let cleanValue = value.replace('$', '').replace(/,/g, '');
-    element.value = cleanValue;
-}
-
-function formatOnBlur(event, isInput) {
-    const element = isInput ? event : event.target;
-    let value = element.value;
-
-    let number = safeParseFloat(value);
-    // 2. Formatear el número como moneda
-    const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-    });
-    // 3. Actualizar el contenido con el valor formateado
-    element.value = formatter.format(number);
-
-}
-
 let loadSaleState = async () => {
     const savedState = localStorage.getItem(saleKey);
     if (!savedState) {
         // Si no hay estado guardado, aseguramos que el contenedor de abonos esté limpio
         document.querySelector(".amounts").innerHTML = '';
-        createInitialPaymentField(); // Y creamos el campo inicial limpio
+        createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Y creamos el campo inicial limpio
         return;
     }
 
@@ -397,7 +409,7 @@ let loadSaleState = async () => {
             const receiptRef = payment.receiptUrl && payment.receiptUrl.startsWith('http') ? payment.receiptUrl : null;
 
             // Aquí pasamos la URL remota (o null)
-            createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef);
+            createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef, null, saveSaleState, createBtnUrl, getTotal);
 
             if (payment.amount === 0) lastValueWasZero = true;
             else lastValueWasZero = false;
@@ -405,101 +417,18 @@ let loadSaleState = async () => {
 
         // 4. Asegurar un campo vacío al final si el último abono guardado tenía valor
         if (state.payments.length > 0 && !lastValueWasZero) {
-            createInitialPaymentField(0, null, null); // Campo vacío para el siguiente abono
+            createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Campo vacío para el siguiente abono
         }
 
     } else {
         // Si no hay vehículo, limpiamos la venta guardada en localStorage
         localStorage.removeItem(saleKey);
-        createInitialPaymentField(); // Crear el primer campo limpio
+        createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Crear el primer campo limpio
     }
 
     // 5. Recalcular la deuda para actualizar 'due'
-    managePaymentsAndCalculateDebt();
+    managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal);
 };
-
-function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, idPayment = null) {
-    const amountContainer = document.querySelector(".amounts");
-
-    // 1. Crear elementos
-    const index = amountContainer.children.length + 1;
-
-    const div = document.createElement("div");
-    div.classList.add("containerAmount");
-    div.setAttribute("data-index", index);
-    if (idPayment) div.setAttribute("data-id", idPayment);
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = `Abono ${index}`;
-    input.classList.add("txtInputs", "amountInput");
-    input.id = `amountInput${index}`;
-
-    if (amount > 0) {
-        input.value = amount;
-        formatOnBlur(input, true);
-    }
-
-    allowDecimal(input);
-    input.addEventListener("focus", formatOnFocus)
-    input.addEventListener("blur", formatOnBlur)
-    input.addEventListener("input", managePaymentsAndCalculateDebt);
-
-    const select = document.createElement("select");
-    select.classList.add("txtInputs", "paymentTypeSelect");
-    select.id = `paymentTypeSelect${index}`;
-
-    select.addEventListener("change", saveSaleState);
-
-    // === ELEMENTOS PARA EL COMPROBANTE ===
-    const receiptContainer = document.createElement("div");
-    receiptContainer.classList.add("receiptContainer");
-
-    // Input de archivo oculto (Se usará por el modal para seleccionar el archivo)
-    const receiptInput = document.createElement("input");
-    receiptInput.type = "file";
-    receiptInput.accept = "image/*, application/pdf";
-    receiptInput.classList.add("receiptInput");
-    receiptInput.id = `receiptInput${index}`;
-    receiptInput.setAttribute("hidden", "true");
-
-    // Botón principal (Ahora abre el MODAL)
-    const receiptButton = document.createElement("button");
-    receiptButton.type = "button";
-    receiptButton.classList.add("btnVoucher");
-    receiptButton.innerHTML = `<span class="icon">+</span>`; // Ícono de clip (Añadir/Cambiar)
-
-    // === LISTENERS ===
-
-    // El botón principal AHORA abre tu función de modal
-    receiptButton.addEventListener("click", (e) => {
-        e.preventDefault();
-        openReceiptModal(receiptInput, receiptButton);
-    });
-
-    // 🔑 Ya no necesitamos el listener 'change' aquí. El modal lo gestionará.
-
-    receiptContainer.append(receiptInput, receiptButton);
-
-    if (receiptUrl && receiptUrl.startsWith('http')) {
-        // Asumimos que si hay una URL remota, el botón debe verse como 'cargado'
-        receiptButton.classList.add("receipt-loaded");
-        receiptButton.setAttribute("data-receipt-url", receiptUrl);
-    }
-
-
-    // === Ensamblar ===
-    div.append(input, select, receiptContainer);
-    amountContainer.appendChild(div);
-
-    // 2. Llenar el Select
-    fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
-
-    // 3. Restaurar el método de pago seleccionado
-    if (paymentMethodId) {
-        select.value = paymentMethodId;
-    }
-}
 
 // ==========================================================
 // A. LÓGICA DE VISUALIZACIÓN DENTRO DEL MODAL
@@ -652,78 +581,6 @@ function openReceiptModal(inputElement, buttonElement) {
     modalContainer.classList.remove('hide');
 }
 
-let managePaymentsAndCalculateDebt = () => {
-    const amountContainer = document.querySelector(".amounts");
-    let allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-
-    const totalSale = document.getElementById("txtTotal").value.replace(/[$,]/g, "") || 0;
-    let totalPaid = 0;
-
-    // 1. Eliminar abonos vacíos excepto el primero
-    allPayments.forEach((payment, idx) => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat(input.value.replace(/[$,]/g, "")) || 0;
-
-        if (idx > 0 && value === 0) {
-            if (payment.dataset.id) paymentsToDelete.push(payment.dataset.id);
-            payment.remove();
-        }
-    });
-
-    // Refrescar nodos
-    allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-
-    // 2. Renumerar correctamente
-    allPayments.forEach((payment, i) => {
-        const number = i + 1;
-        payment.setAttribute("data-index", number);
-
-        const input = payment.querySelector(".amountInput");
-        input.placeholder = `Abono ${number}`;
-    });
-
-    // 3. Volver a calcular total pagado
-    allPayments.forEach(payment => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat(input.value.replace(/[$,]/g, "")) || 0;
-        totalPaid += value;
-    });
-
-    // 4. Si el último abono tiene valor → crear otro
-    const lastPayment = allPayments[allPayments.length - 1];
-    const lastInput = lastPayment.querySelector(".amountInput");
-    const lastValue = parseFloat(lastInput.value.replace(/[$,]/g, "")) || 0;
-
-    if (lastValue > 0) {
-        addNewPaymentField();
-    }
-
-    // 5. Calcular deuda
-    const debt = totalSale - totalPaid;
-    const dueText = document.getElementById("due");
-
-    dueText.textContent = `$${formatWithCommas(debt)}`;
-    dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
-
-    verifySelects();
-};
-
-function addNewPaymentField() {
-    const amountContainer = document.querySelector(".amounts");
-
-    // Si el último campo está vacío → NO crear otro
-    const lastInput = amountContainer.lastElementChild.querySelector(".amountInput");
-    const lastValue = parseFloat(lastInput.value.replace(/[$,]/g, "")) || 0;
-
-    if (lastValue === 0) return;
-
-    // 🔑 Usamos la función auxiliar que asegura el ID y llena el select
-    createInitialPaymentField();
-
-    verifySelects();
-    saveSaleState();
-}
-
 function saveSaleState() {
     if (idSale) return;
     const payments = [...document.querySelectorAll(".containerAmount")].map(container => {
@@ -758,26 +615,6 @@ function saveSaleState() {
 //     CONFIGURAR CARRUSEL DE IMÁGENES
 // =====================================
 
-let verifySelects = () => {
-    const amounts = document.querySelectorAll(".amounts .containerAmount");
-    amounts.forEach(amount => {
-        const input = amount.querySelector(".amountInput");
-        const select = amount.querySelector(".paymentTypeSelect");
-
-        if (!input || !select) return;
-
-        const rawValue = (input.value || "").trim();
-        const numeric = parseFloat(rawValue.replace(/[$,]/g, "")) || 0;
-
-        if (numeric === 0) {
-            select.disabled = true;
-            select.value = ""; // evita selects colgados
-        } else {
-            select.disabled = false;
-        }
-    });
-};
-
 let cancelVehicleSelection = () => {
     // 1. Ocultar la Ficha del Vehículo (Columna Izquierda)
     document.querySelector(".viewVechicleContainer").classList.add("hide");
@@ -795,7 +632,7 @@ let cancelVehicleSelection = () => {
     amountContainer.innerHTML = ''; // Elimina todos los abonos
 
     // 5. 🔑 Crear el primer campo de abono vacío usando la función auxiliar
-    createInitialPaymentField();
+    createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal);
 
     // 6. Restablecer la deuda a cero
     document.getElementById("due").textContent = "$0";

@@ -15,7 +15,7 @@ export async function loadPayMethods() {
     }
 }
 
-export function managePaymentsAndCalculateDebt(savedState) {
+export function managePaymentsAndCalculateDebt(savedState, createBtnUrl, calculateTotal) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -36,7 +36,7 @@ export function managePaymentsAndCalculateDebt(savedState) {
         if (input && select) {
             input.placeholder = `Abono ${number}`
             input.id = `amountInput${number}`
-            select.id = `paymentTypeSelect${number};`
+            select.id = `paymentTypeSelect${number}`
         };
 
         // Asegurar que los selects estén llenos
@@ -59,10 +59,10 @@ export function managePaymentsAndCalculateDebt(savedState) {
     if (lastPayment) {
         const lastInput = lastPayment.querySelector(".amountInput");
         const lastValue = parseFloat((lastInput?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (lastValue > 0) addNewPaymentField(savedState);
+        if (lastValue > 0) addNewPaymentField(savedState, createBtnUrl, calculateTotal);
     } else {
         // No hay campos, crear uno
-        createInitialPaymentField(0, null, null, savedState);
+        createInitialPaymentField(0, null, null, null, savedState, createBtnUrl, calculateTotal);
     }
 
     // Calcular deuda y actualizar UI
@@ -78,7 +78,7 @@ export function managePaymentsAndCalculateDebt(savedState) {
     savedState ? savedState() : null;
 }
 
-function addNewPaymentField(savedState) {
+function addNewPaymentField(savedState, createBtnUrl, calculateTotal) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -91,10 +91,10 @@ function addNewPaymentField(savedState) {
 
     // crear field usando la función que centraliza comportamiento
     verifySelects();
-    createInitialPaymentField(0, null, null, savedState);
+    createInitialPaymentField(0, null, null, null, savedState, createBtnUrl, calculateTotal);
 }
 
-let verifySelects = () => {
+export let verifySelects = () => {
     const amounts = document.querySelectorAll(".amounts .containerAmount");
     amounts.forEach(amount => {
         const input = amount.querySelector(".amountInput");
@@ -115,7 +115,7 @@ let verifySelects = () => {
 };
 
 
-export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, saveState) {
+export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, idPayment = null, saveState, createBtnUrl, calculateTotal) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -124,6 +124,7 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     const div = document.createElement("div");
     div.classList.add("containerAmount");
     div.setAttribute("data-index", index);
+    if (idPayment) div.setAttribute("data-id", idPayment)
 
     // Input monto
     const input = document.createElement("input");
@@ -150,12 +151,15 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName");
     select.dataset.filled = true;
     saveState ? select.addEventListener("change", saveState) : null;
-
+    if (createBtnUrl) {
+        let image = createBtnUrl(index, receiptUrl);
+        div.appendChild(image);
+    }
     // Si vino con amount sin formato, formatearlo
     if (amount > 0 && input.value && !input.value.startsWith('$')) {
         input.value = `$${formatWithCommas(parseCurrencyStringToNumber(input.value))}`;
     }
-    if(paymentMethodId) select.value = paymentMethodId;
+    if (paymentMethodId) select.value = paymentMethodId;
     input.addEventListener("focus", (e) => {
         formatOnFocus(e, true);
     });
@@ -163,56 +167,11 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
         formatOnBlur(e, true);
     })
 
-    input.addEventListener("input", (e) => {
-        managePaymentsAndCalculateDebt();
+    input.addEventListener("input", () => {
+        managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal);
     }
     );
 
-}
-
-function calculateTotal() {
-    let total = 0;
-    const containerTotal = document.getElementById("containerTotal");
-    const containerDue = document.getElementById("containerAmountDue");
-    const prices = document.querySelectorAll("#tBodySelected .finalPrice");
-    const totalText = document.getElementById("total");
-    const dueText = document.getElementById("due");
-
-    prices.forEach(priceElement => {
-        const priceText = priceElement.textContent;
-        const cleanValue = priceText.replace(/[$,]/g, "");
-        const value = parseFloat(cleanValue) || 0;
-        total += value;
-    });
-
-    const moneyPaid = calculatePaid();
-    const due = total - moneyPaid;
-
-    if (totalText) totalText.textContent = `$${formatWithCommas(total)}`;
-    if (dueText) {
-        dueText.textContent = `$${formatWithCommas(due)}`;
-        dueText.style.color = due > 0 ? 'var(--danger-color)' : 'var(--success-color)';
-    }
-
-    if (total === 0) {
-        containerDue?.classList.remove("show");
-        containerTotal?.classList.remove("show");
-    } else {
-        containerDue?.classList.add("show");
-        containerTotal?.classList.add("show");
-    }
-
-    return total;
-}
-
-function calculatePaid() {
-    let totalPaid = 0;
-    const amountInputs = document.querySelectorAll(".amounts .amountInput");
-    amountInputs.forEach(input => {
-        const cleanValue = (input.value || "").toString().replace(/[$,]/g, "") || "0";
-        totalPaid += parseFloat(cleanValue) || 0;
-    });
-    return totalPaid;
 }
 
 export function formatOnBlur(event, isInput) {

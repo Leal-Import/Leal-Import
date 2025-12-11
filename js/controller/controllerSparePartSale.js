@@ -2,7 +2,7 @@ import {
     getSpareParts,
     postSparePart
 } from '../service/serviceSparePartsSale.js'
-import { managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus } from '../controller/salesHelpers/payments.js'
+import { managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus, verifySelects } from '../controller/salesHelpers/payments.js'
 import {
     formatWithCommas,
     allowDecimal,
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (firstAmount) {
         allowDecimal(firstAmount);
         firstAmount.addEventListener("input", () => {
-            managePaymentsAndCalculateDebt(saveSaleState);
+            managePaymentsAndCalculateDebt(saveSaleState, null, calculateTotal);
         });
         firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
     }
@@ -398,32 +398,12 @@ function calculatePaid() {
     return totalPaid;
 }
 
-let verifySelects = () => {
-    const amounts = document.querySelectorAll(".amounts .containerAmount");
-    amounts.forEach(amount => {
-        const input = amount.querySelector(".amountInput");
-        const select = amount.querySelector(".paymentTypeSelect");
-
-        if (!input || !select) return;
-
-        const rawValue = (input.value || "").trim();
-        const numeric = parseFloat(rawValue.replace(/[$,]/g, "")) || 0;
-
-        if (numeric === 0) {
-            select.disabled = true;
-            select.value = ""; // evita selects colgados
-        } else {
-            select.disabled = false;
-        }
-    });
-};
-
 /* Asegura existe al menos un campo de abono vacio */
 function ensureInitialPaymentField() {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
     if (amountContainer.children.length === 0) {
-        createInitialPaymentField(0, null, null, saveSaleState);
+        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
     }
 }
 
@@ -468,22 +448,23 @@ function loadSavedData(parts, payments, notes) {
     });
 
     if (paymentsNormalized.length === 0) {
-        createInitialPaymentField(0, null, null, saveSaleState);
+        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
     } else {
         let lastValueWasZero = false;
         paymentsNormalized.forEach((payment, index) => {
-            createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, saveSaleState);
+            console.log(payment.receiptUrl)
+            createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, null, saveSaleState, null, calculateTotal);
             lastValueWasZero = (payment.amount === 0);
         });
         // Si el último abono tiene valor, añadimos un campo vacío extra
-        if (!lastValueWasZero) createInitialPaymentField(0, null, null, saveSaleState);
+        if (!lastValueWasZero) createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
     }
 
     // Restaurar notas
     const notesInput = document.getElementById("txtNotes");
     if (notesInput) notesInput.value = notes || "";
 
-    managePaymentsAndCalculateDebt(saveSaleState);
+    managePaymentsAndCalculateDebt(saveSaleState, null, calculateTotal);
 }
 
 let cleanWindow = () => {
@@ -498,7 +479,7 @@ let cleanWindow = () => {
     amountContainer.innerHTML = ''; // Elimina todos los abonos
 
     // 5. 🔑 Crear el primer campo de abono vacío usando la función auxiliar
-    createInitialPaymentField(0, null, null, saveSaleState);
+    createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
 
     // 6. Restablecer la deuda a cero
     document.getElementById("due").textContent = "$0";
