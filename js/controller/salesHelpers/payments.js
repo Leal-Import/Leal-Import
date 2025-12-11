@@ -135,6 +135,7 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     if (amount > 0) {
         input.value = `$${formatWithCommas(amount)}`;
     }
+    saveState ? input.addEventListener("input", saveState) : null;
 
     allowDecimal(input);
 
