@@ -6,27 +6,6 @@
     flex: 3;
 }
 
-.rightColumn {
-    flex: 2;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    border: var(--border);
-    padding: 5px 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 450px;
-}
-
-.headerRightColumn {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    flex: 1 1 auto;
-    max-height: 40%;
-    border-bottom: var(--border)
-}
-
 
 .headerRightColumn .table td,
 .headerRightColumn .table th {
@@ -89,29 +68,14 @@
     font-weight: var(--font-weight-semibold);
 }
 
-.sparePartName {
-    width: 60%;
-}
-
 .finalPrice {
-    width: 30%;
     text-align: center;
 }
 
 .bodyRightColumn {
-    flex: 0 1 auto;
     max-height: 40%;
     min-height: 0;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border-bottom: var(--border);
-}
-
-.headerRightColumn .tableContainer {
-    height: 100%;
-    overflow-y: auto;
 }
 
 .headerRightColumn .table:has(.noDataMessage) {
@@ -122,25 +86,9 @@
     text-align: center;
 }
 
-.bodyRightColumn h2 {
-    font-weight: var(--font-weight-medium);
-    font-size: 1.2em;
-}
-
-.footerRightColumn {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 .footerRightColumn .btnPrimary {
     font-size: 1.3em;
     padding: 5px 30px;
-}
-
-.lbl {
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
 }
 
 textarea {

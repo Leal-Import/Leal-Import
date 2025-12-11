@@ -1,17 +1,52 @@
 import { getSpareParts } from '../service/serviceSpareParts.js'
+import { getStatus } from '../service/serviceSparePartsDetails.js'
 import {
-    setupModal
+    setupModal,
+    fillSelect
 } from '../utils.js';
 // Configurar el modal para agregar repuestos
 setupModal("#modalParts", "#modalSpareParts", "#closeAddEmployee");
 
+const txtSearchData = document.getElementById("txtSearchData");
+const cmbSearchByStatus = document.getElementById("cmbSearchByStatus");
+
+let searchTimeout = null;
+
+txtSearchData.addEventListener('input', () => {
+    filterData()
+});
+
+let filterData = async () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+        const searchQuery = txtSearchData.value.trim();
+        const status = cmbSearchByStatus.value;
+        await loadSpareParts(searchQuery, status);
+    }, 1500);
+}
+
+cmbSearchByStatus.addEventListener("change", () => {
+    filterData();
+})
+
+let statusList = [];
+let loadStatusSelect = async () => {
+    try {
+        const status = await getStatus();
+        statusList = status;
+        fillSelect('cmbSearchByStatus', statusList, 'idPartsState', 'state');
+    } catch (error) {
+        console.error('Error al cargar estados:', error);
+    }
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
+    await loadStatusSelect();
     await loadSpareParts();
 });
 
-let loadSpareParts = async () => {
-    const data = await getSpareParts();
-    console.log(data)
+let loadSpareParts = async (search, status) => {
+    const data = await getSpareParts(search, status);
     insertSpareParts(data.content);
 }
 

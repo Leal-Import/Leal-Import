@@ -1,8 +1,10 @@
+import { loadVehicle } from '../controller/salesHelpers/loadInfoVehicle.js'
 import { getPaymentMethods } from '../service/serviceConfiguration.js'
-import { getVehicles as getVehicleByVin } from '../service/serviceVehicleDetails.js'
 import {
     postVehicle,
-    getVehiclesAviable
+    getVehiclesAviable,
+    putVehicle,
+    getSaleById
 } from '../service/serviceVehicleSale.js'
 import {
     formatWithCommas,
@@ -25,8 +27,10 @@ const frmVehicleSale = document.getElementById("frmVehicleSale");
 const btnCreateOrder = document.getElementById("btnCreateOrder");
 
 let vehicleId = params.get('idVehicle') || null;
-let currentId = null;
+let idSale = params.get('idSale') || null;
 function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
+
+const paymentsToDelete = [];
 
 allowDecimal(txtTotal);
 allowDecimal(txtCommission);
@@ -118,17 +122,25 @@ let createNewSale = async (isWO) => {
             showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
             return false;
         }
-        amountData.push({
+        let obj = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
-        });
-        if (receiptInput.files.length == 0) {
-            highlightAndFocus(amountInput);
-            showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
-            return false;
+            idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         }
-        imagesAmounts.push(receiptInput.files[0] || null);
+        if (amounts[i].dataset.id && idSale) obj.idPayment = amounts[i].dataset.id;
+        amountData.push(obj);
+        if (!idSale) {
+            if (receiptInput.files.length == 0) {
+                highlightAndFocus(amountInput);
+                showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
+                return false;
+            }
+        }
+        let imgs = {
+            file: receiptInput.files[0],
+            isOld: amounts[i].dataset.id ? true : false
+        }
+        imagesAmounts.push(imgs);
     }
 
     const fd = new FormData();
@@ -138,18 +150,44 @@ let createNewSale = async (isWO) => {
         idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
-        payments: amountData
+        idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
     }
-
+    const amountOld = [];
+    const amountNew = [];
+    if (idSale) {
+        amountData.forEach(amount => {
+            if (amount.idPayment) {
+                amountOld.push(amount)
+            } else {
+                amountNew.push(amount)
+            }
+            saleData.paymentsToUpdate = amountOld;
+            saleData.newPayments = amountNew;
+        })
+        saleData.paymentsToDelete = paymentsToDelete;
+    } else {
+        saleData.payments = amountData;
+    }
     fd.append("vehicleData", JSON.stringify(saleData));
-
-    imagesAmounts.forEach(file => {
-        fd.append("paymentImages", file);
+    console.log(amountData)
+    imagesAmounts.forEach(objFile => {
+        if (idSale) {
+            if (objFile.isOld) {
+                if (objFile.file == undefined) return;
+                fd.append("updateImages", objFile.file);
+            } else {
+                fd.append("newPaymentImages", objFile.file);
+            }
+        } else {
+            fd.append("paymentImages", objFile.file);
+        }
     });
 
     try {
-        if (currentId != null) {
+        if (idSale != null) {
+            await putVehicle(fd, idSale);
+            await showMessage('Venta actualizada correctamente.', 'Exito', 'success');
+            return true;
         } else {
             let response = await postVehicle(fd, vehicleId);
             await showMessage('Venta registrada con éxito.', 'Éxito', 'success');
@@ -179,22 +217,26 @@ let loadLinkAddVehicle = () => {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    await loadVehicles();
     await loadPayMethods();
-    loadLinkAddVehicle();
-    setupModalListeners();
-
-    if (vehicleId) {
-        await loadVehicle(vehicleId);
-    }
-
     txtTotal.addEventListener("input", managePaymentsAndCalculateDebt);
     txtCommission.addEventListener("input", saveSaleState);
     document.getElementById("txtNotes").addEventListener("input", saveSaleState);
 
-    await loadSaleState();
+    if (idSale) {
+        await loadSale();
+    } else {
+        await loadVehicles();
+        await loadSaleState();
+    }
+    loadLinkAddVehicle();
+    setupModalListeners();
+
+    if (vehicleId) {
+        await loadVehicle(vehicleId, idSale);
+    }
 
     document.getElementById("customerName").textContent = customerName;
+
 
     const btnCancel = document.querySelector(".btnCancelVehicle");
     if (btnCancel) {
@@ -202,6 +244,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     verifySelects();
 });
+
+let loadSale = async () => {
+    const sale = await getSaleById(idSale);
+    insertSale(sale);
+    const btnCancel = document.querySelector(".btnCancelVehicle");
+    const btnAddSale = document.getElementById("btnAddSale");
+    btnCancel.classList.add("hide");
+    btnCreateOrder.classList.add("hide");
+    btnAddSale.value = "Actualizar";
+}
+
+let insertSale = (sale) => {
+    console.log(sale)
+    document.getElementById("txtNotes").value = sale.notes;
+    document.getElementById("txtCommission").value = sale.commission;
+    document.querySelector(".amounts").innerHTML = '';
+    sale.payments.forEach(payment => {
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment);
+    })
+    managePaymentsAndCalculateDebt();
+    document.getElementById("due").textContent = `$${formatWithCommas(sale.amountDue)}`;
+    document.getElementById("due").style.color = sale.amountDue > 0 ? 'var(--danger-color)' : 'var(--success-color)';
+    txtTotal.value = `$${formatWithCommas(sale.fullTotalCost)}`;
+}
 
 let loadVehicles = async () => {
     const vehicles = await getVehiclesAviable();
@@ -257,7 +323,7 @@ let insertVehicles = (vehicles) => {
 
             btnAddVehicle.addEventListener("click", async () => {
                 vehicleId = vehicle.idVehicle;
-                await loadVehicle(vehicle.idVehicle);
+                await loadVehicle(vehicle.idVehicle, idSale);
                 saveSaleState();
             })
 
@@ -265,42 +331,6 @@ let insertVehicles = (vehicles) => {
     }
 
     container.appendChild(fragment);
-}
-
-let loadVehicle = async (id) => {
-    const vehicle = await getVehicleByVin(id);
-    // Mostrar contenedor de visualización
-    document.querySelector(".viewVechicleContainer").classList.remove("hide");
-
-    // Cargar datos del vehículo
-    document.getElementById("vehicleVin").textContent = vehicle.vin;
-    document.getElementById("vehicleBrand").textContent = vehicle.brand;
-    document.getElementById("vehicleModel").textContent = vehicle.model;
-    document.getElementById("vehicleYear").textContent = vehicle.year;
-    document.getElementById("purchaseDate").textContent = vehicle.purchaseDate;
-    document.getElementById("mileaje").textContent = vehicle.mileage;
-    document.getElementById("lote").textContent = vehicle.lote.numLote;
-    vehicle.lote.linkLote != null ? document.getElementById("lote").href = vehicle.lote.linkLote : null;
-    document.getElementById("status").textContent = vehicle.status;
-    document.getElementById("suggestedPrice").textContent = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; // Por el momento es costo total
-
-    document.getElementById("bill").textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
-    vehicle.costs.costPhoto.billPhoto != null ? document.getElementById("bill").href = vehicle.costs.costPhoto.billPhoto : null;
-    document.getElementById("ship").textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
-    vehicle.costs.costPhoto.shipPhoto != null ? document.getElementById("ship").href = vehicle.costs.costPhoto.shipPhoto : null;
-    document.getElementById("towTruck").textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
-    vehicle.costs.costPhoto.shipPhoto != null ? document.getElementById("towTruck").href = vehicle.costs.costPhoto.shipPhoto : null;
-    document.getElementById("iva").textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
-    document.getElementById("taxes").textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
-    vehicle.costs.costPhoto.taxesPhoto != null ? document.getElementById("taxes").href = vehicle.costs.costPhoto.taxesPhoto : null;
-    document.getElementById("transfer").textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
-    document.getElementById("pa").textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
-    document.getElementById("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
-    document.getElementById("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
-
-    txtTotal.value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
-
-    loadVehicleImages(vehicle.photos);
 }
 
 
@@ -329,7 +359,6 @@ function formatOnBlur(event, isInput) {
 
 let loadSaleState = async () => {
     const savedState = localStorage.getItem(saleKey);
-
     if (!savedState) {
         // Si no hay estado guardado, aseguramos que el contenedor de abonos esté limpio
         document.querySelector(".amounts").innerHTML = '';
@@ -344,7 +373,7 @@ let loadSaleState = async () => {
     // 1. Restaurar el vehículo
     if (state.vehicleId) {
         vehicleId = state.vehicleId;
-        await loadVehicle(vehicleId);
+        await loadVehicle(vehicleId, idSale);
         // Restaurar el precio final si fue modificado
         if (state.finalPrice) {
             txtTotal.value = `$${formatWithCommas(state.finalPrice)}`;
@@ -389,7 +418,7 @@ let loadSaleState = async () => {
     managePaymentsAndCalculateDebt();
 };
 
-function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
+function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, idPayment = null) {
     const amountContainer = document.querySelector(".amounts");
 
     // 1. Crear elementos
@@ -398,6 +427,7 @@ function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUr
     const div = document.createElement("div");
     div.classList.add("containerAmount");
     div.setAttribute("data-index", index);
+    if (idPayment) div.setAttribute("data-id", idPayment);
 
     const input = document.createElement("input");
     input.type = "text";
@@ -635,6 +665,7 @@ let managePaymentsAndCalculateDebt = () => {
         const value = parseFloat(input.value.replace(/[$,]/g, "")) || 0;
 
         if (idx > 0 && value === 0) {
+            if (payment.dataset.id) paymentsToDelete.push(payment.dataset.id);
             payment.remove();
         }
     });
@@ -694,6 +725,7 @@ function addNewPaymentField() {
 }
 
 function saveSaleState() {
+    if (idSale) return;
     const payments = [...document.querySelectorAll(".containerAmount")].map(container => {
         const input = container.querySelector(".amountInput");
         const select = container.querySelector(".paymentTypeSelect");
@@ -725,52 +757,6 @@ function saveSaleState() {
 // =====================================
 //     CONFIGURAR CARRUSEL DE IMÁGENES
 // =====================================
-
-let mainSwiper;
-let thumbsSwiper;
-
-function loadVehicleImages(imagesArray) {
-    const mainWrapper = document.getElementById("mainSwiperWrapper");
-    const thumbsWrapper = document.getElementById("thumbsWrapper");
-
-    mainWrapper.innerHTML = "";
-    thumbsWrapper.innerHTML = "";
-
-    imagesArray.forEach(img => {
-        mainWrapper.innerHTML += `
-            <div class="swiper-slide">
-                <img src="${img.photoUrl}" class="mainImage" alt="vehicle image">
-            </div>
-        `;
-
-        thumbsWrapper.innerHTML += `
-            <div class="swiper-slide">
-                <img src="${img.photoUrl}" class="thumbImage" alt="thumbnail">
-            </div>
-        `;
-    });
-
-    if (thumbsSwiper) thumbsSwiper.destroy();
-    if (mainSwiper) mainSwiper.destroy();
-
-    thumbsSwiper = new Swiper("#thumbsSwiper", {
-        spaceBetween: 10,
-        slidesPerView: 6,
-        freeMode: true,
-        watchSlidesProgress: true,
-    });
-
-    mainSwiper = new Swiper("#mainSwiper", {
-        spaceBetween: 10,
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        },
-        thumbs: {
-            swiper: thumbsSwiper,
-        },
-    });
-}
 
 let verifySelects = () => {
     const amounts = document.querySelectorAll(".amounts .containerAmount");

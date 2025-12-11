@@ -2,12 +2,13 @@ import {
     getSpareParts,
     postSparePart
 } from '../service/serviceSparePartsSale.js'
-import { getPaymentMethods } from '../service/serviceConfiguration.js'
+import { managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus } from '../controller/salesHelpers/payments.js'
 import {
     formatWithCommas,
     allowDecimal,
     getInputsValues,
-    showMessage
+    showMessage,
+    highlightAndFocus
 } from '../utils.js'
 
 /* ---------------------------
@@ -29,101 +30,12 @@ const btnAddPart = document.getElementById("btnAddPart");
 
 /* Estado local */
 let selectedIds = [];
-let paymentMethodsList = [];
 
 /* ---------------------------
 Helpers
 --------------------------- */
 function sanitizeParam(param) {
     return param === null || param === "null" || param === "undefined" ? null : param;
-}
-function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
-
-function formatOnBlur(event, isInput) {
-    const element = event.target;
-    let value
-    if (isInput) {
-        value = element.value;
-        let number = safeParseFloat(value);
-        // 2. Formatear el número como moneda
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-        });
-        // 3. Actualizar el contenido con el valor formateado
-        element.value = formatter.format(number);
-    } else {
-        value = element.textContent
-        let number = safeParseFloat(value);
-        // 2. Formatear el número como moneda
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-        });
-        // 3. Actualizar el contenido con el valor formateado
-        element.textContent = formatter.format(number);
-    }
-}
-
-function formatOnFocus(event, isInput) {
-    const element = event.target;
-    let value;
-    if (isInput) {
-        value = element.value;
-        let cleanValue = value.replace('$', '').replace(/,/g, '');
-        element.value = cleanValue;
-    }
-    else {
-        value = element.innerText;
-        let cleanValue = value.replace('$', '').replace(/,/g, '');
-        element.textContent = cleanValue;
-    }
-}
-
-function parseCurrencyStringToNumber(text) {
-    if (!text) return 0;
-    const clean = String(text).replace(/[$,]/g, "").trim();
-    return parseFloat(clean) || 0;
-}
-
-/* Rellena un <select> con métodos de pago (usa la estructura esperada por tu API) */
-function fillPaymentSelect(selectElement, selectedValue = null) {
-    if (!selectElement) return;
-    selectElement.innerHTML = "";
-
-    const defaultOpt = document.createElement("option");
-    defaultOpt.value = "";
-    defaultOpt.textContent = "Seleccionar método";
-    selectElement.appendChild(defaultOpt);
-
-    (paymentMethodsList || []).forEach(method => {
-        const option = document.createElement("option");
-        // Asumo que la API usa idPaymentMethod y paymentMethod (ajusta si tu API usa nombres distintos)
-        option.value = method.idPaymentMethod ?? method.id ?? "";
-        option.textContent = method.paymentMethod ?? method.methodName ?? method.name ?? "Método";
-        if (selectedValue && String(selectedValue) === String(option.value)) {
-            option.selected = true;
-        }
-        selectElement.appendChild(option);
-    });
-
-    selectElement.dataset.filled = "true";
-}
-
-/* ---------------------------
-Cargar métodos de pago
---------------------------- */
-async function loadPayMethods() {
-    try {
-        const roles = await getPaymentMethods();
-        // Tu API puede devolver array o { content: [...] }
-        paymentMethodsList = Array.isArray(roles) ? roles : (roles?.content || []);
-    } catch (error) {
-        console.error('Error al cargar métodos de pago:', error);
-        paymentMethodsList = [];
-    }
 }
 
 /* ---------------------------
@@ -152,7 +64,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const firstAmount = document.querySelector('.amounts .amountInput');
     if (firstAmount) {
         allowDecimal(firstAmount);
-        firstAmount.addEventListener("input", managePaymentsAndCalculateDebt);
+        firstAmount.addEventListener("input", () => {
+            managePaymentsAndCalculateDebt();
+            saveSaleState();
+        });
         firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
     }
     verifySelects();
@@ -266,7 +181,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         });
     }
 
@@ -294,7 +209,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
     const saleData = {
         idCustomer: customerId,
         notes: txtNotes || "",
-        idEmployee: "b026087b-99d6-47fb-92ba-e25f3312b93d", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData,
         sparePartItems
     }
@@ -505,88 +420,6 @@ let verifySelects = () => {
     });
 };
 
-
-/* ---------------------------
-Manejo de abonos dinámicos
---------------------------- */
-function managePaymentsAndCalculateDebt() {
-    const amountContainer = document.querySelector(".amounts");
-    if (!amountContainer) return;
-
-    // Eliminar abonos vacíos excepto el primero
-    let allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-    allPayments.forEach((payment, idx) => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (idx > 0 && value === 0) payment.remove();
-    });
-    // Refrescar nodos y renumerar
-    allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-    allPayments.forEach((payment, i) => {
-        const number = i + 1;
-        payment.setAttribute("data-index", number);
-        const input = payment.querySelector(".amountInput");
-        if (input) input.placeholder = `Abono ${number}`;
-
-        // Asegurar que los selects estén llenos
-        const select = payment.querySelector(".paymentTypeSelect");
-        if (select && !select.dataset.filled) {
-            fillPaymentSelect(select);
-        }
-    });
-
-    // Recalcular total pagado
-    let totalPaid = 0;
-    allPayments.forEach(payment => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        totalPaid += value;
-    });
-
-    // Si el último abono tiene valor → crear otro campo vacío
-    const lastPayment = allPayments[allPayments.length - 1];
-    if (lastPayment) {
-        const lastInput = lastPayment.querySelector(".amountInput");
-        const lastValue = parseFloat((lastInput?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (lastValue > 0) addNewPaymentField();
-    } else {
-        // No hay campos, crear uno
-        createInitialPaymentField();
-    }
-
-    // Calcular deuda y actualizar UI
-    const totalSale = calculateTotal();
-    const debt = totalSale - totalPaid;
-    const dueText = document.getElementById("due");
-    if (dueText) {
-        dueText.textContent = `$${formatWithCommas(debt)}`;
-        dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
-    }
-
-    verifySelects();
-
-    saveSaleState();
-}
-
-/* Crear nuevo campo de abono con select relleno */
-function addNewPaymentField() {
-    const amountContainer = document.querySelector(".amounts");
-    if (!amountContainer) return;
-
-    const lastChild = amountContainer.lastElementChild;
-    if (lastChild) {
-        const lastInput = lastChild.querySelector(".amountInput");
-        const lastValue = parseFloat((lastInput?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (lastValue === 0) return; // si ultimo está vacío, no crear
-    }
-
-    const index = amountContainer.children.length + 1;
-    // crear field usando la función que centraliza comportamiento
-    verifySelects();
-    createInitialPaymentField(0, null, null);
-    saveSaleState();
-}
-
 /* Asegura existe al menos un campo de abono vacio */
 function ensureInitialPaymentField() {
     const amountContainer = document.querySelector(".amounts");
@@ -594,62 +427,6 @@ function ensureInitialPaymentField() {
     if (amountContainer.children.length === 0) {
         createInitialPaymentField(0, null, null);
     }
-}
-
-/* ---------------------------
-Crear campo de abono (input + select + comprobante botón)
---------------------------- */
-function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
-    const amountContainer = document.querySelector(".amounts");
-    if (!amountContainer) return;
-
-    const index = amountContainer.children.length + 1;
-
-    const div = document.createElement("div");
-    div.classList.add("containerAmount");
-    div.setAttribute("data-index", index);
-
-    // Input monto
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = `Abono ${index}`;
-    input.classList.add("txtInputs", "amountInput");
-    input.id = `amountInput${index}`;
-
-    if (amount > 0) {
-        input.value = `$${formatWithCommas(amount)}`;
-    }
-
-    allowDecimal(input);
-
-    // Select metodo pago
-    const select = document.createElement("select");
-    select.classList.add("txtInputs", "paymentTypeSelect");
-    select.id = `paymentTypeSelect${index}`;
-    select.addEventListener("change", saveSaleState);
-
-    // Llenar select con métodos de pago cargados
-    fillPaymentSelect(select, paymentMethodId);
-
-    // Ensamblar
-    div.append(input, select);
-    amountContainer.appendChild(div);
-
-    // Si vino con amount sin formato, formatearlo
-    if (amount > 0 && input.value && !input.value.startsWith('$')) {
-        input.value = `$${formatWithCommas(parseCurrencyStringToNumber(input.value))}`;
-    }
-    input.addEventListener("focus", (e) => {
-        formatOnFocus(e, true);
-    });
-    input.addEventListener("blur", (e) => {
-        formatOnBlur(e, true);
-    })
-
-    input.addEventListener("input", (e) => {
-        managePaymentsAndCalculateDebt(e, select);
-    }
-    );
 }
 
 /* ---------------------------
@@ -712,6 +489,7 @@ function loadSavedData(parts, payments, notes) {
     if (notesInput) notesInput.value = notes || "";
 
     managePaymentsAndCalculateDebt();
+    saveSaleState();
 }
 
 let cleanWindow = () => {

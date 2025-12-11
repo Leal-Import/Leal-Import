@@ -1,0 +1,176 @@
+.content {
+    flex-direction: row;
+}
+
+.breadCrumbSection {
+    margin-bottom: 2em;
+}
+
+.leftColumn {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+/* ----------------------------- */
+/*  CONTENEDOR VEHÍCULO
+/* ----------------------------- */
+
+.viewVechicleContainer {
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: var(--border);
+}
+
+/* ================================ */
+/*   SWIPER PRINCIPAL
+/* ================================ */
+
+#mainSwiper {
+    padding: 5px;
+    width: 100%;
+    max-height: 250px;
+    border: 1px solid #8884;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ❗ FIX DEL ANCHO INFINITO */
+.swiper-wrapper {
+    width: 100% !important;
+}
+
+.swiper-slide {
+    width: 100% !important;   /* Antes estaba "auto" → CAUSABA EL BUG */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mainSwiper img {
+    border: var(--border);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ================================ */
+/*   THUMBNAILS
+/* ================================ */
+
+.thumbnailImagesContainer {
+    margin-top: 10px;
+}
+
+#thumbsSwiper {
+    height: 70px;
+    width: 90%;
+    padding: 5px;
+    background-color: #e8e8e8;
+    border-radius: var(--border-radius-input);
+}
+
+#thumbsSwiper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: solid 1px #888;
+    border-radius: 6px;
+}
+
+.swiper-slide-thumb-active img {
+    border: 2px solid var(--danger-color) !important;
+}
+
+/* ================================ */
+/*   INFO VEHÍCULO
+/* ================================ */
+
+.vehicleInfo {
+    flex: 2;
+    display: flex;
+    width: 90%;
+    margin: auto;
+    flex-direction: column;
+}
+
+.mainInfoContainer {
+    display: flex;
+    border: var(--border);
+}
+
+.mainInfoContainer > div {
+    flex: 1;
+}
+
+.columnInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.columnInfo h2 {
+    border: var(--border);
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    font-size: var(--font-size-lg);
+}
+
+.bodyDataInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.bodyDataInfo .infoItem {
+    flex: 1;
+    padding: 5px;
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--font-size-sm);
+}
+
+.infoItem .infoLabel {
+    font-weight: var(--font-weight-medium);
+}
+
+/* ================================ */
+/*   COSTOS / INFORMACIÓN GENERAL
+/* ================================ */
+
+.saleGenInfoSec {
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9f9;
+    border: var(--border);
+}
+
+.saleGenInfoSec .infoItem {
+    padding: 10px;
+    border: var(--border);
+}
+
+.saleGenInfoSec .infoItem + .infoItem {
+    width: 30%;
+}
+
+.infoRow {
+    display: flex;
+}
+
+.itemLarge {
+    flex: 2;
+}
+
+.footerRightColumn {
+    flex: 1;
+}
