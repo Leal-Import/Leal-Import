@@ -35,9 +35,6 @@ export function setupModalListeners() {
             const clipButton = document.querySelector(`#${inputElement.id}`).nextElementSibling;
             clipButton.classList.remove("receipt-loaded");
             clipButton.removeAttribute("data-receipt-url");
-
-            // C. Guardar estado (sin archivo) y cerrar modal
-            saveSaleState();
             closeModalAndClean();
         }
     };
@@ -58,8 +55,6 @@ export function setupModalListeners() {
                 clipButton.classList.remove("receipt-loaded");
                 clipButton.removeAttribute("data-receipt-url");
             }
-
-            saveSaleState();
 
             // Si el modal estaba abierto para ESTE input, actualizamos la previsualización
             if (!modalContainer.classList.contains('hide') && inputElement.id === inputIdField.value) {

@@ -1,5 +1,4 @@
 import { getSaleById } from '../service/serviceVehicleSale.js'
-import { getVehicles } from '../service/serviceVehicleDetails.js'
 import { formatWithCommas } from '../utils.js'
 import { loadVehicle } from '../controller/salesHelpers/loadInfoVehicle.js'
 
@@ -29,5 +28,6 @@ let insertSaleData = (sale) => {
     $("amountDue").textContent = `$${formatWithCommas(sale.amountDue)}`;
     $("totalAmount").textContent = `$${formatWithCommas(sale.fullTotalCost - sale.amountDue)}`;
     $("total").textContent = `$${formatWithCommas(sale.fullTotalCost)}`;
+    console.log()
 
 }

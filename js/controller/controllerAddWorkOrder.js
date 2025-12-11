@@ -11,8 +11,6 @@ import {
 import { getSpareParts } from '../service/serviceSpareParts.js'
 import {
     formatWithCommas,
-    allowDecimal,
-    fillSelect,
     showMessage,
     getInputsValues,
     highlightAndFocus
@@ -443,10 +441,7 @@ function calculateTotalService() {
 
 // ---------- Repuestos logic ----------
 function addSparePart(p) {
-    if (selectedSpareParts.some(x => x.id === p.id)) {
-        showMessage('Advertencia', 'El repuesto ya fue añadido', 'warning');
-        return;
-    }
+    if (selectedSpareParts.some(x => x.id === p.id)) return;
     const data = {
         id: p.id,
         name: p.name,
