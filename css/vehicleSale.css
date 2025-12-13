@@ -17,10 +17,6 @@
     flex: 3;
 }
 
-.viewVechicleContainer a[href]{
-    color: var(--danger-color);
-}
-
 .filterSection {
     margin-top: 6px;
     padding-right: 5px;

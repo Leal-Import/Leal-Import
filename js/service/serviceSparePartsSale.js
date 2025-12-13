@@ -18,6 +18,24 @@ export let getSpareParts = async (search = "") => {
     }
 };
 
+export let getSparePartById = async (id) => {
+    try {
+        const request = await fetch(`${API_URLSALE}/getSparePartsSaleById/${id}`, {
+            credentials: 'include'
+        });
+        if (!request.ok) {
+            const errorBody = await request.text();
+            throw new Error(`Error ${request.status}: No se pudo obtener el repuesto. Detalle: ${errorBody.substring(0, 100)}`);
+        }
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en getSparePartById:", error);
+        throw new Error("Fallo al conectar con el servicio de repuestos.");
+    }
+};
+
+
 export let postSparePart = async (sale) => {
     try {
         const request = await fetch(`${API_URLSALE}/postSparePartsSale`, {

@@ -2,7 +2,7 @@
 // Reescritura completa - módulo Órdenes de Trabajo
 // Mantén los imports tal como los usas en tu proyecto:
 import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
-import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMethods, verifySelects} from '../controller/salesHelpers/payments.js'
+import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMethods, verifySelects, formatOnBlur, formatOnFocus } from '../controller/salesHelpers/payments.js'
 import {
     getServices,
     postWorkOrder,
@@ -13,7 +13,8 @@ import {
     formatWithCommas,
     showMessage,
     getInputsValues,
-    highlightAndFocus
+    highlightAndFocus,
+    allowDecimal
 } from '../utils.js';
 
 /*
@@ -56,9 +57,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadPayMethods();
     setupModalListeners();
     bindEvents();
-    loadDataVehicle();
+    await loadDataVehicle();
     createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
-    calculateAllTotals();
     // ejecutar verifySelects inicialmente y también está atento a cambios dinámicos
     verifySelects();
     observeAmountsContainer(); // observa cambios en los abonos (dinámicos)
@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         addNewPartToTable();
         saveCurrentOrderState();
     }
+    calculateAllTotals();
 });
 
 // ---------- Utilities ----------
@@ -96,8 +97,10 @@ function initStaticRows() {
         const frag = document.createDocumentFragment();
         for (let i = 0; i < 7; i++) {
             const tr = document.createElement('tr');
-            const tdName = document.createElement('td'); tdName.className = 'tdName';
-            const tdPrice = document.createElement('td'); tdPrice.className = 'tdPrice';
+            const tdName = document.createElement('td');
+            tdName.className = 'tdName';
+            const tdPrice = document.createElement('td');
+            tdPrice.className = 'tdPrice';
             tr.append(tdName, tdPrice);
             frag.appendChild(tr);
         }
@@ -294,7 +297,7 @@ function appendServiceToDOM(service) {
     const priceCell = emptyRow.querySelector('.tdPrice');
 
     nameCell.textContent = service.name;
-    priceCell.textContent = (service.price || 0).toFixed(2);
+    priceCell.textContent = `$${formatWithCommas(service.price)}`;
     priceCell.setAttribute('contenteditable', 'true');
 
     // limpiar inputs ocultos previos
@@ -347,65 +350,23 @@ function appendServiceToDOM(service) {
     emptyRow.appendChild(btn);
 
     // listener para editar precio (preservando cursor)
+    allowDecimal(priceCell);
     priceCell.addEventListener('input', (e) => {
-        restrictToDecimal(e);
-        const v = safeParseFloat(priceCell.textContent);
-        inpPrice.value = v;
         calculateTotalService();
         calculateAmountDue();
     });
 
-    priceCell.addEventListener("focus", formatOnFocus)
-    priceCell.addEventListener("blur", formatOnBlur);
+    priceCell.addEventListener("focus", (e) => {
+        formatOnFocus(e);
+    })
+    priceCell.addEventListener("blur", (e) => {
+        formatOnBlur(e);
+    });
+
 
     rowsServices++;
     reindexServices();
     return true;
-}
-
-// Funciones Corregidas
-
-function formatOnFocus(event, isInput) {
-    const element = event.target;
-    let value;
-    if (isInput) {
-        value = element.value;
-        let cleanValue = value.replace('$', '').replace(/,/g, '');
-        element.value = cleanValue;
-    }
-    else {
-        value = element.innerText;
-        let cleanValue = value.replace('$', '').replace(/,/g, '');
-        element.textContent = cleanValue;
-    }
-}
-
-function formatOnBlur(event, isInput) {
-    const element = event.target;
-    let value
-    if (isInput) {
-        value = element.value;
-        let number = safeParseFloat(value);
-        // 2. Formatear el número como moneda
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-        });
-        // 3. Actualizar el contenido con el valor formateado
-        element.value = formatter.format(number);
-    } else {
-        value = element.textContent
-        let number = safeParseFloat(value);
-        // 2. Formatear el número como moneda
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-        });
-        // 3. Actualizar el contenido con el valor formateado
-        element.textContent = formatter.format(number);
-    }
 }
 
 function reindexServices() {
@@ -515,15 +476,17 @@ function appendSparePartToDOM(part) {
         calculateAmountDue();
         updateImportButtonPosition();
     });
-    priceCell.addEventListener("input", (e) => {
-        restrictToDecimal(e);
-        const v = safeParseFloat(priceCell.textContent);
-        inpUnit.value = v;
+    allowDecimal(priceCell)
+    priceCell.addEventListener("input", () => {
         calculateTotalSpareParts();
         calculateAmountDue();
     })
-    priceCell.addEventListener("focus", formatOnFocus);
-    priceCell.addEventListener("blur", formatOnBlur);
+    priceCell.addEventListener("focus", (e) => {
+        formatOnFocus(e)
+    });
+    priceCell.addEventListener("blur", (e) => {
+        formatOnBlur(e)
+    });
     emptyRow.appendChild(btn);
 
     rowsSpareParts++;
@@ -575,64 +538,6 @@ function calculateTotal() {
 }
 
 function calculateAllTotals() { calculateTotalService(); calculateTotalSpareParts(); calculateRepairCost(); calculateTotal(); }
-
-// ---------- Cursor / decimal preserve ----------
-function saveCursorPosition(element) {
-    const sel = window.getSelection();
-    if (sel.rangeCount === 0) return 0;
-    const range = sel.getRangeAt(0);
-    const pre = range.cloneRange();
-    pre.selectNodeContents(element);
-    pre.setEnd(range.endContainer, range.endOffset);
-    return pre.toString().length;
-}
-function restoreCursorPosition(element, caretPos) {
-    const range = document.createRange();
-    const sel = window.getSelection();
-    let found = false;
-    element.childNodes.forEach(node => {
-        if (found) return;
-        if (node.nodeType === 3) {
-            const ln = node.nodeValue.length;
-            if (caretPos <= ln) {
-                range.setStart(node, caretPos);
-                range.collapse(true);
-                sel.removeAllRanges();
-                sel.addRange(range);
-                found = true;
-            } else caretPos -= ln;
-        }
-    });
-    if (!found) {
-        range.selectNodeContents(element);
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    }
-}
-function restrictToDecimal(event) {
-    const el = event.target;
-    const originalCaret = saveCursorPosition(el);
-    let value = el.textContent;
-    let cleaned = value.replace(/[^0-9.]/g, '');
-    const prevLen = value.length;
-
-    const parts = cleaned.split('.');
-    let intPart = parts[0].replace(/^0+(?=\d)/, '') || '0';
-    let decPart = parts[1] || '';
-    cleaned = intPart + (parts.length > 1 ? '.' + decPart : '');
-
-    if (parts.length > 1 && decPart.length > 2) cleaned = intPart + '.' + decPart.substring(0, 2);
-
-    if (el.textContent !== cleaned) {
-        el.textContent = cleaned;
-        const newLen = cleaned.length;
-        const diff = prevLen - newLen;
-        let newCaret = Math.max(0, Math.min(originalCaret - diff, newLen));
-        setTimeout(() => restoreCursorPosition(el, newCaret), 0);
-    }
-}
-
 
 let calculateAmountDue = () => {
     const amountContainer = document.querySelector('.amounts');

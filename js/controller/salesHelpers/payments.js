@@ -15,7 +15,7 @@ export async function loadPayMethods() {
     }
 }
 
-export function managePaymentsAndCalculateDebt(savedState, createBtnUrl, calculateTotal) {
+export function managePaymentsAndCalculateDebt(savedState, createBtnUrl, calculateTotal, arrayDeleteIds) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -24,7 +24,11 @@ export function managePaymentsAndCalculateDebt(savedState, createBtnUrl, calcula
     allPayments.forEach((payment, idx) => {
         const input = payment.querySelector(".amountInput");
         const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (idx > 0 && value === 0) payment.remove();
+        if (idx > 0 && value === 0) {
+            const idPayment = payment.dataset.id; // <-- ID real de ese pago
+            if (idPayment && arrayDeleteIds) arrayDeleteIds.push(idPayment);
+            payment.remove();
+        }
     });
     // Refrescar nodos y renumerar
     allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
@@ -115,7 +119,7 @@ export let verifySelects = () => {
 };
 
 
-export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, idPayment = null, saveState, createBtnUrl, calculateTotal) {
+export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, idPayment = null, saveState, createBtnUrl, calculateTotal, arrayDeleteIds) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -138,12 +142,12 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     }
     saveState ? input.addEventListener("input", saveState) : null;
 
-    allowDecimal(input);
-
     // Select metodo pago
     const select = document.createElement("select");
     select.classList.add("txtInputs", "paymentTypeSelect");
     select.id = `paymentTypeSelect${index}`;
+
+    allowDecimal(input)
 
     // Llenar select con métodos de pago cargados
     div.append(input, select);
@@ -168,7 +172,7 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     })
 
     input.addEventListener("input", () => {
-        managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal);
+        managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal, arrayDeleteIds);
     }
     );
 
@@ -176,43 +180,56 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
 
 export function formatOnBlur(event, isInput) {
     const element = event.target;
-    let value
-    if (isInput) {
-        value = element.value;
-        let number = safeParseFloat(value);
-        // 2. Formatear el número como moneda
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-        });
-        // 3. Actualizar el contenido con el valor formateado
-        element.value = formatter.format(number);
-    } else {
-        value = element.textContent
-        let number = safeParseFloat(value);
-        // 2. Formatear el número como moneda
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-        });
-        // 3. Actualizar el contenido con el valor formateado
-        element.textContent = formatter.format(number);
+    let value = isInput ? element.value : element.textContent;
+
+    // Convertir a número
+    let number = safeParseFloat(value);
+
+    // Si resulta en NaN, lo dejamos vacío
+    if (isNaN(number)) {
+        if (isInput) element.value = "";
+        else element.textContent = "";
+        return;
     }
+
+    // Formateador USD
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+    });
+
+    // Aplicar formato
+    const formatted = formatter.format(number);
+
+    if (isInput) element.value = formatted;
+    else element.textContent = formatted;
 }
+
 
 export function formatOnFocus(event, isInput) {
     const element = event.target;
-    let value;
-    if (isInput) {
-        value = element.value;
-        let cleanValue = value.replace('$', '').replace(/,/g, '');
-        element.value = cleanValue;
+    let value = isInput ? element.value : element.innerText;
+
+    // Quitar símbolo de dólar y comas
+    let clean = value.replace('$', '').replace(/,/g, '');
+
+    // Si incluía decimales escritos por el usuario, mantenerlos
+    // Detecta si el valor original NO estaba formateado automáticamente.
+    const userTypedDecimals =
+        (value.includes('.') || value.includes(',')) &&
+        !value.includes('$') &&
+        !value.includes(',');
+
+    if (!userTypedDecimals) {
+        // Quitar decimales si no fueron escritos manualmente
+        clean = clean.split('.')[0];
+        clean = clean.split(',')[0];
     }
-    else {
-        value = element.innerText;
-        let cleanValue = value.replace('$', '').replace(/,/g, '');
-        element.textContent = cleanValue;
+
+    if (isInput) {
+        element.value = clean;
+    } else {
+        element.textContent = clean;
     }
 }

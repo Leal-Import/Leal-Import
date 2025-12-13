@@ -4,6 +4,7 @@
 
 .breadCrumbSection {
     margin-bottom: 2em;
+    display: inline-flex;
 }
 
 .leftColumn {
@@ -11,6 +12,21 @@
     display: flex;
     gap: 10px;
     flex-direction: column;
+}
+
+.bodyRightColumn{
+    border: var(--border);
+    gap: 0;
+    margin-top: 15px;
+}
+
+.bodyRightColumn .infoItem{
+    border-bottom: var(--border);
+    padding: 5px 10px;
+}
+
+.bodyRightColumn .infoItem:last-child{
+    border-bottom: none;
 }
 
 /* ----------------------------- */
@@ -173,4 +189,8 @@
 
 .footerRightColumn {
     flex: 1;
+}
+
+#thumbsWrapper .swiper-slide{
+    max-width: 100px;
 }

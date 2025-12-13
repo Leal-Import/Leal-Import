@@ -1,8 +1,10 @@
 import {
+    getSparePartById,
     getSpareParts,
     postSparePart
 } from '../service/serviceSparePartsSale.js'
 import { managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus, verifySelects } from '../controller/salesHelpers/payments.js'
+import { createRowTable } from '../controller/salesHelpers/loadRowTableSales.js'
 import {
     formatWithCommas,
     allowDecimal,
@@ -21,10 +23,9 @@ const newPartId = sanitizeParam(params.get('sparePartId'));
 const newPartName = sanitizeParam(params.get('sparePartName'));
 const suggestedPrice = sanitizeParam(params.get('suggestedPrice'));
 const frmSparePartSale = document.getElementById("frmSparePartSale");
+const idSale = sanitizeParam(params.get("idSale"));
 
-let currentId = null;
-
-const saleKey = `saleState_cliente_${customerId}`;
+const saleKey = `saleSpareState_customer_${customerId}`;
 
 const btnAddPart = document.getElementById("btnAddPart");
 
@@ -38,6 +39,58 @@ function sanitizeParam(param) {
     return param === null || param === "null" || param === "undefined" ? null : param;
 }
 
+let addEventsPrice = (price) => {
+    price.contentEditable = "plaintext-only";  // ← FIX DEL CURSOR
+    allowDecimal(price);
+
+    price.addEventListener("input", () => {
+        calculateTotal();
+        saveSaleState();
+    });
+
+    price.addEventListener("focus", (e) => {
+        formatOnFocus(e);
+    });
+
+    price.addEventListener("blur", (e) => {
+        formatOnBlur(e);
+    });
+}
+
+
+let createTrashOption = async (container, tr, id) => {
+    const btnTrash = document.createElement("button");
+    btnTrash.classList.add("btnTrash");
+    btnTrash.type = "button";
+    const iconImg = document.createElement("img");
+
+    iconImg.src = "../../media/appMedia/trashIcon.png";
+
+    btnTrash.appendChild(iconImg);
+
+    btnTrash.addEventListener("click", async () => {
+        const deleteId = selectedIds.findIndex(idS => String(idS) === String(id));
+        if (deleteId !== -1) selectedIds.splice(deleteId, 1);
+        tr.remove();
+        calculateTotal();
+        await loadSpareParts();
+        saveSaleState();
+
+        if (container.children.length === 0) {
+            const trNoData = document.createElement("tr");
+            trNoData.classList.add("rowNoData");
+            const tdNoData = document.createElement("td");
+            tdNoData.classList.add("noDataMessage");
+            tdNoData.colSpan = 3;
+            tdNoData.textContent = "No hay repuestos seleccionados";
+            trNoData.appendChild(tdNoData);
+            container.appendChild(trNoData);
+        }
+    });
+    await loadSpareParts();
+    return btnTrash;
+}
+
 /* ---------------------------
 DOMContentLoaded
 --------------------------- */
@@ -46,8 +99,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Cargar estado guardado (si existe)
     const saved = loadSaleState();
-    if (saved && saved.selectedParts && saved.payments && saved.notes !== undefined) {
+    if (saved && saved.selectedParts && saved.payments && saved.notes !== undefined && !idSale) {
         loadSavedData(saved.selectedParts, saved.payments, saved.notes);
+    } else if (idSale) {
+        await loadSale()
+        createInitialPaymentField(0, null, null, null, null, null, calculateTotal);
     } else {
         // si no hay saved, crear primer campo de abono vacío
         ensureInitialPaymentField();
@@ -69,10 +125,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
     }
+
     verifySelects();
     // input notas guarda estado
     document.getElementById("txtNotes")?.addEventListener("input", saveSaleState);
 });
+
+let loadSale = async () => {
+    const sale = await getSparePartById(idSale);
+    document.getElementById("txtNotes").value = sale.notes;
+    document.querySelector(".btnSubmitData").value = "Actualizar"
+    sale.payments.forEach(payment => {
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, null, payment.idPayment, null, null, calculateTotal);
+    });
+    sale.sparePartItems.forEach(async item => {
+        await createRowTable("tBodySelected", item.idSaleItem, item.sparePartName, item.priceApplied, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal)
+    })
+}
 
 /* ---------------------------
 Cargar repuestos e insertarlos
@@ -137,9 +206,9 @@ function insertSpareParts(spareParts) {
             tr.append(tdImage, name, cost, suggestedPriceTd, btnAddSparePart);
             fragment.appendChild(tr);
 
-            btnAddSparePart.addEventListener("click", () => {
+            btnAddSparePart.addEventListener("click", async () => {
                 selectedIds.push(sparePart.idSpareParts);
-                createRowSparePart(sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice);
+                await createRowTable("tBodySelected", sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal);
                 tr.remove();
                 saveSaleState();
             });
@@ -204,6 +273,11 @@ frmSparePartSale.addEventListener("submit", async (e) => {
         return;
     }
 
+    if (amountData.length == 0) {
+        showMessage(`Por favor, ingrese al menos un abono`, 'Sin abonos', 'warning');
+        return;
+    }
+
     const saleData = {
         idCustomer: customerId,
         notes: txtNotes || "",
@@ -213,7 +287,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
     }
 
     try {
-        if (currentId != null) {
+        if (idSale != null) {
 
         } else {
             let response = await postSparePart(saleData);
@@ -230,125 +304,6 @@ frmSparePartSale.addEventListener("submit", async (e) => {
 
 })
 
-/* ---------------------------
-Crear fila de repuesto seleccionado
---------------------------- */
-function createRowSparePart(id, name, suggestedPrice) {
-    const container = document.getElementById("tBodySelected");
-    if (!container) return;
-
-    // Remover row 'no data' si existe
-    const rowNoData = container.querySelector(".rowNoData");
-    if (rowNoData) rowNoData.remove();
-
-    const tr = document.createElement("tr");
-    const partName = document.createElement("td");
-    const price = document.createElement("td");
-    const btnTrash = document.createElement("button");
-    const iconImg = document.createElement("img");
-
-    iconImg.src = "../../media/appMedia/trashIcon.png";
-
-    partName.textContent = name;
-    price.textContent = "$" + formatWithCommas(suggestedPrice);
-    price.setAttribute("contenteditable", true);
-
-    tr.setAttribute("data-id", id);
-    partName.classList.add("sparePartName");
-    price.classList.add("finalPrice");
-    btnTrash.classList.add("btnTrash");
-    tr.classList.add("tableRow");
-
-    price.addEventListener("input", (e) => {
-        restrictToDecimal(e);
-        calculateTotal();
-        saveSaleState();
-    });
-    price.addEventListener("focus", formatOnFocus);
-    price.addEventListener("blur", formatOnBlur);
-    btnTrash.appendChild(iconImg);
-    tr.append(partName, price, btnTrash);
-    container.appendChild(tr);
-
-    btnTrash.addEventListener("click", async () => {
-        const deleteId = selectedIds.findIndex(idS => String(idS) === String(id));
-        if (deleteId !== -1) selectedIds.splice(deleteId, 1);
-        tr.remove();
-        calculateTotal();
-        await loadSpareParts();
-        saveSaleState();
-
-        if (container.children.length === 0) {
-            const trNoData = document.createElement("tr");
-            trNoData.classList.add("rowNoData");
-            const tdNoData = document.createElement("td");
-            tdNoData.classList.add("noDataMessage");
-            tdNoData.colSpan = 3;
-            tdNoData.textContent = "No hay repuestos seleccionados";
-            trNoData.appendChild(tdNoData);
-            container.appendChild(trNoData);
-        }
-    });
-
-    calculateTotal();
-}
-
-function restrictToDecimal(event) {
-    const el = event.target;
-    const originalCaret = saveCursorPosition(el);
-    let value = el.textContent;
-    let cleaned = value.replace(/[^0-9.]/g, '');
-    const prevLen = value.length;
-
-    const parts = cleaned.split('.');
-    let intPart = parts[0].replace(/^0+(?=\d)/, '') || '0';
-    let decPart = parts[1] || '';
-    cleaned = intPart + (parts.length > 1 ? '.' + decPart : '');
-
-    if (parts.length > 1 && decPart.length > 2) cleaned = intPart + '.' + decPart.substring(0, 2);
-
-    if (el.textContent !== cleaned) {
-        el.textContent = cleaned;
-        const newLen = cleaned.length;
-        const diff = prevLen - newLen;
-        let newCaret = Math.max(0, Math.min(originalCaret - diff, newLen));
-        setTimeout(() => restoreCursorPosition(el, newCaret), 0);
-    }
-}
-
-function saveCursorPosition(element) {
-    const sel = window.getSelection();
-    if (sel.rangeCount === 0) return 0;
-    const range = sel.getRangeAt(0);
-    const pre = range.cloneRange();
-    pre.selectNodeContents(element);
-    pre.setEnd(range.endContainer, range.endOffset);
-    return pre.toString().length;
-}
-function restoreCursorPosition(element, caretPos) {
-    const range = document.createRange();
-    const sel = window.getSelection();
-    let found = false;
-    element.childNodes.forEach(node => {
-        if (found) return;
-        if (node.nodeType === 3) {
-            const ln = node.nodeValue.length;
-            if (caretPos <= ln) {
-                range.setStart(node, caretPos);
-                range.collapse(true);
-                sel.removeAllRanges();
-                sel.addRange(range);
-                found = true;
-            } else caretPos -= ln;
-        }
-    });
-    if (!found) {
-        range.selectNodeContents(element);
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    }
-}
 
 /* ---------------------------
 Cálculos: total, pagado, deuda
@@ -421,20 +376,20 @@ function loadSaleState() {
     }
 }
 
-function loadSavedData(parts, payments, notes) {
+async function loadSavedData(parts, payments, notes) {
     // parts: [{id,name,price}], payments: [{amount, paymentMethodId, receiptUrl}], notes: string
     selectedIds = parts.map(p => p.id);
     // Restaurar repuestos seleccionados
-    parts.forEach(part => {
-        createRowSparePart(part.id, part.name, part.price);
+    parts.forEach(async sparePart => {
+        await createRowTable("tBodySelected", sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal);
     });
-    
+
     // Si hay nuevo repuesto por param
     if (newPartId && !selectedIds.includes(newPartId)) {
         selectedIds.push(newPartId);
-        createRowSparePart(newPartId, newPartName, suggestedPrice || 0);
+        await createRowTable("tBodySelected", newPartId, newPartName, suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal);
     }
-    
+
     // Restaurar abonos
     const amountContainer = document.querySelector(".amounts");
     amountContainer.innerHTML = "";
@@ -452,7 +407,6 @@ function loadSavedData(parts, payments, notes) {
     } else {
         let lastValueWasZero = false;
         paymentsNormalized.forEach((payment, index) => {
-            console.log(payment.receiptUrl)
             createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, null, saveSaleState, null, calculateTotal);
             lastValueWasZero = (payment.amount === 0);
         });

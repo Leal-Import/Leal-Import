@@ -1,5 +1,5 @@
 import { loadVehicle } from '../controller/salesHelpers/loadInfoVehicle.js'
-import { verifySelects, managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField } from '../controller/salesHelpers/payments.js'
+import { verifySelects, managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnFocus, formatOnBlur } from '../controller/salesHelpers/payments.js'
 import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
 import {
     postVehicle,
@@ -19,7 +19,7 @@ import {
 const params = new URLSearchParams(window.location.search);
 const customerName = params.get('customerName') || "Nombre del cliente";
 const customerId = params.get('idCustomer') || null;
-const saleKey = `saleState_cliente_${customerId}`;
+const saleKey = `saleVehicleState_customer_${customerId}`;
 
 const txtTotal = document.getElementById("txtTotal");
 const txtCommission = document.getElementById("txtCommission");
@@ -31,9 +31,6 @@ let idSale = params.get('idSale') || null;
 function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
 const paymentsToDelete = [];
-
-allowDecimal(txtTotal);
-allowDecimal(txtCommission);
 
 document.addEventListener("click", (e) => {
     if (e.target && e.target.classList.contains("containerModal")) {
@@ -136,8 +133,8 @@ let createNewSale = async (isWO) => {
     const fd = new FormData();
 
     const saleData = {
-        salePrice: txtTotal.replace(/[$,]/g, ""),
-        idCustomer: customerId,
+        salePrice: cleanNumber(txtTotal),
+        idCustomer: customerId || "ccc7e10e-d512-11f0-b459-94bb4356b639",
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
         idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
@@ -211,13 +208,32 @@ let getTotal = () => {
     return total;
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadPayMethods();
+let loadEventsInps = () => {
     txtTotal.addEventListener("input", () => {
         managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal)
     });
     txtCommission.addEventListener("input", saveSaleState);
     document.getElementById("txtNotes").addEventListener("input", saveSaleState);
+    txtTotal.addEventListener("focus", (e) => {
+        formatOnFocus(e, true);
+    });
+    txtTotal.addEventListener("blur", (e) => {
+        formatOnBlur(e, true);
+    });
+    txtCommission.addEventListener("focus", (e) => {
+        formatOnFocus(e, true);
+    });
+    txtCommission.addEventListener("blur", (e) => {
+        formatOnBlur(e, true);
+    });
+
+    allowDecimal(txtCommission);
+    allowDecimal(txtTotal);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadPayMethods();
+    loadEventsInps();
 
     if (idSale) {
         await loadSale();
@@ -258,7 +274,7 @@ let insertSale = (sale) => {
     document.getElementById("txtCommission").value = sale.commission;
     document.querySelector(".amounts").innerHTML = '';
     sale.payments.forEach(payment => {
-        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, saveSaleState, createBtnUrl, getTotal);
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, saveSaleState, createBtnUrl, getTotal, paymentsToDelete);
     })
     managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal);
     document.getElementById("due").textContent = `$${formatWithCommas(sale.amountDue)}`;
