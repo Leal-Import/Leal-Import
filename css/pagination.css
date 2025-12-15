@@ -1,0 +1,70 @@
+.paginationContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 15px 10px;
+    border-top: var(--border);
+    font-size: var(--font-size-sm);
+}
+
+/* Lado izquierdo */
+.paginationLeft {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.paginationInfo {
+    color: var(--text-color-secondary);
+}
+
+.pageSize {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pageSize select {
+    padding: 4px 6px;
+    border-radius: var(--border-radius-input);
+    border: var(--border);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+}
+
+/* Lado derecho */
+.paginationRight {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pageBtn {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: var(--border);
+    background-color: var(--bg-color-white);
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+    transition: all .2s ease;
+}
+
+.pageBtn:hover {
+    background-color: var(--danger-color);
+    color: var(--bg-color-white);
+    border-color: var(--danger-color);
+}
+
+.pageBtn.active {
+    background-color: var(--danger-color);
+    color: var(--bg-color-white);
+    border-color: var(--danger-color);
+    cursor: default;
+}
+
+.pageDots {
+    padding: 0 5px;
+    color: var(--text-color-secondary);
+}

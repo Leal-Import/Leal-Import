@@ -21,6 +21,8 @@ import {
     putEmployee
 } from '../service/serviceEmployees.js';
 
+import { createPagination } from '../pagination.js'
+
 const modalEmployees = document.getElementById("modalEmployees");
 const frmEmployees = document.getElementById("frmEmployees");
 const txtPhone = document.getElementById("txtEmployeePhone");
@@ -32,38 +34,62 @@ const selectSearchRoles = document.getElementById("cmbSearchByRole");
 // Configurar el modal para agregar empleados
 setupModal("#OpenModalEmployees", "#modalEmployees", "#closeAddEmployee", "#frmEmployees", "Agregar empleado");
 
-let currentId = null;
-let searchTimeout = null;
-
-document.addEventListener("DOMContentLoaded", async () => {
-    /* Eventos al cargar la pagina */
-    await loadEmployees();
-    await loadRolesSelect();
-})
-
-txtSearchData.addEventListener('input', () => {
-    clearTimeout(searchTimeout)
-    searchTimeout = setTimeout(async () => {
-        const searchQuery = txtSearchData.value.trim();
-        const rolesQuery = selectSearchRoles.value;
-        await loadEmployees(searchQuery, rolesQuery);
-    }, 1500);
-})
-
-selectSearchRoles.addEventListener('change', async () => {
-    const searchQuery = txtSearchData.value.trim();
-    const rolesQuery = selectSearchRoles.value;
-    await loadEmployees(searchQuery, rolesQuery);
-})
-
-let loadEmployees = async (search, idRole) => {
+let loadEmployees = async ({ page, size, filters }) => {
     try {
-        const data = await getActiveEmployees(0, 15, search, idRole);
+        const data = await getActiveEmployees(
+            page - 1,           // backend normalmente es 0-based
+            size,
+            filters.search || '',
+            filters.role || ''
+        );
+        console.log(data)
         insertEmployees(data.content);
+        pagination.setTotal({
+            totalElements: data.totalElements,
+            totalPages: data.totalPages,
+            page: data.number + 1, // volvemos a 1-based
+            size: data.size
+        });
     } catch (error) {
         showMessage("Error critico", error, "error")
     }
 }
+
+const pagination = createPagination({
+    initialSize: 15,
+    onChange: loadEmployees
+});
+
+
+let currentId = null;
+let searchTimeout = null;
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadRolesSelect();
+    pagination.update({});
+});
+
+
+let filterData = () => {
+    clearTimeout(searchTimeout)
+    searchTimeout = setTimeout(() => {
+        pagination.update({
+            page: 1,
+            filters: {
+                search: txtSearchData.value.trim(),
+                role: selectSearchRoles.value
+            }
+        });
+    }, 1500);
+}
+
+txtSearchData.addEventListener('input', () => {
+    filterData();
+})
+
+selectSearchRoles.addEventListener('change', async () => {
+    filterData();
+})
 
 let insertEmployees = (employees) => {
     const fragment = document.createDocumentFragment();
@@ -199,7 +225,7 @@ frmEmployees.addEventListener("submit", async (e) => {
             await postEmployee(employeeData);
             showMessage('¡Empleado agregado con éxito!', 'Exito', 'success');
         }
-        loadEmployees();
+        pagination.update({});
     } catch (error) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar el empleado.';

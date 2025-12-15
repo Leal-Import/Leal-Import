@@ -146,30 +146,3 @@
     border-radius: var(--border-radius-input);
 }
 
-/* Modal */
-
-.modalAdd{
-    max-width: 600px;
-    width: 90%;
-}
-
-#btnSelectFile{
-    border-radius: var(--border-radius-input);
-}
-
-#modalPreviewArea {
-    min-height: 150px;
-    border: 3px dashed #888;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.containerModal h2{
-    text-align: center;
-    font-weight: var(--font-weight-medium);
-}
-

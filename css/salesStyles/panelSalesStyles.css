@@ -48,6 +48,8 @@
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     border: var(--border);
+    max-height: 30dvh;
+    overflow-y: auto;
 }
 
 .rightColumn .table th,

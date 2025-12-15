@@ -1,0 +1,65 @@
+.containerTotal {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-base);
+    border-bottom: var(--border);
+}
+
+.containerTotal .lbl {
+    font-size: var(--font-size-lg);
+}
+
+.containerTotal .infoValue {
+    font-size: var(--font-size-title);
+}
+
+.containerDataAmount {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: var(--border);
+}
+
+.containerDataAmount .infoItem {
+    font-size: var(--font-size-lg) !important;
+    padding: 2px;
+}
+
+.rightColumn .infoItem .lbl {
+    font-weight: var(--font-weight-medium);
+}
+
+.rightColumn .infoValue {
+    font-weight: var(--font-weight-medium);
+}
+
+.percentageBar {
+    height: 20px;
+    width: 100%;
+    border: var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.percentageInfo {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-lg);
+}
+
+.percentage {
+    background-color: var(--success-color);
+    height: 100%;
+}
+
+.danger{
+    color: var(--danger-color);
+}
+
+.bodyRightColumn {
+    gap: 0;
+    margin-top: 15px;
+}   
+
+textarea{
+    color: #000 !important;
+}

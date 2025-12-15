@@ -1,9 +1,8 @@
 import { formatWithCommas } from "../../utils.js";
 
-export async function createRowTable(tBody, id, name, price, createTrashOption, addEventsPrice, className, classPrice, calculateTotal, isView) {
+export async function createRowTable(tBody, id, name, price, createTrashOption, addEventsPrice, className, classPrice, calculateTotal, idSaleItem, isView) {
     const container = document.getElementById(tBody);
     if (!container) return;
-    console.log(id, name, price)
 
     // Remover row 'no data' si existe
     const rowNoData = container.querySelector(".rowNoData");
@@ -13,6 +12,7 @@ export async function createRowTable(tBody, id, name, price, createTrashOption, 
     const partName = document.createElement("td");
     const tdPrice = document.createElement("td");
     if (id) tr.setAttribute("data-id", id);
+    if (idSaleItem) tr.setAttribute("data-idSaleItem", idSaleItem);
 
     partName.textContent = name;
     tdPrice.textContent = "$" + formatWithCommas(price);
@@ -22,7 +22,7 @@ export async function createRowTable(tBody, id, name, price, createTrashOption, 
     tr.classList.add("tableRow");
 
     let btnTrash;
-    if (createTrashOption) btnTrash = await createTrashOption(container, tr, id);
+    if (createTrashOption) btnTrash = await createTrashOption(container, tr, id, idSaleItem);
     if (addEventsPrice) addEventsPrice(tdPrice);
     tr.append(partName, tdPrice);
     if(btnTrash) tr.appendChild(btnTrash);

@@ -7,28 +7,31 @@
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/addWorkOrder.css">
     <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
+    <link rel="stylesheet" href="../css/salesStyles/modalVoucher.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <title>Crear orden</title>
 </head>
 
 <body>
-    <div class="containerModal hide" id="modalVoucher">
+    <div class="containerModal hide">
         <div class="modalVoucher modalAdd">
             <button id="closeVoucherModal" class="btnClose" type="button">
                 <img src="../media/appMedia/closeIcon.svg" alt="Cerrar">
             </button>
             <h2>
                 Comprobante de abono
-                <span id="modalAbonoTitle" style="font-weight: 400; font-size: 0.9em; color: #777;"></span>
+                <span id="modalAbonoTitle" style="font-weight: 400; font-size: 0.9em; color: #777;">(Abono 1)</span>
             </h2>
-            <div id="modalPreviewArea" class="preview-area"></div>
+            <div id="modalPreviewArea" class="preview-area">
+                <p id="previewPlaceholder">No hay comprobante cargado.</p>
+            </div>
             <div class="modal-actions" style="display: flex; gap: 10px; justify-content: center;">
                 <button id="btnSelectFile" class="btnPrimary" type="button">Seleccionar comprobante</button>
                 <button id="btnClearFile" class="btnSecondary hide" type="button">
                     Eliminar Comprobante
                 </button>
             </div>
-            <input type="hidden" id="currentReceiptInputId">
+            <input type="hidden" id="currentReceiptInputId" value="receiptInput1">
         </div>
     </div>
     <div class="bodyContent">

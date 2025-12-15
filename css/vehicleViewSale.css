@@ -7,18 +7,6 @@
     display: inline-flex;
 }
 
-#saleStatus{
-    padding: 7px 15px;
-    margin-left: 20px;
-    border: var(--border);
-    border-radius: var(--border-radius-input);
-    font-weight: var(--font-weight-semibold);
-}
-
-.pendingStatus{
-    background-color: var(--danger-color);
-    color: var(--bg-color);
-}
 
 .leftColumn {
     height: fit-content;
@@ -28,58 +16,6 @@
     flex-direction: column;
 }
 
-.bodyRightColumn{
-    gap: 0;
-    margin-top: 15px;
-}
-
-.containerTotal{
-    flex-direction: column;
-    font-size: var(--font-size-base);
-    border-bottom: var(--border);
-}
-
-.containerTotal .lbl{
-    font-size: var(--font-size-lg);
-}
-
-.containerTotal .infoValue{
-    font-size: var(--font-size-title);
-}
-
-.danger{
-    color: var(--danger-color);
-}
-
-.containerDataAmount{
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    border-bottom: var(--border);
-}
-
-.containerDataAmount .infoItem{
-    font-size: var(--font-size-lg) !important;
-    padding: 2px;
-}
-
-.percentageBar{
-    height: 20px;
-    width: 100%;
-    border: var(--border);
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.percentage{
-    background-color: var(--success-color);
-    height: 100%;
-}
-
-.percentageInfo{
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-lg);
-}
 
 .commissionContainer{
     margin-top: 10px;
@@ -90,36 +26,10 @@
 /*   COSTOS / INFORMACIÓN GENERAL
 /* ================================ */
 
-.saleGenInfoSec {
-    display: flex;
-    background-color: #f9f9f9;
-    border: var(--border);
-    padding: 15px;
-    border-radius: 10px;
-}
-
-.saleGenInfoSec .infoItem {
-    padding: 10px;
-    flex: 2
-}
-
-.infoRow {
-    display: flex;
-}
-
-.itemLarge {
-    flex: 4 !important;
-    border-right: var(--border);
-}
-
 .footerRightColumn {
     flex: 1;
 }
 
 textarea:focus-visible{
     outline: none;
-}
-
-textarea{
-    color: #000 !important;
 }

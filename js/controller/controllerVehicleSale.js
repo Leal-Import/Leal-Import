@@ -50,6 +50,7 @@ btnCreateOrder.addEventListener("click", async (e) => {
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
     let success = await createNewSale();
+    return
     if (success) {
         window.location.href = "sales.html";
     }
@@ -98,6 +99,7 @@ let createNewSale = async (isWO) => {
         const paymentTypeSelect = amounts[i].querySelector('.paymentTypeSelect');
         const receiptInput = amounts[i].querySelector('.receiptInput');
         const amountValue = parseFloat(amountInput.value.replace(/[$,]/g, ""));
+        const idAmount = amounts[i].dataset.id || null;
 
         if (isNaN(amountValue) || amountValue <= 0) {
             highlightAndFocus(amountInput);
@@ -112,9 +114,9 @@ let createNewSale = async (isWO) => {
         let obj = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "810b89d1-2ff4-47e2-9e5b-8404ac05c899" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         }
-        if (amounts[i].dataset.id && idSale) obj.idPayment = amounts[i].dataset.id;
+        if (idAmount) obj.idPayment = idAmount;
         amountData.push(obj);
         if (!idSale) {
             if (receiptInput.files.length == 0) {
@@ -125,11 +127,13 @@ let createNewSale = async (isWO) => {
         }
         let imgs = {
             file: receiptInput.files[0],
-            isOld: amounts[i].dataset.id ? true : false
+            isOld: amounts[i].dataset.id ? true : false,
         }
+        if(idAmount) imgs.idPayment = idAmount;
+        console.log(amounts[i])
         imagesAmounts.push(imgs);
     }
-
+    console.log(imagesAmounts);
     const fd = new FormData();
 
     const saleData = {
@@ -137,7 +141,7 @@ let createNewSale = async (isWO) => {
         idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "810b89d1-2ff4-47e2-9e5b-8404ac05c899", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
     }
     const amountOld = [];
     const amountNew = [];
@@ -161,7 +165,8 @@ let createNewSale = async (isWO) => {
         if (idSale) {
             if (objFile.isOld) {
                 if (objFile.file == undefined) return;
-                fd.append("updateImages", objFile.file);
+                const mapKey = `updateImages[${objFile.idPayment}]`;
+                fd.append(mapKey, objFile.file);
             } else {
                 fd.append("newPaymentImages", objFile.file);
             }

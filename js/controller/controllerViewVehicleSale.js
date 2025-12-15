@@ -24,6 +24,7 @@ let loadDataSales = async () => {
 let insertSaleData = (sale) => {
     const percentage = Math.round(((sale.fullTotalCost - sale.amountDue) / sale.fullTotalCost) * 100) + "%";
     const status = sale.nameStateSale;
+    console.log(sale)
 
     $("employeeName").textContent = sale.employeeFullName;
     $("customerName").textContent = sale.customerFullName;
@@ -40,6 +41,6 @@ let insertSaleData = (sale) => {
     $("percentage").style.width = percentage;
     $("percentageInfo").textContent = `${percentage} Pagado`;
     sale.payments.forEach(payment => {
-        createRowTable("tBodyAmount", payment.idPayment, "Ejemplo", payment.amount, null, null, "tdAmount", "tdTypeAmount", null, true)
+        createRowTable("tBodyAmount", payment.idPayment, payment.paymentMethod, payment.amount, null, null, "tdAmount", "tdTypeAmount", null, true);
     });
 }

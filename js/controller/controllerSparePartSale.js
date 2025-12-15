@@ -1,8 +1,10 @@
 import {
     getSparePartById,
     getSpareParts,
-    postSparePart
+    postSparePart,
+    putSparePart
 } from '../service/serviceSparePartsSale.js'
+import { insertSpareParts } from '../controller/salesHelpers/loadTableSpareParts.js'
 import { managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus, verifySelects } from '../controller/salesHelpers/payments.js'
 import { createRowTable } from '../controller/salesHelpers/loadRowTableSales.js'
 import {
@@ -31,6 +33,8 @@ const btnAddPart = document.getElementById("btnAddPart");
 
 /* Estado local */
 let selectedIds = [];
+const itemsToDelete = [];
+const paymentsToDelete = [];
 
 /* ---------------------------
 Helpers
@@ -57,8 +61,13 @@ let addEventsPrice = (price) => {
     });
 }
 
+let verifyIds = (idSparePart) => {
+    return selectedIds.includes(idSparePart);
+}
 
-let createTrashOption = async (container, tr, id) => {
+
+
+let createTrashOption = async (container, tr, id, idSaleItem) => {
     const btnTrash = document.createElement("button");
     btnTrash.classList.add("btnTrash");
     btnTrash.type = "button";
@@ -69,12 +78,12 @@ let createTrashOption = async (container, tr, id) => {
     btnTrash.appendChild(iconImg);
 
     btnTrash.addEventListener("click", async () => {
-        console.log(selectedIds);
         const deleteId = selectedIds.findIndex(idS => String(idS) === String(id));
         if (deleteId !== -1) selectedIds.splice(deleteId, 1);
         tr.remove();
         calculateTotal();
         saveSaleState();
+        if (idSaleItem) itemsToDelete.push(idSaleItem);
         if (container.children.length === 0) {
             const trNoData = document.createElement("tr");
             trNoData.classList.add("rowNoData");
@@ -89,6 +98,19 @@ let createTrashOption = async (container, tr, id) => {
     });
     await loadSpareParts();
     return btnTrash;
+}
+
+let createBtnAdd = async (sparePart, tr) => {
+    const btnAddSparePart = document.createElement("button");
+    btnAddSparePart.classList.add("btnPrimary", "btnAddPart");
+    btnAddSparePart.textContent = "+";
+    btnAddSparePart.addEventListener("click", async () => {
+        selectedIds.push(sparePart.idSpareParts);
+        await createRowTable("tBodySelected", sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal);
+        tr.remove();
+        saveSaleState();
+    });
+    return btnAddSparePart;
 }
 
 /* ---------------------------
@@ -108,7 +130,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         // si no hay saved, crear primer campo de abono vacío
         ensureInitialPaymentField();
     }
-    console.log(selectedIds)
     // Cargar inventario de repuestos
     await loadSpareParts();
 
@@ -136,10 +157,10 @@ let loadSale = async () => {
     document.getElementById("txtNotes").value = sale.notes;
     document.querySelector(".btnSubmitData").value = "Actualizar"
     sale.payments.forEach(payment => {
-        createInitialPaymentField(payment.amount, payment.idPaymentMethod, null, payment.idPayment, null, null, calculateTotal);
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, null, payment.idPayment, null, null, calculateTotal, paymentsToDelete);
     });
     sale.sparePartItems.forEach(async item => {
-        await createRowTable("tBodySelected", item.idSaleItem, item.sparePartName, item.priceApplied, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal)
+        await createRowTable("tBodySelected", item.idSparePart, item.sparePartName, item.priceApplied, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal, item.idSaleItem)
     })
 }
 
@@ -150,72 +171,11 @@ async function loadSpareParts() {
     try {
         const spareParts = await getSpareParts();
         const list = Array.isArray(spareParts) ? spareParts : (spareParts?.content || []);
-        insertSpareParts(list);
+        insertSpareParts(list, "tBodyInventory", createBtnAdd, verifyIds);
     } catch (err) {
         console.error('Error cargando repuestos:', err);
-        insertSpareParts([]);
+        insertSpareParts([], "tBodyInventory", createBtnAdd, verifyIds);
     }
-}
-
-function insertSpareParts(spareParts) {
-    const container = document.getElementById("tBodyInventory");
-    if (!container) return;
-    container.innerHTML = "";
-    const fragment = document.createDocumentFragment();
-
-    if (!spareParts || spareParts.length === 0) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 5;
-        td.textContent = "No hay datos disponibles";
-        td.classList.add("no-data-message");
-        td.style.textAlign = "center";
-        td.style.padding = "15px";
-        td.style.color = "#777";
-        tr.appendChild(td);
-        fragment.appendChild(tr);
-        const tableEl = document.querySelector(".table");
-        if (tableEl) tableEl.style.height = "100%";
-    } else {
-        spareParts.forEach(sparePart => {
-            let idSelected;
-            selectedIds.forEach(id => {
-                if (id == sparePart.idSpareParts) idSelected = true;
-            });
-            if (idSelected) return;
-
-            const tr = document.createElement("tr");
-            const tdImage = document.createElement("td");
-            const image = document.createElement("img");
-            const name = document.createElement("td");
-            const cost = document.createElement("td");
-            const suggestedPriceTd = document.createElement("td");
-            const btnAddSparePart = document.createElement("button");
-
-            image.src = sparePart.photoUrl || "";
-            name.textContent = sparePart.nameSpareParts || "Sin nombre";
-            cost.textContent = `$${formatWithCommas(sparePart.total || 0)}`;
-            suggestedPriceTd.textContent = `$${formatWithCommas(sparePart.suggestedPrice || 0)}`;
-
-            tr.classList.add("tableRow");
-            btnAddSparePart.classList.add("btnPrimary", "btnAddPart");
-            image.classList.add("imgSparePart");
-            btnAddSparePart.textContent = "+";
-
-            tdImage.appendChild(image);
-            tr.append(tdImage, name, cost, suggestedPriceTd, btnAddSparePart);
-            fragment.appendChild(tr);
-
-            btnAddSparePart.addEventListener("click", async () => {
-                selectedIds.push(sparePart.idSpareParts);
-                await createRowTable("tBodySelected", sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal);
-                tr.remove();
-                saveSaleState();
-            });
-        });
-    }
-
-    container.appendChild(fragment);
 }
 
 frmSparePartSale.addEventListener("submit", async (e) => {
@@ -234,6 +194,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
         const amountInput = amounts[i].querySelector('.amountInput');
         const paymentTypeSelect = amounts[i].querySelector('.paymentTypeSelect');
         const amountValue = parseFloat(amountInput.value.replace(/[$,]/g, ""));
+        const id = amounts[i].dataset.id;
 
         if (isNaN(amountValue) || amountValue <= 0) {
             highlightAndFocus(amountInput);
@@ -245,11 +206,13 @@ frmSparePartSale.addEventListener("submit", async (e) => {
             showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
             return;
         }
-        amountData.push({
+        const objA = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "810b89d1-2ff4-47e2-9e5b-8404ac05c899" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
-        });
+            idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        }
+        if (id) objA.idPayment = id;
+        amountData.push(objA);
     }
 
     const sparePartItems = [];
@@ -258,15 +221,19 @@ frmSparePartSale.addEventListener("submit", async (e) => {
         const id = spareParts[i].dataset.id;
         const price = spareParts[i].querySelector(".finalPrice");
         const amountValue = parseFloat(price.textContent.replace(/[$,]/g, ""));
+        const idSaleItem = spareParts[i].dataset.idsaleitem;
 
         if (isNaN(amountValue) || amountValue <= 0) {
             showMessage(`Por favor, ingrese un total válido para el repuesto ${i + 1}.`, 'total inválido', 'warning');
             return;
         }
-        sparePartItems.push({
+
+        const objI = {
             idSparePart: id,
             priceApplied: amountValue
-        })
+        }
+        if (idSaleItem) objI.idSaleItem = idSaleItem;
+        sparePartItems.push(objI)
     }
     if (sparePartItems.length == 0) {
         showMessage(`Sin repuestos seleccionados`, 'Por favor, seleccione al menos un repuesto', 'warning');
@@ -281,20 +248,32 @@ frmSparePartSale.addEventListener("submit", async (e) => {
     const saleData = {
         idCustomer: customerId,
         notes: txtNotes || "",
-        idEmployee: "810b89d1-2ff4-47e2-9e5b-8404ac05c899", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData,
         sparePartItems
     }
 
-    try {
-        if (idSale != null) {
+    if (idSale) {
+        saleData.itemsToDelete = itemsToDelete;
+        saleData.paymentsToDelete = paymentsToDelete;
+        saleData.saveOrUpdateItems = saleData.sparePartItems;
+        delete saleData.sparePartItems;
+        saleData.saveOrUpdatePayments = saleData.payments;
+        delete saleData.payments;
+    }
 
+    try {
+        let response;
+        if (idSale != null) {
+            response = await putSparePart(saleData, idSale);
+            await showMessage('Venta actualizada con exito,', 'Éxito', 'success');
+            cleanWindow();
         } else {
-            let response = await postSparePart(saleData);
+            response = await postSparePart(saleData);
             await showMessage('Venta registrada con éxito.', 'Éxito', 'success');
             cleanWindow();
         }
-        window.location.href = "sales.html";
+        if (response) window.location.href = "sales.html";
     } catch (error) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar la venta.';
@@ -450,7 +429,6 @@ async function loadSavedData(parts, payments, notes) {
     managePaymentsAndCalculateDebt(saveSaleState, null, calculateTotal);
 
     // 7. El console.log ahora reflejará el estado final y completo de selectedIds
-    console.log(selectedIds);
 }
 
 let cleanWindow = () => {
