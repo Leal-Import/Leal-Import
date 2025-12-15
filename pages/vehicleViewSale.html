@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/vehicleViewSale.css">
+    <link rel="stylesheet" href="../css/salesStyles/vehicleView.css">
     <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
     <title>Ver venta</title>
 </head>
@@ -20,27 +21,16 @@
                     <div class="breadCrumbSection">
                         <a href="sales.html" class="breadcrumb">Ventas ></a>
                         <a class="breadcrumb" id="customerName"></a>
+                        <span class="infoValue" id="saleStatus"></span>
                     </div>
                     <div class="saleGenInfoSec">
-                        <div class="infoRow">
-                            <div class="infoItem itemLarge">
-                                <span class="lbl">Vendedor:</span>
-                                <span class="infoValue" id="employeeName"></span>
-                            </div>
-                            <div class="infoItem">
-                                <span class="lbl">Fecha:</span>
-                                <span class="infoValue" id="dateSale"></span>
-                            </div>
+                        <div class="infoItem itemLarge">
+                            <span class="lbl">Vendedor:</span>
+                            <span class="infoValue" id="employeeName"></span>
                         </div>
-                        <div class="infoRow">
-                            <div class="infoItem itemLarge">
-                                <span class="lbl">Cliente:</span>
-                                <span class="infoValue" id="customerNameLbl"></span>
-                            </div>
-                            <div class="infoItem">
-                                <span class="lbl">Estado:</span>
-                                <span class="infoValue" id="saleStatus"></span>
-                            </div>
+                        <div class="infoItem">
+                            <span class="lbl">Fecha:</span>
+                            <span class="infoValue" id="dateSale"></span>
                         </div>
                     </div>
                 </div>
@@ -110,7 +100,7 @@
                             </div>
                             <div class="columnInfo">
                                 <h2>Costos</h2>
-                                <div class="bodyDataInfo">
+                                <div class="bodyDataInfo costsBody">
                                     <div class="infoItem">
                                         <span class="infoLabel">Factura:</span>
                                         <a id="bill" class="infoValue"></a>
@@ -145,7 +135,7 @@
                                     </div>
                                     <div class="infoItem">
                                         <span class="infoLabel">Costo total:</span>
-                                        <span id="totalCost" class="values"
+                                        <span id="totalCostV" class="values"
                                             style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
                                     </div>
                                 </div>
@@ -170,23 +160,29 @@
                     </div>
                 </div>
                 <div class="bodyRightColumn">
-                    <div class="infoItem">
-                        <div class="lbl">total:</div>
+                    <div class="containerTotal">
+                        <div class="lbl">Total:</div>
                         <div class="infoValue" id="total"></div>
                     </div>
-                    <div class="infoItem">
-                        <div class="lbl">Abonado:</div>
-                        <div class="infoValue" id="totalAmount"></div>
-                    </div>
-                    <div class="infoItem">
-                        <div class="lbl">Deuda:</div>
-                        <div class="infoValue" id="amountDue"></div>
+                    <div class="containerDataAmount">
+                        <div class="infoItem">
+                            <div class="lbl">Abonado:</div>
+                            <div class="infoValue" id="totalAmount"></div>
+                        </div>
+                        <div class="infoItem">
+                            <div class="lbl">Deuda:</div>
+                            <div class="infoValue danger" id="amountDue"></div>
+                        </div>
+                        <div class="percentageBar">
+                            <div class="percentage" id="percentage"></div>
+                        </div>
+                        <div class="percentageInfo" id="percentageInfo"></div>
                     </div>
                 </div>
                 <div class="footerRightColumn">
-                    <div class="formGroup" style="flex: 0;">
-                        <label for="txtCommission" class="lblInp">Comision</label>
-                        <input id="txtCommission" class="txtInputs" type="text" disabled>
+                    <div class="infoItem commissionContainer" style="flex: 0;">
+                        <div class="lbl">Comision</div>
+                        <div id="commission" class="infoValue"></div>
                     </div>
                     <div class="formGroup frmGLarge" style="flex: 1;">
                         <label for="txtNotes" class="lblInp">Notas adicionales</label>

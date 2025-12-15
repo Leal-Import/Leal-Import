@@ -22,7 +22,7 @@ export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole 
 
 export let postEmployee = async (employeeData) => {
     try {
-        const request = await fetch(`${API_URL}/postEmploye`, {
+        const request = await fetch(`${API_URL}/postEmployee`, {
             method: 'POST',
             credentials: 'include',
             headers: {

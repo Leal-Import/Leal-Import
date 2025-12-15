@@ -10,10 +10,10 @@ const idVehicle = params.get("idVehicle");
 const $ = id => document.getElementById(id);
 
 document.addEventListener("DOMContentLoaded", async () => {
-    await loadDataSales();
     if(idVehicle){
         await loadVehicle(idVehicle, idSale);
     }
+    await loadDataSales();
 });
 
 let loadDataSales = async () => {
@@ -22,18 +22,24 @@ let loadDataSales = async () => {
 }
 
 let insertSaleData = (sale) => {
+    const percentage = Math.round(((sale.fullTotalCost - sale.amountDue) / sale.fullTotalCost) * 100) + "%";
+    const status = sale.nameStateSale;
+
     $("employeeName").textContent = sale.employeeFullName;
     $("customerName").textContent = sale.customerFullName;
-    $("customerNameLbl").textContent = sale.customerFullName;
-    $("saleStatus").textContent = sale.nameStateSale;
+    $("saleStatus").textContent = status;
+    if(status == "Pendiente") $("saleStatus").classList.add("pendingStatus");
+    else $("saleStatus").classList.add("successStatus");
+
     $("dateSale").textContent = sale.saleDate;
-    $("txtCommission").value = `$${formatWithCommas(sale.commission)}`;
+    $("commission").textContent = `$${formatWithCommas(sale.commission)}`;
     $("txtNotes").value = sale.notes;
     $("amountDue").textContent = `$${formatWithCommas(sale.amountDue)}`;
     $("totalAmount").textContent = `$${formatWithCommas(sale.fullTotalCost - sale.amountDue)}`;
     $("total").textContent = `$${formatWithCommas(sale.fullTotalCost)}`;
+    $("percentage").style.width = percentage;
+    $("percentageInfo").textContent = `${percentage} Pagado`;
     sale.payments.forEach(payment => {
         createRowTable("tBodyAmount", payment.idPayment, "Ejemplo", payment.amount, null, null, "tdAmount", "tdTypeAmount", null, true)
     });
-    console.log(sale)
 }

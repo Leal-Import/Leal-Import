@@ -12,6 +12,14 @@
     padding: 8px;
 }
 
+.headerRightColumn {
+    height: 40%;
+}
+
+.headerRightColumn .tableContainer {
+    height: 80%;
+}
+
 .btnTrash {
     position: absolute;
     height: 24px;
@@ -33,6 +41,10 @@
     display: flex;
     justify-content: space-between;
     padding: 0 40px 0 10px;
+    border: var(--border);
+    border-top: none;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
 }
 
 .containerTotal,
@@ -40,7 +52,7 @@
     align-self: end;
     align-items: center;
     gap: 10px;
-    display: none ;
+    display: none;
 }
 
 .containerAmountDue {
@@ -82,7 +94,7 @@
     height: 100%;
 }
 
-.noDataMessage{
+.noDataMessage {
     text-align: center;
 }
 
@@ -120,7 +132,7 @@ textarea {
     border: var(--border);
 }
 
-.leftColumn .tableContainer{
+.leftColumn .tableContainer {
     max-height: 65dvh;
     overflow-y: auto;
 }

@@ -69,13 +69,12 @@ let createTrashOption = async (container, tr, id) => {
     btnTrash.appendChild(iconImg);
 
     btnTrash.addEventListener("click", async () => {
+        console.log(selectedIds);
         const deleteId = selectedIds.findIndex(idS => String(idS) === String(id));
         if (deleteId !== -1) selectedIds.splice(deleteId, 1);
         tr.remove();
         calculateTotal();
-        await loadSpareParts();
         saveSaleState();
-
         if (container.children.length === 0) {
             const trNoData = document.createElement("tr");
             trNoData.classList.add("rowNoData");
@@ -86,6 +85,7 @@ let createTrashOption = async (container, tr, id) => {
             trNoData.appendChild(tdNoData);
             container.appendChild(trNoData);
         }
+        await loadSpareParts();
     });
     await loadSpareParts();
     return btnTrash;
@@ -98,9 +98,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadPayMethods();
 
     // Cargar estado guardado (si existe)
-    const saved = loadSaleState();
+    const saved = await loadSaleState();
     if (saved && saved.selectedParts && saved.payments && saved.notes !== undefined && !idSale) {
-        loadSavedData(saved.selectedParts, saved.payments, saved.notes);
+        await loadSavedData(saved.selectedParts, saved.payments, saved.notes);
     } else if (idSale) {
         await loadSale()
         createInitialPaymentField(0, null, null, null, null, null, calculateTotal);
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // si no hay saved, crear primer campo de abono vacío
         ensureInitialPaymentField();
     }
-
+    console.log(selectedIds)
     // Cargar inventario de repuestos
     await loadSpareParts();
 
@@ -248,7 +248,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "810b89d1-2ff4-47e2-9e5b-8404ac05c899" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         });
     }
 
@@ -281,7 +281,7 @@ frmSparePartSale.addEventListener("submit", async (e) => {
     const saleData = {
         idCustomer: customerId,
         notes: txtNotes || "",
-        idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "810b89d1-2ff4-47e2-9e5b-8404ac05c899", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData,
         sparePartItems
     }
@@ -378,22 +378,50 @@ function loadSaleState() {
 
 async function loadSavedData(parts, payments, notes) {
     // parts: [{id,name,price}], payments: [{amount, paymentMethodId, receiptUrl}], notes: string
+
+    // 1. Inicializar selectedIds con los IDs guardados (Síncrono)
     selectedIds = parts.map(p => p.id);
-    // Restaurar repuestos seleccionados
-    parts.forEach(async sparePart => {
-        await createRowTable("tBodySelected", sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal);
+
+    // 2. Crear las filas de repuestos y esperar a que todas las operaciones asíncronas
+    //    (como la creación de la fila y la carga de datos) terminen.
+    const partCreationPromises = parts.map(sparePart => {
+        return createRowTable(
+            "tBodySelected",
+            sparePart.id,
+            sparePart.name,
+            sparePart.price,
+            createTrashOption,
+            addEventsPrice,
+            "sparePartName",
+            "finalPrice",
+            calculateTotal
+        );
     });
 
-    // Si hay nuevo repuesto por param
+    await Promise.all(partCreationPromises);
+    // >> Ahora selectedIds está lleno con los IDs guardados.
+
+    // 3. Añadir nuevo repuesto si viene por parámetro
     if (newPartId && !selectedIds.includes(newPartId)) {
         selectedIds.push(newPartId);
-        await createRowTable("tBodySelected", newPartId, newPartName, suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal);
+        await createRowTable(
+            "tBodySelected",
+            newPartId,
+            newPartName,
+            suggestedPrice,
+            createTrashOption,
+            addEventsPrice,
+            "sparePartName",
+            "finalPrice",
+            calculateTotal
+        );
     }
+    // >> selectedIds ahora incluye los IDs guardados y el posible nuevo ID.
 
-    // Restaurar abonos
+    // 4. Restaurar abonos (Pagos)
     const amountContainer = document.querySelector(".amounts");
     amountContainer.innerHTML = "";
-    // payments puede venir como array de números (compatibilidad) o como objetos
+
     const paymentsNormalized = (payments || []).map(p => {
         return {
             amount: p.amount || 0,
@@ -406,7 +434,7 @@ async function loadSavedData(parts, payments, notes) {
         createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
     } else {
         let lastValueWasZero = false;
-        paymentsNormalized.forEach((payment, index) => {
+        paymentsNormalized.forEach((payment) => {
             createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, null, saveSaleState, null, calculateTotal);
             lastValueWasZero = (payment.amount === 0);
         });
@@ -414,11 +442,15 @@ async function loadSavedData(parts, payments, notes) {
         if (!lastValueWasZero) createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
     }
 
-    // Restaurar notas
+    // 5. Restaurar notas
     const notesInput = document.getElementById("txtNotes");
     if (notesInput) notesInput.value = notes || "";
 
+    // 6. Recalcular y guardar el estado final
     managePaymentsAndCalculateDebt(saveSaleState, null, calculateTotal);
+
+    // 7. El console.log ahora reflejará el estado final y completo de selectedIds
+    console.log(selectedIds);
 }
 
 let cleanWindow = () => {
@@ -441,7 +473,6 @@ let cleanWindow = () => {
 };
 
 function saveSaleState() {
-
     // selected parts
     const parts = [];
     document.querySelectorAll("#tBodySelected tr[data-id]").forEach(tr => {

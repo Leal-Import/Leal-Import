@@ -45,7 +45,9 @@
     width: 100%;
     overflow: hidden;
     border-radius: 2px;
-    border: 1px solid #ddd;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: var(--border);
 }
 
 .rightColumn .table th,
@@ -153,4 +155,8 @@
     cursor: pointer;
     text-align: center;
     display: inline-block;
+}
+
+.leftColumn{
+    height: fit-content;
 }

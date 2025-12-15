@@ -112,7 +112,7 @@ let createNewSale = async (isWO) => {
         let obj = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "810b89d1-2ff4-47e2-9e5b-8404ac05c899" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         }
         if (amounts[i].dataset.id && idSale) obj.idPayment = amounts[i].dataset.id;
         amountData.push(obj);
@@ -134,10 +134,10 @@ let createNewSale = async (isWO) => {
 
     const saleData = {
         salePrice: cleanNumber(txtTotal),
-        idCustomer: customerId || "ccc7e10e-d512-11f0-b459-94bb4356b639",
+        idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "810b89d1-2ff4-47e2-9e5b-8404ac05c899", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
     }
     const amountOld = [];
     const amountNew = [];

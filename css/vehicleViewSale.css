@@ -7,7 +7,21 @@
     display: inline-flex;
 }
 
+#saleStatus{
+    padding: 7px 15px;
+    margin-left: 20px;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+    font-weight: var(--font-weight-semibold);
+}
+
+.pendingStatus{
+    background-color: var(--danger-color);
+    color: var(--bg-color);
+}
+
 .leftColumn {
+    height: fit-content;
     flex: 1;
     display: flex;
     gap: 10px;
@@ -15,148 +29,61 @@
 }
 
 .bodyRightColumn{
-    border: var(--border);
     gap: 0;
     margin-top: 15px;
 }
 
-.bodyRightColumn .infoItem{
+.containerTotal{
+    flex-direction: column;
+    font-size: var(--font-size-base);
     border-bottom: var(--border);
-    padding: 5px 10px;
 }
 
-.bodyRightColumn .infoItem:last-child{
-    border-bottom: none;
-}
-
-/* ----------------------------- */
-/*  CONTENEDOR VEHÍCULO
-/* ----------------------------- */
-
-.viewVechicleContainer {
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    width: 100%;
-    height: fit-content;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: var(--border);
-}
-
-/* ================================ */
-/*   SWIPER PRINCIPAL
-/* ================================ */
-
-#mainSwiper {
-    padding: 5px;
-    width: 100%;
-    max-height: 250px;
-    border: 1px solid #8884;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-/* ❗ FIX DEL ANCHO INFINITO */
-.swiper-wrapper {
-    width: 100% !important;
-}
-
-.swiper-slide {
-    width: 100% !important;   /* Antes estaba "auto" → CAUSABA EL BUG */
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#mainSwiper img {
-    border: var(--border);
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-/* ================================ */
-/*   THUMBNAILS
-/* ================================ */
-
-.thumbnailImagesContainer {
-    margin-top: 10px;
-}
-
-#thumbsSwiper {
-    height: 70px;
-    width: 90%;
-    padding: 5px;
-    background-color: #e8e8e8;
-    border-radius: var(--border-radius-input);
-}
-
-#thumbsSwiper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: solid 1px #888;
-    border-radius: 6px;
-}
-
-.swiper-slide-thumb-active img {
-    border: 2px solid var(--danger-color) !important;
-}
-
-/* ================================ */
-/*   INFO VEHÍCULO
-/* ================================ */
-
-.vehicleInfo {
-    flex: 2;
-    display: flex;
-    width: 90%;
-    margin: auto;
-    flex-direction: column;
-}
-
-.mainInfoContainer {
-    display: flex;
-    border: var(--border);
-}
-
-.mainInfoContainer > div {
-    flex: 1;
-}
-
-.columnInfo {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.columnInfo h2 {
-    border: var(--border);
-    font-weight: var(--font-weight-medium);
-    text-align: center;
+.containerTotal .lbl{
     font-size: var(--font-size-lg);
 }
 
-.bodyDataInfo {
-    flex: 1;
+.containerTotal .infoValue{
+    font-size: var(--font-size-title);
+}
+
+.danger{
+    color: var(--danger-color);
+}
+
+.containerDataAmount{
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    border-bottom: var(--border);
 }
 
-.bodyDataInfo .infoItem {
-    flex: 1;
-    padding: 5px;
+.containerDataAmount .infoItem{
+    font-size: var(--font-size-lg) !important;
+    padding: 2px;
+}
+
+.percentageBar{
+    height: 20px;
+    width: 100%;
     border: var(--border);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: var(--font-size-sm);
+    border-radius: 20px;
+    overflow: hidden;
 }
 
-.infoItem .infoLabel {
+.percentage{
+    background-color: var(--success-color);
+    height: 100%;
+}
+
+.percentageInfo{
     font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-lg);
+}
+
+.commissionContainer{
+    margin-top: 10px;
+    font-size: var(--font-size-lg) !important;
 }
 
 /* ================================ */
@@ -165,18 +92,15 @@
 
 .saleGenInfoSec {
     display: flex;
-    flex-direction: column;
     background-color: #f9f9f9;
     border: var(--border);
+    padding: 15px;
+    border-radius: 10px;
 }
 
 .saleGenInfoSec .infoItem {
     padding: 10px;
-    border: var(--border);
-}
-
-.saleGenInfoSec .infoItem + .infoItem {
-    width: 30%;
+    flex: 2
 }
 
 .infoRow {
@@ -184,13 +108,18 @@
 }
 
 .itemLarge {
-    flex: 2;
+    flex: 4 !important;
+    border-right: var(--border);
 }
 
 .footerRightColumn {
     flex: 1;
 }
 
-#thumbsWrapper .swiper-slide{
-    max-width: 100px;
+textarea:focus-visible{
+    outline: none;
+}
+
+textarea{
+    color: #000 !important;
 }

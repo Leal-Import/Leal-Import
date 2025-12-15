@@ -3,6 +3,7 @@ import { formatWithCommas } from "../../utils.js";
 export async function createRowTable(tBody, id, name, price, createTrashOption, addEventsPrice, className, classPrice, calculateTotal, isView) {
     const container = document.getElementById(tBody);
     if (!container) return;
+    console.log(id, name, price)
 
     // Remover row 'no data' si existe
     const rowNoData = container.querySelector(".rowNoData");
