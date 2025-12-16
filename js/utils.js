@@ -279,54 +279,94 @@ export function formatWithCommas(number) {
 
 export function cleanNumber(str) {
     if (!str) return "0";
-    return str.replace(/,/g, "");
+
+    // Quitar $ y comas
+    str = str.replace(/[$,]/g, "");
+
+    // Si no contiene punto → retornar tal cual
+    if (!str.includes(".")) {
+        return str;
+    }
+
+    let [intPart, decPart] = str.split(".");
+
+    // Si los decimales son 0 o vacíos → eliminar el punto y decimales
+    if (!decPart || /^0+$/.test(decPart)) {
+        return intPart;
+    }
+
+    // Si los decimales son válidos → devolver número normal
+    return `${intPart}.${decPart}`;
 }
 
-export let allowDecimal = (input) => {
+export let allowDecimal = (element) => {
+    const isInput = element instanceof HTMLInputElement;
+    const isEditable = element.isContentEditable;
 
-    // FORMATEO MIENTRAS ESCRIBES
-    input.addEventListener("input", () => {
-        let value = input.value;
+    const getValue = () => isInput ? element.value : element.textContent;
+    const setValue = (v) => {
+        if (isInput) element.value = v;
+        else element.textContent = v;
+    };
 
-        // Quitar caracteres inválidos
-        value = value.replace(/[^0-9.]/g, "");
+    const getCaret = () => {
+        if (isInput) return element.selectionStart;
+        if (isEditable) return getCaretPositionContentEditable(element);
+    };
+
+    const setCaret = (pos) => {
+        if (isInput) {
+            element.selectionStart = pos;
+            element.selectionEnd = pos;
+        } else if (isEditable) {
+            setCaretPositionContentEditable(element, pos);
+        }
+    };
+
+
+    element.addEventListener("input", () => {
+
+        let cursorPos = getCaret();
+        let oldValue = getValue();
+
+        // Limpiar caracteres
+        let value = oldValue.replace(/[^0-9.]/g, "");
 
         let parts = value.split(".");
 
-        // Evitar más de un punto
         if (parts.length > 2) {
             value = parts[0] + "." + parts.slice(1).join("");
             parts = value.split(".");
         }
 
-        // Limitar a 2 decimales
         if (parts[1]?.length > 2) {
             parts[1] = parts[1].slice(0, 2);
         }
 
-        // Formatear miles en parte entera
-        let integer = parts[0].replace(/^0+(?=\d)/, "");
-        if (integer) {
-            integer = Number(integer).toLocaleString("en-US");
-        }
+        let finalValue =
+            parts.length > 1
+                ? `${parts[0]}.${parts[1] ?? ""}`
+                : parts[0];
 
-        // Reconstruir
-        value = parts.length > 1 ? `${integer}.${parts[1] ?? ""}` : integer;
+        setValue(finalValue);
 
-        input.value = value;
+        // Ajustar cursor
+        let diff = finalValue.length - oldValue.length;
+        setCaret(cursorPos + diff);
     });
 
-    // EVITAR PEGAR COSAS INVALIDAS
-    input.addEventListener("paste", (e) => {
-        const text = e.clipboardData.getData("text");
-        if (!/^[0-9,.]*\.?[0-9]{0,2}$/.test(text)) {
-            e.preventDefault();
-        }
-    });
+    // Paste solo aplica a input
+    if (isInput) {
+        element.addEventListener("paste", (e) => {
+            const text = e.clipboardData.getData("text");
+            if (!/^[0-9]*\.?[0-9]{0,2}$/.test(text)) {
+                e.preventDefault();
+            }
+        });
+    }
 
-    // 🔥 FIX: AGREGAR CERO SI SOLO HAY 1 DECIMAL
-    input.addEventListener("blur", () => {
-        let value = input.value;
+    element.addEventListener("blur", () => {
+        let value = getValue();
 
         if (!value.includes(".")) return;
 
@@ -334,13 +374,56 @@ export let allowDecimal = (input) => {
         let decimal = parts[1];
 
         if (decimal.length === 1) {
-            // Agrega el cero faltante
-            parts[1] = decimal + "0";
-            input.value = parts.join(".");
+            setValue(parts[0] + "." + decimal + "0");
         }
     });
 
 };
+
+function getCaretPositionContentEditable(el) {
+    let caretOffset = 0;
+    let sel = window.getSelection();
+    if (!sel.rangeCount) return 0;
+
+    let range = sel.getRangeAt(0);
+    let preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(el);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+
+    caretOffset = preCaretRange.toString().length;
+    return caretOffset;
+}
+
+function setCaretPositionContentEditable(el, pos) {
+    let nodeStack = [el], node, found = false;
+    let charIndex = 0;
+    let range = document.createRange();
+    range.setStart(el, 0);
+    range.collapse(true);
+
+    while (!found && (node = nodeStack.pop())) {
+        if (node.nodeType === 3) {
+            let nextCharIndex = charIndex + node.length;
+            if (pos >= charIndex && pos <= nextCharIndex) {
+                range.setStart(node, pos - charIndex);
+                found = true;
+                break;
+            }
+            charIndex = nextCharIndex;
+        } else {
+            let children = node.childNodes;
+            for (let i = children.length - 1; i >= 0; i--) {
+                nodeStack.push(children[i]);
+            }
+        }
+    }
+
+    let sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+
 
 
 // Helpers para modo lectura / UI
@@ -363,7 +446,6 @@ export function enableFormUI(frm) {
 /* Llenar select */
 export const fillSelect = (selectId, data, valueKey, textKey, defaultText = 'Seleccione una opción') => {
     const select = document.getElementById(selectId);
-    console.log(select)
     if (!select) return;
 
     //limpiar opciones previas

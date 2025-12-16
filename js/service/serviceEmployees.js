@@ -15,14 +15,14 @@ export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole 
         return await request.json();
 
     } catch (error) {
-        console.error("Error en getActiveEmployees:", error);
-        throw new Error("Fallo al conectar con el servicio de empleados.");
+        console.error("Error en getActiveEmployees:", error.message);
+        throw new Error("Fallo al conectar con el servicio de empleados." + error.message);
     }
 };
 
 export let postEmployee = async (employeeData) => {
     try {
-        const request = await fetch(`${API_URL}/postEmploye`, {
+        const request = await fetch(`${API_URL}/postEmployee`, {
             method: 'POST',
             credentials: 'include',
             headers: {

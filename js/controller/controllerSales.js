@@ -1,5 +1,6 @@
-import { setupModal } from '../utils.js'
+import { setupModal, showMessage } from '../utils.js'
 import { getSales } from '../service/serviceSales.js'
+import { createPagination } from '../pagination.js'
 
 setupModal("#btnAskSale", "#modalAskSale", "#btnCloseModalAsk", null, "¿Que deseas vender?");
 
@@ -8,16 +9,41 @@ const txtSearchData = document.getElementById("txtSearchData");
 
 let searchTimeout = null;
 
-console.log(txtSearchData)
-txtSearchData.addEventListener('input', () => {
+let loadSales = async ({ page, size, filters }) => {
+    try {
+        const data = await getSales(page - 1, size, filters.search);
+        insertSales(data.content)
+        pagination.setTotal({
+            totalElements: data.page.totalElements,
+            totalPages: data.page.totalPages,
+            page: data.page.number + 1, // volvemos a 1-based
+            size: data.page.size
+        });
+    } catch (error) {
+        showMessage("Error", "No se pudieron cargar las ventas." + error, "error");
+        console.error(error)
+    }
+}
+
+const pagination = createPagination({ initialSize: 10, onChange: loadSales })
+
+let filterData = () => {
     clearTimeout(searchTimeout)
     searchTimeout = setTimeout(async () => {
-        const searchQuery = txtSearchData.value.trim();
-        await loadSales(searchQuery);
+        pagination.update({
+            page: 1,
+            filters: {
+                search: txtSearchData.value.trim()
+            }
+        })
     }, 1500);
+}
+
+txtSearchData.addEventListener('input', () => {
+    filterData();
 })
 
-document.addEventListener("DOMContentLoaded", async () => {
+let loadEventsFilterBtn = () => {
     filterLinesButtons.forEach(button => {
         button.addEventListener("click", (e) => {
             filterLinesButtons.forEach(btn => {
@@ -26,13 +52,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             button.querySelector(".lineSelected").classList.add("selected");
         })
     });
-    await loadSales();
-});
-
-let loadSales = async (search) => {
-    const sales = await getSales(search);
-    insertSales(sales.content)
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+    loadEventsFilterBtn();
+    pagination.update({});
+});
 
 let insertSales = (sales) => {
     console.log(sales)
@@ -193,8 +218,8 @@ let insertSales = (sales) => {
                 btnEdit.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}`;
                 btnView.href = `vehicleViewSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}`;
             } else {
-                btnEdit.href = `sparePartSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}`;
-                btnView.href = `sparePartsSaleView.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}`;
+                btnEdit.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${sale.customerName}`;
+                btnView.href = `sparePartsSaleView.html?idSale=${sale.idSale}&customerName=${sale.customerName}`;
             }
 
             containerButtonsData.append(btnView, btnEdit);

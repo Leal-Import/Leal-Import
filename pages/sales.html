@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/sales.css">
+    <link rel="stylesheet" href="../css/pagination.css">
     <title>Ventas</title>
 </head>
 
@@ -59,11 +60,36 @@
                 </div>
             </div>
             <div class="panelContainer"></div>
+            <div class="paginationContainer">
+
+                <!-- Info + page size -->
+                <div class="paginationLeft">
+                    <span class="paginationInfo"></span>
+
+                    <div class="pageSize">
+                        <select class="txtInputs" id="sizeSelect">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15" selected>15</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                        <span>por página</span>
+                    </div>
+                </div>
+
+                <!-- Page controls -->
+                <div class="paginationRight">
+                    <button class="pageBtn prev">‹</button>
+                    <button class="pageBtn next">›</button>
+                </div>
+
+            </div>
         </div>
     </div>
     </div>
     <script src="../js/sidebar.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/utils.js"></script>
     <script type="module" src="../js/controller/controllerSales.js"></script>
     <script type="module" src="../js/service/serviceSales.js"></script>

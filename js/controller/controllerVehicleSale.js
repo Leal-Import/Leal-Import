@@ -1,5 +1,6 @@
 import { loadVehicle } from '../controller/salesHelpers/loadInfoVehicle.js'
-import { getPaymentMethods } from '../service/serviceConfiguration.js'
+import { verifySelects, managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnFocus, formatOnBlur } from '../controller/salesHelpers/payments.js'
+import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
 import {
     postVehicle,
     getVehiclesAviable,
@@ -9,7 +10,6 @@ import {
 import {
     formatWithCommas,
     allowDecimal,
-    fillSelect,
     getInputsValues,
     highlightAndFocus,
     cleanNumber,
@@ -19,7 +19,7 @@ import {
 const params = new URLSearchParams(window.location.search);
 const customerName = params.get('customerName') || "Nombre del cliente";
 const customerId = params.get('idCustomer') || null;
-const saleKey = `saleState_cliente_${customerId}`;
+const saleKey = `saleVehicleState_customer_${customerId}`;
 
 const txtTotal = document.getElementById("txtTotal");
 const txtCommission = document.getElementById("txtCommission");
@@ -31,9 +31,6 @@ let idSale = params.get('idSale') || null;
 function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
 const paymentsToDelete = [];
-
-allowDecimal(txtTotal);
-allowDecimal(txtCommission);
 
 document.addEventListener("click", (e) => {
     if (e.target && e.target.classList.contains("containerModal")) {
@@ -49,16 +46,6 @@ btnCreateOrder.addEventListener("click", async (e) => {
         window.location.href = `addWorkOrder.html?idSale=${data.idSale}&customerName=${customerName}&idVehicle=${data.idVehicle}&idCustomer=${customerId}&totalPrice=${data.price}`;
     }
 })
-
-let paymentMethodsList = [];
-let loadPayMethods = async () => {
-    try {
-        const roles = await getPaymentMethods();
-        paymentMethodsList = roles; // Guardamos para mapear luego
-    } catch (error) {
-        console.error('Error al cargar roles en el select:', error);
-    }
-}
 
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -111,6 +98,7 @@ let createNewSale = async (isWO) => {
         const paymentTypeSelect = amounts[i].querySelector('.paymentTypeSelect');
         const receiptInput = amounts[i].querySelector('.receiptInput');
         const amountValue = parseFloat(amountInput.value.replace(/[$,]/g, ""));
+        const idAmount = amounts[i].dataset.id || null;
 
         if (isNaN(amountValue) || amountValue <= 0) {
             highlightAndFocus(amountInput);
@@ -125,9 +113,9 @@ let createNewSale = async (isWO) => {
         let obj = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         }
-        if (amounts[i].dataset.id && idSale) obj.idPayment = amounts[i].dataset.id;
+        if (idAmount) obj.idPayment = idAmount;
         amountData.push(obj);
         if (!idSale) {
             if (receiptInput.files.length == 0) {
@@ -138,19 +126,21 @@ let createNewSale = async (isWO) => {
         }
         let imgs = {
             file: receiptInput.files[0],
-            isOld: amounts[i].dataset.id ? true : false
+            isOld: amounts[i].dataset.id ? true : false,
         }
+        if(idAmount) imgs.idPayment = idAmount;
+        console.log(amounts[i])
         imagesAmounts.push(imgs);
     }
-
+    console.log(imagesAmounts);
     const fd = new FormData();
 
     const saleData = {
-        salePrice: txtTotal.replace(/[$,]/g, ""),
+        salePrice: cleanNumber(txtTotal),
         idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "955b7a1a-182e-42fe-8d49-34988e7d18ef", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
     }
     const amountOld = [];
     const amountNew = [];
@@ -174,7 +164,7 @@ let createNewSale = async (isWO) => {
         if (idSale) {
             if (objFile.isOld) {
                 if (objFile.file == undefined) return;
-                fd.append("updateImages", objFile.file);
+                fd.append(objFile.idPayment, objFile.file);
             } else {
                 fd.append("newPaymentImages", objFile.file);
             }
@@ -216,11 +206,37 @@ let loadLinkAddVehicle = () => {
     btnAddPart.href = `vehicleDetails.html?sale=true&idCustomer=${customerId}&customerName=${customerName}`;
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadPayMethods();
-    txtTotal.addEventListener("input", managePaymentsAndCalculateDebt);
+let getTotal = () => {
+    const total = safeParseFloat(txtTotal.value);
+    return total;
+}
+
+let loadEventsInps = () => {
+    txtTotal.addEventListener("input", () => {
+        managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal)
+    });
     txtCommission.addEventListener("input", saveSaleState);
     document.getElementById("txtNotes").addEventListener("input", saveSaleState);
+    txtTotal.addEventListener("focus", (e) => {
+        formatOnFocus(e, true);
+    });
+    txtTotal.addEventListener("blur", (e) => {
+        formatOnBlur(e, true);
+    });
+    txtCommission.addEventListener("focus", (e) => {
+        formatOnFocus(e, true);
+    });
+    txtCommission.addEventListener("blur", (e) => {
+        formatOnBlur(e, true);
+    });
+
+    allowDecimal(txtCommission);
+    allowDecimal(txtTotal);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadPayMethods();
+    loadEventsInps();
 
     if (idSale) {
         await loadSale();
@@ -261,9 +277,9 @@ let insertSale = (sale) => {
     document.getElementById("txtCommission").value = sale.commission;
     document.querySelector(".amounts").innerHTML = '';
     sale.payments.forEach(payment => {
-        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment);
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, saveSaleState, createBtnUrl, getTotal, paymentsToDelete);
     })
-    managePaymentsAndCalculateDebt();
+    managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal);
     document.getElementById("due").textContent = `$${formatWithCommas(sale.amountDue)}`;
     document.getElementById("due").style.color = sale.amountDue > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     txtTotal.value = `$${formatWithCommas(sale.fullTotalCost)}`;
@@ -333,36 +349,12 @@ let insertVehicles = (vehicles) => {
     container.appendChild(fragment);
 }
 
-
-function formatOnFocus(event) {
-    const element = event.target;
-    let value = element.value;
-    let cleanValue = value.replace('$', '').replace(/,/g, '');
-    element.value = cleanValue;
-}
-
-function formatOnBlur(event, isInput) {
-    const element = isInput ? event : event.target;
-    let value = element.value;
-
-    let number = safeParseFloat(value);
-    // 2. Formatear el número como moneda
-    const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-    });
-    // 3. Actualizar el contenido con el valor formateado
-    element.value = formatter.format(number);
-
-}
-
 let loadSaleState = async () => {
     const savedState = localStorage.getItem(saleKey);
     if (!savedState) {
         // Si no hay estado guardado, aseguramos que el contenedor de abonos esté limpio
         document.querySelector(".amounts").innerHTML = '';
-        createInitialPaymentField(); // Y creamos el campo inicial limpio
+        createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Y creamos el campo inicial limpio
         return;
     }
 
@@ -397,7 +389,7 @@ let loadSaleState = async () => {
             const receiptRef = payment.receiptUrl && payment.receiptUrl.startsWith('http') ? payment.receiptUrl : null;
 
             // Aquí pasamos la URL remota (o null)
-            createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef);
+            createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef, null, saveSaleState, createBtnUrl, getTotal);
 
             if (payment.amount === 0) lastValueWasZero = true;
             else lastValueWasZero = false;
@@ -405,324 +397,18 @@ let loadSaleState = async () => {
 
         // 4. Asegurar un campo vacío al final si el último abono guardado tenía valor
         if (state.payments.length > 0 && !lastValueWasZero) {
-            createInitialPaymentField(0, null, null); // Campo vacío para el siguiente abono
+            createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Campo vacío para el siguiente abono
         }
 
     } else {
         // Si no hay vehículo, limpiamos la venta guardada en localStorage
         localStorage.removeItem(saleKey);
-        createInitialPaymentField(); // Crear el primer campo limpio
+        createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Crear el primer campo limpio
     }
 
     // 5. Recalcular la deuda para actualizar 'due'
-    managePaymentsAndCalculateDebt();
+    managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal);
 };
-
-function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, idPayment = null) {
-    const amountContainer = document.querySelector(".amounts");
-
-    // 1. Crear elementos
-    const index = amountContainer.children.length + 1;
-
-    const div = document.createElement("div");
-    div.classList.add("containerAmount");
-    div.setAttribute("data-index", index);
-    if (idPayment) div.setAttribute("data-id", idPayment);
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = `Abono ${index}`;
-    input.classList.add("txtInputs", "amountInput");
-    input.id = `amountInput${index}`;
-
-    if (amount > 0) {
-        input.value = amount;
-        formatOnBlur(input, true);
-    }
-
-    allowDecimal(input);
-    input.addEventListener("focus", formatOnFocus)
-    input.addEventListener("blur", formatOnBlur)
-    input.addEventListener("input", managePaymentsAndCalculateDebt);
-
-    const select = document.createElement("select");
-    select.classList.add("txtInputs", "paymentTypeSelect");
-    select.id = `paymentTypeSelect${index}`;
-
-    select.addEventListener("change", saveSaleState);
-
-    // === ELEMENTOS PARA EL COMPROBANTE ===
-    const receiptContainer = document.createElement("div");
-    receiptContainer.classList.add("receiptContainer");
-
-    // Input de archivo oculto (Se usará por el modal para seleccionar el archivo)
-    const receiptInput = document.createElement("input");
-    receiptInput.type = "file";
-    receiptInput.accept = "image/*, application/pdf";
-    receiptInput.classList.add("receiptInput");
-    receiptInput.id = `receiptInput${index}`;
-    receiptInput.setAttribute("hidden", "true");
-
-    // Botón principal (Ahora abre el MODAL)
-    const receiptButton = document.createElement("button");
-    receiptButton.type = "button";
-    receiptButton.classList.add("btnVoucher");
-    receiptButton.innerHTML = `<span class="icon">+</span>`; // Ícono de clip (Añadir/Cambiar)
-
-    // === LISTENERS ===
-
-    // El botón principal AHORA abre tu función de modal
-    receiptButton.addEventListener("click", (e) => {
-        e.preventDefault();
-        openReceiptModal(receiptInput, receiptButton);
-    });
-
-    // 🔑 Ya no necesitamos el listener 'change' aquí. El modal lo gestionará.
-
-    receiptContainer.append(receiptInput, receiptButton);
-
-    if (receiptUrl && receiptUrl.startsWith('http')) {
-        // Asumimos que si hay una URL remota, el botón debe verse como 'cargado'
-        receiptButton.classList.add("receipt-loaded");
-        receiptButton.setAttribute("data-receipt-url", receiptUrl);
-    }
-
-
-    // === Ensamblar ===
-    div.append(input, select, receiptContainer);
-    amountContainer.appendChild(div);
-
-    // 2. Llenar el Select
-    fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
-
-    // 3. Restaurar el método de pago seleccionado
-    if (paymentMethodId) {
-        select.value = paymentMethodId;
-    }
-}
-
-// ==========================================================
-// A. LÓGICA DE VISUALIZACIÓN DENTRO DEL MODAL
-// ==========================================================
-function updateModalContent(inputElement, buttonElement) {
-    // 🔑 CORRECCIÓN: Obtener las referencias fuera del if/else
-    const previewArea = document.getElementById('modalPreviewArea');
-    const btnClear = document.getElementById('btnClearFile');
-    const placeholder = document.getElementById('previewPlaceholder'); // Referencia al elemento existente
-
-    // Asumimos que la URL remota está en el data-receipt-url del botón clip
-    const remoteUrl = buttonElement.getAttribute('data-receipt-url');
-
-    const hasLocalFile = inputElement.files.length > 0;
-    const hasRemoteUrl = remoteUrl && remoteUrl.startsWith('http');
-    const isLoaded = hasLocalFile || hasRemoteUrl;
-
-    // Limpiamos el contenido del preview area antes de decidir qué mostrar
-    previewArea.innerHTML = '';
-
-    if (isLoaded) {
-        btnClear.classList.remove('hide');
-
-        let urlToPreview = hasLocalFile
-            ? URL.createObjectURL(inputElement.files[0])
-            : remoteUrl;
-
-        // 2. Inyectar el elemento de previsualización
-        const previewElement = document.createElement(urlToPreview.endsWith('.pdf') ? 'embed' : 'img');
-
-        if (previewElement.tagName === 'IMG') {
-            previewElement.src = urlToPreview;
-            previewElement.style.maxWidth = '100%';
-            previewElement.style.maxHeight = '400px';
-        } else {
-            // Para PDF o documentos, usar embed
-            previewElement.src = urlToPreview;
-            previewElement.style.width = '100%';
-            previewElement.style.height = '400px';
-            previewElement.type = 'application/pdf';
-        }
-        previewArea.appendChild(previewElement);
-
-    } else {
-        // Nada cargado: Añadir el placeholder existente
-        btnClear.classList.add('hide');
-
-        // 🔑 CORRECCIÓN: Volvemos a añadir el placeholder al área de preview
-        if (placeholder) {
-            previewArea.appendChild(placeholder);
-        } else {
-            // Caso de fallback, si el placeholder fue eliminado del DOM
-            let noImageMessage = document.createElement('p');
-            noImageMessage.textContent = "No hay comprobante cargado.";
-            noImageMessage.id = "previewPlaceholder";
-            previewArea.appendChild(noImageMessage);
-        }
-    }
-}
-
-// ==========================================================
-// B. LISTENERS DEL MODAL (Se ejecutan una sola vez al cargar la página)
-// ==========================================================
-
-function setupModalListeners() {
-    const modalContainer = document.querySelector('.containerModal');
-    const btnClose = document.getElementById('closeVoucherModal');
-    const btnSelectFile = document.getElementById('btnSelectFile');
-    const btnClearFile = document.getElementById('btnClearFile');
-    const inputIdField = document.getElementById('currentReceiptInputId');
-
-    // Función para cerrar el modal y limpiar el control
-    const closeModalAndClean = () => {
-        modalContainer.classList.add('hide');
-        inputIdField.value = '';
-    };
-
-    // --- 1. Cerrar Modal ---
-    btnClose.onclick = closeModalAndClean;
-
-    // --- 2. Acción: SELECCIONAR/CAMBIAR ---
-    btnSelectFile.onclick = () => {
-        const inputElement = document.getElementById(inputIdField.value);
-        if (inputElement) {
-            // Limpiamos el valor para forzar el evento 'change' si selecciona el mismo archivo
-            inputElement.value = '';
-            inputElement.click(); // Abre el selector de archivos
-        }
-    };
-
-    // --- 3. Acción: ELIMINAR ---
-    btnClearFile.onclick = () => {
-        const inputElement = document.getElementById(inputIdField.value);
-        if (inputElement) {
-            // A. Limpiar el archivo del navegador
-            inputElement.value = '';
-
-            // B. Actualizar visuales del botón clip (buscar por el ID)
-            const clipButton = document.querySelector(`#${inputElement.id}`).nextElementSibling;
-            clipButton.classList.remove("receipt-loaded");
-            clipButton.removeAttribute("data-receipt-url");
-
-            // C. Guardar estado (sin archivo) y cerrar modal
-            saveSaleState();
-            closeModalAndClean();
-        }
-    };
-
-    // --- 4. Listener para la SELECCIÓN REAL del archivo (Delegación) ---
-    // Este escucha cualquier cambio en cualquier input type="file" con la clase 'receiptInput'
-    document.body.addEventListener('change', (e) => {
-        if (e.target.classList.contains('receiptInput')) {
-            const inputElement = e.target;
-            const clipButton = inputElement.nextElementSibling;
-
-            if (inputElement.files.length > 0) {
-                // Hay archivo: Marcar el clip como cargado y guardar referencia temporal
-                clipButton.classList.add("receipt-loaded");
-                clipButton.setAttribute("data-receipt-url", inputElement.files[0].name);
-            } else {
-                // Cancelación: Limpiar visuales
-                clipButton.classList.remove("receipt-loaded");
-                clipButton.removeAttribute("data-receipt-url");
-            }
-
-            saveSaleState();
-
-            // Si el modal estaba abierto para ESTE input, actualizamos la previsualización
-            if (!modalContainer.classList.contains('hide') && inputElement.id === inputIdField.value) {
-                // Re-ejecutamos la lógica de visualización del modal
-                updateModalContent(inputElement, clipButton);
-            }
-        }
-    });
-}
-
-function openReceiptModal(inputElement, buttonElement) {
-    const modalContainer = document.querySelector('.containerModal'); // Usa la clase o ID del contenedor
-    const inputIdField = document.getElementById('currentReceiptInputId');
-    const abonoIndex = inputElement.closest('.containerAmount').getAttribute('data-index');
-
-    // 1. CONEXIÓN: Guardar el ID del input dinámico al que hace referencia el modal
-    inputIdField.value = inputElement.id;
-    document.getElementById('modalAbonoTitle').textContent = `(Abono ${abonoIndex})`;
-
-    // 2. ACTUALIZAR VISUALES del modal (Muestra el archivo actual o el placeholder)
-    updateModalContent(inputElement, buttonElement);
-
-    // 3. Mostrar el modal
-    modalContainer.classList.remove('hide');
-}
-
-let managePaymentsAndCalculateDebt = () => {
-    const amountContainer = document.querySelector(".amounts");
-    let allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-
-    const totalSale = document.getElementById("txtTotal").value.replace(/[$,]/g, "") || 0;
-    let totalPaid = 0;
-
-    // 1. Eliminar abonos vacíos excepto el primero
-    allPayments.forEach((payment, idx) => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat(input.value.replace(/[$,]/g, "")) || 0;
-
-        if (idx > 0 && value === 0) {
-            if (payment.dataset.id) paymentsToDelete.push(payment.dataset.id);
-            payment.remove();
-        }
-    });
-
-    // Refrescar nodos
-    allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-
-    // 2. Renumerar correctamente
-    allPayments.forEach((payment, i) => {
-        const number = i + 1;
-        payment.setAttribute("data-index", number);
-
-        const input = payment.querySelector(".amountInput");
-        input.placeholder = `Abono ${number}`;
-    });
-
-    // 3. Volver a calcular total pagado
-    allPayments.forEach(payment => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat(input.value.replace(/[$,]/g, "")) || 0;
-        totalPaid += value;
-    });
-
-    // 4. Si el último abono tiene valor → crear otro
-    const lastPayment = allPayments[allPayments.length - 1];
-    const lastInput = lastPayment.querySelector(".amountInput");
-    const lastValue = parseFloat(lastInput.value.replace(/[$,]/g, "")) || 0;
-
-    if (lastValue > 0) {
-        addNewPaymentField();
-    }
-
-    // 5. Calcular deuda
-    const debt = totalSale - totalPaid;
-    const dueText = document.getElementById("due");
-
-    dueText.textContent = `$${formatWithCommas(debt)}`;
-    dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
-
-    verifySelects();
-};
-
-function addNewPaymentField() {
-    const amountContainer = document.querySelector(".amounts");
-
-    // Si el último campo está vacío → NO crear otro
-    const lastInput = amountContainer.lastElementChild.querySelector(".amountInput");
-    const lastValue = parseFloat(lastInput.value.replace(/[$,]/g, "")) || 0;
-
-    if (lastValue === 0) return;
-
-    // 🔑 Usamos la función auxiliar que asegura el ID y llena el select
-    createInitialPaymentField();
-
-    verifySelects();
-    saveSaleState();
-}
 
 function saveSaleState() {
     if (idSale) return;
@@ -758,26 +444,6 @@ function saveSaleState() {
 //     CONFIGURAR CARRUSEL DE IMÁGENES
 // =====================================
 
-let verifySelects = () => {
-    const amounts = document.querySelectorAll(".amounts .containerAmount");
-    amounts.forEach(amount => {
-        const input = amount.querySelector(".amountInput");
-        const select = amount.querySelector(".paymentTypeSelect");
-
-        if (!input || !select) return;
-
-        const rawValue = (input.value || "").trim();
-        const numeric = parseFloat(rawValue.replace(/[$,]/g, "")) || 0;
-
-        if (numeric === 0) {
-            select.disabled = true;
-            select.value = ""; // evita selects colgados
-        } else {
-            select.disabled = false;
-        }
-    });
-};
-
 let cancelVehicleSelection = () => {
     // 1. Ocultar la Ficha del Vehículo (Columna Izquierda)
     document.querySelector(".viewVechicleContainer").classList.add("hide");
@@ -795,7 +461,7 @@ let cancelVehicleSelection = () => {
     amountContainer.innerHTML = ''; // Elimina todos los abonos
 
     // 5. 🔑 Crear el primer campo de abono vacío usando la función auxiliar
-    createInitialPaymentField();
+    createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal);
 
     // 6. Restablecer la deuda a cero
     document.getElementById("due").textContent = "$0";

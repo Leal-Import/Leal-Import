@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/vehicleSale.css">
     <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
+    <link rel="stylesheet" href="../css/salesStyles/vehicleView.css">
+    <link rel="stylesheet" href="../css/salesStyles/modalVoucher.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <title>Agregar venta</title>
 </head>
@@ -108,7 +110,7 @@
                                 </div>
                                 <div class="columnInfo">
                                     <h2>Costos</h2>
-                                    <div class="bodyDataInfo">
+                                    <div class="bodyDataInfo costsBody">
                                         <div class="infoItem">
                                             <span class="infoLabel">Factura:</span>
                                             <a id="bill" class="infoValue"></a>
@@ -176,12 +178,7 @@
                 <form class="formRightColumn" id="frmVehicleSale">
                     <div class="bodyRightColumn">
                         <h2>Abonos</h2>
-                        <div class="amounts">
-                            <div class="containerAmount">
-                                <input type="text" placeholder="Abono 1" class="txtInputs amountInput">
-                                <select id="" class="txtInputs"></select>
-                            </div>
-                        </div>
+                        <div class="amounts"></div>
                         <div class="containerAmountDue" id="containerAmountDue">
                             <h3>Deuda:</h3>
                             <span id="due"></span>

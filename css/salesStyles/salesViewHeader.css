@@ -1,0 +1,30 @@
+.saleGenInfoSec {
+    display: flex;
+    background-color: #f9f9f9;
+    border: var(--border);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.saleGenInfoSec .infoItem {
+    padding: 10px;
+    flex: 2;
+}
+
+.itemLarge {
+    flex: 4 !important;
+    border-right: var(--border);
+}
+
+.saleStatus{
+    padding: 7px 15px;
+    margin-left: 20px;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+    font-weight: var(--font-weight-semibold);
+}
+
+.pendingStatus{
+    background-color: var(--danger-color);
+    color: var(--bg-color);
+}

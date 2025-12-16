@@ -4,12 +4,11 @@ import {
   formatWithCommas,
   allowMotoYear
 } from '../utils.js';
-
-import { getCustomers } from '../service/serviceCustomers.js';
 import {
   getVehicles,
   getStatus,
 } from '../service/serviceVehicle.js';
+import { createPagination } from '../pagination.js'
 
 /* ==============================
     ELEMENTOS DEL DOM
@@ -18,6 +17,8 @@ import {
 const txtSearchCustomer = document.getElementById("txtSearchData");
 const txtSearchYear = document.getElementById("txtSearchYear");
 const selectSearStatus = document.getElementById("cmbSearchByStatus");
+const params = new URLSearchParams(window.location.search);
+const workOrder = params.get("workOrder") || false;
 
 let searchTimeout = null;
 let statusList = [];
@@ -26,9 +27,30 @@ let statusList = [];
     INICIO
 ============================== */
 
+const loadVehicles = async ({ page, size, filters }) => {
+  try {
+    const data = await getVehicles(page - 1, size, filters.search || '', filters.status || '', filters.year || '');
+    insertVehicles(data.content);
+    pagination.setTotal({
+      totalElements: data.page.totalElements,
+      totalPages: data.page.totalPages,
+      page: data.page.number + 1, // volvemos a 1-based
+      size: data.page.size
+    });
+  } catch (error) {
+    showMessage("Error", "No se pudieron cargar los vehículos." + error, "error");
+  }
+};
+
+const pagination = createPagination({ initialSize: 10, onChange: loadVehicles })
+
 document.addEventListener("DOMContentLoaded", async () => {
   await loadStatusSelect();
-  await loadVehicles();
+  pagination.update({});
+  if (workOrder) {
+    document.querySelector(".breadcrumb").textContent = "Selecciona un vehiculo";
+    document.querySelector(".btnOpenModal").classList.add("hide");
+  }
 });
 
 /* ==============================
@@ -44,11 +66,16 @@ txtSearchCustomer.addEventListener('input', () => {
 let filterData = async () => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
-    const yearQuery = txtSearchYear.value.trim();
-    const searchQuery = txtSearchCustomer.value.trim();
-    const statusQuery = selectSearStatus.value;
-    await loadVehicles(searchQuery, statusQuery, yearQuery);
-  }, 500);
+    pagination.update({
+      page: 1,
+      filters: {
+        year: txtSearchYear.value.trim(),
+        search: txtSearchCustomer.value.trim(),
+        status: selectSearStatus.value
+      }
+
+    })
+  }, 1500);
 }
 
 txtSearchYear.addEventListener('input', async () => {
@@ -73,18 +100,6 @@ let loadStatusSelect = async () => {
   }
 };
 
-/* ==============================
-    CARGAR VEHÍCULOS
-============================== */
-
-const loadVehicles = async (search, stateId, year) => {
-  try {
-    const vehicles = await getVehicles(0, 15, search, stateId, year);
-    insertVehicles(vehicles.content);
-  } catch (error) {
-    showMessage("Error", "No se pudieron cargar los vehículos." + error, "error");
-  }
-};
 
 /* ==============================
     MOSTRAR TARJETAS DE VEHÍCULOS
@@ -117,16 +132,12 @@ let insertVehicles = (vehicles) => {
       const vehicleStatus = document.createElement("div");
       const containerInfoVehicle = document.createElement("div");
       const containerButtons = document.createElement("div");
-      const btnView = document.createElement("a");
-      const btnEdit = document.createElement("a");
       const vinItem = document.createElement("div");
       const yearItem = document.createElement("div");
       const modelItem = document.createElement("div");
 
       // datos
       vehicleBrand.textContent = vehicle.brand;
-      btnView.textContent = "Ver más";
-      btnEdit.textContent = "Editar";
       vehiclePrice.textContent = `$${formatWithCommas(vehicle.total)}`;
       vinItem.innerHTML = `<div>Vin:</div> <span>${vehicle.vin}</span>`;
       yearItem.innerHTML = `<div>Año:</div> <span>${vehicle.year}</span>`;
@@ -147,13 +158,27 @@ let insertVehicles = (vehicles) => {
       vinItem.classList.add("infoVehicleItem");
       yearItem.classList.add("infoVehicleItem");
       modelItem.classList.add("infoVehicleItem");
-      btnView.classList.add("btnPrimary");
-      btnEdit.classList.add("btnSecondary")
       containerButtons.classList.add("containerButtons");
 
       // botón ver más
-      btnEdit.href = `vehicleDetails.html?id=${vehicle.idVehicle}`;
-      btnView.href = `vehicleView.html?id=${vehicle.idVehicle}`;
+      if (workOrder) {
+        const btnSelect = document.createElement("a");
+        btnSelect.textContent = "Seleccionar";
+        btnSelect.classList.add("btnPrimary");
+        btnSelect.href = `addWorkOrder.html?idVehicle=${vehicle.idVehicle}`
+        containerButtons.appendChild(btnSelect);
+      } else {
+        const btnView = document.createElement("a");
+        const btnEdit = document.createElement("a");
+        btnView.textContent = "Ver más";
+        btnEdit.textContent = "Editar";
+        btnView.classList.add("btnPrimary");
+        btnEdit.classList.add("btnSecondary")
+        btnEdit.href = `vehicleDetails.html?id=${vehicle.idVehicle}`;
+        btnView.href = `vehicleView.html?id=${vehicle.idVehicle}`;
+        containerButtons.appendChild(btnView);
+        containerButtons.appendChild(btnEdit);
+      }
 
       containerInfoVehicle.appendChild(vinItem);
       containerInfoVehicle.appendChild(yearItem);
@@ -164,8 +189,6 @@ let insertVehicles = (vehicles) => {
       footerCard.appendChild(vehicleStatus);
       footerCard.appendChild(containerInfoVehicle);
       footerCard.appendChild(containerButtons);
-      containerButtons.appendChild(btnView);
-      containerButtons.appendChild(btnEdit);
       card.appendChild(headerCard);
       card.appendChild(containerImgVehicle);
       card.appendChild(footerCard);

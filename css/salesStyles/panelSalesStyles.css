@@ -1,14 +1,17 @@
-.rightColumn {
+.rightColumn,
+.rightColumn form {
     display: flex;
     flex-direction: column;
+}
+
+.rightColumn {
     width: 450px;
-    position: sticky;
-    top: 0;
-    padding: 20px;
+    padding: 15px;
     background: #f9f9f9;
     border: var(--border);
     border-radius: 12px;
-    gap: 10px;
+    position: sticky;
+    top: 0;
 }
 
 /* ================================
@@ -19,7 +22,11 @@
 .bodyRightColumn h2 {
     font-size: 20px;
     margin-bottom: 10px;
-    font-weight: 600;
+    font-weight: var(--font-weight-medium);
+}
+
+.viewVechicleContainer a[href]{
+    color: var(--danger-color);
 }
 
 .headerRightColumn {
@@ -27,12 +34,22 @@
     flex-direction: column;
 }
 
+.containerAmount .txtInputs {
+    flex: 1;
+    border-radius: 3px;
+    background-color: #fafafa;
+}
+
 /* Tabla general del panel */
 .rightColumn .tableContainer {
     width: 100%;
     overflow: hidden;
     border-radius: 2px;
-    border: 1px solid #ddd;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: var(--border);
+    max-height: 30dvh;
+    overflow-y: auto;
 }
 
 .rightColumn .table th,
@@ -43,7 +60,7 @@
     border-bottom: 1px solid #eee;
 }
 
-.rightColumn .table tr:nth-child(2n){
+.rightColumn .table tr:nth-child(2n) {
     background-color: #eee
 }
 
@@ -63,8 +80,13 @@
 
 .bodyRightColumn {
     display: flex;
+    max-height: 38%;
     flex-direction: column;
     gap: 2px;
+}
+
+.rightColumn .formGroup{
+    flex: 0;
 }
 
 /* Línea tipo total / abonado / deuda */
@@ -75,18 +97,18 @@
 }
 
 .rightColumn .infoItem .lbl {
-    font-weight: 600;
+    font-weight: var(--font-weight-medium);
 }
 
 .rightColumn .infoValue {
-    font-weight: 600;
+    font-weight: var(--font-weight-medium);
 }
 
 /* Lista de abonos */
 .amounts {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .containerAmount {
@@ -109,13 +131,14 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
-}
-
-.footerRightColumn textarea{
     flex: 1;
 }
 
-.lbl{
+.footerRightColumn textarea {
+    flex: 1;
+}
+
+.lbl {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-base);
 }
@@ -134,4 +157,8 @@
     cursor: pointer;
     text-align: center;
     display: inline-block;
+}
+
+.leftColumn{
+    height: fit-content;
 }

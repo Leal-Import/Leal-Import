@@ -15,7 +15,7 @@ export async function loadPayMethods() {
     }
 }
 
-export function managePaymentsAndCalculateDebt() {
+export function managePaymentsAndCalculateDebt(savedState, createBtnUrl, calculateTotal, arrayDeleteIds) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -24,7 +24,11 @@ export function managePaymentsAndCalculateDebt() {
     allPayments.forEach((payment, idx) => {
         const input = payment.querySelector(".amountInput");
         const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (idx > 0 && value === 0) payment.remove();
+        if (idx > 0 && value === 0) {
+            const idPayment = payment.dataset.id; // <-- ID real de ese pago
+            if (idPayment && arrayDeleteIds) arrayDeleteIds.push(idPayment);
+            payment.remove();
+        }
     });
     // Refrescar nodos y renumerar
     allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
@@ -32,12 +36,16 @@ export function managePaymentsAndCalculateDebt() {
         const number = i + 1;
         payment.setAttribute("data-index", number);
         const input = payment.querySelector(".amountInput");
-        if (input) input.placeholder = `Abono ${number}`;
+        const select = payment.querySelector(".paymentTypeSelect");
+        if (input && select) {
+            input.placeholder = `Abono ${number}`
+            input.id = `amountInput${number}`
+            select.id = `paymentTypeSelect${number}`
+        };
 
         // Asegurar que los selects estén llenos
-        const select = payment.querySelector(".paymentTypeSelect");
         if (select && !select.dataset.filled) {
-            fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName");
+            fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
             select.dataset.filled = true;
         }
     });
@@ -55,10 +63,10 @@ export function managePaymentsAndCalculateDebt() {
     if (lastPayment) {
         const lastInput = lastPayment.querySelector(".amountInput");
         const lastValue = parseFloat((lastInput?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (lastValue > 0) addNewPaymentField();
+        if (lastValue > 0) addNewPaymentField(savedState, createBtnUrl, calculateTotal);
     } else {
         // No hay campos, crear uno
-        createInitialPaymentField();
+        createInitialPaymentField(0, null, null, null, savedState, createBtnUrl, calculateTotal);
     }
 
     // Calcular deuda y actualizar UI
@@ -71,9 +79,10 @@ export function managePaymentsAndCalculateDebt() {
     }
 
     verifySelects();
+    savedState ? savedState() : null;
 }
 
-function addNewPaymentField() {
+function addNewPaymentField(savedState, createBtnUrl, calculateTotal) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -86,10 +95,10 @@ function addNewPaymentField() {
 
     // crear field usando la función que centraliza comportamiento
     verifySelects();
-    createInitialPaymentField(0, null, null);
+    createInitialPaymentField(0, null, null, null, savedState, createBtnUrl, calculateTotal);
 }
 
-let verifySelects = () => {
+export let verifySelects = () => {
     const amounts = document.querySelectorAll(".amounts .containerAmount");
     amounts.forEach(amount => {
         const input = amount.querySelector(".amountInput");
@@ -110,7 +119,7 @@ let verifySelects = () => {
 };
 
 
-export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null) {
+export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, idPayment = null, saveState, createBtnUrl, calculateTotal, arrayDeleteIds) {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
 
@@ -119,6 +128,7 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     const div = document.createElement("div");
     div.classList.add("containerAmount");
     div.setAttribute("data-index", index);
+    if (idPayment) div.setAttribute("data-id", idPayment)
 
     // Input monto
     const input = document.createElement("input");
@@ -130,26 +140,30 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
     if (amount > 0) {
         input.value = `$${formatWithCommas(amount)}`;
     }
-
-    allowDecimal(input);
+    saveState ? input.addEventListener("input", saveState) : null;
 
     // Select metodo pago
     const select = document.createElement("select");
     select.classList.add("txtInputs", "paymentTypeSelect");
     select.id = `paymentTypeSelect${index}`;
 
+    allowDecimal(input)
+
     // Llenar select con métodos de pago cargados
     div.append(input, select);
     amountContainer.appendChild(div);
-    fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName");
+    fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
     select.dataset.filled = true;
-
-    // Ensamblar
-
+    saveState ? select.addEventListener("change", saveState) : null;
+    if (createBtnUrl) {
+        let image = createBtnUrl(index, receiptUrl);
+        div.appendChild(image);
+    }
     // Si vino con amount sin formato, formatearlo
     if (amount > 0 && input.value && !input.value.startsWith('$')) {
         input.value = `$${formatWithCommas(parseCurrencyStringToNumber(input.value))}`;
     }
+    if (paymentMethodId) select.value = paymentMethodId;
     input.addEventListener("focus", (e) => {
         formatOnFocus(e, true);
     });
@@ -157,97 +171,65 @@ export function createInitialPaymentField(amount = 0, paymentMethodId = null, re
         formatOnBlur(e, true);
     })
 
-    input.addEventListener("input", (e) => {
-        managePaymentsAndCalculateDebt(e, select);
+    input.addEventListener("input", () => {
+        managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal, arrayDeleteIds);
     }
     );
-    
-}
 
-function calculateTotal() {
-    let total = 0;
-    const containerTotal = document.getElementById("containerTotal");
-    const containerDue = document.getElementById("containerAmountDue");
-    const prices = document.querySelectorAll("#tBodySelected .finalPrice");
-    const totalText = document.getElementById("total");
-    const dueText = document.getElementById("due");
-
-    prices.forEach(priceElement => {
-        const priceText = priceElement.textContent;
-        const cleanValue = priceText.replace(/[$,]/g, "");
-        const value = parseFloat(cleanValue) || 0;
-        total += value;
-    });
-
-    const moneyPaid = calculatePaid();
-    const due = total - moneyPaid;
-
-    if (totalText) totalText.textContent = `$${formatWithCommas(total)}`;
-    if (dueText) {
-        dueText.textContent = `$${formatWithCommas(due)}`;
-        dueText.style.color = due > 0 ? 'var(--danger-color)' : 'var(--success-color)';
-    }
-
-    if (total === 0) {
-        containerDue?.classList.remove("show");
-        containerTotal?.classList.remove("show");
-    } else {
-        containerDue?.classList.add("show");
-        containerTotal?.classList.add("show");
-    }
-
-    return total;
-}
-
-function calculatePaid() {
-    let totalPaid = 0;
-    const amountInputs = document.querySelectorAll(".amounts .amountInput");
-    amountInputs.forEach(input => {
-        const cleanValue = (input.value || "").toString().replace(/[$,]/g, "") || "0";
-        totalPaid += parseFloat(cleanValue) || 0;
-    });
-    return totalPaid;
 }
 
 export function formatOnBlur(event, isInput) {
     const element = event.target;
-    let value
-    if (isInput) {
-        value = element.value;
-        let number = safeParseFloat(value);
-        // 2. Formatear el número como moneda
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-        });
-        // 3. Actualizar el contenido con el valor formateado
-        element.value = formatter.format(number);
-    } else {
-        value = element.textContent
-        let number = safeParseFloat(value);
-        // 2. Formatear el número como moneda
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-        });
-        // 3. Actualizar el contenido con el valor formateado
-        element.textContent = formatter.format(number);
+    let value = isInput ? element.value : element.textContent;
+
+    // Convertir a número
+    let number = safeParseFloat(value);
+
+    // Si resulta en NaN, lo dejamos vacío
+    if (isNaN(number)) {
+        if (isInput) element.value = "";
+        else element.textContent = "";
+        return;
     }
+
+    // Formateador USD
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+    });
+
+    // Aplicar formato
+    const formatted = formatter.format(number);
+
+    if (isInput) element.value = formatted;
+    else element.textContent = formatted;
 }
+
 
 export function formatOnFocus(event, isInput) {
     const element = event.target;
-    let value;
-    if (isInput) {
-        value = element.value;
-        let cleanValue = value.replace('$', '').replace(/,/g, '');
-        element.value = cleanValue;
+    let value = isInput ? element.value : element.innerText;
+
+    // Quitar símbolo de dólar y comas
+    let clean = value.replace('$', '').replace(/,/g, '');
+
+    // Si incluía decimales escritos por el usuario, mantenerlos
+    // Detecta si el valor original NO estaba formateado automáticamente.
+    const userTypedDecimals =
+        (value.includes('.') || value.includes(',')) &&
+        !value.includes('$') &&
+        !value.includes(',');
+
+    if (!userTypedDecimals) {
+        // Quitar decimales si no fueron escritos manualmente
+        clean = clean.split('.')[0];
+        clean = clean.split(',')[0];
     }
-    else {
-        value = element.innerText;
-        let cleanValue = value.replace('$', '').replace(/,/g, '');
-        element.textContent = cleanValue;
+
+    if (isInput) {
+        element.value = clean;
+    } else {
+        element.textContent = clean;
     }
 }

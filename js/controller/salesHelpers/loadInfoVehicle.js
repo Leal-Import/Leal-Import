@@ -3,6 +3,8 @@ import { formatWithCommas } from '../../utils.js';
 
 export let loadVehicle = async (id, idSale) => {
     const vehicle = await getVehicleByVin(id);
+    if (document.getElementById("totalCostV")) document.getElementById("totalCostV").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
+    else document.getElementById("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
     // Mostrar contenedor de visualización
     document.querySelector(".viewVechicleContainer").classList.remove("hide");
 
@@ -30,9 +32,8 @@ export let loadVehicle = async (id, idSale) => {
     document.getElementById("transfer").textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
     document.getElementById("pa").textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
     document.getElementById("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
-    document.getElementById("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
 
-    if(!idSale) document.getElementById("txtTotal").value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
+    if (!idSale) document.getElementById("txtTotal").value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
 
     loadVehicleImages(vehicle.photos);
 }
