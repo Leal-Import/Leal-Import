@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/workOrders.css">
+    <link rel="stylesheet" href="../css/pagination.css">
     <title>Ordenes de trabajo</title>
 </head>
 
@@ -42,186 +43,41 @@
                         <select id="cmbSearchByStatus" class="cmbFilterData">
                             <option value="">Estado</option>
                         </select>
-                        <select id="cmbSearchByYear" class="cmbFilterData">
-                            <option value="">Año</option>
-                        </select>
                     </div>
-                    <a id="OpenModalVehicles" href="vehicle.html?workOrder=true" class="btnPrimary btnOpenModal">Añadir</a>
+                    <a id="OpenModalVehicles" href="vehicle.html?workOrder=true"
+                        class="btnPrimary btnOpenModal">Añadir</a>
                 </div>
             </div>
-            <div class="cardContainer">
-                <div class="card">
-                    <div class="containerImgVehicle">
-                        <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762451416/Leal%20Import/Vehicles/TYT-CAMRY-2024-001/file_95204244-cc78-49f9-afa8-9cf3058a2048.png"
-                            alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <span class="vehicleName">Kawasaki ninja</span>
-                        <div class="containerInfoVehicle">
-                            <div class="containerOrderStatus">
-                                <div class="orderColor colorPending"></div>
-                                <div class="orderStatus pendingOrder">Pendiente</div>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Cliente:</div> <span>Mario Guzman</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Fecha de creación:</div> <span>6/11/2025</span>
-                            </div>
-                        </div>
-                        <div class="moreInfoContainer">
-                            <div class="moreInfoInfo">Ver mas -></div>
-                            <button class="btnPrimary">Ver mas</button>
-                        </div>
+            <div class="cardContainer"></div>
+            <div class="paginationContainer">
+
+                <!-- Info + page size -->
+                <div class="paginationLeft">
+                    <span class="paginationInfo"></span>
+
+                    <div class="pageSize">
+                        <select class="txtInputs" id="sizeSelect">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15" selected>15</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                        <span>por página</span>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="containerImgVehicle">
-                        <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762451416/Leal%20Import/Vehicles/TYT-CAMRY-2024-001/file_95204244-cc78-49f9-afa8-9cf3058a2048.png"
-                            alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <span class="vehicleName">Kawasaki ninja</span>
-                        <div class="containerInfoVehicle">
-                            <div class="containerOrderStatus">
-                                <div class="orderColor colorPending"></div>
-                                <div class="orderStatus pendingOrder">Pendiente</div>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Cliente:</div> <span>Mario Guzman</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Fecha de creación:</div> <span>6/11/2025</span>
-                            </div>
-                        </div>
-                        <div class="moreInfoContainer">
-                            <div class="moreInfoInfo">Ver mas -></div>
-                            <button class="btnPrimary">Ver mas</button>
-                        </div>
-                    </div>
+
+                <!-- Page controls -->
+                <div class="paginationRight">
+                    <button class="pageBtn prev">‹</button>
+                    <button class="pageBtn next">›</button>
                 </div>
-                <div class="card">
-                    <div class="containerImgVehicle">
-                        <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762451416/Leal%20Import/Vehicles/TYT-CAMRY-2024-001/file_95204244-cc78-49f9-afa8-9cf3058a2048.png"
-                            alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <span class="vehicleName">Kawasaki ninja</span>
-                        <div class="containerInfoVehicle">
-                            <div class="containerOrderStatus">
-                                <div class="orderColor colorPending"></div>
-                                <div class="orderStatus pendingOrder">Pendiente</div>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Cliente:</div> <span>Mario Guzman</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Fecha de creación:</div> <span>6/11/2025</span>
-                            </div>
-                        </div>
-                        <div class="moreInfoContainer">
-                            <div class="moreInfoInfo">Ver mas -></div>
-                            <button class="btnPrimary">Ver mas</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="containerImgVehicle">
-                        <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762451416/Leal%20Import/Vehicles/TYT-CAMRY-2024-001/file_95204244-cc78-49f9-afa8-9cf3058a2048.png"
-                            alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <span class="vehicleName">Kawasaki ninja</span>
-                        <div class="containerInfoVehicle">
-                            <div class="containerOrderStatus">
-                                <div class="orderColor colorPending"></div>
-                                <div class="orderStatus pendingOrder">Pendiente</div>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Cliente:</div> <span>Mario Guzman</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Fecha de creación:</div> <span>6/11/2025</span>
-                            </div>
-                        </div>
-                        <div class="moreInfoContainer">
-                            <div class="moreInfoInfo">Ver mas -></div>
-                            <button class="btnPrimary">Ver mas</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="containerImgVehicle">
-                        <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762451416/Leal%20Import/Vehicles/TYT-CAMRY-2024-001/file_95204244-cc78-49f9-afa8-9cf3058a2048.png"
-                            alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <span class="vehicleName">Kawasaki ninja</span>
-                        <div class="containerInfoVehicle">
-                            <div class="containerOrderStatus">
-                                <div class="orderColor colorPending"></div>
-                                <div class="orderStatus pendingOrder">Pendiente</div>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Cliente:</div> <span>Mario Guzman</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Fecha de creación:</div> <span>6/11/2025</span>
-                            </div>
-                        </div>
-                        <div class="moreInfoContainer">
-                            <div class="moreInfoInfo">Ver mas -></div>
-                            <button class="btnPrimary">Ver mas</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="containerImgVehicle">
-                        <img src="https://res.cloudinary.com/drjmfhpvp/image/upload/v1762451416/Leal%20Import/Vehicles/TYT-CAMRY-2024-001/file_95204244-cc78-49f9-afa8-9cf3058a2048.png"
-                            alt="Moto Kawasaki">
-                    </div>
-                    <div class="footerCard">
-                        <span class="vehicleName">Kawasaki ninja</span>
-                        <div class="containerInfoVehicle">
-                            <div class="containerOrderStatus">
-                                <div class="orderColor colorPending"></div>
-                                <div class="orderStatus pendingOrder">Pendiente</div>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Cliente:</div> <span>Mario Guzman</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Vin:</div> <span>HD73KFHSN2BDK3LF</span>
-                            </div>
-                            <div class="infoVehicleItem">
-                                <div>Fecha de creación:</div> <span>6/11/2025</span>
-                            </div>
-                        </div>
-                        <div class="moreInfoContainer">
-                            <div class="moreInfoInfo">Ver mas -></div>
-                            <button class="btnPrimary">Ver mas</button>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
+    <script src="../js/controller/controllerWorkOrders.js" type="module"></script>
 </body>
 
 </html>

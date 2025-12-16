@@ -6,9 +6,9 @@ import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMetho
 import {
     getServices,
     postWorkOrder,
-    getDataVehicleById
+    getDataVehicleById,
+    getSpareParts
 } from '../service/serviceAddWorkOrder.js'
-import { getSpareParts } from '../service/serviceSpareParts.js'
 import {
     formatWithCommas,
     showMessage,
@@ -177,7 +177,7 @@ function renderSparePartSuggestions(list) {
     boxSparePart.innerHTML = '';
     console.log(list)
     list.forEach(p => {
-        if (selectedSpareParts.some(x => x.id === p.idSparePart)) return;
+        if (selectedSpareParts.some(x => x.id === p.idSpareParts)) return;
         const div = document.createElement('div');
         div.classList.add('suggestionItem');
         div.classList.add('suggestionPart');
@@ -188,14 +188,14 @@ function renderSparePartSuggestions(list) {
         const img = document.createElement('img');
         const name = document.createElement('span');
         const suggestedPrice = document.createElement('span');
-        img.src = p.photoUrl;
+        img.src = p.imageUrl;
         name.textContent = p.nameSpareParts;
         suggestedPrice.textContent = `$${formatWithCommas(p.suggestedPrice)}`
         containerImg.appendChild(img);
         containerImgName.append(containerImg, name)
         div.append(containerImgName, suggestedPrice);
         div.addEventListener('click', () => addSparePart({
-            id: p.idSparePart,
+            id: p.idSpareParts,
             name: p.nameSpareParts,
             unitPrice: p.suggestedPrice
         }));
@@ -610,7 +610,7 @@ async function handleSubmit(e) {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: '810b89d1-2ff4-47e2-9e5b-8404ac05c899'
+            idEmployee: 'd7793632-7704-4a2c-a81f-753574934d1c'
         });
         imagesAmounts.push(receiptInput.files[0] || null);
     }
@@ -627,13 +627,13 @@ async function handleSubmit(e) {
     for (const r of activeServices) {
         const idInput = r.querySelector('.hidden-service-id');
         const nameInput = r.querySelector('.hidden-service-name');
-        const priceInput = r.querySelector('.hidden-service-price');
-
-        if ((idInput || nameInput) && priceInput) {
+        const tdPrice = r.querySelector('.tdPrice');
+        console.log(r, idInput, nameInput, tdPrice)
+        if ((idInput || nameInput) && tdPrice) {
             const obj = {
                 idService: idInput ? idInput.value : null,
                 nameService: nameInput ? nameInput.value : r.querySelector('.tdName').textContent.trim(),
-                priceApplied: safeParseFloat(priceInput.value)
+                priceApplied: safeParseFloat(tdPrice.textContent)
             };
             if (obj.priceApplied < 0) { showMessage('warning', `El precio del servicio '${obj.nameService}' es inválido.`); return; }
             services.push(obj);
@@ -666,7 +666,7 @@ async function handleSubmit(e) {
         estimatedDate: dtEstimated,
         services,
         spareParts,
-        idEmployee: '810b89d1-2ff4-47e2-9e5b-8404ac05c899',
+        idEmployee: 'd7793632-7704-4a2c-a81f-753574934d1c',
         payments: amountData
     };
     fd.append('workOrderData', JSON.stringify(workOrderData));
@@ -683,7 +683,7 @@ async function handleSubmit(e) {
         localStorage.removeItem("pendingOrder");
     } catch (err) {
         console.error('postWorkOrder', err);
-        showMessage('error', err?.message || 'Error al registrar la orden');
+        showMessage('error', err?.message || 'Error al registrar la orden', 'error');
     }
 }
 
@@ -839,7 +839,7 @@ function loadSavedSpareParts(sparePartsArray) {
 
     // Añadir cada repuesto usando tu función pública (respeta validaciones)
     sparePartsArray.forEach(item => {
-        const id = item.id || item.idSparePart || item.idSpare || null;
+        const id = item.id || item.idSpareParts || item.idSpare || null;
         const name = item.name || item.nameSpareParts || item.nameSparePart || item.nameSpare || item.nameSparePartName || '';
         const unitPrice = safeParseFloat(item.unitPrice || item.price || item.priceApplied || item.suggestedPrice || item.subtotal || 0);
 

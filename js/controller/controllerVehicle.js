@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   pagination.update({});
   if (workOrder) {
     document.querySelector(".breadcrumb").textContent = "Selecciona un vehiculo";
-    document.querySelector(".btnOpenModal").classList.add("hide");
+    document.querySelector(".btnOpenModal").href = `vehicleDetails.html?workOrder=true`;
   }
 });
 

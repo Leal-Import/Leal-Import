@@ -19,6 +19,7 @@ const params = new URLSearchParams(window.location.search);
 
 let currentId = params.get("id");
 let sale = params.get("sale") || false;
+let workOrder = params.get("workOrder") || false;
 
 const frmVehicles = document.getElementById("frmVehicles");
 const btnLink = document.querySelector(".btnLink");
@@ -272,6 +273,11 @@ frmVehicles.addEventListener("submit", async (e) => {
 
         if (sale) {
             window.location.href = `vehicleSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&idVehicle=${response.data.idVehicle}`;
+            return;
+        }
+
+        if (workOrder) {
+            window.location.href = `addWorkOrder.html?idVehicle=${response.data.idVehicle}`
             return;
         }
 
