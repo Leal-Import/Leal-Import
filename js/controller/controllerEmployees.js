@@ -42,13 +42,12 @@ let loadEmployees = async ({ page, size, filters }) => {
             filters.search || '',
             filters.role || ''
         );
-        console.log(data)
         insertEmployees(data.content);
         pagination.setTotal({
-            totalElements: data.totalElements,
-            totalPages: data.totalPages,
-            page: data.number + 1, // volvemos a 1-based
-            size: data.size
+            totalElements: data.page.totalElements,
+            totalPages: data.page.totalPages,
+            page: data.page.number + 1, // volvemos a 1-based
+            size: data.page.size
         });
     } catch (error) {
         showMessage("Error critico", error, "error")
@@ -105,7 +104,7 @@ let insertEmployees = (employees) => {
         td.style.textAlign = "center";
         td.style.padding = "15px";
         td.style.color = "#777";
-
+        document.querySelector('.containerTable table').style.height = "100%"
         tr.appendChild(td);
         fragment.appendChild(tr);
     } else {
@@ -119,7 +118,7 @@ let insertEmployees = (employees) => {
 
             tdName.textContent = employee.fullName;
             tdEmail.textContent = employee.email;
-            tdPhone.textContent = employee.phoneEmploye;
+            tdPhone.textContent = employee.phoneEmployee;
             tdRole.textContent = employee.roleName || 'Error al cargar rol';
 
             const actionButton = document.createElement('button');
@@ -148,7 +147,7 @@ let editEmployee = (employee) => {
     fillForm('#frmEmployees', {
         txtFullName: employee.fullName,
         txtEmployeeEmail: employee.email,
-        txtEmployeePhone: employee.phoneEmploye,
+        txtEmployeePhone: employee.phoneEmployee,
         txtUsername: employee.username,
         cmbUserRole: employee.idRole
     });
@@ -167,7 +166,7 @@ let viewEmployee = (employee) => {
     fillForm('#frmEmployees', {
         txtFullName: employee.fullName,
         txtEmployeeEmail: employee.email,
-        txtEmployeePhone: employee.phoneEmploye,
+        txtEmployeePhone: employee.phoneEmployee,
         txtUsername: employee.username,
         cmbUserRole: employee.idRole
     });
@@ -212,7 +211,7 @@ frmEmployees.addEventListener("submit", async (e) => {
     const employeeData = {
         fullName: txtFullName,
         email: txtEmployeeEmail,
-        phoneEmploye: txtEmployeePhone,
+        phoneEmployee: txtEmployeePhone,
         username: txtUsername,
         idRole: cmbUserRole,
     };

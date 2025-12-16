@@ -1,8 +1,9 @@
 const API_URL = "http://127.0.0.1:8080/api/spareParts";
 
-export let getSpareParts = async (search = "", status = "") => {
+export let getSpareParts = async (page = 0, size = 15, search = "", idState = "") => {
     try {
-        const request = await fetch(`${API_URL}/getSparePartSummary?search=${search}&idState=${status}`, {
+        const params = new URLSearchParams({ page, size, search, idState })
+        const request = await fetch(`${API_URL}/getSparePartSummary?${params.toString()}`, {
             credentials: 'include'
         });
         if (!request.ok) {

@@ -4,12 +4,11 @@ import {
   formatWithCommas,
   allowMotoYear
 } from '../utils.js';
-
-import { getCustomers } from '../service/serviceCustomers.js';
 import {
   getVehicles,
   getStatus,
 } from '../service/serviceVehicle.js';
+import { createPagination } from '../pagination.js'
 
 /* ==============================
     ELEMENTOS DEL DOM
@@ -28,9 +27,26 @@ let statusList = [];
     INICIO
 ============================== */
 
+const loadVehicles = async ({ page, size, filters }) => {
+  try {
+    const data = await getVehicles(page - 1, size, filters.search || '', filters.status || '', filters.year || '');
+    insertVehicles(data.content);
+    pagination.setTotal({
+      totalElements: data.page.totalElements,
+      totalPages: data.page.totalPages,
+      page: data.page.number + 1, // volvemos a 1-based
+      size: data.page.size
+    });
+  } catch (error) {
+    showMessage("Error", "No se pudieron cargar los vehículos." + error, "error");
+  }
+};
+
+const pagination = createPagination({ initialSize: 10, onChange: loadVehicles })
+
 document.addEventListener("DOMContentLoaded", async () => {
   await loadStatusSelect();
-  await loadVehicles();
+  pagination.update({});
   if (workOrder) {
     document.querySelector(".breadcrumb").textContent = "Selecciona un vehiculo";
     document.querySelector(".btnOpenModal").classList.add("hide");
@@ -50,11 +66,16 @@ txtSearchCustomer.addEventListener('input', () => {
 let filterData = async () => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(async () => {
-    const yearQuery = txtSearchYear.value.trim();
-    const searchQuery = txtSearchCustomer.value.trim();
-    const statusQuery = selectSearStatus.value;
-    await loadVehicles(searchQuery, statusQuery, yearQuery);
-  }, 500);
+    pagination.update({
+      page: 1,
+      filters: {
+        year: txtSearchYear.value.trim(),
+        search: txtSearchCustomer.value.trim(),
+        status: selectSearStatus.value
+      }
+
+    })
+  }, 1500);
 }
 
 txtSearchYear.addEventListener('input', async () => {
@@ -79,18 +100,6 @@ let loadStatusSelect = async () => {
   }
 };
 
-/* ==============================
-    CARGAR VEHÍCULOS
-============================== */
-
-const loadVehicles = async (search, stateId, year) => {
-  try {
-    const vehicles = await getVehicles(0, 15, search, stateId, year);
-    insertVehicles(vehicles.content);
-  } catch (error) {
-    showMessage("Error", "No se pudieron cargar los vehículos." + error, "error");
-  }
-};
 
 /* ==============================
     MOSTRAR TARJETAS DE VEHÍCULOS

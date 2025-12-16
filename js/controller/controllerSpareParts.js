@@ -1,8 +1,10 @@
 import { getSpareParts } from '../service/serviceSpareParts.js'
 import { getStatus } from '../service/serviceSparePartsDetails.js'
+import { createPagination } from '../pagination.js'
 import {
     setupModal,
-    fillSelect
+    fillSelect,
+    showMessage
 } from '../utils.js';
 // Configurar el modal para agregar repuestos
 setupModal("#modalParts", "#modalSpareParts", "#closeAddEmployee");
@@ -12,16 +14,37 @@ const cmbSearchByStatus = document.getElementById("cmbSearchByStatus");
 
 let searchTimeout = null;
 
+let loadSpareParts = async ({ page, size, filters }) => {
+    try {
+        const data = await getSpareParts(page - 1, size, filters.search || '', filters.idState || '');
+        insertSpareParts(data.content);
+        pagination.setTotal({
+            totalElements: data.page.totalElements,
+            totalPages: data.page.totalPages,
+            page: data.page.number + 1, // volvemos a 1-based
+            size: data.page.size
+        });
+    } catch (error) {
+        showMessage("Error", "No se pudieron cargar los repuestos." + error, "error");
+    }
+}
+
 txtSearchData.addEventListener('input', () => {
     filterData()
 });
 
+const pagination = createPagination({ initialSize: 10, onChange: loadSpareParts })
+
 let filterData = async () => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
-        const searchQuery = txtSearchData.value.trim();
-        const status = cmbSearchByStatus.value;
-        await loadSpareParts(searchQuery, status);
+        pagination.update({
+            page: 1,
+            filters: {
+                search: txtSearchData.value.trim(),
+                idState: cmbSearchByStatus.value
+            }
+        })
     }, 1500);
 }
 
@@ -42,13 +65,8 @@ let loadStatusSelect = async () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadStatusSelect();
-    await loadSpareParts();
+    pagination.update({});
 });
-
-let loadSpareParts = async (search, status) => {
-    const data = await getSpareParts(search, status);
-    insertSpareParts(data.content);
-}
 
 let insertSpareParts = (spareParts) => {
     const container = document.querySelector(".cardContainer");
@@ -56,7 +74,11 @@ let insertSpareParts = (spareParts) => {
     if (!container) return;
     const fragment = document.createDocumentFragment();
     if (spareParts.length == 0) {
-
+        const noDataDiv = document.createElement("div");
+        noDataDiv.textContent = "No hay repuestos disponibles.";
+        noDataDiv.style.gridColumn = "1 / -1";
+        noDataDiv.classList.add("noDataMessage");
+        fragment.appendChild(noDataDiv);
     } else {
         spareParts.forEach(sparePart => {
             const card = document.createElement("div");

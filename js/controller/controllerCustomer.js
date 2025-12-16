@@ -18,6 +18,8 @@ import {
     formatDUIInput
 } from '../utils.js';
 
+import { createPagination } from '../pagination.js'
+
 const modalCustomers = document.getElementById("modalCustomers");
 const frmCustomers = document.getElementById("frmCustomers");
 const txtPhone = document.getElementById("txtCustomerPhone");
@@ -37,26 +39,42 @@ setupModal("#openModalCustomer", "#modalCustomers", "#closeAddCustomer", "#frmCu
 
 let currentId = null;
 
+let loadCustomers = async ({ page, size, filters }) => {
+    try {
+        const data = await getCustomers(
+            page - 1,
+            size,
+            filters.search || ''
+        );
+        insertCustomers(data.content);
+        pagination.setTotal({
+            totalElements: data.page.totalElements,
+            totalPages: data.page.totalPages,
+            page: data.page.number + 1, // volvemos a 1-based
+            size: data.page.size
+        });
+    } catch (error) {
+        showMessage("Error crítico", error.message || error, "error");
+    }
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
-    await loadCustomers();
+    pagination.update({});
 });
 
 txtSearchCustomer.addEventListener('input', () => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
-        const searchQuery = txtSearchCustomer.value.trim();
-        await loadCustomers(searchQuery);
+        pagination.update({
+            page: 1,
+            filters: {
+                search: txtSearchCustomer.value.trim()
+            }
+        })
     }, 1500)
 })
 
-let loadCustomers = async (search) => {
-    try {
-        const data = await getCustomers(0, 15, search);
-        insertCustomers(data.content);
-    } catch (error) {
-        showMessage("Error crítico", error.message || error, "error");
-    }
-};
+const pagination = createPagination({ initialSize: 10, onChange: loadCustomers });
 
 let insertCustomers = (customers) => {
     const fragment = document.createDocumentFragment();
@@ -117,16 +135,20 @@ let insertCustomers = (customers) => {
 
 let editCustomer = (customer) => {
     currentId = customer.idClient;
+    btnAddCustomer.value = "Actualizar cliente";
+    if (titleModal) titleModal.textContent = "Actualizar cliente";
+    fillData(customer);
+};
+
+let fillData = (customer) => {
     enableFormUI('#frmCustomers');
     fillForm('#frmCustomers', {
         txtFullName: customer.fullName,
         txtCustomerDUI: customer.dui,
         txtCustomerPhone: customer.personalPhone
     });
-    btnAddCustomer.value = "Actualizar cliente";
-    if (titleModal) titleModal.textContent = "Actualizar cliente";
     toggleModal(modalCustomers, true);
-};
+}
 
 let deleteCustomer = (customerId) => {
     if (!customerId) return;
@@ -137,16 +159,9 @@ let deleteCustomer = (customerId) => {
 };
 
 let viewCustomer = (customer) => {
-    enableFormUI('#frmCustomers'); // ensure consistent state before disabling
-    fillForm('#frmCustomers', {
-        txtFullName: customer.fullName,
-        txtCustomerDUI: customer.dui,
-        txtCustomerPhone: customer.personalPhone
-    });
-    // disable inputs and hide submit for read-only view
+    fillData(customer);
     setFormReadOnly('#frmCustomers', true);
     if (titleModal) titleModal.textContent = "Detalles del cliente";
-    toggleModal(modalCustomers, true);
 };
 
 txtPhone.addEventListener('input', () => {
@@ -208,7 +223,7 @@ frmCustomers.addEventListener("submit", async (e) => {
             await postCustomer(customerData);
             showMessage('Cliente agregado con éxito', 'Éxito', 'success');
         }
-        await loadCustomers();
+        pagination.update({});
     } catch (error) {
         console.error('Error al guardar cliente:', error);
         showMessage(error.message || 'Error desconocido', 'Error', 'error');

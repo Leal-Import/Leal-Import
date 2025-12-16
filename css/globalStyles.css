@@ -149,7 +149,6 @@
 .containerTable {
     box-shadow: 0 4px 4px #313A8D44;
     border-radius: var(--border-radius-table);
-    overflow: hidden;
     flex: 1;
 }
 

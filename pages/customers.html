@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/customers.css">
+    <link rel="stylesheet" href="../css/pagination.css">
     <title>Clientes</title>
 </head>
 
@@ -60,7 +61,31 @@
                     </tbody>
                 </table>
             </div>
-            <div class="paginationContainer"></div>
+            <div class="paginationContainer">
+
+                <!-- Info + page size -->
+                <div class="paginationLeft">
+                    <span class="paginationInfo"></span>
+
+                    <div class="pageSize">
+                        <select class="txtInputs" id="sizeSelect">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                        </select>
+                        <span>por página</span>
+                    </div>
+                </div>
+
+                <!-- Page controls -->
+                <div class="paginationRight">
+                    <button class="pageBtn prev">‹</button>
+                    <button class="pageBtn next">›</button>
+                </div>
+
+            </div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>

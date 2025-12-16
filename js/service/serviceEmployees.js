@@ -15,8 +15,8 @@ export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole 
         return await request.json();
 
     } catch (error) {
-        console.error("Error en getActiveEmployees:", error);
-        throw new Error("Fallo al conectar con el servicio de empleados.");
+        console.error("Error en getActiveEmployees:", error.message);
+        throw new Error("Fallo al conectar con el servicio de empleados." + error.message);
     }
 };
 

@@ -50,7 +50,6 @@ btnCreateOrder.addEventListener("click", async (e) => {
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
     let success = await createNewSale();
-    return
     if (success) {
         window.location.href = "sales.html";
     }
@@ -165,8 +164,7 @@ let createNewSale = async (isWO) => {
         if (idSale) {
             if (objFile.isOld) {
                 if (objFile.file == undefined) return;
-                const mapKey = `updateImages[${objFile.idPayment}]`;
-                fd.append(mapKey, objFile.file);
+                fd.append(objFile.idPayment, objFile.file);
             } else {
                 fd.append("newPaymentImages", objFile.file);
             }

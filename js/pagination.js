@@ -37,7 +37,6 @@ export function createPagination({
         state.totalPages = totalPages;
         state.page = page;
         state.size = size;
-
         render();
     };
 
@@ -72,7 +71,6 @@ export function createPagination({
         pagesContainer.appendChild(createNavButton('‹', state.page === 1, () => {
             update({ page: state.page - 1 });
         }));
-
         const pages = getVisiblePages(state.page, state.totalPages);
 
         pages.forEach(p => {
@@ -140,7 +138,6 @@ export function createPagination({
     const syncSizeSelect = () => {
         sizeSelect.value = state.size;
     };
-
     sizeSelect.addEventListener('change', () => {
         update({
             page: 1,
