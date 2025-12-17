@@ -128,7 +128,7 @@ let createNewSale = async (isWO) => {
             file: receiptInput.files[0],
             isOld: amounts[i].dataset.id ? true : false,
         }
-        if(idAmount) imgs.idPayment = idAmount;
+        if (idAmount) imgs.idPayment = idAmount;
         console.log(amounts[i])
         imagesAmounts.push(imgs);
     }
@@ -323,8 +323,13 @@ let insertVehicles = (vehicles) => {
 
             image.src = vehicle.photoUrl;
             vin.textContent = vehicle.vin;
-            cost.textContent = `$${formatWithCommas(vehicle.total)}`;
-            suggesredPrice.textContent = `$${formatWithCommas(vehicle.suggestedPrice)}`; /* Por el momento es costo total */
+            if (vehicle.total && vehicle.suggestedPrice) {
+                cost.textContent = `$${formatWithCommas(vehicle.total)}`;
+                suggesredPrice.textContent = `$${formatWithCommas(vehicle.suggestedPrice)}`; /* Por el momento es costo total */
+            } else {
+                cost.textContent = `Externo`;
+                suggesredPrice.textContent = `Externo`; /* Por el momento es costo total */
+            }
 
             tr.classList.add("tableRow");
             btnAddVehicle.classList.add("btnPrimary", "btnAddVehicle");

@@ -1,42 +1,58 @@
 import { getVehicles as getVehicleByVin } from '../../service/serviceVehicleDetails.js'
 import { formatWithCommas } from '../../utils.js';
 
+const $ = (id) => document.getElementById(id);
+const $$ = (selector) => document.querySelector(selector);
+
 export let loadVehicle = async (id, idSale) => {
     const vehicle = await getVehicleByVin(id);
-    if (document.getElementById("totalCostV")) document.getElementById("totalCostV").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
-    else document.getElementById("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
-    // Mostrar contenedor de visualización
-    document.querySelector(".viewVechicleContainer").classList.remove("hide");
 
-    // Cargar datos del vehículo
-    document.getElementById("vehicleVin").textContent = vehicle.vin;
-    document.getElementById("vehicleBrand").textContent = vehicle.brand;
-    document.getElementById("vehicleModel").textContent = vehicle.model;
-    document.getElementById("vehicleYear").textContent = vehicle.year;
-    document.getElementById("purchaseDate").textContent = vehicle.purchaseDate;
-    document.getElementById("mileaje").textContent = vehicle.mileage;
-    document.getElementById("lote").textContent = vehicle.lote.numLote;
-    vehicle.lote.linkLote != null ? document.getElementById("lote").href = vehicle.lote.linkLote : null;
-    document.getElementById("status").textContent = vehicle.status;
-    document.getElementById("suggestedPrice").textContent = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; // Por el momento es costo total
+    $$(".viewVechicleContainer")?.classList.remove("hide");
 
-    document.getElementById("bill").textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
-    vehicle.costs.costPhoto.billPhoto != null ? document.getElementById("bill").href = vehicle.costs.costPhoto.billPhoto : null;
-    document.getElementById("ship").textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
-    vehicle.costs.costPhoto.shipPhoto != null ? document.getElementById("ship").href = vehicle.costs.costPhoto.shipPhoto : null;
-    document.getElementById("towTruck").textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
-    vehicle.costs.costPhoto.shipPhoto != null ? document.getElementById("towTruck").href = vehicle.costs.costPhoto.shipPhoto : null;
-    document.getElementById("iva").textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
-    document.getElementById("taxes").textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
-    vehicle.costs.costPhoto.taxesPhoto != null ? document.getElementById("taxes").href = vehicle.costs.costPhoto.taxesPhoto : null;
-    document.getElementById("transfer").textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
-    document.getElementById("pa").textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
-    document.getElementById("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
+    $("vehicleVin").textContent = vehicle.vin;
+    $("vehicleBrand").textContent = vehicle.brand;
+    $("vehicleModel").textContent = vehicle.model;
+    $("vehicleYear").textContent = vehicle.year;
+    $("purchaseDate").textContent = vehicle.purchaseDate;
+    $("mileaje").textContent = vehicle.mileage;
+    $("lote").textContent = vehicle.lote.numLote;
+    if (vehicle.lote.linkLote) $("lote").href = vehicle.lote.linkLote;
+    $("status").textContent = vehicle.status;
 
-    if (!idSale) document.getElementById("txtTotal").value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`; /* Aca por defecto va a ir el precio sugerido */
+    if (vehicle.costs) {
+        $("suggestedPrice").textContent = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`;
+
+        $("bill").textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
+        if (vehicle.costs.costPhoto.billPhoto) $("bill").href = vehicle.costs.costPhoto.billPhoto;
+        $("ship").textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
+        if (vehicle.costs.costPhoto.shipPhoto) $("ship").href = vehicle.costs.costPhoto.shipPhoto;
+        $("towTruck").textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
+        if (vehicle.costs.costPhoto.shipPhoto) $("towTruck").href = vehicle.costs.costPhoto.shipPhoto;
+        $("iva").textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
+        $("taxes").textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
+        if (vehicle.costs.costPhoto.taxesPhoto) $("taxes").href = vehicle.costs.costPhoto.taxesPhoto;
+        $("transfer").textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
+        $("pa").textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
+        $("stotage").textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
+        if (!idSale && $("txtTotal")) {
+            $("txtTotal").value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`;
+        }
+        if ($("totalCostV")) {
+            $("totalCostV").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
+        } else if ($("total")) {
+            $("total").textContent = `$${formatWithCommas(vehicle.costs.total)}`;
+        }
+
+        $$(".columnCosts")?.classList.remove("hide");
+        $$(".suggestedItem")?.classList.remove("hide");
+    } else {
+        $$(".suggestedItem")?.classList.add("hide");
+        $$(".columnCosts")?.classList.add("hide");
+    }
 
     loadVehicleImages(vehicle.photos);
-}
+};
+
 
 let mainSwiper;
 let thumbsSwiper;
