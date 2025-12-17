@@ -48,11 +48,11 @@
     font-weight: var(--font-weight-medium);
 }
 
-.CompletedOrder {
+.colorCompleted {
     background-color: var(--success-color);
 }
 
-.colorCompleted {
+.completedOrder {
     color: var(--success-color);
     font-weight: var(--font-weight-medium);
 }

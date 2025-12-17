@@ -150,7 +150,7 @@ let insertWOrders = (workOrders) => {
                 {
                     label: "Editar orden",
                     id: `btnEditWO-${woId}`,
-                    onClick: () => editWorkOrder(wo.idWorkOrder)
+                    onClick: () => editWorkOrder(wo.idWorkOrder, wo.idVehicle)
                 }
             ]);
         });
@@ -167,6 +167,6 @@ let viewWorkOrder = (idWorkOrder) => {
 
 }
 
-let editWorkOrder = (idWorkOrder) => {
-    window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}`
+let editWorkOrder = (idWorkOrder, idVehicle) => {
+    window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}`
 }

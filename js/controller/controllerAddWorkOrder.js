@@ -7,7 +7,8 @@ import {
     getServices,
     postWorkOrder,
     getDataVehicleById,
-    getSpareParts
+    getSpareParts,
+    getWorkOrderById
 } from '../service/serviceAddWorkOrder.js'
 import {
     formatWithCommas,
@@ -44,6 +45,7 @@ const isNewPart = params.get("isNewPart") === "true";
 const newPartId = params.get("newSparePartId");
 const newPartName = params.get("newSparePartName");
 const newSuggestedPrice = params.get("newSuggestedPrice");
+const idWorkOrder = params.get("idWorkOrder") || null;
 
 // Local state
 const selectedServices = []; // { id|null, name, price }
@@ -58,7 +60,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupModalListeners();
     bindEvents();
     await loadDataVehicle();
-    createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
+    if(idWorkOrder){
+        await loadWorkOrder();
+    } else {
+        createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
+    }
     // ejecutar verifySelects inicialmente y también está atento a cambios dinámicos
     verifySelects();
     observeAmountsContainer(); // observa cambios en los abonos (dinámicos)
@@ -72,6 +78,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     calculateAllTotals();
 });
 
+let loadWorkOrder = async () => {
+    const workOrder = await getWorkOrderById(idWorkOrder);
+    console.log(workOrder)
+}
+
 // ---------- Utilities ----------
 const $ = id => document.getElementById(id);
 const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -79,6 +90,7 @@ function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s
 
 
 let loadDataVehicle = async () => {
+    console.log(idVehicle)
     const vehicleData = await getDataVehicleById(idVehicle)
     if ($('vin')) $('vin').textContent = vehicleData.vin || '-';
     if ($('vehiclePrice')) $('vehiclePrice').textContent = `$${formatWithCommas(vehiclePrice || 0)}`;

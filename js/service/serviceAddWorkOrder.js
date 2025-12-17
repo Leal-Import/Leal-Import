@@ -37,6 +37,23 @@ export let getDataVehicleById = async (id) => {
     }
 };
 
+export let getWorkOrderById = async (id) => {
+    try {
+        const request = await fetch(`${API_URL}/getWorkOrderById/${id}`, {
+            credentials: 'include'
+        });
+        if (!request.ok) {
+            const errorBody = await request.text();
+            throw new Error(`Error ${request.status}: No se pudueron obtener los datos de la orden. Detalle: ${errorBody.substring(0, 100)}`);
+        }
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en getWorkOrderById:", error);
+        throw new Error("Fallo al conectar con el servicio de ordenes.");
+    }
+};
+
 export let getSpareParts = async () => {
     try {
         const request = await fetch(`${API_URLSPA}/getWorkOrderSpareParts`, {
