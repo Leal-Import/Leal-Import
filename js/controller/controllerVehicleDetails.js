@@ -12,7 +12,9 @@ import {
     allowDecimal,
     cleanNumber,
     formatWithCommas,
-    allowMotoYear
+    allowMotoYear,
+    enableFormUI,
+    setFormReadOnly
 } from '../utils.js';
 
 const params = new URLSearchParams(window.location.search);
@@ -41,6 +43,8 @@ const btnSelectImageShip = document.querySelector("#modalShip .btnFullWidth");
 const dropAreaTaxes = document.getElementById("dropAreaTaxes");
 const fileUploadInputTaxes = document.getElementById("fileUploadInputTaxes");
 const btnSelectImageTaxes = document.querySelector("#modalTaxes .btnFullWidth");
+
+const isExternalOpt = document.getElementById("isExternalOpt");
 
 const txtCosts = document.querySelectorAll(".txtCosts");
 const txtTotal = document.getElementById("txtTotal");
@@ -76,6 +80,31 @@ document.addEventListener("click", (e) => {
         if (!modalTaxes.classList.contains("hide")) toggleModal(modalTaxes, false)
     }
 })
+
+const btnImgs = document.querySelectorAll(".btnImgs");
+
+isExternalOpt.addEventListener("change", () => {
+    if (isExternalOpt.checked) {
+        setFormReadOnly('.costsData', true);
+        txtCosts.forEach(txt => {
+            txt.value = "";
+            txt.removeAttribute("required");
+        })
+        txtTotal.value = "";
+        btnImgs.forEach(btn => {
+            btn.classList.add("hide");
+        })
+    } else {
+        setFormReadOnly('.costsData', false);
+        txtCosts.forEach(txt => {
+            txt.setAttribute("required", true)
+        })
+        btnImgs.forEach(btn => {
+            btn.classList.remove("hide");
+        })
+    }
+});
+
 
 allowMotoYear(document.getElementById("txtYear"));
 
@@ -130,26 +159,33 @@ let loadVehicle = async () => {
         txtLote: data.lote.numLote,
         txtLink: data.lote.linkLote,
         txtDescription: data.description,
-        txtBill: formatWithCommas(data.costs.bill),
-        txtTransfer: formatWithCommas(data.costs.transfer),
-        txtStorage: formatWithCommas(data.costs.storage),
-        txtTowTruck: formatWithCommas(data.costs.towTruck),
-        txtShip: formatWithCommas(data.costs.ship),
-        txtTaxes: formatWithCommas(data.costs.taxes),
-        txtIva: formatWithCommas(data.costs.iva),
-        txtPa: formatWithCommas(data.costs.pa),
-        txtTotal: formatWithCommas(data.costs.total),
-        txtSuggestedPrice: formatWithCommas(data.costs.suggestedPrice)
     });
+    if (data.costs) {
+        fillForm('#frmVehicles', {
+            txtBill: formatWithCommas(data.costs.bill),
+            txtTransfer: formatWithCommas(data.costs.transfer),
+            txtStorage: formatWithCommas(data.costs.storage),
+            txtTowTruck: formatWithCommas(data.costs.towTruck),
+            txtShip: formatWithCommas(data.costs.ship),
+            txtTaxes: formatWithCommas(data.costs.taxes),
+            txtIva: formatWithCommas(data.costs.iva),
+            txtPa: formatWithCommas(data.costs.pa),
+            txtTotal: formatWithCommas(data.costs.total),
+            txtSuggestedPrice: formatWithCommas(data.costs.suggestedPrice)
+        })
+        document.getElementById("costId").value = data.costs.idCost;
+        billImageUrl = data.costs.costPhoto.billPhoto || null;
+        taxImageUrl = data.costs.costPhoto.taxesPhoto || null;
+        shipImageUrl = data.costs.costPhoto.shipPhoto || null;
+        renderCostPreview(dropArea, billImageUrl);
+        renderCostPreview(dropAreaTaxes, taxImageUrl);
+        renderCostPreview(dropAreaShip, shipImageUrl);
+    } else {
+        isExternalOpt.checked = true;
+        isExternalOpt.dispatchEvent(new Event('change'));
+    }
     document.getElementById("loteId").value = data.lote.idLote;
-    document.getElementById("costId").value = data.costs.idCost;
-    billImageUrl = data.costs.costPhoto.billPhoto || null;
-    taxImageUrl = data.costs.costPhoto.taxesPhoto || null;
-    shipImageUrl = data.costs.costPhoto.shipPhoto || null;
     // Renderizar en los modales
-    renderCostPreview(dropArea, billImageUrl);
-    renderCostPreview(dropAreaTaxes, taxImageUrl);
-    renderCostPreview(dropAreaShip, shipImageUrl);
 
     loadBackendImages(data.photos);
 };
@@ -167,7 +203,6 @@ let loadBackendImages = (photos = []) => {
 frmVehicles.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = getInputsValues(frmVehicles);
-
     const {
         txtVin,
         txtBrand,
@@ -188,10 +223,18 @@ frmVehicles.addEventListener("submit", async (e) => {
         txtSuggestedPrice
     } = formData;
 
-    if (!txtVin || !txtModel || !txtMileage || !txtYear || !txtLote || !txtBill || !txtTransfer || !txtStorage || !txtTowTruck || !txtShip || !txtTaxes || !txtIva || !txtPa) {
+    if (!isExternalOpt.checked) {
+        if (!txtBill || !txtTransfer || !txtStorage || !txtTowTruck || !txtShip || !txtTaxes || !txtIva || !txtPa) {
+            showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
+            return;
+        }
+    }
+
+    if (!txtVin || !txtModel || !txtMileage || !txtYear || !txtLote) {
         showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
         return;
     }
+
     const loteId = document.getElementById("loteId").value;
     const costId = document.getElementById("costId").value;
 
@@ -205,24 +248,8 @@ frmVehicles.addEventListener("submit", async (e) => {
         lote: {
             linkLote: txtLink,
             numLote: txtLote
-        },
-        costs: {
-            bill: cleanNumber(txtBill),
-            transfer: cleanNumber(txtTransfer),
-            storage: cleanNumber(txtStorage),
-            towTruck: cleanNumber(txtTowTruck),
-            ship: cleanNumber(txtShip),
-            taxes: cleanNumber(txtTaxes),
-            iva: cleanNumber(txtIva),
-            pa: cleanNumber(txtPa),
-            suggestedPrice: cleanNumber(txtSuggestedPrice)
         }
     }
-
-    if (loteId || costId) {
-        vehicle.lote.idLote = loteId
-        vehicle.costs.idCost = costId
-    };
 
     const newFiles = images.filter(img => img.isNew).map(img => img.file);
 
@@ -252,9 +279,32 @@ frmVehicles.addEventListener("submit", async (e) => {
 
     const fd = new FormData();
 
-    if (billImageFile) fd.append("billPhoto", billImageFile);
-    if (taxImageFile) fd.append("taxesPhoto", taxImageFile);
-    if (shipImageFile) fd.append("TransferShipPhoto", shipImageFile);
+    if (!isExternalOpt.checked) {
+        vehicle.costs = {
+            bill: cleanNumber(txtBill),
+            transfer: cleanNumber(txtTransfer),
+            storage: cleanNumber(txtStorage),
+            towTruck: cleanNumber(txtTowTruck),
+            ship: cleanNumber(txtShip),
+            taxes: cleanNumber(txtTaxes),
+            iva: cleanNumber(txtIva),
+            pa: cleanNumber(txtPa),
+            suggestedPrice: cleanNumber(txtSuggestedPrice)
+        }
+
+        if (billImageFile) fd.append("billPhoto", billImageFile);
+        if (taxImageFile) fd.append("taxesPhoto", taxImageFile);
+        if (shipImageFile) fd.append("TransferShipPhoto", shipImageFile);
+
+        if (costId) {
+            vehicle.costs.idCost = costId
+        };
+
+    }
+
+    if (loteId) {
+        vehicle.lote.idLote = loteId
+    };
 
     newFiles.forEach(file => {
         fd.append("photos", file);
