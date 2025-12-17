@@ -1,0 +1,58 @@
+.breadCrumbSection{
+    margin-bottom: 1em;
+    display: inline-flex;
+}
+
+.containerTable{
+    min-height: 60dvh;
+}
+
+.detailsWOSection{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1em;
+}
+
+.filtersGroup {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+}
+
+.infoItem{
+    font-size: var(--font-size-lg);
+}
+
+.lbl{
+    font-weight: var(--font-weight-medium);
+}
+
+.containerDtStatus{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.orderColor {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+.colorPending {
+    background-color: var(--warning-color);
+}
+
+.pendingOrder {
+    color: var(--warning-color);
+    font-weight: var(--font-weight-medium);
+}
+
+.CompletedOrder {
+    background-color: var(--success-color);
+}
+
+.colorCompleted {
+    color: var(--success-color);
+    font-weight: var(--font-weight-medium);
+}

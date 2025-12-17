@@ -152,7 +152,7 @@ let insertWorkOrders = (workOrders) => {
             const btnView = document.createElement("a");
             btnView.classList.add("btnPrimary");
             btnView.textContent = "Ver más";
-            btnView.href = `workOrderDetails.html?id=${workOrder.idVehicle}`;
+            btnView.href = `workOrderDetails.html?idVehicle=${workOrder.idVehicle}`;
 
             moreInfoContainer.append(moreInfoText, btnView);
 

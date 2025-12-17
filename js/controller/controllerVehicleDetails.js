@@ -48,6 +48,7 @@ const isExternalOpt = document.getElementById("isExternalOpt");
 
 const txtCosts = document.querySelectorAll(".txtCosts");
 const txtTotal = document.getElementById("txtTotal");
+const txtCustomer = document.getElementById("suggestionsCustomer");
 
 // imágenes máximas
 const MAX_IMAGES = 12;
@@ -94,6 +95,8 @@ isExternalOpt.addEventListener("change", () => {
         btnImgs.forEach(btn => {
             btn.classList.add("hide");
         })
+        txtCustomer.classList.remove("hide");
+        txtCustomer.removeAttribute("required");
     } else {
         setFormReadOnly('.costsData', false);
         txtCosts.forEach(txt => {
@@ -102,6 +105,8 @@ isExternalOpt.addEventListener("change", () => {
         btnImgs.forEach(btn => {
             btn.classList.remove("hide");
         })
+        txtCustomer.classList.add("hide");
+        txtCustomer.setAttribute("required", true);
     }
 });
 

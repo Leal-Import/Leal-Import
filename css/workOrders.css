@@ -2,26 +2,6 @@
     margin-bottom: 1.5em;
 }
 
-.statsSection {
-    display: flex;
-    margin-bottom: 20px;
-    gap: 20px;
-    width: 100%;
-}
-
-.statItem {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius-table);
-    border: var(--border);
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-}
-
 .statTitle {
     font-size: var(--font-size-base);
 }
