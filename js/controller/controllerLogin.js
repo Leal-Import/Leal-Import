@@ -83,54 +83,47 @@ frmLogin.addEventListener("submit", async (e) => {
     const response = await login(credentials, password);
     console.log(response);
 
-    if (response.ok) {
-      Swal.fire({
-        icon: 'success',
-        title: '¡Bienvenido!',
-        text: `Hola, ${credentials.trim()}`,
-        confirmButtonText: 'Continuar',
-        confirmButtonColor: '#616FEF',
-        background: '#f8fbff',
-        color: '#3d3d6b',
-        iconColor: '#616FEF',
-      }).then(() => {
-        localStorage.setItem("navItem", "dashItem")
-        window.location.href = 'dashboard.html';
+    Swal.fire({
+      icon: 'success',
+      title: '¡Bienvenido!',
+      text: `Hola, ${credentials.trim()}`,
+      confirmButtonText: 'Continuar',
+      confirmButtonColor: '#616FEF',
+      background: '#f8fbff',
+      color: '#3d3d6b',
+      iconColor: '#616FEF',
+    }).then(() => {
+      localStorage.setItem("navItem", "dashItem")
+      window.location.href = 'dashboard.html';
     });
-    localStorage.setItem("navItem", "dashItem");
-    window.location.href = 'dashboard.html';
-    } else {
-        await Swal.fire({
+    
+  } catch (error) {
+      console.error("Login failed:", error);
+      
+      let titulo = 'Error';
+      let texto = error.message;
+
+      if(texto.includes("401") || texto.includes("Credenciales")){
+          titulo = "Usuario no encontrado";
+          texto = "Credenciales inválidas. Inténtalo de nuevo.";
+      }
+
+      await Swal.fire({
           icon: 'error',
-          title: 'Usuario no encontrado',
-          text: "Credenciales inválidas. Inténtalo de nuevo.",
+          title: titulo,
+          text: texto,
           confirmButtonText: 'Aceptar',
           confirmButtonColor: '#616FEF',
           background: '#f8fbff',
           color: '#3d3d6b',
           iconColor: '#616FEF',
-        });
+      });
+  } finally {
+      if (loginButton) {
+          loginButton.disabled = false;
+          loginButton.textContent = 'Iniciar Sesión';
       }
-    } catch (error) {
-        // Handle any network or parsing errors here
-        console.error("Login failed:", error);
-        await Swal.fire({
-            icon: 'error',
-            title: 'Error de Conexión',
-            text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#616FEF',
-            background: '#f8fbff',
-            color: '#3d3d6b',
-            iconColor: '#616FEF',
-        });
-    } finally {
-        //Re-enable the button and reset its text after the operation completes
-        if (loginButton) {
-            loginButton.disabled = false;
-            loginButton.textContent = 'Iniciar Sesión';
-        }
-    }
+  }
 });
 
 // ---------- Modales & UI wiring ----------
