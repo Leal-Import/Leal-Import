@@ -73,7 +73,10 @@ export let getSpareParts = async () => {
 
 export let postWorkOrder = async (workOrderData, idVehicle, idSale) => {
     try {
-        if(idSale == null) idSale = "";
+        if (idSale === null || idSale === "null") {
+            idSale = "";
+        }
+
         const request = await fetch(`${API_URL}/postWorkOrder/${idVehicle}?idSale=${idSale}`, {
             method: 'POST',
             body: workOrderData,

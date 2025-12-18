@@ -622,7 +622,7 @@ async function handleSubmit(e) {
         amountData.push({
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: 'd7793632-7704-4a2c-a81f-753574934d1c'
+            idEmployee: '159ae7b1-dc58-11f0-b474-581122cc1fec'
         });
         imagesAmounts.push(receiptInput.files[0] || null);
     }
@@ -678,7 +678,7 @@ async function handleSubmit(e) {
         estimatedDate: dtEstimated,
         services,
         spareParts,
-        idEmployee: 'd7793632-7704-4a2c-a81f-753574934d1c',
+        idEmployee: '159ae7b1-dc58-11f0-b474-581122cc1fec',
         payments: amountData
     };
     fd.append('workOrderData', JSON.stringify(workOrderData));

@@ -148,6 +148,7 @@ legend {
 
 .previewImg {
     width: 100%;
+    border: var(--border);
     height: 100%;
     object-fit: cover;
 }
@@ -160,6 +161,7 @@ legend {
 }
 
 .thumbs-swiper .swiper-slide {
+    border: var(--border);
     opacity: 0.5;
     flex: 0 0 auto;
     cursor: pointer;

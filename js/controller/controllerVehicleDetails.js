@@ -4,6 +4,8 @@ import {
     putVehicle
 } from '../service/serviceVehicleDetails.js';
 
+import { getCustomers } from '../service/serviceCustomers.js'
+
 import {
     showMessage,
     toggleModal,
@@ -13,8 +15,8 @@ import {
     cleanNumber,
     formatWithCommas,
     allowMotoYear,
-    enableFormUI,
-    setFormReadOnly
+    setFormReadOnly,
+    highlightAndFocus
 } from '../utils.js';
 
 const params = new URLSearchParams(window.location.search);
@@ -48,7 +50,8 @@ const isExternalOpt = document.getElementById("isExternalOpt");
 
 const txtCosts = document.querySelectorAll(".txtCosts");
 const txtTotal = document.getElementById("txtTotal");
-const txtCustomer = document.getElementById("suggestionsCustomer");
+const txtCustomer = document.getElementById("txtCustomer");
+const boxCustomer = document.getElementById("suggestionsCustomer");
 
 // imágenes máximas
 const MAX_IMAGES = 12;
@@ -73,6 +76,8 @@ let mainSwiper = null;
 let thumbsSwiper = null;
 let photosToDeleteIds = [];
 
+let searchTimeout = null;
+
 document.addEventListener("click", (e) => {
     let target = e.target;
     if (target.classList.contains("containerModal")) {
@@ -83,6 +88,45 @@ document.addEventListener("click", (e) => {
 })
 
 const btnImgs = document.querySelectorAll(".btnImgs");
+
+txtCustomer?.addEventListener('input',(e) => {
+    clearTimeout(searchTimeout)
+    if(txtCustomer.dataset.id) txtCustomer.removeAttribute("data-id");
+    searchTimeout = setTimeout(async () => {
+        const q = e.target.value.trim();
+        if (!q) { boxCustomer.classList.add("hide"); return; }
+        try {
+            const res = await getCustomers(0, 15, q);
+            renderCustomersSuggestions(res.content || []);
+        } catch (err) { console.error(err); }
+    }, 1500);
+});
+
+function renderCustomersSuggestions(list) {
+    if (!boxCustomer) return;
+    boxCustomer.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    console.log(list)
+    list.forEach(p => {
+        const div = document.createElement('div');
+        div.classList.add('suggestionItem');
+        const name = document.createElement('span');
+        const dui = document.createElement('span');
+        name.textContent = p.fullName;
+        dui.textContent = `Dui: ${p.dui}`
+        div.append(name, dui);
+        div.addEventListener('click', () => {
+            txtCustomer.value = p.fullName;
+            txtCustomer.dataset.id = p.idCustomer;
+            boxCustomer.classList.add("hide");
+            boxCustomer.classList.remove("show");
+        });
+        fragment.appendChild(div);
+    });
+    boxCustomer.appendChild(fragment);
+    boxCustomer.classList.add("show");
+    boxCustomer.classList.remove("hide");
+}
 
 isExternalOpt.addEventListener("change", () => {
     if (isExternalOpt.checked) {
@@ -95,8 +139,8 @@ isExternalOpt.addEventListener("change", () => {
         btnImgs.forEach(btn => {
             btn.classList.add("hide");
         })
-        txtCustomer.classList.remove("hide");
-        txtCustomer.removeAttribute("required");
+        document.querySelector(".groupCustomer").classList.remove("hide");
+        txtCustomer.setAttribute("required", true);
     } else {
         setFormReadOnly('.costsData', false);
         txtCosts.forEach(txt => {
@@ -105,8 +149,10 @@ isExternalOpt.addEventListener("change", () => {
         btnImgs.forEach(btn => {
             btn.classList.remove("hide");
         })
-        txtCustomer.classList.add("hide");
-        txtCustomer.setAttribute("required", true);
+        document.querySelector(".groupCustomer").classList.add("hide");
+        txtCustomer.removeAttribute("required");
+        txtCustomer.removeAttribute("data-id");
+        txtCustomer.value = "";
     }
 });
 
@@ -155,6 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 let loadVehicle = async () => {
     document.getElementById("typeAction").textContent = "Actualizar vehiculo"
     const data = await getVehicles(currentId);
+    console.log(data)
     fillForm('#frmVehicles', {
         txtVin: data.vin,
         txtBrand: data.brand,
@@ -188,6 +235,8 @@ let loadVehicle = async () => {
     } else {
         isExternalOpt.checked = true;
         isExternalOpt.dispatchEvent(new Event('change'));
+        txtCustomer.dataset.id = data.idOwnerCustomer;
+        txtCustomer.value = data.customerName;
     }
     document.getElementById("loteId").value = data.lote.idLote;
     // Renderizar en los modales
@@ -305,6 +354,13 @@ frmVehicles.addEventListener("submit", async (e) => {
             vehicle.costs.idCost = costId
         };
 
+    } else {
+        if (!txtCustomer.dataset.id) {
+            highlightAndFocus(txtCustomer)
+            showMessage(`Sin cliente seleccionado`, "Debes seleccionar un cliente", "warning");
+            return;
+        }
+        vehicle.idOwnerCustomer = txtCustomer.dataset.id;
     }
 
     if (loteId) {
