@@ -16,7 +16,8 @@ import {
     showMessage,
     getInputsValues,
     highlightAndFocus,
-    allowDecimal
+    allowDecimal,
+    validateDate
 } from '../utils.js';
 
 /*
@@ -33,6 +34,7 @@ const txtAddSparePart = document.getElementById("txtSearchSparePart");
 const boxSparePart = document.getElementById("suggestionsSpareParts");
 
 const frmAddWorkOrder = document.getElementById("frmWorkOrder");
+const dtEstimated = document.getElementById("dtEstimated");
 
 // URL params
 const params = new URLSearchParams(window.location.search);
@@ -109,16 +111,6 @@ let extraMethodsSpare = () => {
     updateImportButtonPosition();
 }
 
-let addEventsPriceSpare = () => {
-    calculateTotalSpareParts();
-    calculateAmountDue();
-}
-
-let addEventsPriceService = () => {
-    calculateTotalService();
-    calculateAmountDue();
-}
-
 function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption) {
     const tBody = qsa(tBodyS); if (!tBody) return false;
     let emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
@@ -143,6 +135,7 @@ function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTra
     allowDecimal(priceCell);
     priceCell.addEventListener('input', (e) => {
         addEventsPrice();
+        calculateAmountDue();
     });
 
     priceCell.addEventListener("focus", (e) => {
@@ -159,7 +152,7 @@ function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTra
 }
 
 let loadBreadCrumb = () => {
-    if(idSale) {
+    if (idSale) {
         $("firstBread").textContent = "Ventas >";
         $("firstBread").href = "sales.html"
     }
@@ -175,6 +168,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadDataVehicle();
     if (idWorkOrder) {
         await loadWorkOrder();
+        validateDate(dtEstimated, dtEstimated.value);
+    } else {
+        validateDate(dtEstimated, new Date())
     }
     createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
     // ejecutar verifySelects inicialmente y también está atento a cambios dinámicos
@@ -194,12 +190,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 let loadWorkOrder = async () => {
     const workOrder = await getWorkOrderById(idWorkOrder);
-    console.log(workOrder)
-    loadSavedSpareParts(workOrder.spareParts);
-    loadSavedServices(workOrder.services);
     workOrder.payments.forEach(payment => {
         createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, null, createBtnUrl, calculateRepairCost, paymentsToDelete)
     })
+    loadSavedSpareParts(workOrder.spareParts);
+    loadSavedServices(workOrder.services);
 
     document.getElementById("txtNotes").value = workOrder.notes || "";
     document.getElementById("dtEstimated").value = workOrder.estimatedDate || "";
@@ -407,11 +402,12 @@ function addService(service) {
 
     const obj = { id: service.id || null, name: service.name, price: service.price || 0, idWo: service.idWoService };
     // si append falla porque no hay fila vacía, appendServiceToDOM ahora añadirá filas y reintentará
-    if (!appendToDom("#tBodyServices", obj, rowsServices, addEventsPriceService, reindexServices, createTrashOptionService)) return;
+    if (!appendToDom("#tBodyServices", obj, rowsServices, calculateTotalService, reindexServices, createTrashOptionService)) return;
     selectedServices.push(obj);
     txtAddService.value = '';
     hideElement(boxServ);
     calculateTotalService();
+    calculateAmountDue();
 }
 
 function reindexServices() {
@@ -454,7 +450,7 @@ function addSparePart(p) {
         price: p.unitPrice || 0,
         idWo: p.idWorkOrder || null
     };
-    if (!appendToDom("#tBodySpareParts", data, rowsSpareParts, addEventsPriceSpare, extraMethodsSpare, createTrashOptionSpare)) return;
+    if (!appendToDom("#tBodySpareParts", data, rowsSpareParts, calculateTotalSpareParts, extraMethodsSpare, createTrashOptionSpare)) return;
     selectedSpareParts.push(data);
     txtAddSparePart.value = '';
     hideElement(boxSparePart);
@@ -512,7 +508,6 @@ let calculateAmountDue = () => {
     let payments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
     let totalPaid = 0;
     payments.forEach(p => totalPaid += safeParseFloat(p.querySelector('.amountInput').value));
-
     const txtTotal = safeParseFloat(($('txtTotal') || {}).value);
     const debt = txtTotal - totalPaid;
     const dueText = $('due');
@@ -663,12 +658,12 @@ async function handleSubmit(e) {
     }
     fd.append('workOrderData', JSON.stringify(workOrderData));
     imagesAmounts.forEach(objFile => {
-        if (idSale) {
+        if (idWorkOrder) {
             if (objFile.isOld) {
                 if (objFile.file == undefined) return;
                 fd.append(objFile.idPayment, objFile.file);
             } else {
-                fd.append("updatePaymentsImages", objFile.file);
+                fd.append("newPaymentImages", objFile.file);
             }
         } else {
             fd.append('paymentImages', objFile.file);

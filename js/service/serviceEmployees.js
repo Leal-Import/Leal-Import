@@ -1,10 +1,11 @@
 const API_URL = "http://127.0.0.1:8080/api/employees";
-const API_URLR = "http://127.0.0.1:8080/api/roles"
+const API_URLR = "http://127.0.0.1:8080/api/roles";
+const API_URLUS = "http://127.0.0.1:8080/api/users";
 
-export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "") => {
+export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "", status = "") => {
 
     try {
-        const params = new URLSearchParams({ page, size, search, idRole })
+        const params = new URLSearchParams({ page, size, search, idRole, status })
         const request = await fetch(`${API_URL}/getEmployees?${params.toString()}`, {
             credentials: 'include'
         });
@@ -64,6 +65,48 @@ export let postEmployee = async (employeeData) => {
         throw error;
     }
 };
+
+export const patchEmployee = async (username, value) => {
+    try {
+        const response = await fetch(
+            `${API_URLUS}/${username}/status?value=${value}`,
+            {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+
+        if (!response.ok) {
+            let errorMessage = `Error al actualizar el estado del usuario. Código: ${response.status}.`;
+
+            try {
+                const errorData = await response.json();
+                if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).join('\n');
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch {
+                const text = await response.text();
+                if (text) errorMessage += ` Detalle: ${text.substring(0, 100)}`;
+            }
+
+            throw new Error(errorMessage);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        if (error instanceof TypeError) {
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+        }
+        throw error;
+    }
+};
+
 
 export let putEmployee = async (employeeData, id) => {
     try {
