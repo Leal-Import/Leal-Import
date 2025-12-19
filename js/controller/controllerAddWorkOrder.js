@@ -53,6 +53,7 @@ const selectedServices = []; // { id|null, name, price }
 const selectedSpareParts = []; // { id, name, unitPrice, quantity }
 const sparePartsToDelete = [];
 const servicesToDelete = [];
+const paymentsToDelete = [];
 let rowsServices = 0;
 let rowsSpareParts = 0;
 
@@ -191,7 +192,7 @@ let loadWorkOrder = async () => {
     loadSavedSpareParts(workOrder.spareParts);
     loadSavedServices(workOrder.services);
     workOrder.payments.forEach(payment => {
-        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, null, createBtnUrl, calculateRepairCost, null)
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, null, createBtnUrl, calculateRepairCost, paymentsToDelete)
     })
 
     document.getElementById("txtNotes").value = workOrder.notes || "";
@@ -652,6 +653,7 @@ async function handleSubmit(e) {
         delete workOrderData.payments;
         workOrderData.serviceToDelete = servicesToDelete;
         workOrderData.itemsToDelete = sparePartsToDelete;
+        workOrderData.paymentsToDelete = paymentsToDelete;
     }
     fd.append('workOrderData', JSON.stringify(workOrderData));
     imagesAmounts.forEach(objFile => {
@@ -666,7 +668,6 @@ async function handleSubmit(e) {
             fd.append('paymentImages', objFile.file);
         }
     });
-
 
     try {
         let response;
