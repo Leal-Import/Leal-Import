@@ -115,6 +115,10 @@ let insertWorkOrders = (workOrders) => {
                 orderColor.classList.add("colorCompleted");
                 orderStatus.classList.add("completedOrder");
                 orderStatus.textContent = "Completada";
+            } else {
+                orderColor.classList.add("colorDelay");
+                orderStatus.classList.add("delayOrder");
+                orderStatus.textContent = "Retraso";
             }
 
             containerOrderStatus.append(orderColor, orderStatus);

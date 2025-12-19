@@ -90,6 +90,14 @@
     font-weight: var(--font-weight-medium);
 }
 
+.colorDelay {
+    background-color: var(--danger-color);
+}
+.delayOrder {
+    color: var(--danger-color);
+    font-weight: var(--font-weight-medium);
+}
+
 .moreInfoContainer {
     display: flex;
     justify-content: space-between;
