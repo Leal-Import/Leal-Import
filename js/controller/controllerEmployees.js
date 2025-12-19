@@ -18,7 +18,8 @@ import {
     getActiveEmployees,
     postEmployee,
     getRoles,
-    putEmployee
+    putEmployee,
+    patchEmployee
 } from '../service/serviceEmployees.js';
 
 import { createPagination } from '../pagination.js'
@@ -30,6 +31,7 @@ const btnAddEmployee = document.getElementById("btnAddEmployee");
 const titleModal = document.querySelector(".titleModal");
 const txtSearchData = document.getElementById("txtSearchData");
 const selectSearchRoles = document.getElementById("cmbSearchByRole");
+const cmbSearchByStatus = document.getElementById("cmbSearchByStatus");
 
 // Configurar el modal para agregar empleados
 setupModal("#OpenModalEmployees", "#modalEmployees", "#closeAddEmployee", "#frmEmployees", "Agregar empleado");
@@ -40,7 +42,8 @@ let loadEmployees = async ({ page, size, filters }) => {
             page - 1,           // backend normalmente es 0-based
             size,
             filters.search || '',
-            filters.role || ''
+            filters.role || '',
+            filters.status || ''
         );
         insertEmployees(data.content);
         pagination.setTotal({
@@ -76,7 +79,8 @@ let filterData = () => {
             page: 1,
             filters: {
                 search: txtSearchData.value.trim(),
-                role: selectSearchRoles.value
+                role: selectSearchRoles.value,
+                status: cmbSearchByStatus.value
             }
         });
     }, 1500);
@@ -87,6 +91,10 @@ txtSearchData.addEventListener('input', () => {
 })
 
 selectSearchRoles.addEventListener('change', async () => {
+    filterData();
+})
+
+cmbSearchByStatus.addEventListener('change', () => {
     filterData();
 })
 
@@ -120,6 +128,16 @@ let insertEmployees = (employees) => {
             tdEmail.textContent = employee.email;
             tdPhone.textContent = employee.phoneEmployee;
             tdRole.textContent = employee.roleName || 'Error al cargar rol';
+            let btnText = "";
+            let status = "";
+            if (employee.status == "T") {
+                btnText = "Desactivar empleado";
+                status = "F";
+            } else {
+                btnText = "Activar empleado";
+                status = "T";
+            }
+
 
             const actionButton = document.createElement('button');
             actionButton.textContent = '⋯';
@@ -130,7 +148,7 @@ let insertEmployees = (employees) => {
                 event.stopPropagation();
                 showFloatingMenu(event, [
                     { label: 'Editar empleado', onClick: () => editEmployee(employee), id: 'btnUpdateEmp' },
-                    { label: 'Desactivar empleado', onClick: () => deleteEmployee(employee.idEmployee), id: 'btnDeleteEmp' },
+                    { label: btnText, onClick: () => disable(employee.username, status), id: 'btnDeleteEmp' },
                     { label: 'Ver detalles', onClick: () => viewEmployee(employee), id: 'btnViewEmp' }
                 ]);
             });
@@ -144,6 +162,7 @@ let insertEmployees = (employees) => {
 
 let editEmployee = (employee) => {
     currentId = employee.idEmployee;
+    console.log(employee)
     fillForm('#frmEmployees', {
         txtFullName: employee.fullName,
         txtEmployeeEmail: employee.email,
@@ -156,9 +175,13 @@ let editEmployee = (employee) => {
     toggleModal(modalEmployees, true);
 }
 
-let deleteEmployee = (employeeId) => {
-    console.log("Eliminando empleado ID:", employeeId);
-    // Podés mostrar un modal de confirmación aquí
+let disable = async (username, status) => {
+    let message = "";
+    if(status == "T") message = "Empleado activado con exito";
+    else message = "Empleado desactivado con exito";
+    const response = await patchEmployee(username, status);
+    if(response) await showMessage("Empleado", message, "success");
+    pagination.update({});
 }
 
 let viewEmployee = (employee) => {
@@ -244,8 +267,8 @@ let loadRolesSelect = async () => {
         const roles = await getRoles();
         console.log(roles);
         rolesList = roles; // Guardamos para mapear luego
-        fillSelect('cmbUserRole', rolesList, 'idRole', 'roleName');
-        fillSelect('cmbSearchByRole', rolesList, 'idRole', 'roleName')
+        fillSelect('cmbUserRole', rolesList, 'idRole', 'roleName', "Selecciona un rol");
+        fillSelect('cmbSearchByRole', rolesList, 'idRole', 'roleName', "Buscar por rol");
     } catch (error) {
         console.error('Error al cargar roles en el select:', error);
     }

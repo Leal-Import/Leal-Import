@@ -119,6 +119,9 @@ let insertWOrders = (workOrders) => {
         } else if (wo.statusName == "Completada") {
             orderColor.classList.add("colorCompleted");
             statusBadge.classList.add("CompletedOrder");
+        } else {
+            orderColor.classList.add("colorDelay");
+            statusBadge.classList.add("delayOrder");
         }
 
         const tdCost = document.createElement("td");

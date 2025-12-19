@@ -43,6 +43,12 @@ export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, for
     });
 };
 
+export const validateDate = (input, minDate) => {
+    const date = new Date(minDate);
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    input.min = date.toISOString().split('T')[0];
+};
+
 export const getInputsValues = (form) => {
     const data = {};
     const inputs = form.querySelectorAll('input, textarea, select');
@@ -124,7 +130,7 @@ export const initSession = async () => {
 export const getCurrentEmployeeId = () => {
     if (!currentUser) {
         console.warn("Se intentó obtener ID sin sesión iniciada.");
-        return null; 
+        return null;
     }
     return currentUser.idEmployee;
 };

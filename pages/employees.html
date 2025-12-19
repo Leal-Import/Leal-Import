@@ -53,9 +53,14 @@
                         placeholder="Buscar por: nombre, correo o teléfono">
                 </div>
                 <div class="filterSection">
-                    <select id="cmbSearchByRole" class="cmbFilterData">
-                        <option value="">Buscar por rol</option>
-                    </select>
+                    <div class="containerSelects">
+                        <select id="cmbSearchByRole" class="cmbFilterData"></select>
+                        <select id="cmbSearchByStatus" class="cmbFilterData">
+                            <option value="T">Activo</option>
+                            <option value="F">Inactivo</option>
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
                     <button id="OpenModalEmployees" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
             </div>

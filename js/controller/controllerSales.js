@@ -16,7 +16,7 @@ let StateList = [];
 
 let loadSales = async ({ page, size, filters }) => {
     try {
-        const data = await getSales(page - 1, size, filters.search, filters.idState, filters.productType);
+        const data = await getSales(page - 1, size, filters.search || '', filters.idState || '', filters.productType || '');
         insertSales(data.content)
         pagination.setTotal({
             totalElements: data.page.totalElements,
