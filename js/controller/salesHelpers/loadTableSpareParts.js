@@ -45,9 +45,9 @@ export async function insertSpareParts(
         const suggestedPriceTd = document.createElement("td");
 
         image.src = sparePart.photoUrl || "";
-        name.textContent = sparePart.nameSpareParts || "Sin nombre";
-        cost.textContent = `$${formatWithCommas(sparePart.total || 0)}`;
-        suggestedPriceTd.textContent = `$${formatWithCommas(sparePart.suggestedPrice || 0)}`;
+        name.textContent = sparePart.nameSpareParts || sparePart.sparePartName;
+        cost.textContent = `$${formatWithCommas(sparePart.total || sparePart.totalCost || 0)}`;
+        suggestedPriceTd.textContent = `$${formatWithCommas(sparePart.suggestedPrice || sparePart.priceApplied || 0)}`;
 
         tr.classList.add("tableRow");
         image.classList.add("imgSparePart");

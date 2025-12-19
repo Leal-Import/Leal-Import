@@ -4,7 +4,8 @@ import { createPagination } from '../pagination.js'
 import {
     setupModal,
     fillSelect,
-    showMessage
+    showMessage,
+    formatWithCommas
 } from '../utils.js';
 // Configurar el modal para agregar repuestos
 setupModal("#modalParts", "#modalSpareParts", "#closeAddEmployee");
@@ -102,7 +103,7 @@ let insertSpareParts = (spareParts) => {
             brandModel.textContent = `${sparePart.brand} ${sparePart.model}`;
             statusPart.textContent = sparePart.state;
             yearPart.textContent = sparePart.yearPart;
-            partPrice.textContent = `$${sparePart.totalCost}`;
+            partPrice.textContent = `$${formatWithCommas(sparePart.totalCost)}`;
             btnEdit.textContent = "Editar";
             btnView.textContent = "Ver mas";
 

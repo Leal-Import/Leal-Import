@@ -125,23 +125,6 @@ textarea {
     gap: 20px;
 }
 
-.imgSparePart {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border: var(--border);
-}
-
-.leftColumn .tableContainer {
-    max-height: 65dvh;
-    overflow-y: auto;
-}
-
-.leftColumn .table {
-    border: var(--border);
-    max-height: 100%;
-}
-
 .tableRow {
     position: relative;
 }

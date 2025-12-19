@@ -22,7 +22,7 @@
                     <a class="breadcrumb" id="typeAction">Agregar vehiculos</a>
                 </div>
             </div>
-            <div>
+            <div class="gridPlace">
                 <div class="modalAdd hide" id="modalLink">
                     <button class="btnClose" type="button">
                         <img src="../media/appMedia/closeIcon.svg" alt="">
@@ -92,33 +92,33 @@
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtVin" class="lblInputs">Vin</label>
-                            <input type="text" class="txtInputs" id="txtVin" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtVin" maxlength="50" required>
                         </div>
                         <div class="formGroup">
                             <label for="txtBrand" class="lblInputs">Marca</label>
-                            <input type="text" class="txtInputs" id="txtBrand" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtBrand" maxlength="50" required>
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtModel" class="lblInputs">Modelo</label>
-                            <input type="text" class="txtInputs" id="txtModel" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtModel" maxlength="50" required>
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtYear" class="lblInputs">Año</label>
-                            <input type="text" class="txtInputs" id="txtYear" maxlength="4">
+                            <input type="text" class="txtInputs" id="txtYear" maxlength="4" required>
                         </div>
                         <div class="formGroup">
                             <label for="txtMileage" class="lblInputs">Millaje</label>
-                            <input type="text" class="txtInputs" id="txtMileage" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtMileage" maxlength="50" required>
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup" style="position: relative;">
                             <label for="txtLote" class="lblInputs">Lote</label>
-                            <input type="text" class="txtInputs" id="txtLote" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtLote" maxlength="50" required>
                             <button class="btnLink btnPrimary" type="button">Enlace</button>
                         </div>
                     </div>
@@ -126,6 +126,11 @@
                         <label for="txtDescription" class="lblInputs">Descripción</label>
                         <textarea type="text" class="txtInputs" id="txtDescription" rows="7" maxlength="1000"
                             style="flex: 1"></textarea>
+                    </div>
+                    <div class="formGroup groupCustomer hide" style="position: relative;">
+                        <label for="txtMileage" class="lblInputs">Cliente</label>
+                        <input type="text" class="txtInputs" id="txtCustomer" maxlength="50">
+                        <div class="suggestions hide" id="suggestionsCustomer"></div>
                     </div>
                 </fieldset>
                 <div class="imgData">
@@ -152,47 +157,47 @@
                     <div class="rowFields">
                         <div class="formGroup" style="position: relative;">
                             <label for="txtBill" class="lblInputs">Factura</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtBill" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts" id="txtBill" maxlength="11" required>
                             <button type="button" class="btnImgs btnPrimary" id="btnBill">+</button>
                         </div>
                         <div class="formGroup" style="position: relative;">
                             <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTaxes" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts" id="txtTaxes" maxlength="11" required>
                             <button type="button" class="btnImgs btnPrimary" id="btnTaxes">+</button>
                         </div>
                         <div class="formGroup" style="position: relative;">
                             <label for="txtShip" class="lblInputs">Barco</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtShip" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts" id="txtShip" maxlength="11" required>
                             <button type="button" class="btnImgs btnPrimary btnsTransport">+</button>
                         </div>
                         <div class="formGroup" style="position: relative;">
                             <label for="txtTowTruck" class="lblInputs">Transporte</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTowTruck" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts" id="txtTowTruck" maxlength="11" required>
                             <button type="button" class="btnImgs btnPrimary btnsTransport">+</button>
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtStorage" class="lblInputs">Almacenamiento</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtStorage" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts" id="txtStorage" maxlength="11" required>
                         </div>
                         <div class="formGroup">
                             <label for="txtTransfer" class="lblInputs">Transferencia</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTransfer" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts" id="txtTransfer" maxlength="11" required>
                         </div>
                         <div class="formGroup">
                             <label for="txtIva" class="lblInputs">IVA</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtIva" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts" id="txtIva" maxlength="11" required>
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtPa" class="lblInputs">P.A</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtPa" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts" id="txtPa" maxlength="11" required>
                         </div>
                         <div class="formGroup">
                             <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
-                            <input type="text" class="txtInputs" id="txtSuggestedPrice" maxlength="11">
+                            <input type="text" class="txtInputs" id="txtSuggestedPrice" maxlength="11" required>
                         </div>
                         <div class="formGroup">
                             <label for="txtTotal" class="lblInputs">Total</label>
@@ -201,7 +206,16 @@
                     </div>
                 </fieldset>
             </div>
-            <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" style="padding: 10px 40px;">
+            <div class="containerOptions">
+                <div class="isExternalContainer">
+                    <span class="lbl">¿Es externo?</span>
+                    <label class="switch">
+                        <input type="checkbox" id="isExternalOpt">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" style="padding: 10px 40px;">
+            </div>
         </form>
         <script src="../js/sidebar.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>

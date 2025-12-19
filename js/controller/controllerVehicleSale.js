@@ -13,7 +13,9 @@ import {
     getInputsValues,
     highlightAndFocus,
     cleanNumber,
-    showMessage
+    showMessage,
+    initSession,
+    getCurrentEmployeeId
 } from '../utils.js'
 
 const params = new URLSearchParams(window.location.search);
@@ -58,6 +60,7 @@ frmVehicleSale.addEventListener("submit", async (e) => {
 
 let createNewSale = async (isWO) => {
     const formData = getInputsValues(frmVehicleSale);
+    const currentIdEmployee = getCurrentEmployeeId();
 
     const {
         txtTotal,
@@ -79,6 +82,11 @@ let createNewSale = async (isWO) => {
     if (!txtCommission) {
         highlightAndFocus(document.getElementById('txtCommission'));
         showMessage('Por favor, ingrese la comision de la venta.', 'Comisión requerida', 'warning');
+        return false;
+    }
+
+    if (!currentIdEmployee) {
+        showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
         return false;
     }
 
@@ -113,7 +121,7 @@ let createNewSale = async (isWO) => {
         let obj = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: currentIdEmployee
         }
         if (idAmount) obj.idPayment = idAmount;
         amountData.push(obj);
@@ -128,11 +136,9 @@ let createNewSale = async (isWO) => {
             file: receiptInput.files[0],
             isOld: amounts[i].dataset.id ? true : false,
         }
-        if(idAmount) imgs.idPayment = idAmount;
-        console.log(amounts[i])
+        if (idAmount) imgs.idPayment = idAmount;
         imagesAmounts.push(imgs);
     }
-    console.log(imagesAmounts);
     const fd = new FormData();
 
     const saleData = {
@@ -140,7 +146,7 @@ let createNewSale = async (isWO) => {
         idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: currentIdEmployee,
     }
     const amountOld = [];
     const amountNew = [];
@@ -159,7 +165,6 @@ let createNewSale = async (isWO) => {
         saleData.payments = amountData;
     }
     fd.append("vehicleData", JSON.stringify(saleData));
-    console.log(amountData)
     imagesAmounts.forEach(objFile => {
         if (idSale) {
             if (objFile.isOld) {
@@ -235,6 +240,9 @@ let loadEventsInps = () => {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if(!user)return; // Detenemos la ejecución si no hay usuario
+
     await loadPayMethods();
     loadEventsInps();
 
@@ -323,8 +331,13 @@ let insertVehicles = (vehicles) => {
 
             image.src = vehicle.photoUrl;
             vin.textContent = vehicle.vin;
-            cost.textContent = `$${formatWithCommas(vehicle.total)}`;
-            suggesredPrice.textContent = `$${formatWithCommas(vehicle.suggestedPrice)}`; /* Por el momento es costo total */
+            if (vehicle.total && vehicle.suggestedPrice) {
+                cost.textContent = `$${formatWithCommas(vehicle.total)}`;
+                suggesredPrice.textContent = `$${formatWithCommas(vehicle.suggestedPrice)}`; /* Por el momento es costo total */
+            } else {
+                cost.textContent = `Externo`;
+                suggesredPrice.textContent = `Externo`; /* Por el momento es costo total */
+            }
 
             tr.classList.add("tableRow");
             btnAddVehicle.classList.add("btnPrimary", "btnAddVehicle");

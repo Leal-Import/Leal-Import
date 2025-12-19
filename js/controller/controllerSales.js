@@ -1,17 +1,22 @@
-import { setupModal, showMessage } from '../utils.js'
-import { getSales } from '../service/serviceSales.js'
+import { setupModal, showMessage, fillSelect } from '../utils.js'
+import { getSales, getStateSales } from '../service/serviceSales.js'
 import { createPagination } from '../pagination.js'
 
 setupModal("#btnAskSale", "#modalAskSale", "#btnCloseModalAsk", null, "¿Que deseas vender?");
 
 const filterLinesButtons = document.querySelectorAll(".filterType");
 const txtSearchData = document.getElementById("txtSearchData");
+const cmdStateSales = document.getElementById("cmbSearchByStatus");
+const filterType = document.querySelectorAll(".filterType")
 
 let searchTimeout = null;
+let currentProductType = null;
+let StateList = [];
+
 
 let loadSales = async ({ page, size, filters }) => {
     try {
-        const data = await getSales(page - 1, size, filters.search);
+        const data = await getSales(page - 1, size, filters.search, filters.idState, filters.productType);
         insertSales(data.content)
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -25,6 +30,16 @@ let loadSales = async ({ page, size, filters }) => {
     }
 }
 
+let loadStateSales = async () => {
+    try {
+        const status = await getStateSales();
+        StateList = status;
+        fillSelect('cmbSearchByStatus', StateList, 'idStateSale', 'stateName');
+    } catch (error) {
+        console.error('Error al cargar estados:', error);
+    }
+};
+
 const pagination = createPagination({ initialSize: 10, onChange: loadSales })
 
 let filterData = () => {
@@ -33,13 +48,19 @@ let filterData = () => {
         pagination.update({
             page: 1,
             filters: {
-                search: txtSearchData.value.trim()
+                search: txtSearchData.value.trim(),
+                idState: cmdStateSales.value,
+                productType: currentProductType
             }
         })
     }, 1500);
 }
 
 txtSearchData.addEventListener('input', () => {
+    filterData();
+})
+
+cmdStateSales.addEventListener('change', () => {
     filterData();
 })
 
@@ -50,11 +71,15 @@ let loadEventsFilterBtn = () => {
                 btn.querySelector(".lineSelected").classList.remove("selected");
             });
             button.querySelector(".lineSelected").classList.add("selected");
+
+            currentProductType = button.getAttribute("value");
+            filterData();
         })
     });
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    await loadStateSales();
     loadEventsFilterBtn();
     pagination.update({});
 });

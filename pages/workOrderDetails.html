@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/workOrders.css">
+    <link rel="stylesheet" href="../css/workOrdersDetails.css">
     <link rel="stylesheet" href="../css/pagination.css">
-    <title>Ordenes de trabajo</title>
+    <title>Ordenes</title>
 </head>
 
 <body>
@@ -16,7 +16,18 @@
         <div class="content">
             <div class="headerContent">
                 <div class="breadCrumbSection">
-                    <a class="breadcrumb">Ordenes</a>
+                    <a class="breadcrumb" href="workOrders.html">Ordenes > </a>
+                    <a class="breadcrumb" id="vin">83UDJSHEKFLWJA28</a>
+                </div>
+                <div class="detailsWOSection">
+                    <div class="infoItem">
+                        <span class="lbl">Vehiculo:</span>
+                        <span class="valueItem">aldcndsocew</span>
+                    </div>
+                    <div class="infoItem">
+                        <span class="lbl">Cliente:</span>
+                        <span class="valueItem">ilcjdwioci</span>
+                    </div>
                 </div>
                 <div class="statsSection">
                     <div class="statItem totalVehicle">
@@ -31,7 +42,7 @@
                         <p class="statTitle">Atrasadas</p>
                         <h2 class="statValue" id="inactiveVehicles">0</h2>
                     </div>
-                    <div class="statItem totalSales">
+                    <div class="statItem totalSales" style="flex: 2;">
                         <p class="statTitle statValue">Facturado</p>
                         <h2 class="statValue" id="totalSalesQuantity">$283,384,384.93</h2>
                     </div>
@@ -39,16 +50,31 @@
                 <div class="filterSection">
                     <div class="filtersGroup">
                         <input type="text" id="txtSearchData" class="txtSearchData"
-                            placeholder="Buscar por vehiculo, empleado o cliente asociado">
+                            placeholder="Buscar por Empleado">
                         <select id="cmbSearchByStatus" class="cmbFilterData">
                             <option value="">Estado</option>
                         </select>
                     </div>
-                    <a id="OpenModalVehicles" href="vehicle.html?workOrder=true"
-                        class="btnPrimary btnOpenModal">Añadir</a>
+                    <a id="openModalCustomer" class="btnPrimary btnOpenModal">Añadir</a>
                 </div>
             </div>
-            <div class="cardContainer"></div>
+            <div class="containerTable">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Fecha registro</th>
+                            <th>Estimada</th>
+                            <th>Estado</th>
+                            <th>Costo</th>
+                            <th>Debe</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="woDetailsTBody">
+                    </tbody>
+                </table>
+            </div>
             <div class="paginationContainer">
 
                 <!-- Info + page size -->
@@ -59,7 +85,7 @@
                         <select class="txtInputs" id="sizeSelect">
                             <option value="5">5</option>
                             <option value="10" selected>10</option>
-                            <option value="15" selected>15</option>
+                            <option value="15">15</option>
                             <option value="20">20</option>
                             <option value="30">30</option>
                         </select>
@@ -77,7 +103,10 @@
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
-    <script src="../js/controller/controllerWorkOrders.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/utils.js"></script>
+    <script type="module" src="../js/controller/controllerWODetails.js"></script>
+    <script type="module" src="../js/service/serviceCustomers.js"></script>
 </body>
 
 </html>

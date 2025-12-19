@@ -214,7 +214,8 @@ frmSpareParts.addEventListener("submit", async (e) => {
                 totalPrice: params.get("totalPrice"),
                 newSparePartId: response.data.idSparePart,
                 newSparePartName: response.data.nameSpareParts,
-                newSuggestedPrice : response.data.sparePartsCosts.suggestedPrice
+                newSuggestedPrice : response.data.sparePartsCosts.suggestedPrice,
+                idWorkOrder: params.get("idWorkOrder") || null
             })
             window.location.href = `addWorkOrder.html?${paramsOrder.toString()}`;
         } else {

@@ -4,6 +4,8 @@ import {
     putVehicle
 } from '../service/serviceVehicleDetails.js';
 
+import { getCustomers } from '../service/serviceCustomers.js'
+
 import {
     showMessage,
     toggleModal,
@@ -12,13 +14,16 @@ import {
     allowDecimal,
     cleanNumber,
     formatWithCommas,
-    allowMotoYear
+    allowMotoYear,
+    setFormReadOnly,
+    highlightAndFocus
 } from '../utils.js';
 
 const params = new URLSearchParams(window.location.search);
 
 let currentId = params.get("id");
 let sale = params.get("sale") || false;
+let workOrder = params.get("workOrder") || false;
 
 const frmVehicles = document.getElementById("frmVehicles");
 const btnLink = document.querySelector(".btnLink");
@@ -41,8 +46,12 @@ const dropAreaTaxes = document.getElementById("dropAreaTaxes");
 const fileUploadInputTaxes = document.getElementById("fileUploadInputTaxes");
 const btnSelectImageTaxes = document.querySelector("#modalTaxes .btnFullWidth");
 
+const isExternalOpt = document.getElementById("isExternalOpt");
+
 const txtCosts = document.querySelectorAll(".txtCosts");
 const txtTotal = document.getElementById("txtTotal");
+const txtCustomer = document.getElementById("txtCustomer");
+const boxCustomer = document.getElementById("suggestionsCustomer");
 
 // imágenes máximas
 const MAX_IMAGES = 12;
@@ -67,6 +76,8 @@ let mainSwiper = null;
 let thumbsSwiper = null;
 let photosToDeleteIds = [];
 
+let searchTimeout = null;
+
 document.addEventListener("click", (e) => {
     let target = e.target;
     if (target.classList.contains("containerModal")) {
@@ -75,6 +86,76 @@ document.addEventListener("click", (e) => {
         if (!modalTaxes.classList.contains("hide")) toggleModal(modalTaxes, false)
     }
 })
+
+const btnImgs = document.querySelectorAll(".btnImgs");
+
+txtCustomer?.addEventListener('input',(e) => {
+    clearTimeout(searchTimeout)
+    if(txtCustomer.dataset.id) txtCustomer.removeAttribute("data-id");
+    searchTimeout = setTimeout(async () => {
+        const q = e.target.value.trim();
+        if (!q) { boxCustomer.classList.add("hide"); return; }
+        try {
+            const res = await getCustomers(0, 15, q);
+            renderCustomersSuggestions(res.content || []);
+        } catch (err) { console.error(err); }
+    }, 1500);
+});
+
+function renderCustomersSuggestions(list) {
+    if (!boxCustomer) return;
+    boxCustomer.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    console.log(list)
+    list.forEach(p => {
+        const div = document.createElement('div');
+        div.classList.add('suggestionItem');
+        const name = document.createElement('span');
+        const dui = document.createElement('span');
+        name.textContent = p.fullName;
+        dui.textContent = `Dui: ${p.dui}`
+        div.append(name, dui);
+        div.addEventListener('click', () => {
+            txtCustomer.value = p.fullName;
+            txtCustomer.dataset.id = p.idCustomer;
+            boxCustomer.classList.add("hide");
+            boxCustomer.classList.remove("show");
+        });
+        fragment.appendChild(div);
+    });
+    boxCustomer.appendChild(fragment);
+    boxCustomer.classList.add("show");
+    boxCustomer.classList.remove("hide");
+}
+
+isExternalOpt.addEventListener("change", () => {
+    if (isExternalOpt.checked) {
+        setFormReadOnly('.costsData', true);
+        txtCosts.forEach(txt => {
+            txt.value = "";
+            txt.removeAttribute("required");
+        })
+        txtTotal.value = "";
+        btnImgs.forEach(btn => {
+            btn.classList.add("hide");
+        })
+        document.querySelector(".groupCustomer").classList.remove("hide");
+        txtCustomer.setAttribute("required", true);
+    } else {
+        setFormReadOnly('.costsData', false);
+        txtCosts.forEach(txt => {
+            txt.setAttribute("required", true)
+        })
+        btnImgs.forEach(btn => {
+            btn.classList.remove("hide");
+        })
+        document.querySelector(".groupCustomer").classList.add("hide");
+        txtCustomer.removeAttribute("required");
+        txtCustomer.removeAttribute("data-id");
+        txtCustomer.value = "";
+    }
+});
+
 
 allowMotoYear(document.getElementById("txtYear"));
 
@@ -120,6 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 let loadVehicle = async () => {
     document.getElementById("typeAction").textContent = "Actualizar vehiculo"
     const data = await getVehicles(currentId);
+    console.log(data)
     fillForm('#frmVehicles', {
         txtVin: data.vin,
         txtBrand: data.brand,
@@ -129,26 +211,35 @@ let loadVehicle = async () => {
         txtLote: data.lote.numLote,
         txtLink: data.lote.linkLote,
         txtDescription: data.description,
-        txtBill: formatWithCommas(data.costs.bill),
-        txtTransfer: formatWithCommas(data.costs.transfer),
-        txtStorage: formatWithCommas(data.costs.storage),
-        txtTowTruck: formatWithCommas(data.costs.towTruck),
-        txtShip: formatWithCommas(data.costs.ship),
-        txtTaxes: formatWithCommas(data.costs.taxes),
-        txtIva: formatWithCommas(data.costs.iva),
-        txtPa: formatWithCommas(data.costs.pa),
-        txtTotal: formatWithCommas(data.costs.total),
-        txtSuggestedPrice: formatWithCommas(data.costs.suggestedPrice)
     });
+    if (data.costs) {
+        fillForm('#frmVehicles', {
+            txtBill: formatWithCommas(data.costs.bill),
+            txtTransfer: formatWithCommas(data.costs.transfer),
+            txtStorage: formatWithCommas(data.costs.storage),
+            txtTowTruck: formatWithCommas(data.costs.towTruck),
+            txtShip: formatWithCommas(data.costs.ship),
+            txtTaxes: formatWithCommas(data.costs.taxes),
+            txtIva: formatWithCommas(data.costs.iva),
+            txtPa: formatWithCommas(data.costs.pa),
+            txtTotal: formatWithCommas(data.costs.total),
+            txtSuggestedPrice: formatWithCommas(data.costs.suggestedPrice)
+        })
+        document.getElementById("costId").value = data.costs.idCost;
+        billImageUrl = data.costs.costPhoto.billPhoto || null;
+        taxImageUrl = data.costs.costPhoto.taxesPhoto || null;
+        shipImageUrl = data.costs.costPhoto.shipPhoto || null;
+        renderCostPreview(dropArea, billImageUrl);
+        renderCostPreview(dropAreaTaxes, taxImageUrl);
+        renderCostPreview(dropAreaShip, shipImageUrl);
+    } else {
+        isExternalOpt.checked = true;
+        isExternalOpt.dispatchEvent(new Event('change'));
+        txtCustomer.dataset.id = data.idOwnerCustomer;
+        txtCustomer.value = data.customerName;
+    }
     document.getElementById("loteId").value = data.lote.idLote;
-    document.getElementById("costId").value = data.costs.idCost;
-    billImageUrl = data.costs.costPhoto.billPhoto || null;
-    taxImageUrl = data.costs.costPhoto.taxesPhoto || null;
-    shipImageUrl = data.costs.costPhoto.shipPhoto || null;
     // Renderizar en los modales
-    renderCostPreview(dropArea, billImageUrl);
-    renderCostPreview(dropAreaTaxes, taxImageUrl);
-    renderCostPreview(dropAreaShip, shipImageUrl);
 
     loadBackendImages(data.photos);
 };
@@ -166,7 +257,6 @@ let loadBackendImages = (photos = []) => {
 frmVehicles.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = getInputsValues(frmVehicles);
-
     const {
         txtVin,
         txtBrand,
@@ -187,10 +277,18 @@ frmVehicles.addEventListener("submit", async (e) => {
         txtSuggestedPrice
     } = formData;
 
-    if (!txtVin || !txtModel || !txtMileage || !txtYear || !txtLote || !txtBill || !txtTransfer || !txtStorage || !txtTowTruck || !txtShip || !txtTaxes || !txtIva || !txtPa) {
+    if (!isExternalOpt.checked) {
+        if (!txtBill || !txtTransfer || !txtStorage || !txtTowTruck || !txtShip || !txtTaxes || !txtIva || !txtPa) {
+            showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
+            return;
+        }
+    }
+
+    if (!txtVin || !txtModel || !txtMileage || !txtYear || !txtLote) {
         showMessage('Por favor, complete todos los campos requeridos.', 'Campos vacios', 'warning');
         return;
     }
+
     const loteId = document.getElementById("loteId").value;
     const costId = document.getElementById("costId").value;
 
@@ -204,24 +302,8 @@ frmVehicles.addEventListener("submit", async (e) => {
         lote: {
             linkLote: txtLink,
             numLote: txtLote
-        },
-        costs: {
-            bill: cleanNumber(txtBill),
-            transfer: cleanNumber(txtTransfer),
-            storage: cleanNumber(txtStorage),
-            towTruck: cleanNumber(txtTowTruck),
-            ship: cleanNumber(txtShip),
-            taxes: cleanNumber(txtTaxes),
-            iva: cleanNumber(txtIva),
-            pa: cleanNumber(txtPa),
-            suggestedPrice: cleanNumber(txtSuggestedPrice)
         }
     }
-
-    if (loteId || costId) {
-        vehicle.lote.idLote = loteId
-        vehicle.costs.idCost = costId
-    };
 
     const newFiles = images.filter(img => img.isNew).map(img => img.file);
 
@@ -251,9 +333,39 @@ frmVehicles.addEventListener("submit", async (e) => {
 
     const fd = new FormData();
 
-    if (billImageFile) fd.append("billPhoto", billImageFile);
-    if (taxImageFile) fd.append("taxesPhoto", taxImageFile);
-    if (shipImageFile) fd.append("TransferShipPhoto", shipImageFile);
+    if (!isExternalOpt.checked) {
+        vehicle.costs = {
+            bill: cleanNumber(txtBill),
+            transfer: cleanNumber(txtTransfer),
+            storage: cleanNumber(txtStorage),
+            towTruck: cleanNumber(txtTowTruck),
+            ship: cleanNumber(txtShip),
+            taxes: cleanNumber(txtTaxes),
+            iva: cleanNumber(txtIva),
+            pa: cleanNumber(txtPa),
+            suggestedPrice: cleanNumber(txtSuggestedPrice)
+        }
+
+        if (billImageFile) fd.append("billPhoto", billImageFile);
+        if (taxImageFile) fd.append("taxesPhoto", taxImageFile);
+        if (shipImageFile) fd.append("TransferShipPhoto", shipImageFile);
+
+        if (costId) {
+            vehicle.costs.idCost = costId
+        };
+
+    } else {
+        if (!txtCustomer.dataset.id) {
+            highlightAndFocus(txtCustomer)
+            showMessage(`Sin cliente seleccionado`, "Debes seleccionar un cliente", "warning");
+            return;
+        }
+        vehicle.idOwnerCustomer = txtCustomer.dataset.id;
+    }
+
+    if (loteId) {
+        vehicle.lote.idLote = loteId
+    };
 
     newFiles.forEach(file => {
         fd.append("photos", file);
@@ -272,6 +384,11 @@ frmVehicles.addEventListener("submit", async (e) => {
 
         if (sale) {
             window.location.href = `vehicleSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&idVehicle=${response.data.idVehicle}`;
+            return;
+        }
+
+        if (workOrder) {
+            window.location.href = `addWorkOrder.html?idVehicle=${response.data.idVehicle}`
             return;
         }
 

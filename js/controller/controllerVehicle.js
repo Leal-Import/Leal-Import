@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   pagination.update({});
   if (workOrder) {
     document.querySelector(".breadcrumb").textContent = "Selecciona un vehiculo";
-    document.querySelector(".btnOpenModal").classList.add("hide");
+    document.querySelector(".btnOpenModal").href = `vehicleDetails.html?workOrder=true`;
   }
 });
 
@@ -165,7 +165,7 @@ let insertVehicles = (vehicles) => {
         const btnSelect = document.createElement("a");
         btnSelect.textContent = "Seleccionar";
         btnSelect.classList.add("btnPrimary");
-        btnSelect.href = `addWorkOrder.html?idVehicle=${vehicle.idVehicle}`
+        btnSelect.href = `addWorkOrder.html?idVehicle=${vehicle.idVehicle}&idCustomer=${vehicle.idOwnerCustomer}`;
         containerButtons.appendChild(btnSelect);
       } else {
         const btnView = document.createElement("a");

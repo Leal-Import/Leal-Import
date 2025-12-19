@@ -32,9 +32,10 @@ let insertSaleData = (sale) => {
     $("amountDue").textContent = `$${formatWithCommas(sale.amountDue)}`;
     $("totalAmount").textContent = `$${formatWithCommas(sale.salePrice - sale.amountDue)}`;
     $("total").textContent = `$${formatWithCommas(sale.salePrice)}`;
-    //$("percentage").style.width = percentage;
-    //$("percentageInfo").textContent = `${percentage} Pagado`;
+    $("percentage").style.width = percentage;
+    $("percentageInfo").textContent = `${percentage} Pagado`;
     sale.payments.forEach(payment => {
-        createRowTable("tBodyAmount", payment.idPayment, "Ejemplo", payment.amount, null, null, "tdAmount", "tdTypeAmount", null, true)
+        createRowTable("tBodyAmount", payment.idPayment, payment.paymentMethod, payment.amount, null, null, "tdAmount", "tdTypeAmount", null, true)
     });
+    insertSpareParts(sale.sparePartItems, "tBodyInventory", null, null);
 }

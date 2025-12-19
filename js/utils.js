@@ -1,3 +1,5 @@
+import { getAuthMe } from '../js/service/serviceLogin.js'
+
 export const toggleModal = (modal, show) => {
     if (!modal) return;
     modal.classList.toggle("show", show);
@@ -89,6 +91,62 @@ export const showMessage = async (title, message, type = 'info', isToast = false
     }
 
     await Swal.fire(config);
+};
+
+/* Optener el idEmployee del Auth/Me */
+let currentUser = null;
+
+/**
+ * Inicializa la sesión. Debe llamarse al cargar cualquier página.
+ * Si falla o no hay usuario, redirige al login automáticamente.
+ */
+export const initSession = async () => {
+    try {
+        const response = await getAuthMe();
+
+        if (response?.authenticated) {
+            currentUser = response.user;
+            return currentUser;
+        } else {
+            await forceLogout("Sesión no válida");
+        }
+    } catch (error) {
+        if (error?.status === 401) {
+            await forceLogout("Sesión expirada");
+        } else {
+            console.error("Error verificando sesión:", error);
+            await forceLogout("Error de sesión");
+        }
+    }
+};
+
+/* Devuelve el ID del empleado actual, Útil para enviar en formularios.*/
+export const getCurrentEmployeeId = () => {
+    if (!currentUser) {
+        console.warn("Se intentó obtener ID sin sesión iniciada.");
+        return null; 
+    }
+    return currentUser.idEmployee;
+};
+
+/* Devuelve el objeto completo del usuario (para mostrar nombre, rol, etc)*/
+export const getCurrentUser = () => {
+    return currentUser;
+};
+
+// Función auxiliar para sacar al usuario
+const forceLogout = async () => {
+    currentUser = null;
+
+    if (!window.location.pathname.includes("login.html")) {
+        await showMessage(
+            "Sesión finalizada",
+            "Tu sesión ha expirado. Por favor inicia sesión nuevamente.",
+            "warning"
+        );
+
+        window.location.href = 'login.html';
+    }
 };
 
 /* Llenar formulario */
