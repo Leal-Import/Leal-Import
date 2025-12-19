@@ -43,6 +43,24 @@ export let login = async (credentials, password) => {
     }
 };
 
+export let getAuthMe = async () => {
+    try {
+        const request = await fetch(`${API_URL}/me`, {
+            credentials: 'include'
+        });
+        if (!request.ok) {
+            const errorBody = await request.text();
+            throw new Error(`Error ${request.status}: No se pudo obtener los datos personales. Detalle: ${errorBody.substring(0, 100)}`);
+        }
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en getAuthMe:", error);
+        throw new Error("Fallo al conectar con el servicio de Login.");
+    }
+};
+
+
 export let sendPin = () => {
 }
 

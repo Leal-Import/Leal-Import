@@ -13,7 +13,9 @@ import {
     getInputsValues,
     highlightAndFocus,
     cleanNumber,
-    showMessage
+    showMessage,
+    initSession,
+    getCurrentEmployeeId
 } from '../utils.js'
 
 const params = new URLSearchParams(window.location.search);
@@ -58,6 +60,7 @@ frmVehicleSale.addEventListener("submit", async (e) => {
 
 let createNewSale = async (isWO) => {
     const formData = getInputsValues(frmVehicleSale);
+    const currentIdEmployee = getCurrentEmployeeId();
 
     const {
         txtTotal,
@@ -79,6 +82,11 @@ let createNewSale = async (isWO) => {
     if (!txtCommission) {
         highlightAndFocus(document.getElementById('txtCommission'));
         showMessage('Por favor, ingrese la comision de la venta.', 'Comisión requerida', 'warning');
+        return false;
+    }
+
+    if (!currentIdEmployee) {
+        showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
         return false;
     }
 
@@ -113,7 +121,7 @@ let createNewSale = async (isWO) => {
         let obj = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+            idEmployee: currentIdEmployee
         }
         if (idAmount) obj.idPayment = idAmount;
         amountData.push(obj);
@@ -140,7 +148,7 @@ let createNewSale = async (isWO) => {
         idCustomer: customerId,
         commission: cleanNumber(txtCommission) || 0,
         notes: txtNotes || "",
-        idEmployee: "57f74b0b-fade-45b2-928d-dc0b54aadb08", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
+        idEmployee: currentIdEmployee,
     }
     const amountOld = [];
     const amountNew = [];
@@ -235,6 +243,9 @@ let loadEventsInps = () => {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if(!user)return; // Detenemos la ejecución si no hay usuario
+
     await loadPayMethods();
     loadEventsInps();
 
