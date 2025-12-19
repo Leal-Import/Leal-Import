@@ -2,7 +2,8 @@ import {
   showMessage,
   fillSelect,
   formatWithCommas,
-  allowMotoYear
+  allowMotoYear,
+  initSession
 } from '../utils.js';
 import {
   getVehicles,
@@ -45,6 +46,9 @@ const loadVehicles = async ({ page, size, filters }) => {
 const pagination = createPagination({ initialSize: 10, onChange: loadVehicles })
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const user = await initSession();
+  if(!user)return;
+  
   await loadStatusSelect();
   pagination.update({});
   if (workOrder) {

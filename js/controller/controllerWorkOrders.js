@@ -1,6 +1,6 @@
 import { getVehiclesWOrders, getWOStatus } from '../service/serviceWorkOrders.js'
 import { createPagination } from '../pagination.js'
-import { showMessage, fillSelect } from '../utils.js'
+import { showMessage, fillSelect, initSession } from '../utils.js'
 
 const txtSearch = document.getElementById("txtSearchData");
 const cmbSearchByStatus = document.getElementById("cmbSearchByStatus");
@@ -58,6 +58,9 @@ let loadWorkOrders = async ({ page, size, filters }) => {
 const pagination = createPagination({ initialSize: 10, onChange: loadWorkOrders })
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if(!user)return;
+    
     await loadStatusSelect();
     pagination.update({});
 })

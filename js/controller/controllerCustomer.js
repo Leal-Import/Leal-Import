@@ -15,7 +15,8 @@ import {
     toggleModal,
     enableFormUI,
     setFormReadOnly,
-    formatDUIInput
+    formatDUIInput,
+    initSession
 } from '../utils.js';
 
 import { createPagination } from '../pagination.js'
@@ -59,6 +60,8 @@ let loadCustomers = async ({ page, size, filters }) => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if(!user)return;
     pagination.update({});
 });
 

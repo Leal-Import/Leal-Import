@@ -11,7 +11,8 @@ import {
     toggleModal,
     fillForm,
     enableFormUI,
-    setFormReadOnly
+    setFormReadOnly,
+    initSession
 } from '../utils.js';
 
 import {
@@ -67,6 +68,9 @@ let currentId = null;
 let searchTimeout = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if(!user)return;
+    
     await loadRolesSelect();
     pagination.update({});
 });
