@@ -46,12 +46,13 @@ cmbFilterData.addEventListener("change", () => {
 let loadWorkOrders = async ({ page, size, filters }) => {
     try {
         const data = await getDetailsOrders(idVehicle, page - 1, size, filters.search || '', filters.idStatus || '');
-        insertWOrders(data.content);
+        insertWOrders(data.orderList.content);
+        loadStats(data.statistics);
         pagination.setTotal({
-            totalElements: data.page.totalElements,
-            totalPages: data.page.totalPages,
-            page: data.page.number + 1, // volvemos a 1-based
-            size: data.page.size
+            totalElements: data.orderList.page.totalElements,
+            totalPages: data.orderList.page.totalPages,
+            page: data.orderList.page.number + 1, // volvemos a 1-based
+            size: data.orderList.page.size
         });
     } catch (error) {
         showMessage("Error", "No se pudieron cargar los vehículos." + error, "error");
@@ -59,11 +60,24 @@ let loadWorkOrders = async ({ page, size, filters }) => {
     }
 }
 
+let loadStats = (data) => {
+    document.getElementById("finalized").textContent = data.finalized;
+    document.getElementById("pending").textContent = data.pending;
+    document.getElementById("delayed").textContent = data.delayed;
+    document.getElementById("totalOrdersQuantity").textContent = `$${formatWithCommas(data.totalBilled)}`;
+
+}
+
 const pagination = createPagination({ initialSize: 10, onChange: loadWorkOrders });
+
+let loadAddLink = () => {
+    document.getElementById("openModalCustomer").href = `addWorkOrder.html?idVehicle=${idVehicle}`
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     const user = await initSession();
-    if(!user)return;
+    if (!user) return;
+    loadAddLink();
 
     await loadStatusSelect();
     pagination.update({});
@@ -99,6 +113,9 @@ let insertWOrders = (workOrders) => {
 
         const tdEmployee = document.createElement("td");
         tdEmployee.textContent = wo.employeeName ?? "—";
+
+        const tdCustomer = document.createElement("td");
+        tdCustomer.textContent = wo.employeeName ?? "—";//Por el momento sale el empleado pero aca va el cliente
 
         const tdOrderDate = document.createElement("td");
         tdOrderDate.textContent = wo.orderDate;
@@ -151,7 +168,7 @@ let insertWOrders = (workOrders) => {
                 {
                     label: "Ver orden",
                     id: `btnViewWO-${woId}`,
-                    onClick: () => viewWorkOrder(wo.idWorkOrder)
+                    onClick: () => viewWorkOrder(wo.idWorkOrder, wo.idVehicle)
                 },
                 {
                     label: "Editar orden",
@@ -161,7 +178,7 @@ let insertWOrders = (workOrders) => {
             ]);
         });
 
-        tr.append(tdEmployee, tdOrderDate, tdEstimated, tdStatus, tdCost, tdDue, tdActions);
+        tr.append(tdEmployee, tdCustomer, tdOrderDate, tdEstimated, tdStatus, tdCost, tdDue, tdActions);
 
         fragment.appendChild(tr);
     });
@@ -169,10 +186,10 @@ let insertWOrders = (workOrders) => {
     container.appendChild(fragment);
 };
 
-let viewWorkOrder = (idWorkOrder) => {
-
+let viewWorkOrder = (idWorkOrder, idVehicle) => {
+    window.location.href = `workOrderView.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}`;
 }
 
 let editWorkOrder = (idWorkOrder, idVehicle) => {
-    window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}`
+    window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}`;
 }

@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="../css/addWorkOrder.css">
     <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
     <link rel="stylesheet" href="../css/salesStyles/modalVoucher.css">
-    <title>Crear orden</title>
+    <link rel="stylesheet" href="../css/salesStyles/viewSalesStat.css">
+    <link rel="stylesheet" href="../css/workOrderView.css">
+    <title>Ver orden</title>
 </head>
 
 <body>
@@ -40,10 +42,21 @@
                 <div class="headerContent">
                     <div class="breadCrumbSection">
                         <a href="workOrders.html" class="breadcrumb" id="firstBread">Ordenes ></a>
-                        <a class="breadcrumb">Presupuesto</a>
+                        <a class="breadcrumb">Ver orden </a>
+                        <div class="orderStatus delayStatus">Retraso</div>
                     </div>
                 </div>
                 <div class="bodyLeftPart">
+                    <div class="moreDataSection">
+                        <div class="dataInfo">
+                            <span class="lblMore">Empleado: </span>
+                            <span id="employeeName">Jose merino</span>
+                        </div>
+                        <div class="dataInfo">
+                            <span class="lblMore">Cliente: </span>
+                            <span id="customerName">Cristian Vladimir</span>
+                        </div>
+                    </div>
                     <div class="moreDataContainer">
                         <div class="rowInfo">
                             <div class="dataInfo">
@@ -81,14 +94,6 @@
                     <div class="tablesDataContainer">
                         <div class="containerTables">
                             <div class="tableContainer">
-                                <div class="containerInput">
-                                    <input type="text" id="txtSearchSparePart" class="txtInputs"
-                                        placeholder="Buscar repuestos">
-                                    <div class="suggestions hide" id="suggestionsSpareParts"></div>
-                                    <button class="btnVoucher btnOpenModalSp">
-                                        <span class="icon">+</span>
-                                    </button>
-                                </div>
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -104,11 +109,6 @@
                                 </div>
                             </div>
                             <div class="tableContainer">
-                                <div class="containerInput">
-                                    <input type="text" id="txtAddService" class="txtInputs"
-                                        placeholder="Añadir servicios">
-                                    <div class="suggestions hide" id="suggestionsService"></div>
-                                </div>
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -133,30 +133,54 @@
             </div>
             <div class="rightColumn">
                 <form class="formRightColumn" id="frmWorkOrder">
+                    <div class="headerRightColumn">
+                        <h2>Resumen de pagos</h2>
+                        <div class="tableContainer">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="tdTypeAmount">Tipo de pago</th>
+                                        <th class="tdAmount">Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tBodyAmount"></tbody>
+                            </table>
+                        </div>
+                    </div>
                     <div class="bodyRightColumn">
-                        <h2>Abonos</h2>
-                        <div class="amounts"></div>
-                        <div class="containerAmountDue" id="containerAmountDue">
-                            <h3>Deuda:</h3>
-                            <span id="due"></span>
+                        <div class="containerTotal">
+                            <div class="lbl">Total:</div>
+                            <div class="infoValue" id="total">$15,210.00</div>
+                        </div>
+                        <div class="containerDataAmount">
+                            <div class="infoItem">
+                                <div class="lbl">Abonado:</div>
+                                <div class="infoValue" id="totalAmount">$5,610.00</div>
+                            </div>
+                            <div class="infoItem">
+                                <div class="lbl">Deuda:</div>
+                                <div class="infoValue danger" id="amountDue">$9,600.00</div>
+                            </div>
+                            <div class="percentageBar">
+                                <div class="percentage" id="percentage" style="width: 37%;"></div>
+                            </div>
+                            <div class="percentageInfo" id="percentageInfo">37% Pagado</div>
                         </div>
                     </div>
                     <div class="footerRightColumn">
-                        <div class="formGroup">
-                            <label for="txtNotes" class="lbl">Notas adicionales</label>
-                            <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
+                        <div class="dataInfo">
+                            <span>Fecha de registro: </span>
+                            <span id="registerDate">20/20/20</span>
+                        </div>
+                        <div class="dataInfo">
+                            <span>Fecha estimada: </span>
+                            <span id="estimatedDate">20/20/20</span>
                         </div>
                         <div class="formGroup">
-                            <label for="dtEstimated" class="lbl">Fecha estimada</label>
-                            <input type="date" id="dtEstimated" class="txtInputs">
+                            <label for="txtNotes" class="lblInp">Notas adicionales</label>
+                            <textarea id="txtNotes" class="txtInputs" readonly></textarea>
                         </div>
-                        <div class="formGroup">
-                            <label for="txtTotal" class="lbl">Precio de la orden</label>
-                            <input type="text" id="txtTotal" class="txtInputs" disabled>
-                        </div>
-                        <div class="containerButtons">
-                            <input type="submit" value="Crear orden" class="btnPrimary btnSubmitData">
-                        </div>
+                        <button class="btnPrimary btnComplete">Marcar como completado</button>
                     </div>
                 </form>
             </div>

@@ -153,10 +153,13 @@ function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTra
     return true;
 }
 
-let loadBreadCrumb = () => {
+let loadInfoPage = () => {
     if (idSale) {
         $("firstBread").textContent = "Ventas >";
         $("firstBread").href = "sales.html"
+    }
+    if(idWorkOrder){
+        document.querySelector(".btnSubmitData").value = "Actualizar";
     }
 }
 
@@ -166,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(!user)return;
 
     initStaticRows();
-    loadBreadCrumb();
+    loadInfoPage();
     await loadPayMethods();
     setupModalListeners();
     bindEvents();
