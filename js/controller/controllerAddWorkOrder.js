@@ -8,7 +8,8 @@ import {
     postWorkOrder,
     getDataVehicleById,
     getSpareParts,
-    getWorkOrderById
+    getWorkOrderById,
+    putWorkOrder
 } from '../service/serviceAddWorkOrder.js'
 import {
     formatWithCommas,
@@ -50,27 +51,140 @@ const idWorkOrder = params.get("idWorkOrder") || null;
 // Local state
 const selectedServices = []; // { id|null, name, price }
 const selectedSpareParts = []; // { id, name, unitPrice, quantity }
+const sparePartsToDelete = [];
+const servicesToDelete = [];
+const paymentsToDelete = [];
 let rowsServices = 0;
 let rowsSpareParts = 0;
+
+let createTrashOptionSpare = (id, idWoItem, nameCell, priceCell) => {
+    // boton eliminar
+    const btn = document.createElement('button');
+    btn.className = 'btnTrash';
+    btn.type = 'button';
+    const img = document.createElement('img');
+    img.src = '../../media/appMedia/trashIcon.png';
+    btn.appendChild(img);
+    btn.addEventListener('click', () => {
+        nameCell.textContent = '';
+        priceCell.textContent = '';
+        priceCell.removeAttribute("contenteditable");
+        btn.remove();
+        if (idWoItem) sparePartsToDelete.push(idWoItem);
+        const idx = selectedSpareParts.findIndex(s => s.id === id);
+        if (idx > -1) selectedSpareParts.splice(idx, 1);
+        reindexSpareParts();
+        calculateTotalSpareParts();
+        calculateAmountDue();
+        updateImportButtonPosition();
+    });
+    return btn;
+}
+
+let createTrashOptionService = (id, idWoItem, nameCell, priceCell) => {
+    // boton eliminar
+    const btn = document.createElement('button');
+    btn.className = 'btnTrash';
+    btn.type = 'button';
+    const img = document.createElement('img');
+    img.src = '../../media/appMedia/trashIcon.png';
+    btn.appendChild(img);
+    btn.addEventListener('click', () => {
+        nameCell.textContent = '';
+        priceCell.textContent = '';
+        priceCell.removeAttribute('contenteditable');
+        btn.remove();
+        if (idWoItem) servicesToDelete.push(idWoItem);
+        const idx = selectedServices.findIndex(s => s.id === id);
+        if (idx > -1) selectedServices.splice(idx, 1);
+        reindexServices();
+        calculateTotalService();
+        calculateAmountDue();
+    });
+    return btn;
+}
+
+let extraMethodsSpare = () => {
+    reindexSpareParts();
+    updateImportButtonPosition();
+}
+
+let addEventsPriceSpare = () => {
+    calculateTotalSpareParts();
+    calculateAmountDue();
+}
+
+let addEventsPriceService = () => {
+    calculateTotalService();
+    calculateAmountDue();
+}
+
+function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption) {
+    const tBody = qsa(tBodyS); if (!tBody) return false;
+    let emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
+    if (!emptyRow) {
+        // si no hay fila vacía, añadimos una fila a ambas tablas y reintentamos
+        addRowToBothTables();
+        emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
+    }
+
+    const nameCell = emptyRow.querySelector('.tdName');
+    const priceCell = emptyRow.querySelector('.tdPrice');
+    nameCell.textContent = data.name;
+    priceCell.textContent = `$${formatWithCommas(data.price)}`;
+    priceCell.setAttribute('contenteditable', 'true');
+
+    // limpiar inputs ocultos previos
+    emptyRow.dataset.id = data.id;
+    if (data.idWo) emptyRow.dataset.idWo = data.idWo;
+    const btn = createTrashOption(data.id, data.idWo, nameCell, priceCell);
+    emptyRow.appendChild(btn);
+    // listener para editar precio (preservando cursor)
+    allowDecimal(priceCell);
+    priceCell.addEventListener('input', (e) => {
+        addEventsPrice();
+    });
+
+    priceCell.addEventListener("focus", (e) => {
+        formatOnFocus(e);
+    })
+    priceCell.addEventListener("blur", (e) => {
+        formatOnBlur(e);
+    });
+
+
+    rows++;
+    extraMethods();
+    return true;
+}
+
+let loadBreadCrumb = () => {
+    if(idSale) {
+        $("firstBread").textContent = "Ventas >";
+        $("firstBread").href = "sales.html"
+    }
+}
 
 // ---------- Init ----------
 document.addEventListener('DOMContentLoaded', async () => {
     initStaticRows();
+    loadBreadCrumb();
     await loadPayMethods();
     setupModalListeners();
     bindEvents();
     await loadDataVehicle();
-    if(idWorkOrder){
+    if (idWorkOrder) {
         await loadWorkOrder();
-    } else {
-        createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
     }
+    createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
     // ejecutar verifySelects inicialmente y también está atento a cambios dinámicos
     verifySelects();
     observeAmountsContainer(); // observa cambios en los abonos (dinámicos)
     // Si venimos de "añadir repuesto", revisar params para agregarlo automáticamente
     tryAddSpareFromUrl();
-    if (isNewPart) {
+    if (isNewPart && idWorkOrder) {
+        addNewPartToTable();
+    } else if (isNewPart) {
         restoreOrderState();
         addNewPartToTable();
         saveCurrentOrderState();
@@ -81,6 +195,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 let loadWorkOrder = async () => {
     const workOrder = await getWorkOrderById(idWorkOrder);
     console.log(workOrder)
+    loadSavedSpareParts(workOrder.spareParts);
+    loadSavedServices(workOrder.services);
+    workOrder.payments.forEach(payment => {
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, null, createBtnUrl, calculateRepairCost, paymentsToDelete)
+    })
+
+    document.getElementById("txtNotes").value = workOrder.notes || "";
+    document.getElementById("dtEstimated").value = workOrder.estimatedDate || "";
 }
 
 // ---------- Utilities ----------
@@ -259,6 +381,7 @@ function updateImportButtonPosition() {
                 saveCurrentOrderState();
                 const params = new URLSearchParams({
                     workOrder: true,
+                    idWorkOrder,
                     idSale,
                     customerName,
                     idVehicle,
@@ -282,103 +405,13 @@ function addService(service) {
     if (service.id && selectedServices.some(s => s.id === service.id)) { showMessage('warning', 'El servicio ya fue añadido'); return; }
     if (!service.id && selectedServices.some(s => s.name.toLowerCase() === service.name.toLowerCase())) { showMessage('warning', 'El servicio ya fue añadido'); return; }
 
-    const obj = { id: service.id || null, name: service.name, price: service.price || 0 };
+    const obj = { id: service.id || null, name: service.name, price: service.price || 0, idWo: service.idWoService };
     // si append falla porque no hay fila vacía, appendServiceToDOM ahora añadirá filas y reintentará
-    if (!appendServiceToDOM(obj)) return;
+    if (!appendToDom("#tBodyServices", obj, rowsServices, addEventsPriceService, reindexServices, createTrashOptionService)) return;
     selectedServices.push(obj);
     txtAddService.value = '';
     hideElement(boxServ);
     calculateTotalService();
-}
-
-function appendServiceToDOM(service) {
-    const tBody = $('tBodyServices'); if (!tBody) return false;
-    let emptyRow = qsa('#tBodyServices tr').find(r => r.querySelector('.tdName').textContent.trim() === '');
-    if (!emptyRow) {
-        // si no hay fila vacía, añadimos una fila a ambas tablas y reintentamos
-        addRowToBothTables();
-        emptyRow = qsa('#tBodyServices tr').find(r => r.querySelector('.tdName').textContent.trim() === '');
-        if (!emptyRow) {
-            showMessage('warning', 'No fue posible crear una fila nueva para servicios.');
-            return false;
-        }
-    }
-
-    const index = rowsServices;
-    const nameCell = emptyRow.querySelector('.tdName');
-    const priceCell = emptyRow.querySelector('.tdPrice');
-
-    nameCell.textContent = service.name;
-    priceCell.textContent = `$${formatWithCommas(service.price)}`;
-    priceCell.setAttribute('contenteditable', 'true');
-
-    // limpiar inputs ocultos previos
-    emptyRow.querySelectorAll('input[type=hidden]').forEach(i => i.remove());
-
-    if (service.id) {
-        const inp = document.createElement('input');
-        inp.type = 'hidden';
-        inp.name = `servicios[${index}].id`;
-        inp.value = service.id;
-        inp.classList.add('hidden-service-id');
-        emptyRow.appendChild(inp);
-    } else {
-        const inp = document.createElement('input');
-        inp.type = 'hidden';
-        inp.name = `servicios[${index}].name`;
-        inp.value = service.name;
-        inp.classList.add('hidden-service-name');
-        emptyRow.appendChild(inp);
-    }
-
-    const inpPrice = document.createElement('input');
-    inpPrice.type = 'hidden';
-    inpPrice.name = `servicios[${index}].price`;
-    inpPrice.value = (service.price || 0);
-    inpPrice.classList.add('hidden-service-price');
-    emptyRow.appendChild(inpPrice);
-
-    // boton eliminar
-    const btn = document.createElement('button');
-    btn.className = 'btnTrash';
-    btn.type = 'button';
-    const img = document.createElement('img');
-    img.src = '../../media/appMedia/trashIcon.png';
-    btn.appendChild(img);
-    btn.addEventListener('click', () => {
-        nameCell.textContent = '';
-        priceCell.textContent = '';
-        priceCell.removeAttribute('contenteditable');
-        inpPrice.remove();
-        emptyRow.querySelectorAll('.hidden-service-id, .hidden-service-name').forEach(i => i.remove());
-        btn.remove();
-        const key = service.id || service.name;
-        const idx = selectedServices.findIndex(s => (s.id === key || s.name === key));
-        if (idx > -1) selectedServices.splice(idx, 1);
-        reindexServices();
-        calculateTotalService();
-        calculateAmountDue();
-    });
-    emptyRow.appendChild(btn);
-
-    // listener para editar precio (preservando cursor)
-    allowDecimal(priceCell);
-    priceCell.addEventListener('input', (e) => {
-        calculateTotalService();
-        calculateAmountDue();
-    });
-
-    priceCell.addEventListener("focus", (e) => {
-        formatOnFocus(e);
-    })
-    priceCell.addEventListener("blur", (e) => {
-        formatOnBlur(e);
-    });
-
-
-    rowsServices++;
-    reindexServices();
-    return true;
 }
 
 function reindexServices() {
@@ -418,93 +451,16 @@ function addSparePart(p) {
     const data = {
         id: p.id,
         name: p.name,
-        unitPrice: p.unitPrice || 0,
+        price: p.unitPrice || 0,
+        idWo: p.idWorkOrder || null
     };
-    if (!appendSparePartToDOM(data)) return;
+    if (!appendToDom("#tBodySpareParts", data, rowsSpareParts, addEventsPriceSpare, extraMethodsSpare, createTrashOptionSpare)) return;
     selectedSpareParts.push(data);
     txtAddSparePart.value = '';
     hideElement(boxSparePart);
     calculateTotalSpareParts();
     calculateAmountDue();
     updateImportButtonPosition(); // mover el botón IMPORTAR a la siguiente fila vacía
-}
-
-function appendSparePartToDOM(part) {
-    const tBody = $('tBodySpareParts'); if (!tBody) return false;
-    let emptyRow = qsa('#tBodySpareParts tr').find(r => r.querySelector('.tdName').textContent.trim() === '');
-    if (!emptyRow) {
-        // si no hay fila vacía, añadimos una fila a ambas tablas y reintentamos
-        addRowToBothTables();
-        emptyRow = qsa('#tBodySpareParts tr').find(r => r.querySelector('.tdName').textContent.trim() === '');
-        if (!emptyRow) {
-            showMessage('warning', 'No fue posible crear una fila nueva para repuestos.');
-            return false;
-        }
-    }
-
-    const index = rowsSpareParts;
-    const nameCell = emptyRow.querySelector('.tdName');
-    const priceCell = emptyRow.querySelector('.tdPrice');
-
-    nameCell.textContent = part.name;
-    priceCell.setAttribute("contenteditable", "true");
-    //priceCell.textContent = `$${formatWithCommas(part.unitPrice.toFixed(2))}`;
-    priceCell.textContent = `$${formatWithCommas(part.unitPrice)}`;
-
-
-    emptyRow.querySelectorAll('input[type=hidden]').forEach(i => i.remove());
-
-    const inpId = document.createElement('input');
-    inpId.type = 'hidden';
-    inpId.name = `repuestos[${index}].id`;
-    inpId.value = part.id;
-    inpId.classList.add('hidden-part-id');
-    emptyRow.appendChild(inpId);
-    const inpUnit = document.createElement('input');
-    inpUnit.type = 'hidden';
-    inpUnit.name = `repuestos[${index}].unitPrice`;
-    inpUnit.value = part.unitPrice;
-    inpUnit.classList.add('hidden-part-unitPrice');
-    emptyRow.appendChild(inpUnit);
-
-    // boton eliminar
-    const btn = document.createElement('button');
-    btn.className = 'btnTrash';
-    btn.type = 'button';
-    const img = document.createElement('img');
-    img.src = '../../media/appMedia/trashIcon.png';
-    btn.appendChild(img);
-    btn.addEventListener('click', () => {
-        nameCell.textContent = '';
-        priceCell.textContent = '';
-        priceCell.removeAttribute("contenteditable");
-        inpId.remove();
-        inpUnit.remove();
-        btn.remove();
-        const idx = selectedSpareParts.findIndex(s => s.id === part.id);
-        if (idx > -1) selectedSpareParts.splice(idx, 1);
-        reindexSpareParts();
-        calculateTotalSpareParts();
-        calculateAmountDue();
-        updateImportButtonPosition();
-    });
-    allowDecimal(priceCell)
-    priceCell.addEventListener("input", () => {
-        calculateTotalSpareParts();
-        calculateAmountDue();
-    })
-    priceCell.addEventListener("focus", (e) => {
-        formatOnFocus(e)
-    });
-    priceCell.addEventListener("blur", (e) => {
-        formatOnBlur(e)
-    });
-    emptyRow.appendChild(btn);
-
-    rowsSpareParts++;
-    reindexSpareParts();
-    updateImportButtonPosition();
-    return true;
 }
 
 function reindexSpareParts() {
@@ -602,6 +558,7 @@ async function handleSubmit(e) {
         const amountInput = amountContainers[i].querySelector('.amountInput');
         const paymentTypeSelect = amountContainers[i].querySelector('.paymentTypeSelect');
         const receiptInput = amountContainers[i].querySelector('.receiptInput');
+        const idAmount = amountContainers[i].dataset.id || null;
 
         const amountValue = safeParseFloat(amountInput.value);
         if (amountValue <= 0) {
@@ -614,17 +571,26 @@ async function handleSubmit(e) {
             showMessage('Metodo de pago faltante', `Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'warning');
             return;
         }
-        if (!receiptInput || (receiptInput.files && receiptInput.files.length === 0)) {
-            showMessage('Comprobante faltante', `Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'warning');
-            return;
+        if (!idWorkOrder) {
+            if (!receiptInput || (receiptInput.files && receiptInput.files.length === 0)) {
+                showMessage('Comprobante faltante', `Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'warning');
+                return;
+            }
         }
 
-        amountData.push({
+        let obj = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
             idEmployee: '159ae7b1-dc58-11f0-b474-581122cc1fec'
-        });
-        imagesAmounts.push(receiptInput.files[0] || null);
+        }
+        if (idAmount) obj.idPayment = idAmount;
+        amountData.push(obj);
+        let imgs = {
+            file: receiptInput.files[0] || null,
+            isOld: amountContainers[i].dataset.id ? true : false
+        }
+        if (idAmount) imgs.idPayment = idAmount;
+        imagesAmounts.push(imgs);
     }
 
     if (amountData.length == 0) {
@@ -637,16 +603,16 @@ async function handleSubmit(e) {
     const tBodyServices = $('tBodyServices');
     const activeServices = tBodyServices ? Array.from(tBodyServices.querySelectorAll('tr')).filter(r => r.querySelector('.tdName').textContent.trim() !== '') : [];
     for (const r of activeServices) {
-        const idInput = r.querySelector('.hidden-service-id');
-        const nameInput = r.querySelector('.hidden-service-name');
+        const idService = r.dataset.id;
+        const nameService = r.querySelector('.tdName');
         const tdPrice = r.querySelector('.tdPrice');
-        console.log(r, idInput, nameInput, tdPrice)
-        if ((idInput || nameInput) && tdPrice) {
+        if ((idService || nameService) && tdPrice) {
             const obj = {
-                idService: idInput ? idInput.value : null,
-                nameService: nameInput ? nameInput.value : r.querySelector('.tdName').textContent.trim(),
+                idService: idService ? idService : null,
+                nameService: nameService.textContent,
                 priceApplied: safeParseFloat(tdPrice.textContent)
             };
+            if (r.dataset.idWo) obj.idWorkOrderService = r.dataset.idWo;
             if (obj.priceApplied < 0) { showMessage('warning', `El precio del servicio '${obj.nameService}' es inválido.`); return; }
             services.push(obj);
         }
@@ -657,12 +623,15 @@ async function handleSubmit(e) {
     const tBodyParts = $('tBodySpareParts');
     const activeParts = tBodyParts ? Array.from(tBodyParts.querySelectorAll('tr')).filter(r => r.querySelector('.tdName').textContent.trim() !== '') : [];
     for (const r of activeParts) {
-        const idInput = r.querySelector('.hidden-part-id');
-        const unitPriceInput = r.querySelector('.hidden-part-unitPrice');
-        if (idInput && unitPriceInput) spareParts.push({
-            idSparePart: idInput.value,
-            priceApplied: safeParseFloat(unitPriceInput.value)
-        });
+        const idPart = r.dataset.id;
+        const tdPrice = r.querySelector('.tdPrice');
+        let obj = {
+            idSparePart: idPart,
+            priceApplied: safeParseFloat(tdPrice.textContent)
+        }
+        console.log(r, r.dataset.idWo)
+        if (r.dataset.idWo) obj.idWorkOrderSpareParts = r.dataset.idWo;
+        if (idPart && tdPrice) spareParts.push(obj);
     }
 
     if (spareParts.length == 0 && services.length == 0) {
@@ -681,12 +650,40 @@ async function handleSubmit(e) {
         idEmployee: '159ae7b1-dc58-11f0-b474-581122cc1fec',
         payments: amountData
     };
+    if (idWorkOrder != null) {
+        workOrderData.saveOrUpdateItems = workOrderData.spareParts;
+        delete workOrderData.spareParts;
+        workOrderData.saveOrUpdateService = workOrderData.services;
+        delete workOrderData.services;
+        workOrderData.saveOrUpdatePayments = workOrderData.payments;
+        delete workOrderData.payments;
+        workOrderData.serviceToDelete = servicesToDelete;
+        workOrderData.itemsToDelete = sparePartsToDelete;
+        workOrderData.paymentsToDelete = paymentsToDelete;
+    }
     fd.append('workOrderData', JSON.stringify(workOrderData));
-    imagesAmounts.forEach(file => fd.append('paymentImages', file));
+    imagesAmounts.forEach(objFile => {
+        if (idSale) {
+            if (objFile.isOld) {
+                if (objFile.file == undefined) return;
+                fd.append(objFile.idPayment, objFile.file);
+            } else {
+                fd.append("updatePaymentsImages", objFile.file);
+            }
+        } else {
+            fd.append('paymentImages', objFile.file);
+        }
+    });
 
     try {
-        let response = await postWorkOrder(fd, idVehicle, idSale);
-        await showMessage('Orden registrada', 'Orden de trabajo registrada con éxito.', "success");
+        let response;
+        if (idWorkOrder != null) {
+            response = await putWorkOrder(fd, idWorkOrder);
+            await showMessage('Orden actualizada', 'Orden de trabajo actualizada con éxito.', "success");
+        } else {
+            response = await postWorkOrder(fd, idVehicle, idSale);
+            await showMessage('Orden registrada', 'Orden de trabajo registrada con éxito.', "success");
+        }
         if (response && idSale) {
             window.location.href = "sales.html";
         } else {
@@ -851,15 +848,17 @@ function loadSavedSpareParts(sparePartsArray) {
 
     // Añadir cada repuesto usando tu función pública (respeta validaciones)
     sparePartsArray.forEach(item => {
-        const id = item.id || item.idSpareParts || item.idSpare || null;
-        const name = item.name || item.nameSpareParts || item.nameSparePart || item.nameSpare || item.nameSparePartName || '';
+        const id = item.id || item.idSpareParts || item.idSpare || item.idWorkOrderSpareParts || null;
+        const name = item.name || item.nameSpareParts || item.nameSparePart || item.nameSpare || item.nameSparePartName || item.sparePartName || '';
         const unitPrice = safeParseFloat(item.unitPrice || item.price || item.priceApplied || item.suggestedPrice || item.subtotal || 0);
+        const idWorkOrder = item.idWorkOrderSpareParts || null;
 
         // Usa addSparePart para respetar toda la lógica existente (dup checks, reindex, totals)
         addSparePart({
             id,
             name,
-            unitPrice
+            unitPrice,
+            idWorkOrder
         });
 
         // si la fuente guardó cantidad/subtotal podrías restaurarlas aquí (opcional)
@@ -887,16 +886,17 @@ function loadSavedServices(servicesArray) {
     reindexServices();
 
     servicesArray.forEach(item => {
-        const id = item.id || null;
+        const id = item.idService || null;
         // intentar distintos nombres posibles
-        const name = item.name || null;
+        const name = item.nameService || null;
         const price = safeParseFloat(item.price || item.priceApplied || item.servicePrice || 0);
-
+        const idWoService = item.idWorkOrderService || null;
         // Llamar addService respetando duplicados y la lógica de tu app
         addService({
-            id: id,
-            name: name,
-            price: price
+            id,
+            name,
+            price,
+            idWoService
         });
     });
 

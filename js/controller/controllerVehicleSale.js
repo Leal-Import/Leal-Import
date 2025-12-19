@@ -137,10 +137,8 @@ let createNewSale = async (isWO) => {
             isOld: amounts[i].dataset.id ? true : false,
         }
         if (idAmount) imgs.idPayment = idAmount;
-        console.log(amounts[i])
         imagesAmounts.push(imgs);
     }
-    console.log(imagesAmounts);
     const fd = new FormData();
 
     const saleData = {
@@ -167,7 +165,6 @@ let createNewSale = async (isWO) => {
         saleData.payments = amountData;
     }
     fd.append("vehicleData", JSON.stringify(saleData));
-    console.log(amountData)
     imagesAmounts.forEach(objFile => {
         if (idSale) {
             if (objFile.isOld) {

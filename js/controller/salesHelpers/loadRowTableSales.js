@@ -31,3 +31,4 @@ export async function createRowTable(tBody, id, name, price, createTrashOption, 
 
     if(calculateTotal) calculateTotal();
 }
+
