@@ -158,11 +158,17 @@ function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTra
     return true;
 }
 
-
+let loadBreadCrumb = () => {
+    if(idSale) {
+        $("firstBread").textContent = "Ventas >";
+        $("firstBread").href = "sales.html"
+    }
+}
 
 // ---------- Init ----------
 document.addEventListener('DOMContentLoaded', async () => {
     initStaticRows();
+    loadBreadCrumb();
     await loadPayMethods();
     setupModalListeners();
     bindEvents();
