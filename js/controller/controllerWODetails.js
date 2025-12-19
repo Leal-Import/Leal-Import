@@ -2,7 +2,7 @@ import { createPagination } from '../pagination.js'
 import { showMessage } from '../utils.js';
 import { getDetailsOrders } from '../service/serviceWODetails.js';
 import { getWOStatus } from '../service/serviceWorkOrders.js';
-import { formatWithCommas, showFloatingMenu, fillSelect } from '../utils.js';
+import { formatWithCommas, showFloatingMenu, fillSelect, initSession } from '../utils.js';
 
 const params = new URLSearchParams(window.location.search);
 const txtSearchData = document.getElementById("txtSearchData");
@@ -62,6 +62,9 @@ let loadWorkOrders = async ({ page, size, filters }) => {
 const pagination = createPagination({ initialSize: 10, onChange: loadWorkOrders });
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if(!user)return;
+
     await loadStatusSelect();
     pagination.update({});
 })

@@ -5,7 +5,8 @@ import {
     setupModal,
     fillSelect,
     showMessage,
-    formatWithCommas
+    formatWithCommas,
+    initSession
 } from '../utils.js';
 // Configurar el modal para agregar repuestos
 setupModal("#modalParts", "#modalSpareParts", "#closeAddEmployee");
@@ -65,6 +66,8 @@ let loadStatusSelect = async () => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if(!user)return;
     await loadStatusSelect();
     pagination.update({});
 });

@@ -17,7 +17,9 @@ import {
     getInputsValues,
     highlightAndFocus,
     allowDecimal,
-    validateDate
+    validateDate,
+    initSession,
+    getCurrentEmployeeId
 } from '../utils.js';
 
 /*
@@ -160,6 +162,9 @@ let loadBreadCrumb = () => {
 
 // ---------- Init ----------
 document.addEventListener('DOMContentLoaded', async () => {
+    const user = await initSession();
+    if(!user)return;
+
     initStaticRows();
     loadBreadCrumb();
     await loadPayMethods();
@@ -534,6 +539,8 @@ async function handleSubmit(e) {
     if (!idVehicle) { showMessage('warning', 'Por favor, seleccione un vehículo para la orden.'); return; }
 
     const formValues = getInputsValues(frmAddWorkOrder);
+    const currentIdEmployee = await getCurrentEmployeeId();
+
     const {
         dtEstimated,
         txtNotes
@@ -572,11 +579,15 @@ async function handleSubmit(e) {
                 return;
             }
         }
+        if (!currentIdEmployee) {
+        showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
+        return false;
+    }
 
         let obj = {
             amount: amountValue,
             idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: '159ae7b1-dc58-11f0-b474-581122cc1fec'
+            idEmployee: currentIdEmployee
         }
         if (idAmount) obj.idPayment = idAmount;
         amountData.push(obj);
@@ -642,7 +653,7 @@ async function handleSubmit(e) {
         estimatedDate: dtEstimated,
         services,
         spareParts,
-        idEmployee: '159ae7b1-dc58-11f0-b474-581122cc1fec',
+        idEmployee: currentIdEmployee,
         payments: amountData
     };
     if (idWorkOrder != null) {
