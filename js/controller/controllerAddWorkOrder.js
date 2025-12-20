@@ -2,7 +2,7 @@
 // Reescritura completa - módulo Órdenes de Trabajo
 // Mantén los imports tal como los usas en tu proyecto:
 import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
-import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMethods, verifySelects, formatOnBlur, formatOnFocus } from '../controller/salesHelpers/payments.js'
+import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMethods, verifySelects} from '../controller/salesHelpers/payments.js'
 import {
     getServices,
     postWorkOrder,
@@ -11,6 +11,7 @@ import {
     getWorkOrderById,
     putWorkOrder
 } from '../service/serviceAddWorkOrder.js'
+import { appendToDom } from '../controller/salesHelpers/loadTablesWO.js'
 import {
     formatWithCommas,
     showMessage,
@@ -111,46 +112,6 @@ let createTrashOptionService = (id, idWoItem, nameCell, priceCell) => {
 let extraMethodsSpare = () => {
     reindexSpareParts();
     updateImportButtonPosition();
-}
-
-function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption) {
-    const tBody = qsa(tBodyS); if (!tBody) return false;
-    let emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
-    if (!emptyRow) {
-        // si no hay fila vacía, añadimos una fila a ambas tablas y reintentamos
-        addRowToBothTables();
-        emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
-    }
-
-    const nameCell = emptyRow.querySelector('.tdName');
-    const priceCell = emptyRow.querySelector('.tdPrice');
-    nameCell.textContent = data.name;
-    priceCell.textContent = `$${formatWithCommas(data.price)}`;
-    priceCell.setAttribute('contenteditable', 'true');
-
-    // limpiar inputs ocultos previos
-    emptyRow.dataset.id = data.id;
-    if (data.idWo) emptyRow.dataset.idWo = data.idWo;
-    const btn = createTrashOption(data.id, data.idWo, nameCell, priceCell);
-    emptyRow.appendChild(btn);
-    // listener para editar precio (preservando cursor)
-    allowDecimal(priceCell);
-    priceCell.addEventListener('input', (e) => {
-        addEventsPrice();
-        calculateAmountDue();
-    });
-
-    priceCell.addEventListener("focus", (e) => {
-        formatOnFocus(e);
-    })
-    priceCell.addEventListener("blur", (e) => {
-        formatOnBlur(e);
-    });
-
-
-    rows++;
-    extraMethods();
-    return true;
 }
 
 let loadInfoPage = () => {
@@ -346,22 +307,6 @@ function renderSparePartSuggestions(list) {
 function showElement(el) { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); }
 function hideElement(el) { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); }
 function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), ms); }; }
-
-// ---------- Helpers para filas dinámicas ----------
-function createEmptyRow() {
-    const tr = document.createElement('tr');
-    const tdName = document.createElement('td'); tdName.className = 'tdName';
-    const tdPrice = document.createElement('td'); tdPrice.className = 'tdPrice';
-    tr.append(tdName, tdPrice);
-    return tr;
-}
-
-function addRowToBothTables() {
-    const tBodyServices = $('tBodyServices');
-    const tBodyParts = $('tBodySpareParts');
-    if (tBodyServices) tBodyServices.appendChild(createEmptyRow());
-    if (tBodyParts) tBodyParts.appendChild(createEmptyRow());
-}
 
 // Ubica y coloca el botón IMPORTAR en la primera fila vacía de repuestos
 function updateImportButtonPosition() {
