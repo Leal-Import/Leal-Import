@@ -114,7 +114,7 @@ let insertWorkOrders = (workOrders) => {
                 orderColor.classList.add("colorPending");
                 orderStatus.classList.add("pendingOrder");
                 orderStatus.textContent = "Pendiente";
-            } else if (workOrder.statusName === "Completado") {
+            } else if (workOrder.statusName === "Completada") {
                 orderColor.classList.add("colorCompleted");
                 orderStatus.classList.add("completedOrder");
                 orderStatus.textContent = "Completada";
