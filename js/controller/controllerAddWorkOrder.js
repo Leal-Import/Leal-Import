@@ -153,11 +153,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadPayMethods();
     setupModalListeners();
     bindEvents();
-    await loadDataVehicle();
     if (idWorkOrder) {
         await loadWorkOrder();
         validateDate(dtEstimated, dtEstimated.value);
     } else {
+        await loadDataVehicle();
         validateDate(dtEstimated, new Date())
     }
     createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
@@ -175,6 +175,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 let loadWorkOrder = async () => {
     const workOrder = await getWorkOrderById(idWorkOrder);
+
+    renderVehicleData(workOrder.vehicleInfo);
+
     workOrder.payments.forEach(payment => {
         createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, null, createBtnUrl, calculateRepairCost, paymentsToDelete)
     })
@@ -194,13 +197,9 @@ function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s
 let loadDataVehicle = async () => {
     console.log(idVehicle)
     const vehicleData = await getDataVehicleById(idVehicle)
-    if ($('vin')) $('vin').textContent = vehicleData.vin || '-';
-    if ($('vehiclePrice')) $('vehiclePrice').textContent = `$${formatWithCommas(vehiclePrice || 0)}`;
-    if ($('model')) $('model').textContent = vehicleData.model;
-    if ($('brand')) $('brand').textContent = vehicleData.brand;
-    if ($('year')) $('year').textContent = vehicleData.year
-
+    renderVehicleData(vehicleData);
 }
+
 
 // ---------- Build static rows (si tu html requiere filas vacías) ----------
 function initStaticRows() {
@@ -266,6 +265,15 @@ function bindEvents() {
 
     // Submit
     frmAddWorkOrder?.addEventListener('submit', handleSubmit);
+}
+
+// ---------- VehicleData render ----------
+const renderVehicleData = (data) => {
+    if (!data) return;
+    if ($('vin')) $('vin').textContent = data.vin || '-';
+    if ($('model')) $('model').textContent = data.model || '-';
+    if ($('brand')) $('brand').textContent = data.brand || '-';
+    if ($('year')) $('year').textContent = data.year || '-';
 }
 
 // ---------- Suggestions render ----------
