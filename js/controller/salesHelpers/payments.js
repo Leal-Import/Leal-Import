@@ -32,7 +32,9 @@ export function managePaymentsAndCalculateDebt(
         totalPaid += safeParseFloat(input?.value)
     })
 
-    const totalSale = calculateTotal() || 0;
+    let totalSale;
+    if (calculateTotal) totalSale = calculateTotal();
+    else totalSale = 0;
     const debt = totalSale - totalPaid;
 
     const dueText = document.getElementById('due')
@@ -50,28 +52,8 @@ export function managePaymentsAndCalculateDebt(
             debt > 0 ? 'var(--danger-color)' : 'var(--success-color)'
     }
 
-    verifySelects()
     saveState && saveState()
 }
-
-export let verifySelects = () => {
-    const amounts = document.querySelectorAll(".amounts .paymentRow");
-    amounts.forEach(amount => {
-        const input = amount.querySelector(".amountInput");
-        const select = amount.querySelector(".paymentTypeSelect");
-
-        if (!input || !select) return;
-
-        const rawValue = (input.value || "").trim();
-        const numeric = parseFloat(rawValue.replace(/[$,]/g, "")) || 0;
-
-        if (numeric === 0) {
-            select.disabled = true;
-        } else {
-            select.disabled = false;
-        }
-    });
-};
 
 
 export function createInitialPaymentField(
@@ -119,17 +101,22 @@ export function createInitialPaymentField(
     tdMethod.appendChild(select);
 
     /* ===== ACCIONES ===== */
-    const tdActions = document.createElement("td");
-    const containerActions = document.createElement("div");
-    tdActions.appendChild(containerActions);
-    containerActions.classList.add("actionsPayments");
-
+    let tdActions;
+    let containerActions;
+    let deleteBtn;
     if (createBtnUrl) {
-        const receiptBtn = createBtnUrl(index, receiptUrl);
-        containerActions.appendChild(receiptBtn);
+        tdActions = document.createElement("td");
+        containerActions = document.createElement("div");
+        tdActions.appendChild(containerActions);
+        containerActions.classList.add("actionsPayments");
+
+        if (createBtnUrl) {
+            const receiptBtn = createBtnUrl(index, receiptUrl);
+            containerActions.appendChild(receiptBtn);
+        }
     }
     if (amountContainer.children.length != 0) {
-        const deleteBtn = document.createElement("button");
+        deleteBtn = document.createElement("button");
         deleteBtn.type = "button";
         deleteBtn.classList.add("btnTrash");
         deleteBtn.innerHTML = '<img src="../../media/appMedia/trashIcon.png" alt="Eliminar abono">';
@@ -144,13 +131,17 @@ export function createInitialPaymentField(
             managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal, arrayDeleteIds);
             reindexPayments();
         });
-        containerActions.appendChild(deleteBtn);
+        if (createBtnUrl) containerActions.appendChild(deleteBtn);
     }
 
 
 
     /* ===== ENSAMBLAR ===== */
-    tr.append(tdAmount, tdMethod, tdActions);
+    tr.append(tdAmount, tdMethod);
+    if (createBtnUrl) tr.appendChild(tdActions);
+    else if(amountContainer.children.length != 0) {
+        tr.appendChild(deleteBtn)
+    };
     reindexPayments();
     amountContainer.appendChild(tr);
 

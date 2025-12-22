@@ -43,6 +43,10 @@
             </div>
             <form class="rightColumn" id="frmSparePartSale">
                 <div class="headerRightColumn">
+                    <div class="containerTotal" id="containerTotal">
+                        <h3>Total:</h3>
+                        <span id="total"></span>
+                    </div>
                     <div class="tableContainer">
                         <table class="table">
                             <thead>
@@ -53,21 +57,30 @@
                             </thead>
                             <tbody id="tBodySelected">
                                 <tr class="rowNoData">
-                                    <td colspan="2" style="height: 100%;" class="noDataMessage">No hay repuestos seleccionados</td>
+                                    <td colspan="2" style="height: 100%;" class="noDataMessage">No hay repuestos
+                                        seleccionados</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="containerTotal" id="containerTotal">
-                        <h3>Total:</h3>
-                        <span id="total"></span>
-                    </div>
                 </div>
                 <div class="bodyRightColumn">
-                    <h2>Abonos</h2>
-                    <div class="amounts"></div>
+                    <div class="tableContainer">
+                        <table class="paymentsTable table">
+                            <thead>
+                                <tr>
+                                    <th colspan="1">Monto</th>
+                                    <th class="tdMethod" colspan="2">Método</th>
+                                </tr>
+                            </thead>
+                            <tbody id="amounts" class="amounts">
+                                <!-- Filas generadas por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btnPrimary" id="btnAddPayment" type="button">Agregar abono</button>
                     <div class="containerAmountDue" id="containerAmountDue">
-                        <h3>Deuda:</h3>
+                        <h3>Deuda pendiente:</h3>
                         <span id="due"></span>
                     </div>
                 </div>

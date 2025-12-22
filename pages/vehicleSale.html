@@ -177,8 +177,21 @@
             <div class="rightColumn">
                 <form class="formRightColumn" id="frmVehicleSale">
                     <div class="bodyRightColumn">
-                        <h2>Abonos</h2>
-                        <div class="amounts"></div>
+                        <div class="tableContainer">
+                            <table class="paymentsTable table">
+                                <thead>
+                                    <tr>
+                                        <th>Monto</th>
+                                        <th class="tdMethod">Método</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="amounts" class="amounts">
+                                    <!-- Filas generadas por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btnPrimary" id="btnAddPayment" type="button">Agregar</button>
                         <div class="containerAmountDue" id="containerAmountDue">
                             <h3>Deuda:</h3>
                             <span id="due"></span>

@@ -2,7 +2,7 @@
 // Reescritura completa - módulo Órdenes de Trabajo
 // Mantén los imports tal como los usas en tu proyecto:
 import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
-import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMethods, verifySelects} from '../controller/salesHelpers/payments.js'
+import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMethods } from '../controller/salesHelpers/payments.js'
 import {
     getServices,
     postWorkOrder,
@@ -42,7 +42,7 @@ const dtEstimated = document.getElementById("dtEstimated");
 const params = new URLSearchParams(window.location.search);
 let customerName = params.get("customerName") || null;
 let idVehicle = params.get("idVehicle") || null;
-let idCustomer = params.get("idCustomer") || null;
+let idCustomer = params.get("idCustomer") === "null" ? null : params.get("idCustomer");
 let vehiclePrice = params.get("totalPrice") || 0;
 let idSale = params.get("idSale") || null;
 
@@ -138,7 +138,7 @@ let loadInfoPage = () => {
         $("firstBread").textContent = "Ventas >";
         $("firstBread").href = "sales.html"
     }
-    if(idWorkOrder){
+    if (idWorkOrder) {
         document.querySelector(".btnSubmitData").value = "Actualizar";
     }
 }
@@ -146,7 +146,7 @@ let loadInfoPage = () => {
 // ---------- Init ----------
 document.addEventListener('DOMContentLoaded', async () => {
     const user = await initSession();
-    if(!user)return;
+    if (!user) return;
 
     initStaticRows();
     loadInfoPage();
@@ -161,9 +161,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         validateDate(dtEstimated, new Date())
     }
     createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
-    // ejecutar verifySelects inicialmente y también está atento a cambios dinámicos
-    verifySelects();
-    observeAmountsContainer(); // observa cambios en los abonos (dinámicos)
     // Si venimos de "añadir repuesto", revisar params para agregarlo automáticamente
     tryAddSpareFromUrl();
     if (isNewPart && idWorkOrder) {
@@ -374,7 +371,7 @@ function addService(service) {
 
     const obj = { id: service.id || null, name: service.name, price: service.price || 0, idWo: service.idWoService };
     // si append falla porque no hay fila vacía, appendServiceToDOM ahora añadirá filas y reintentará
-    if (!appendToDom("#tBodyServices", obj, rowsServices, calculateTotalService, reindexServices, createTrashOptionService)) return;
+    if (!appendToDom("#tBodyServices", obj, rowsServices, calculateTotalService, reindexServices, createTrashOptionService, calculateAmountDue)) return;
     selectedServices.push(obj);
     txtAddService.value = '';
     hideElement(boxServ);
@@ -422,7 +419,7 @@ function addSparePart(p) {
         price: p.unitPrice || 0,
         idWo: p.idWorkOrder || null
     };
-    if (!appendToDom("#tBodySpareParts", data, rowsSpareParts, calculateTotalSpareParts, extraMethodsSpare, createTrashOptionSpare)) return;
+    if (!appendToDom("#tBodySpareParts", data, rowsSpareParts, calculateTotalSpareParts, extraMethodsSpare, createTrashOptionSpare, calculateAmountDue)) return;
     selectedSpareParts.push(data);
     txtAddSparePart.value = '';
     hideElement(boxSparePart);
@@ -497,17 +494,6 @@ let calculateAmountDue = () => {
     }
 }
 
-// observe amounts container to react to dynamic changes (improves verifySelects reliability)
-function observeAmountsContainer() {
-    const container = document.querySelector('.amounts');
-    if (!container || window.__amountsObserver) return;
-    const observer = new MutationObserver(() => {
-        verifySelects();
-    });
-    observer.observe(container, { childList: true, subtree: true });
-    window.__amountsObserver = observer;
-}
-
 // ---------- Submit (FormData + POST) ----------
 async function handleSubmit(e) {
     e.preventDefault();
@@ -557,9 +543,9 @@ async function handleSubmit(e) {
             }
         }
         if (!currentIdEmployee) {
-        showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
-        return false;
-    }
+            showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
+            return false;
+        }
 
         let obj = {
             amount: amountValue,
@@ -853,7 +839,6 @@ function loadSavedSpareParts(sparePartsArray) {
     updateImportButtonPosition();
     calculateTotalSpareParts();
     calculateAllTotals();
-    verifySelects();
 }
 
 // Restaurar servicios guardados
@@ -887,7 +872,6 @@ function loadSavedServices(servicesArray) {
     reindexServices();
     calculateTotalService();
     calculateAllTotals();
-    verifySelects();
 }
 
 // Restaurar abonos / amounts
@@ -900,7 +884,6 @@ function loadSavedAmounts(amountsArray) {
     // Si no hay amounts guardados, crear el campo inicial vacío
     if (!Array.isArray(amountsArray) || amountsArray.length === 0) {
         createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost);
-        verifySelects();
         return;
     }
 
@@ -942,5 +925,4 @@ function loadSavedAmounts(amountsArray) {
 
     // Recalcular y verificar
     managePaymentsAndCalculateDebt(null, createBtnUrl, calculateRepairCost);
-    verifySelects();
 }

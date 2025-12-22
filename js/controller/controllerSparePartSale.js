@@ -5,7 +5,7 @@ import {
     putSparePart
 } from '../service/serviceSparePartsSale.js'
 import { insertSpareParts } from '../controller/salesHelpers/loadTableSpareParts.js'
-import { managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus, verifySelects } from '../controller/salesHelpers/payments.js'
+import { managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus } from '../controller/salesHelpers/payments.js'
 import { createRowTable } from '../controller/salesHelpers/loadRowTableSales.js'
 import {
     formatWithCommas,
@@ -35,6 +35,25 @@ const btnAddPart = document.getElementById("btnAddPart");
 let selectedIds = [];
 const itemsToDelete = [];
 const paymentsToDelete = [];
+
+const btnAddPayment = document.getElementById("btnAddPayment");
+
+btnAddPayment.addEventListener("click", () => {
+    addPaymentRow();
+});
+
+function addPaymentRow() {
+    createInitialPaymentField(
+        0,          // monto
+        null,       // metodo pago
+        null,       // comprobante
+        null,       // idPayment
+        null,
+        null,
+        calculateTotal,
+        null
+    );
+}
 
 /* ---------------------------
 Helpers
@@ -146,8 +165,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
     }
-
-    verifySelects();
     // input notas guarda estado
     document.getElementById("txtNotes")?.addEventListener("input", saveSaleState);
 });

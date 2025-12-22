@@ -1,5 +1,6 @@
 .leftColumn .tableContainer {
     max-height: 65dvh;
+    border: var(--border);
     overflow-y: auto;
 }
 
