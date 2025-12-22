@@ -81,6 +81,15 @@
     gap: 10px;
 }
 
+.colorCompleted {
+    background-color: var(--success-color);
+}
+
+.completedOrder {
+    color: var(--success-color);
+    font-weight: var(--font-weight-medium);
+}
+
 .colorPending {
     background-color: var(--warning-color);
 }

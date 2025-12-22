@@ -1,6 +1,6 @@
 import { createPagination } from '../pagination.js'
 import { showMessage } from '../utils.js';
-import { getDetailsOrders } from '../service/serviceWODetails.js';
+import { getDetailsOrders, getDashboardWorkorder } from '../service/serviceWODetails.js';
 import { getWOStatus } from '../service/serviceWorkOrders.js';
 import { formatWithCommas, showFloatingMenu, fillSelect, initSession } from '../utils.js';
 
@@ -46,13 +46,12 @@ cmbFilterData.addEventListener("change", () => {
 let loadWorkOrders = async ({ page, size, filters }) => {
     try {
         const data = await getDetailsOrders(idVehicle, page - 1, size, filters.search || '', filters.idStatus || '');
-        insertWOrders(data.orderList.content);
-        loadStats(data.statistics);
+        insertWOrders(data.content);
         pagination.setTotal({
-            totalElements: data.orderList.page.totalElements,
-            totalPages: data.orderList.page.totalPages,
-            page: data.orderList.page.number + 1, // volvemos a 1-based
-            size: data.orderList.page.size
+            totalElements: data.page.totalElements,
+            totalPages: data.page.totalPages,
+            page: data.page.number + 1, // volvemos a 1-based
+            size: data.page.size
         });
     } catch (error) {
         showMessage("Error", "No se pudieron cargar los vehículos." + error, "error");
@@ -60,12 +59,27 @@ let loadWorkOrders = async ({ page, size, filters }) => {
     }
 }
 
-let loadStats = (data) => {
-    document.getElementById("finalized").textContent = data.finalized;
-    document.getElementById("pending").textContent = data.pending;
-    document.getElementById("delayed").textContent = data.delayed;
-    document.getElementById("totalOrdersQuantity").textContent = `$${formatWithCommas(data.totalBilled)}`;
+let loadDashboard = async () => {
+    try {
+        const data = await getDashboardWorkorder(idVehicle)
+        loadStats(data);
+        loadVehicleInfo(data);
+    } catch (error) {
+        showMessage("Error", "No se pudieron cargar las estadisticas de ordenes del vehiculo." + error, "error");
+        console.error(error)
+    }
+}
 
+let loadStats = (data) => {
+    document.getElementById("finalized").textContent = data.statistics.finalized;
+    document.getElementById("pending").textContent = data.statistics.pending;
+    document.getElementById("delayed").textContent = data.statistics.delayed;
+    document.getElementById("totalOrdersQuantity").textContent = `$${formatWithCommas(data.statistics.totalBilled)}`;
+}
+
+let loadVehicleInfo = (data) => {
+    document.getElementById("infoItem").textContent = `${data.vehicleInfo.brand} ${data.vehicleInfo.model} ${data.vehicleInfo.year}`;
+    document.getElementById("vin").textContent = data.vehicleInfo.vin;
 }
 
 const pagination = createPagination({ initialSize: 10, onChange: loadWorkOrders });
@@ -80,6 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadAddLink();
 
     await loadStatusSelect();
+    await loadDashboard();
     pagination.update({});
 })
 
@@ -120,9 +135,6 @@ let insertWOrders = (workOrders) => {
         const tdOrderDate = document.createElement("td");
         tdOrderDate.textContent = wo.orderDate;
 
-        const tdEstimated = document.createElement("td");
-        tdEstimated.textContent = wo.estimatedDate;
-
         const tdStatus = document.createElement("td");
         const containerDtStatus = document.createElement("div");
         containerDtStatus.classList.add("containerDtStatus");
@@ -138,7 +150,7 @@ let insertWOrders = (workOrders) => {
             statusBadge.classList.add("pendingOrder");
         } else if (wo.statusName == "Completada") {
             orderColor.classList.add("colorCompleted");
-            statusBadge.classList.add("CompletedOrder");
+            statusBadge.classList.add("completedOrder");
         } else {
             orderColor.classList.add("colorDelay");
             statusBadge.classList.add("delayOrder");
@@ -178,7 +190,7 @@ let insertWOrders = (workOrders) => {
             ]);
         });
 
-        tr.append(tdEmployee, tdCustomer, tdOrderDate, tdEstimated, tdStatus, tdCost, tdDue, tdActions);
+        tr.append(tdEmployee, tdCustomer, tdOrderDate, tdStatus, tdCost, tdDue, tdActions);
 
         fragment.appendChild(tr);
     });
