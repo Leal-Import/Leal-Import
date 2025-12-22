@@ -17,7 +17,6 @@ import {
     showMessage,
     getInputsValues,
     highlightAndFocus,
-    allowDecimal,
     validateDate,
     initSession,
     getCurrentEmployeeId
@@ -61,6 +60,26 @@ const servicesToDelete = [];
 const paymentsToDelete = [];
 let rowsServices = 0;
 let rowsSpareParts = 0;
+
+
+const btnAddPayment = document.getElementById("btnAddPayment");
+
+btnAddPayment.addEventListener("click", () => {
+    addPaymentRow();
+});
+
+function addPaymentRow() {
+    createInitialPaymentField(
+        0,          // monto
+        null,       // metodo pago
+        null,       // comprobante
+        null,       // idPayment
+        null,
+        createBtnUrl,
+        calculateTotal,
+        null
+    );
+}
 
 let createTrashOptionSpare = (id, idWoItem, nameCell, priceCell) => {
     // boton eliminar
@@ -457,14 +476,24 @@ function calculateAllTotals() { calculateTotalService(); calculateTotalSparePart
 
 let calculateAmountDue = () => {
     const amountContainer = document.querySelector('.amounts');
-    let payments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
+    let payments = Array.from(amountContainer.querySelectorAll('.paymentRow'));
     let totalPaid = 0;
     payments.forEach(p => totalPaid += safeParseFloat(p.querySelector('.amountInput').value));
     const txtTotal = safeParseFloat(($('txtTotal') || {}).value);
     const debt = txtTotal - totalPaid;
-    const dueText = $('due');
+    const dueText = document.getElementById('due')
+    const paidText = document.getElementById('totalPaid')
+
+    if (paidText) {
+        paidText.textContent = `$${formatWithCommas(totalPaid)}`
+        paidText.style.color =
+            totalPaid > 0 ? 'var(--success-color)' : 'var(--text-muted)'
+    }
+
     if (dueText) {
-        dueText.textContent = `$${formatWithCommas(debt)}`; dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
+        dueText.textContent = `$${formatWithCommas(debt)}`
+        dueText.style.color =
+            debt > 0 ? 'var(--danger-color)' : 'var(--success-color)'
     }
 }
 
@@ -499,11 +528,12 @@ async function handleSubmit(e) {
     }
 
     // recolectar pagos
-    const amountContainers = Array.from(document.querySelectorAll('.containerAmount'));
+    const amountContainers = Array.from(document.querySelectorAll('.amounts .paymentRow'));
+    console.log(amountContainers)
     const amountData = [];
     const imagesAmounts = [];
 
-    for (let i = 0; i < amountContainers.length - 1; i++) {
+    for (let i = 0; i < amountContainers.length; i++) {
         const amountInput = amountContainers[i].querySelector('.amountInput');
         const paymentTypeSelect = amountContainers[i].querySelector('.paymentTypeSelect');
         const receiptInput = amountContainers[i].querySelector('.receiptInput');

@@ -1,6 +1,7 @@
 import { getPaymentMethods } from '../../service/serviceConfiguration.js';
 import { allowDecimal, fillSelect, formatWithCommas } from '../../utils.js'
 
+
 function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
 let paymentMethodsList = [];
@@ -15,91 +16,46 @@ export async function loadPayMethods() {
     }
 }
 
-export function managePaymentsAndCalculateDebt(savedState, createBtnUrl, calculateTotal, arrayDeleteIds) {
-    const amountContainer = document.querySelector(".amounts");
-    if (!amountContainer) return;
+/* ================== MAIN LOGIC ================== */
+export function managePaymentsAndCalculateDebt(
+    saveState,
+    createBtnUrl,
+    calculateTotal,
+    arrayDeleteIds
+) {
+    const rows = document.querySelectorAll('#amounts .paymentRow')
 
-    // Eliminar abonos vacíos excepto el primero
-    let allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-    allPayments.forEach((payment, idx) => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (idx > 0 && value === 0) {
-            const idPayment = payment.dataset.id; // <-- ID real de ese pago
-            if (idPayment && arrayDeleteIds) arrayDeleteIds.push(idPayment);
-            payment.remove();
-        }
-    });
-    // Refrescar nodos y renumerar
-    allPayments = Array.from(amountContainer.querySelectorAll('.containerAmount'));
-    allPayments.forEach((payment, i) => {
-        const number = i + 1;
-        payment.setAttribute("data-index", number);
-        const input = payment.querySelector(".amountInput");
-        const select = payment.querySelector(".paymentTypeSelect");
-        if (input && select) {
-            input.placeholder = `Abono ${number}`
-            input.id = `amountInput${number}`
-            select.id = `paymentTypeSelect${number}`
-        };
+    let totalPaid = 0
 
-        // Asegurar que los selects estén llenos
-        if (select && !select.dataset.filled) {
-            fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
-            select.dataset.filled = true;
-        }
-    });
+    rows.forEach(row => {
+        const input = row.querySelector('.amountInput')
+        totalPaid += safeParseFloat(input?.value)
+    })
 
-    // Recalcular total pagado
-    let totalPaid = 0;
-    allPayments.forEach(payment => {
-        const input = payment.querySelector(".amountInput");
-        const value = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        totalPaid += value;
-    });
-
-    // Si el último abono tiene valor → crear otro campo vacío
-    const lastPayment = allPayments[allPayments.length - 1];
-    if (lastPayment) {
-        const lastInput = lastPayment.querySelector(".amountInput");
-        const lastValue = parseFloat((lastInput?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (lastValue > 0) addNewPaymentField(savedState, createBtnUrl, calculateTotal);
-    } else {
-        // No hay campos, crear uno
-        createInitialPaymentField(0, null, null, null, savedState, createBtnUrl, calculateTotal);
-    }
-
-    // Calcular deuda y actualizar UI
-    const totalSale = calculateTotal();
+    const totalSale = calculateTotal() || 0;
     const debt = totalSale - totalPaid;
-    const dueText = document.getElementById("due");
+
+    const dueText = document.getElementById('due')
+    const paidText = document.getElementById('totalPaid')
+
+    if (paidText) {
+        paidText.textContent = `$${formatWithCommas(totalPaid)}`
+        paidText.style.color =
+            totalPaid > 0 ? 'var(--success-color)' : 'var(--text-muted)'
+    }
+
     if (dueText) {
-        dueText.textContent = `$${formatWithCommas(debt)}`;
-        dueText.style.color = debt > 0 ? 'var(--danger-color)' : 'var(--success-color)';
+        dueText.textContent = `$${formatWithCommas(debt)}`
+        dueText.style.color =
+            debt > 0 ? 'var(--danger-color)' : 'var(--success-color)'
     }
 
-    verifySelects();
-    savedState ? savedState() : null;
-}
-
-function addNewPaymentField(savedState, createBtnUrl, calculateTotal) {
-    const amountContainer = document.querySelector(".amounts");
-    if (!amountContainer) return;
-
-    const lastChild = amountContainer.lastElementChild;
-    if (lastChild) {
-        const lastInput = lastChild.querySelector(".amountInput");
-        const lastValue = parseFloat((lastInput?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        if (lastValue === 0) return; // si ultimo está vacío, no crear
-    }
-
-    // crear field usando la función que centraliza comportamiento
-    verifySelects();
-    createInitialPaymentField(0, null, null, null, savedState, createBtnUrl, calculateTotal);
+    verifySelects()
+    saveState && saveState()
 }
 
 export let verifySelects = () => {
-    const amounts = document.querySelectorAll(".amounts .containerAmount");
+    const amounts = document.querySelectorAll(".amounts .paymentRow");
     amounts.forEach(amount => {
         const input = amount.querySelector(".amountInput");
         const select = amount.querySelector(".paymentTypeSelect");
@@ -111,7 +67,6 @@ export let verifySelects = () => {
 
         if (numeric === 0) {
             select.disabled = true;
-            select.value = ""; // evita selects colgados
         } else {
             select.disabled = false;
         }
@@ -119,64 +74,129 @@ export let verifySelects = () => {
 };
 
 
-export function createInitialPaymentField(amount = 0, paymentMethodId = null, receiptUrl = null, idPayment = null, saveState, createBtnUrl, calculateTotal, arrayDeleteIds) {
-    const amountContainer = document.querySelector(".amounts");
+export function createInitialPaymentField(
+    amount = 0,
+    paymentMethodId = null,
+    receiptUrl = null,
+    idPayment = null,
+    saveState,
+    createBtnUrl,
+    calculateTotal,
+    arrayDeleteIds
+) {
+    const amountContainer = document.getElementById("amounts");
     if (!amountContainer) return;
 
     const index = amountContainer.children.length + 1;
 
-    const div = document.createElement("div");
-    div.classList.add("containerAmount");
-    div.setAttribute("data-index", index);
-    if (idPayment) div.setAttribute("data-id", idPayment)
+    const tr = document.createElement("tr");
+    tr.classList.add("paymentRow");
+    tr.dataset.index = index;
+    if (idPayment) tr.dataset.id = idPayment;
 
-    // Input monto
+    /* ===== MONTO ===== */
+    const tdAmount = document.createElement("td");
     const input = document.createElement("input");
     input.type = "text";
-    input.placeholder = `Abono ${index}`;
     input.classList.add("txtInputs", "amountInput");
+    input.placeholder = `Abono ${index}`;
     input.id = `amountInput${index}`;
 
     if (amount > 0) {
         input.value = `$${formatWithCommas(amount)}`;
     }
-    saveState ? input.addEventListener("input", saveState) : null;
 
-    // Select metodo pago
+    allowDecimal(input);
+    tdAmount.appendChild(input);
+
+    /* ===== MÉTODO ===== */
+    const tdMethod = document.createElement("td");
+    tdMethod.classList.add("tdMethod");
     const select = document.createElement("select");
     select.classList.add("txtInputs", "paymentTypeSelect");
     select.id = `paymentTypeSelect${index}`;
 
-    allowDecimal(input)
+    tdMethod.appendChild(select);
 
-    // Llenar select con métodos de pago cargados
-    div.append(input, select);
-    amountContainer.appendChild(div);
+    /* ===== ACCIONES ===== */
+    const tdActions = document.createElement("td");
+    const containerActions = document.createElement("div");
+    tdActions.appendChild(containerActions);
+    containerActions.classList.add("actionsPayments");
+
+    if (createBtnUrl) {
+        const receiptBtn = createBtnUrl(index, receiptUrl);
+        containerActions.appendChild(receiptBtn);
+    }
+    if (amountContainer.children.length != 0) {
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.classList.add("btnTrash");
+        deleteBtn.innerHTML = '<img src="../../media/appMedia/trashIcon.png" alt="Eliminar abono">';
+
+        deleteBtn.addEventListener("click", () => {
+            const rows = document.querySelectorAll(".amounts .paymentRow");
+
+            // 🗑 Eliminación normal
+            const id = tr.dataset.id;
+            if (id && arrayDeleteIds) arrayDeleteIds.push(id);
+            tr.remove();
+            managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal, arrayDeleteIds);
+            reindexPayments();
+        });
+        containerActions.appendChild(deleteBtn);
+    }
+
+
+
+    /* ===== ENSAMBLAR ===== */
+    tr.append(tdAmount, tdMethod, tdActions);
+    reindexPayments();
+    amountContainer.appendChild(tr);
+
     fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
     select.dataset.filled = true;
-    saveState ? select.addEventListener("change", saveState) : null;
-    if (createBtnUrl) {
-        let image = createBtnUrl(index, receiptUrl);
-        div.appendChild(image);
-    }
-    // Si vino con amount sin formato, formatearlo
-    if (amount > 0 && input.value && !input.value.startsWith('$')) {
-        input.value = `$${formatWithCommas(parseCurrencyStringToNumber(input.value))}`;
-    }
+
     if (paymentMethodId) select.value = paymentMethodId;
-    input.addEventListener("focus", (e) => {
-        formatOnFocus(e, true);
-    });
-    input.addEventListener("blur", (e) => {
-        formatOnBlur(e, true);
-    })
+
+    input.addEventListener("focus", e => formatOnFocus(e, true));
+    input.addEventListener("blur", e => formatOnBlur(e, true));
 
     input.addEventListener("input", () => {
         managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal, arrayDeleteIds);
-    }
-    );
+        calculateTotal()
+    });
 
+    saveState && input.addEventListener("input", saveState);
+    saveState && select.addEventListener("change", saveState);
 }
+
+function reindexPayments() {
+    const rows = document.querySelectorAll("#amounts .paymentRow");
+    rows.forEach((row, i) => {
+        const index = i + 1;
+        row.dataset.index = index;
+
+        const input = row.querySelector(".amountInput");
+        const select = row.querySelector(".paymentTypeSelect");
+
+        if (input) {
+            input.id = `amountInput${index}`;
+            input.placeholder = `Abono ${index}`;
+        }
+
+        if (select) {
+            select.id = `paymentTypeSelect${index}`;
+        }
+
+        // 🔥 Botón comprobante (si depende del index)
+        const receiptBtn = row.querySelector("[data-receipt-btn]");
+        if (receiptBtn) {
+            receiptBtn.dataset.index = index;
+        }
+    });
+}
+
 
 export function formatOnBlur(event, isInput) {
     const element = event.target;

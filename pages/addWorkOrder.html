@@ -145,16 +145,29 @@
             <div class="rightColumn">
                 <form class="formRightColumn" id="frmWorkOrder">
                     <div class="bodyRightColumn">
-                        <h2>Abonos</h2>
-                        <div class="amounts"></div>
+                        <div class="tableContainer">
+                            <table class="paymentsTable table">
+                                <thead>
+                                    <tr>
+                                        <th>Monto</th>
+                                        <th class="tdMethod">Método</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="amounts" class="amounts">
+                                    <!-- Filas generadas por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btnPrimary" id="btnAddPayment" type="button">Agregar</button>
                         <div class="containerAmountInfo">
                             <div class="dataInfo" style="border-bottom: var(--border);">
                                 <h3>Total abonado:</h3>
-                                <span id="totalPaid">s</span>
+                                <span id="totalPaid">$0.00</span>
                             </div>
                             <div class="dataInfo">
                                 <h3>Deuda restante:</h3>
-                                <span id="due"></span>
+                                <span id="due">$0.00</span>
                             </div>
                         </div>
                     </div>

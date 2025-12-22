@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 let loadWorkOrder = async () => {
     const workOrder = await getWorkOrderById(idWorkOrder);
-    console.log(workOrder)
-    
+    workOrder.services.forEach(service => {
+        
+    });
 }
