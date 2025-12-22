@@ -205,9 +205,9 @@ frmSparePartSale.addEventListener("submit", async (e) => {
 
     const amountData = [];
 
-    const amounts = document.querySelectorAll('.containerAmount');
+    const amounts = document.querySelectorAll('.paymentRow');
 
-    for (let i = 0; i < amounts.length - 1; i++) {
+    for (let i = 0; i < amounts.length; i++) {
         const amountInput = amounts[i].querySelector('.amountInput');
         const paymentTypeSelect = amounts[i].querySelector('.paymentTypeSelect');
         const amountValue = parseFloat(amountInput.value.replace(/[$,]/g, ""));
