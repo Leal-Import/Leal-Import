@@ -23,20 +23,24 @@
 .containerTotal {
     width: 100%;
     display: flex;
-    justify-content: space-between;
-    padding: 0 40px 0 10px;
-    border: var(--border);
-    border-top: none;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
+    flex-direction: column;
+    padding: 15px;
+    background-color: #f1f1f3;
+    border-radius: 12px;
+    margin-bottom: 10px;
 }
 
 .containerTotal,
 .containerAmountDue {
     justify-content: space-between;
+    border-bottom: var(--border);
     align-items: center;
     gap: 10px;
     display: none;
+}
+
+.containerAmountDue{
+    padding-bottom: 10px;
 }
 
 .containerTotal h3,
