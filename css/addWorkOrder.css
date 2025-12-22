@@ -1,9 +1,13 @@
-.content{
+/* =======================
+   Layout general
+======================= */
+.content {
     flex-direction: row;
 }
 
-.leftColumn{
+.leftColumn {
     flex: 1;
+    max-width: 64%;
 }
 
 .breadCrumbSection {
@@ -11,96 +15,309 @@
     margin-bottom: 2em;
 }
 
-.moreDataContainer{
+/* =======================
+   Sección vehículo
+======================= */
+.moreDataContainer {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 16px;
+    padding: 12px;
+    background: #fff;
+    border: var(--border);
+    border-radius: 12px;
 }
 
-.containerDataInfo{
+.moreDataContainer h2,
+.tableContainer h2 {
+    font-weight: var(--font-weight-medium);
+    padding-bottom: 6px;
+    border-bottom: var(--border);
+}
+
+.moreDataContainer h2 {
+    font-size: var(--font-size-lg);
+}
+
+/* =======================
+   Estructura base
+======================= */
+.rowInfo,
+.rowVehicle,
+.rowCosts {
     display: flex;
+    width: 100%;
 }
 
-.containerDataInfo>div{
+.dataInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =======================
+   Labels & valores
+======================= */
+.lblInfo {
+    padding: 6px 10px;
+    background: #f3f4f7;
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    border-bottom: var(--border);
+}
+
+.valueInfo {
+    padding: 6px 10px;
+    font-weight: 500;
+    color: var(--text-color-primary);
+}
+
+/* =======================
+   Vehículo y costos
+======================= */
+.rowVehicle,
+.rowCosts {
+    border: var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.rowVehicle .dataInfo:not(:first-child) > * {
+    border-left: var(--border);
+}
+
+/* =======================
+   Contenedores
+======================= */
+.containerDataInfo,
+.containerTables {
+    display: flex;
+    gap: 8px;
+}
+
+.containerDataInfo > div,
+.tableContainer {
     flex: 1;
 }
 
-.dataInfo{
-    display: flex;
-    flex: 1;
+/* =======================
+   Costos
+======================= */
+.rowCosts .dataInfo {
+    flex-direction: row;
+    background: #f3f4f7;
 }
 
-.lblInfo{
+.rowCosts .lblInfo {
+    background: transparent;
+    border-bottom: none;
+}
+
+/* =======================
+   Tablas
+======================= */
+.tablesDataContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.containerTables {
+    gap: 10px;
+}
+
+.tableContainer {
+    padding: 15px;
+    border-radius: 12px;
+    background-color: #fff;
+    border: var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.tableContainer .dataInfo {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tableContainer table {
+    border: var(--border);
+}
+
+/* =======================
+   Inputs & botones
+======================= */
+.containerInput {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.containerInput input {
+    width: 100%;
+}
+
+.btnVoucher,
+.btnImport {
     background-color: var(--danger-color);
-    color: var(--bg-color);
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.btnVoucher {
+    padding: 3px 10px;
+    font-size: 1.2em;
+    border-radius: 50%;
+}
+
+.btnOpenModalSp {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 0;
+    border-bottom-right-radius: var(--border-radius-input);
+    border-top-right-radius: var(--border-radius-input);
+}
+
+.btnImport {
+    position: absolute;
+    right: 5px;
+    top: 8px;
+    font-size: .7em;
+    padding: 1px 5px;
+    font-weight: var(--font-weight-medium);
+    border-radius: 3px;
+}
+
+/* =======================
+   Tablas HTML
+======================= */
+th,
+.lblInfoTotals {
     font-weight: var(--font-weight-semibold);
-    padding: 2px 10px;
+    padding: 2px 5px;
 }
 
-.valueInfo{
-    border-bottom: 1px solid var(--danger-color);
-    flex: 1;
-    padding: 0 3px;
+th {
+    padding: 5px !important;
 }
 
-.rowInfo{
+td {
+    font-size: var(--font-size-sm);
+}
+
+tr {
+    height: 36.4px;
+    position: relative;
+}
+
+/* =======================
+   Sugerencias
+======================= */
+.containerImgSuggest {
+    height: 40px;
+    width: 40px;
+}
+
+.containerImgSuggest img,
+.btnTrash img {
+    width: 100%;
+    height: 100%;
+}
+
+.suggestionPart {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.containerImgNameSuggest {
     display: flex;
+    gap: 5px;
+    align-items: center;
 }
 
+/* =======================
+   Estructura lateral
+======================= */
 .bodyLeftPart {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.tablesDataContainer{
-    display: flex;
-    flex-direction: column;
+.bodyRightColumn {
+    border-bottom: var(--border);
 }
 
-.containerTables{
-    display: flex;
-    gap: 10px
-}
-
-.lblInfoTotals, th{
-    font-weight: var(--font-weight-semibold);
-    padding: 2px 5px;
-}
-
-.lblInfoTotals{
-    background-color: #f8f8f8;
+.rightColumn  td{
+    padding: 7px 5px !important;
     border: var(--border);
 }
 
-th{
-    padding: 5px !important;
+.actionsPayments{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
-td{
-    font-size: var(--font-size-sm);
+.actionsPayments .btnTrash{
+    position: static;
 }
 
-.containerInput{
-    margin-bottom: 10px;
-    position: relative;
-}
-
-.containerInput input{
+.rightColumn .tableContainer .txtInputs{
+    padding: 8px 5px;
     width: 100%;
 }
 
-.tableContainer{
-    flex: 1;
+.tdMethod{
+    width: 45%;
 }
 
-.tableContainer table{
+.rightColumn  th{
+    border-bottom: var(--border) !important;
+}
+
+/* =======================
+   Montos
+======================= */
+.containerAmount {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.containerAmountInfo {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
     border: var(--border);
+    border-radius: 12px;
+    margin: 10px 0;
+    border-bottom: var(--border);
+    background-color: #fff;
 }
 
-tr{
-    height: 36.4px;
-    position: relative;
+.containerAmountInfo .dataInfo{
+    flex-direction: row;
+    padding: 5px 0;
+    justify-content: space-between;
+}
+
+.containerAmountInfo h3 {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+}
+
+/* =======================
+   Utilidades
+======================= */
+#btnClearFile {
+    padding: 3px 5px;
 }
 
 .btnTrash {
@@ -113,112 +330,14 @@ tr{
     background-color: transparent;
 }
 
-.btnTrash img {
-    width: 100%;
-    height: 100%;
-}
-
-
-
-.bodyRightColumn {
-    max-height: 50%;
-    min-height: 0;
-    height: 100%;
-}
-
-.amounts {
-    overflow-y: auto;
-}
-
-.containerAmount {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.containerAmountDue {
-    display: flex;
-    justify-content: space-between;
-}
-
-.containerAmountDue h3 {
-    font-weight: var(--font-weight-medium);
-    font-size: 1.4em;
-}
-
-#due {
-    font-size: 1.4em;
-    color: var(--danger-color);
-    font-weight: var(--font-weight-semibold);
-}
-
-.btnVoucher {
-    padding: 3px 10px;
-    font-size: 1.2em;
-    border-radius: 50%;
-    background-color: var(--danger-color);
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.containerImgSuggest{
-    height: 40px;
-    width: 40px;
-}
-
-.containerImgSuggest img{
-    width: 100%;
-    height: 100%;
-}
-
-.suggestionPart{
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.containerImgNameSuggest{
-    display: flex;
-    gap: 5px;
-    align-items: center;
-}
-
-.btnImport{
-    position: absolute;
-    right: 5px;
-    top: 8px;
-    background-color: var(--danger-color);
-    color: var(--bg-color);
-    font-size: .7em;
-    border: none;
-    padding: 1px 5px;
-    font-weight: var(--font-weight-medium);
-    border-radius: 3px;
-}
-
-#btnClearFile{
-    padding: 3px 5px;
-}
-
-.btnOpenModalSp{
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    border-radius: 0;
-    border-bottom-right-radius: var(--border-radius-input);
-    border-top-right-radius: var(--border-radius-input);
-
-}
-
-/* Modal */
-
 .btnPrimary {
     padding: 5px 12px;
     font-size: 1em;
     text-decoration: none;
-    width: auto;
     display: grid;
     place-content: center;
+}
+
+.danger{
+    color: var(--danger-color);
 }

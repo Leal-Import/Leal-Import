@@ -108,7 +108,7 @@ export let createBtnUrl = (index, receiptUrl) => {
 function openReceiptModal(inputElement, buttonElement) {
     const modalContainer = document.querySelector('.containerModal'); // Usa la clase o ID del contenedor
     const inputIdField = document.getElementById('currentReceiptInputId');
-    const abonoIndex = inputElement.closest('.containerAmount').getAttribute('data-index');
+    const abonoIndex = inputElement.closest('.paymentRow').getAttribute('data-index');
 
     // 1. CONEXIÓN: Guardar el ID del input dinámico al que hace referencia el modal
     inputIdField.value = inputElement.id;

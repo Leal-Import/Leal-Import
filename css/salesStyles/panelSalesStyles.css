@@ -5,13 +5,14 @@
 }
 
 .rightColumn {
-    width: 450px;
+    width: 450px !important;
     padding: 15px;
     background: #f9f9f9;
     border: var(--border);
     border-radius: 12px;
     position: sticky;
     top: 0;
+    height: fit-content;
 }
 
 /* ================================
@@ -50,6 +51,7 @@
     border: var(--border);
     max-height: 30dvh;
     overflow-y: auto;
+    padding: 0 !important;
 }
 
 .rightColumn .table th,
@@ -80,7 +82,6 @@
 
 .bodyRightColumn {
     display: flex;
-    max-height: 38%;
     flex-direction: column;
     gap: 2px;
 }
@@ -105,23 +106,6 @@
 }
 
 /* Lista de abonos */
-.amounts {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.containerAmount {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.containerAmount input,
-.containerAmount select {
-    flex: 1;
-}
-
 
 /* ================================
    FOOTER
@@ -140,7 +124,7 @@
 
 .lbl {
     font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
 }
 
 /* Botones */
