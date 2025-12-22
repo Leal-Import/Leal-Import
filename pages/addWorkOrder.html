@@ -45,42 +45,56 @@
                 </div>
                 <div class="bodyLeftPart">
                     <div class="moreDataContainer">
-                        <div class="rowInfo">
+                        <h2>Datos del vehiculo</h2>
+
+                        <!-- Datos principales del vehículo -->
+                        <div class="rowInfo rowVehicle">
                             <div class="dataInfo">
-                                <span class="lblInfo">Vin: </span>
-                                <span class="valueInfo" id="vin"></span>
+                                <span class="lblInfo">VIN</span>
+                                <span class="valueInfo" id="vin">JDB3JHF374JDHS87</span>
                             </div>
+
                             <div class="dataInfo">
-                                <span class="lblInfo">Marca: </span>
-                                <span class="valueInfo" id="brand"></span>
+                                <span class="lblInfo">Marca</span>
+                                <span class="valueInfo" id="brand">Toyota</span>
                             </div>
+
                             <div class="dataInfo">
-                                <span class="lblInfo">Modelo: </span>
-                                <span class="valueInfo" id="model"></span>
+                                <span class="lblInfo">Modelo</span>
+                                <span class="valueInfo" id="model">Corolla</span>
                             </div>
+
                             <div class="dataInfo">
-                                <span class="lblInfo">Año: </span>
-                                <span class="valueInfo" id="year"></span>
+                                <span class="lblInfo">Año</span>
+                                <span class="valueInfo" id="year">2023</span>
                             </div>
                         </div>
-                        <div class="rowInfo">
+
+                        <!-- Costos -->
+                        <div class="rowInfo rowCosts">
                             <div class="dataInfo">
-                                <span class="lblInfo">Precio de vehiculo: </span>
-                                <span class="valueInfo" id="vehiclePrice"></span>
+                                <span class="lblInfo">Precio del vehículo:</span>
+                                <span class="valueInfo" id="vehiclePrice">$0.00</span>
                             </div>
+
                             <div class="dataInfo">
-                                <span class="lblInfo">Costos de reparación: </span>
+                                <span class="lblInfo">Costos de reparación:</span>
                                 <span class="valueInfo" id="totalRepairCost">$0.00</span>
                             </div>
+
+                            <!-- Total destacado -->
+                            <div class="dataInfo totalHighlight">
+                                <span class="lblInfo">Total reparado:</span>
+                                <span class="valueInfo danger" id="totalCost">$0.00</span>
+                            </div>
                         </div>
-                        <div class="dataInfo">
-                            <span class="lblInfo">Total reparada: </span>
-                            <span class="valueInfo" id="totalCost">$0.00</span>
-                        </div>
+
                     </div>
+
                     <div class="tablesDataContainer">
                         <div class="containerTables">
                             <div class="tableContainer">
+                                <h2>Repuestos</h2>
                                 <div class="containerInput">
                                     <input type="text" id="txtSearchSparePart" class="txtInputs"
                                         placeholder="Buscar repuestos">
@@ -104,6 +118,7 @@
                                 </div>
                             </div>
                             <div class="tableContainer">
+                                <h2>Servicios</h2>
                                 <div class="containerInput">
                                     <input type="text" id="txtAddService" class="txtInputs"
                                         placeholder="Añadir servicios">
@@ -124,10 +139,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="dataInfo">
-                            <span class="lblInfoTotals">Total: </span>
-                            <span class="valueInfo" id="totalValueSparePartsDown">$0.00</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -136,9 +147,15 @@
                     <div class="bodyRightColumn">
                         <h2>Abonos</h2>
                         <div class="amounts"></div>
-                        <div class="containerAmountDue" id="containerAmountDue">
-                            <h3>Deuda:</h3>
-                            <span id="due"></span>
+                        <div class="containerAmountInfo">
+                            <div class="dataInfo" style="border-bottom: var(--border);">
+                                <h3>Total abonado:</h3>
+                                <span id="totalPaid">s</span>
+                            </div>
+                            <div class="dataInfo">
+                                <h3>Deuda restante:</h3>
+                                <span id="due"></span>
+                            </div>
                         </div>
                     </div>
                     <div class="footerRightColumn">

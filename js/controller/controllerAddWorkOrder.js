@@ -442,7 +442,6 @@ function calculateRepairCost() {
     const totalValueSpareParts = safeParseFloat(($('totalValueSpareParts') || {}).textContent);
     const sum = totalValueService + totalValueSpareParts;
     if ($('totalRepairCost')) $('totalRepairCost').textContent = `$${formatWithCommas(sum)}`;
-    if ($('totalValueSparePartsDown')) $('totalValueSparePartsDown').textContent = `$${formatWithCommas(sum)}`;
     if ($('txtTotal')) $('txtTotal').value = `$${formatWithCommas(sum)}`;
     calculateTotal();
     return sum;
