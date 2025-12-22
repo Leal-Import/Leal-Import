@@ -97,12 +97,6 @@
     cursor: pointer;
 }
 
-.amounts {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-}
 
 #btnClearFile{
     padding: 3px 5px;

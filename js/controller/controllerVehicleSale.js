@@ -1,5 +1,5 @@
 import { loadVehicle } from '../controller/salesHelpers/loadInfoVehicle.js'
-import { verifySelects, managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnFocus, formatOnBlur } from '../controller/salesHelpers/payments.js'
+import {managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnFocus, formatOnBlur } from '../controller/salesHelpers/payments.js'
 import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
 import {
     postVehicle,
@@ -27,6 +27,25 @@ const txtTotal = document.getElementById("txtTotal");
 const txtCommission = document.getElementById("txtCommission");
 const frmVehicleSale = document.getElementById("frmVehicleSale");
 const btnCreateOrder = document.getElementById("btnCreateOrder");
+
+const btnAddPayment = document.getElementById("btnAddPayment");
+
+btnAddPayment.addEventListener("click", () => {
+    addPaymentRow();
+});
+
+function addPaymentRow() {
+    createInitialPaymentField(
+        0,          // monto
+        null,       // metodo pago
+        null,       // comprobante
+        null,       // idPayment
+        null,
+        createBtnUrl,
+        null,
+        null
+    );
+}
 
 let vehicleId = params.get('idVehicle') || null;
 let idSale = params.get('idSale') || null;
@@ -266,7 +285,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btnCancel) {
         btnCancel.addEventListener("click", cancelVehicleSelection);
     }
-    verifySelects();
 });
 
 let loadSale = async () => {

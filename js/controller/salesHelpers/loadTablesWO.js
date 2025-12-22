@@ -4,7 +4,7 @@ import { formatWithCommas, allowDecimal } from "../../utils.js";
 const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const $ = id => document.getElementById(id);
 
-export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption) {
+export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption, calculateAmountDue) {
     const tBody = qsa(tBodyS); if (!tBody) return false;
     let emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
     if (!emptyRow) {

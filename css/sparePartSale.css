@@ -20,22 +20,6 @@
     height: 80%;
 }
 
-.btnTrash {
-    position: absolute;
-    height: 24px;
-    width: 24px;
-    right: 10px;
-    top: 20%;
-    border-radius: 50%;
-    border: none;
-    background-color: transparent;
-}
-
-.btnTrash img {
-    width: 100%;
-    height: 100%;
-}
-
 .containerTotal {
     width: 100%;
     display: flex;
@@ -49,22 +33,10 @@
 
 .containerTotal,
 .containerAmountDue {
-    align-self: end;
+    justify-content: space-between;
     align-items: center;
     gap: 10px;
     display: none;
-}
-
-.containerAmountDue {
-    width: 100%;
-    justify-content: space-between;
-}
-
-.amounts {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
 }
 
 .containerTotal h3,
@@ -84,10 +56,8 @@
     text-align: center;
 }
 
-.bodyRightColumn {
-    max-height: 40%;
-    min-height: 0;
-    height: 100%;
+.bodyRightColumn tr{
+    position: relative;
 }
 
 .headerRightColumn .table:has(.noDataMessage) {
