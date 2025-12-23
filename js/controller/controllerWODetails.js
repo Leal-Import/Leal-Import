@@ -199,7 +199,7 @@ let insertWOrders = (workOrders) => {
 };
 
 let viewWorkOrder = (idWorkOrder, idVehicle) => {
-    window.location.href = `workOrderView.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}`;
+    window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}&isView=true`;
 }
 
 let editWorkOrder = (idWorkOrder, idVehicle) => {

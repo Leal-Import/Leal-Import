@@ -51,6 +51,7 @@ const newPartId = params.get("newSparePartId");
 const newPartName = params.get("newSparePartName");
 const newSuggestedPrice = params.get("newSuggestedPrice");
 const idWorkOrder = params.get("idWorkOrder") || null;
+const isView = params.get("isView") === "true";
 
 // Local state
 const selectedServices = []; // { id|null, name, price }
@@ -153,7 +154,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadPayMethods();
     setupModalListeners();
     bindEvents();
-    if (idWorkOrder) {
+    if (isView && idWorkOrder) {
+        loadViewData();
+        await loadWorkOrder()
+    } else if (idWorkOrder) {
+        alert(7)
         await loadWorkOrder();
         validateDate(dtEstimated, dtEstimated.value);
     } else {
@@ -172,6 +177,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     calculateAllTotals();
 });
+
+let loadViewData = () => {
+    $("btnCompleteOrder").classList.remove("hide");
+    $("btnSendData").classList.add("hide");
+    qsa(".containerInput").forEach(inp => {
+        inp.classList.add("hide");
+    })
+}
 
 let loadWorkOrder = async () => {
     const workOrder = await getWorkOrderById(idWorkOrder);
