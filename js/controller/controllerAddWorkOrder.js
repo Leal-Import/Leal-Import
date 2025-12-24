@@ -154,13 +154,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadPayMethods();
     setupModalListeners();
     bindEvents();
-    if (isView && idWorkOrder) {
-        loadViewData();
+    if (idWorkOrder) {
+        if(isView) loadViewData();
+        else validateDate(dtEstimated, dtEstimated.value)
         await loadWorkOrder()
-    } else if (idWorkOrder) {
-        alert(7)
-        await loadWorkOrder();
-        validateDate(dtEstimated, dtEstimated.value);
     } else {
         await loadDataVehicle();
         validateDate(dtEstimated, new Date())

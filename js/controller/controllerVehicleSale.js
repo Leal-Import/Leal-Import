@@ -42,7 +42,7 @@ function addPaymentRow() {
         null,       // idPayment
         null,
         createBtnUrl,
-        null,
+        getTotal,
         null
     );
 }
@@ -71,6 +71,7 @@ btnCreateOrder.addEventListener("click", async (e) => {
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
     let success = await createNewSale();
+    return
     if (success) {
         window.location.href = "sales.html";
     }
@@ -118,9 +119,9 @@ let createNewSale = async (isWO) => {
     const amountData = [];
     const imagesAmounts = [];
 
-    const amounts = document.querySelectorAll('.containerAmount');
+    const amounts = document.querySelectorAll('.paymentRow');
 
-    for (let i = 0; i < amounts.length - 1; i++) {
+    for (let i = 0; i < amounts.length; i++) {
         const amountInput = amounts[i].querySelector('.amountInput');
         const paymentTypeSelect = amounts[i].querySelector('.paymentTypeSelect');
         const receiptInput = amounts[i].querySelector('.receiptInput');
