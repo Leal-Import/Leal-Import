@@ -27,6 +27,7 @@
     --font-size-sm: 0.9em;
     --font-size-title: 1.5em;
     --font-size-breadcrumb: 2.2em;
+    --font-size-amountValue: 3.5em;
     --width-modal: clamp(400px, 70%, 850px);
 }
 

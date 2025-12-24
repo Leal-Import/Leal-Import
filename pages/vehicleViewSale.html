@@ -15,6 +15,41 @@
 </head>
 
 <body>
+    <div class="containerModal hide" id="paymentDetailModal">
+        <div class="modalAdd modalPaymentDetail">
+            <div class="paymentDetailContent">
+                <div class="paymentDetailInfo">
+                    <button id="closePaymentDetailModal" class="btnClose" type="button">
+                        <img src="../media/appMedia/closeIcon.svg" alt="Cerrar">
+                    </button>
+                    <h2>Detalle del pago</h2>
+                    <div class="infoGroup bigAmount">
+                        <label>Monto Total</label>
+                        <div class="amountValue">$<span id="pdAmount"></span></div>
+                    </div>
+                    <div class="infoGrid">
+                        <div class="infoItem">
+                            <label>Método</label>
+                            <span id="pdMethod" class="badgeMethod"></span>
+                        </div>
+                        <div class="infoItem">
+                            <label>Fecha</label>
+                            <span id="pdDate"></span>
+                        </div>
+                        <div class="infoItem fullWidth">
+                            <label>Registrado por</label>
+                            <span id="pdEmployee"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="paymentDetailImage">
+                    <div id="pdImageContainer" class="imageWrapper">
+                    </div>
+                    <div class="overlayText">Comprobante</div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
@@ -155,6 +190,7 @@
                                 <tr>
                                     <th class="tdTypeAmount">Tipo de pago</th>
                                     <th class="tdAmount">Monto</th>
+                                    <th class="tdActions">Detalles</th>
                                 </tr>
                             </thead>
                             <tbody id="tBodyAmount"></tbody>
