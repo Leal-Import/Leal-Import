@@ -90,13 +90,18 @@ export let getSaleById = async (id) => {
         });
         if (!request.ok) {
             const errorBody = await request.text();
+
+            if (request.status === 401) {
+                throw new Error(`Error ${request.status}: No autorizado. Detalle: ${JSON.parse(errorBody).message}`);
+            }
+
             throw new Error(`Error ${request.status}: No se pudo obtener la venta. Detalle: ${errorBody.substring(0, 100)}`);
         }
         return await request.json();
 
     } catch (error) {
         console.error("Error en getSaleById:", error);
-        throw new Error("Fallo al conectar con el servicio de ventas.");
+        throw error;
     }
 };
 
@@ -107,6 +112,11 @@ export let getVehiclesAviable = async () => {
         });
         if (!request.ok) {
             const errorBody = await request.text();
+
+            if (request.status === 401) {
+                throw new Error(`Error ${request.status}: No autorizado. Detalle: ${JSON.parse(errorBody).message}`);
+            }
+
             throw new Error(`Error ${request.status}: No se pudo obtener la lista de vehiculos. Detalle: ${errorBody.substring(0, 100)}`);
         }
         return await request.json();

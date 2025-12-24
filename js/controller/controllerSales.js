@@ -1,4 +1,4 @@
-import { setupModal, showMessage, fillSelect } from '../utils.js'
+import { setupModal, showMessage, fillSelect, initSession} from '../utils.js'
 import { getSales, getStateSales } from '../service/serviceSales.js'
 import { createPagination } from '../pagination.js'
 
@@ -79,6 +79,9 @@ let loadEventsFilterBtn = () => {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if (!user) return;
+    
     await loadStateSales();
     loadEventsFilterBtn();
     pagination.update({});
