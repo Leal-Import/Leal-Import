@@ -4,7 +4,7 @@ import { formatWithCommas, allowDecimal } from "../../utils.js";
 const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const $ = id => document.getElementById(id);
 
-export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption, calculateAmountDue) {
+export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption, calculateAmountDue, calculateTotal) {
     const tBody = qsa(tBodyS); if (!tBody) return false;
     let emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
     if (!emptyRow) {
@@ -23,7 +23,7 @@ export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, cr
     emptyRow.dataset.id = data.id;
     if (data.idWo) emptyRow.dataset.idWo = data.idWo;
     if (createTrashOption) {
-        const btn = createTrashOption(data.id, data.idWo, nameCell, priceCell);
+        const btn = createTrashOption(data.id, data.idWo, nameCell, priceCell, emptyRow);
         emptyRow.appendChild(btn);
     }
     // listener para editar precio (preservando cursor)
@@ -31,7 +31,7 @@ export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, cr
         allowDecimal(priceCell);
         priceCell.addEventListener('input', (e) => {
             addEventsPrice();
-            calculateAmountDue();
+            calculateAmountDue(null, calculateTotal);
         });
     }
 

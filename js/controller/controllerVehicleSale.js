@@ -1,5 +1,5 @@
 import { loadVehicle } from '../controller/salesHelpers/loadInfoVehicle.js'
-import {managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnFocus, formatOnBlur } from '../controller/salesHelpers/payments.js'
+import {calculateDebt, loadPayMethods, createInitialPaymentField, formatOnFocus, formatOnBlur } from '../controller/salesHelpers/payments.js'
 import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
 import {
     postVehicle,
@@ -14,8 +14,9 @@ import {
     highlightAndFocus,
     cleanNumber,
     showMessage,
-    initSession,
-    getCurrentEmployeeId
+    initSession, 
+    getCurrentEmployeeId,
+    safeParseFloat
 } from '../utils.js'
 
 const params = new URLSearchParams(window.location.search);
@@ -43,13 +44,13 @@ function addPaymentRow() {
         null,
         createBtnUrl,
         getTotal,
-        null
+        null,
+        
     );
 }
 
 let vehicleId = params.get('idVehicle') || null;
 let idSale = params.get('idSale') || null;
-function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
 
 const paymentsToDelete = [];
 
@@ -71,7 +72,6 @@ btnCreateOrder.addEventListener("click", async (e) => {
 frmVehicleSale.addEventListener("submit", async (e) => {
     e.preventDefault();
     let success = await createNewSale();
-    return
     if (success) {
         window.location.href = "sales.html";
     }
@@ -238,7 +238,7 @@ let getTotal = () => {
 
 let loadEventsInps = () => {
     txtTotal.addEventListener("input", () => {
-        managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal)
+        calculateDebt(saveSaleState, getTotal)
     });
     txtCommission.addEventListener("input", saveSaleState);
     document.getElementById("txtNotes").addEventListener("input", saveSaleState);
@@ -299,14 +299,13 @@ let loadSale = async () => {
 }
 
 let insertSale = (sale) => {
-    console.log(sale)
     document.getElementById("txtNotes").value = sale.notes;
     document.getElementById("txtCommission").value = sale.commission;
     document.querySelector(".amounts").innerHTML = '';
     sale.payments.forEach(payment => {
         createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, saveSaleState, createBtnUrl, getTotal, paymentsToDelete);
     })
-    managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal);
+    calculateDebt(saveSaleState, getTotal);
     document.getElementById("due").textContent = `$${formatWithCommas(sale.amountDue)}`;
     document.getElementById("due").style.color = sale.amountDue > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     txtTotal.value = `$${formatWithCommas(sale.fullTotalCost)}`;
@@ -439,12 +438,12 @@ let loadSaleState = async () => {
     }
 
     // 5. Recalcular la deuda para actualizar 'due'
-    managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal);
+    calculateDebt(saveSaleState, getTotal);
 };
 
 function saveSaleState() {
     if (idSale) return;
-    const payments = [...document.querySelectorAll(".containerAmount")].map(container => {
+    const payments = [...document.querySelectorAll(".paymentRow")].map(container => {
         const input = container.querySelector(".amountInput");
         const select = container.querySelector(".paymentTypeSelect");
         // Nota: Los inputs de archivo local (receiptInput) solo se usan en la sesión actual

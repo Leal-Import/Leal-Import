@@ -1,9 +1,8 @@
 import { getPaymentMethods } from '../../service/serviceConfiguration.js';
-import { allowDecimal, fillSelect, formatWithCommas } from '../../utils.js'
+import { allowDecimal, fillSelect, formatWithCommas, safeParseFloat } from '../../utils.js'
 
 
-function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
-
+/* Aca se cargan todos los metodos de pago */
 let paymentMethodsList = [];
 export async function loadPayMethods() {
     try {
@@ -16,12 +15,10 @@ export async function loadPayMethods() {
     }
 }
 
-/* ================== MAIN LOGIC ================== */
-export function managePaymentsAndCalculateDebt(
+/* Aca solo se calcula la deuda de todas las interfaces vinculadas a este archivo */
+export function calculateDebt(
     saveState,
-    createBtnUrl,
     calculateTotal,
-    arrayDeleteIds
 ) {
     const rows = document.querySelectorAll('#amounts .paymentRow')
 
@@ -39,7 +36,6 @@ export function managePaymentsAndCalculateDebt(
 
     const dueText = document.getElementById('due')
     const paidText = document.getElementById('totalPaid')
-
     if (paidText) {
         paidText.textContent = `$${formatWithCommas(totalPaid)}`
         paidText.style.color =
@@ -52,10 +48,10 @@ export function managePaymentsAndCalculateDebt(
             debt > 0 ? 'var(--danger-color)' : 'var(--success-color)'
     }
 
-    saveState && saveState()
+    saveState && saveState();
 }
 
-
+/* Se crean los pagos de los abonos */
 export function createInitialPaymentField(
     amount = 0,
     paymentMethodId = null,
@@ -128,7 +124,7 @@ export function createInitialPaymentField(
             const id = tr.dataset.id;
             if (id && arrayDeleteIds) arrayDeleteIds.push(id);
             tr.remove();
-            managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal, arrayDeleteIds);
+            calculateDebt(saveState, calculateTotal);
             reindexPayments();
         });
         if (createBtnUrl) containerActions.appendChild(deleteBtn);
@@ -154,14 +150,14 @@ export function createInitialPaymentField(
     input.addEventListener("blur", e => formatOnBlur(e, true));
 
     input.addEventListener("input", () => {
-        managePaymentsAndCalculateDebt(saveState, createBtnUrl, calculateTotal, arrayDeleteIds);
-        calculateTotal()
+        calculateDebt(saveState, calculateTotal);
     });
 
     saveState && input.addEventListener("input", saveState);
     saveState && select.addEventListener("change", saveState);
 }
 
+/* Se re acomodan los pagos */
 function reindexPayments() {
     const rows = document.querySelectorAll("#amounts .paymentRow");
     rows.forEach((row, i) => {
@@ -188,29 +184,34 @@ function reindexPayments() {
     });
 }
 
-
+/* Utilidad para cuando se quita el focus de un input o elemento editable */
 export function formatOnBlur(event, isInput) {
     const element = event.target;
     let value = isInput ? element.value : element.textContent;
 
-    // Convertir a número
-    let number = safeParseFloat(value);
-
-    // Si resulta en NaN, lo dejamos vacío
-    if (isNaN(number)) {
-        if (isInput) element.value = "";
-        else element.textContent = "";
+    // Si está vacío al salir → 0
+    if (!value || value.trim() === '') {
+        if (isInput) element.value = '$0.00';
+        else element.textContent = '$0.00';
         return;
     }
 
-    // Formateador USD
+    const number = safeParseFloat(value);
+
+    // Si no es número → 0
+    if (isNaN(number)) {
+        if (isInput) element.value = '$0.00';
+        else element.textContent = '$0.00';
+        return;
+    }
+
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     });
 
-    // Aplicar formato
     const formatted = formatter.format(number);
 
     if (isInput) element.value = formatted;
@@ -218,24 +219,26 @@ export function formatOnBlur(event, isInput) {
 }
 
 
+/* Utilidad para cuando se hace focus de un input o elemento editable */
 export function formatOnFocus(event, isInput) {
     const element = event.target;
     let value = isInput ? element.value : element.innerText;
 
-    // Quitar símbolo de dólar y comas
-    let clean = value.replace('$', '').replace(/,/g, '');
+    if (!value) return;
 
-    // Si incluía decimales escritos por el usuario, mantenerlos
-    // Detecta si el valor original NO estaba formateado automáticamente.
-    const userTypedDecimals =
-        (value.includes('.') || value.includes(',')) &&
-        !value.includes('$') &&
-        !value.includes(',');
+    // Si es $0.00, dejar vacío (significa "no hay nada")
+    if (value === '$0.00') {
+        if (isInput) element.value = '';
+        else element.textContent = '';
+        return;
+    }
 
-    if (!userTypedDecimals) {
-        // Quitar decimales si no fueron escritos manualmente
-        clean = clean.split('.')[0];
-        clean = clean.split(',')[0];
+    // Quitar formato visual
+    let clean = value.replace(/\$/g, '').replace(/,/g, '');
+
+    // Si termina en .00, quitar decimales
+    if (clean.endsWith('.00')) {
+        clean = clean.slice(0, -3);
     }
 
     if (isInput) {

@@ -1,5 +1,10 @@
 import { getAuthMe } from '../js/service/serviceLogin.js'
 
+
+export function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
+export const $ = id => document.getElementById(id);
+export const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
 export const toggleModal = (modal, show) => {
     if (!modal) return;
     modal.classList.toggle("show", show);
@@ -43,11 +48,31 @@ export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, for
     });
 };
 
-export const validateDate = (input, minDate) => {
-    const date = new Date(minDate);
-    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-    input.min = date.toISOString().split('T')[0];
+export const validateDate = (input, minDate = null) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let finalMinDate;
+
+    if (!minDate) {
+        // No viene fecha → hoy
+        finalMinDate = today;
+    } else {
+        const recordDate = new Date(minDate);
+        recordDate.setHours(0, 0, 0, 0);
+
+        // Elegir la menor entre hoy y la fecha del registro
+        finalMinDate = recordDate < today ? recordDate : today;
+    }
+
+    // Ajuste timezone
+    finalMinDate.setMinutes(
+        finalMinDate.getMinutes() - finalMinDate.getTimezoneOffset()
+    );
+
+    input.min = finalMinDate.toISOString().slice(0, 10);
 };
+
 
 export const getInputsValues = (form) => {
     const data = {};

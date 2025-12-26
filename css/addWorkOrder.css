@@ -209,6 +209,10 @@ td {
     font-size: var(--font-size-sm);
 }
 
+.tdPrice{
+    width: 35%;
+}
+
 tr {
     height: 36.4px;
     position: relative;
