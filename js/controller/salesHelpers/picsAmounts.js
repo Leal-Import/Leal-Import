@@ -1,3 +1,4 @@
+/*Esta funcion inicializa los listeners del modal de comprobantes */
 export function setupModalListeners() {
     const modalContainer = document.querySelector('.containerModal');
     const btnClose = document.getElementById('closeVoucherModal');
@@ -65,6 +66,7 @@ export function setupModalListeners() {
     });
 }
 
+/* Esta funcion crea el boton para abrir el modal del comprobante de pago */
 export let createBtnUrl = (index, receiptUrl, selectedAmounts) => {
     // === ELEMENTOS PARA EL COMPROBANTE ===
     const receiptContainer = document.createElement("div");
@@ -124,6 +126,7 @@ export let createBtnUrl = (index, receiptUrl, selectedAmounts) => {
     return receiptContainer;
 }
 
+// Función para abrir el modal de comprobante
 function openReceiptModal(inputElement, buttonElement) {
     const modalContainer = document.querySelector('.containerModal'); // Usa la clase o ID del contenedor
     const inputIdField = document.getElementById('currentReceiptInputId');
@@ -140,6 +143,7 @@ function openReceiptModal(inputElement, buttonElement) {
     modalContainer.classList.remove('hide');
 }
 
+// Función para actualizar el contenido del modal según el estado del input
 function updateModalContent(inputElement, buttonElement) {
     // 🔑 CORRECCIÓN: Obtener las referencias fuera del if/else
     const previewArea = document.getElementById('modalPreviewArea');
