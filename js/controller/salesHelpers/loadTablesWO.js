@@ -1,18 +1,21 @@
 import { formatOnBlur, formatOnFocus } from "../salesHelpers/payments.js";
-import { formatWithCommas, allowDecimal } from "../../utils.js";
+import { formatWithCommas, allowDecimal, safeParseFloat } from "../../utils.js";
 
 const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const $ = id => document.getElementById(id);
 
-export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption, calculateAmountDue, calculateTotal) {
-    const tBody = qsa(tBodyS); if (!tBody) return false;
-    let emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
+export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, createTrashOption, calculateAmountDue, calculateTotal, arrayDelete, arraySelected, methodsDelete) {
+    const tBody = $(tBodyS); if (!tBody) return false;
+    const rowsArray = Array.from(tBody.querySelectorAll('tr'));
+    const exists = rowsArray.some(r => r.dataset.id === String(data.id));
+    if (exists) return false; // ya existe, no lo añadimos
+    let emptyRow = qsa(`#${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
     if (!emptyRow) {
         // si no hay fila vacía, añadimos una fila a ambas tablas y reintentamos
         addRowToBothTables();
-        emptyRow = qsa(`${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
+        emptyRow = qsa(`#${tBodyS} tr`).find(r => r.querySelector('.tdName').textContent.trim() === '');
     }
-
+    let idWo = data.idWorkOrderService || data.idWorkOrderSpareParts;
     const nameCell = emptyRow.querySelector('.tdName');
     const priceCell = emptyRow.querySelector('.tdPrice');
     nameCell.textContent = data.name;
@@ -21,15 +24,22 @@ export function appendToDom(tBodyS, data, rows, addEventsPrice, extraMethods, cr
 
     // limpiar inputs ocultos previos
     emptyRow.dataset.id = data.id;
-    if (data.idWo) emptyRow.dataset.idWo = data.idWo;
+    if (idWo) emptyRow.dataset.idWo = idWo;
     if (createTrashOption) {
-        const btn = createTrashOption(data.id, data.idWo, nameCell, priceCell, emptyRow);
+        const btn = createTrashOption(data.id, idWo, nameCell, priceCell, emptyRow, arrayDelete, arraySelected, methodsDelete);
         emptyRow.appendChild(btn);
     }
     // listener para editar precio (preservando cursor)
     if (addEventsPrice) {
         allowDecimal(priceCell);
         priceCell.addEventListener('input', (e) => {
+            const row = priceCell.closest('tr');
+            const id = row.dataset.id;
+            const value = safeParseFloat(priceCell.textContent);
+            const item = arraySelected.find(i => String(i.id) === String(id));
+            if (item) {
+                item.price = value;
+            }
             addEventsPrice();
             calculateAmountDue(null, calculateTotal);
         });
@@ -57,7 +67,7 @@ function createEmptyRow() {
     return tr;
 }
 
-function addRowToBothTables() {
+export function addRowToBothTables() {
     const tBodyServices = $('tBodyServices');
     const tBodyParts = $('tBodySpareParts');
     if (tBodyServices) tBodyServices.appendChild(createEmptyRow());

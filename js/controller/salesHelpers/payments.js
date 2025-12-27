@@ -60,7 +60,8 @@ export function createInitialPaymentField(
     saveState,
     createBtnUrl,
     calculateTotal,
-    arrayDeleteIds
+    arrayDeleteIds,
+    selectedAmounts
 ) {
     const amountContainer = document.getElementById("amounts");
     if (!amountContainer) return;
@@ -71,6 +72,18 @@ export function createInitialPaymentField(
     tr.classList.add("paymentRow");
     tr.dataset.index = index;
     if (idPayment) tr.dataset.id = idPayment;
+    const logicalId = idPayment || crypto.randomUUID();
+    tr.dataset.logicalId = logicalId;
+    // Asegurar que selectedAmounts siempre tenga este payment
+    if (selectedAmounts) {
+        selectedAmounts.push({
+            id: logicalId,
+            amount: safeParseFloat(amount),
+            idPaymentMethod: paymentMethodId || null,
+            idPayment: idPayment || null,
+            paymentURL: receiptUrl || null
+        });
+    }
 
     /* ===== MONTO ===== */
     const tdAmount = document.createElement("td");
@@ -107,7 +120,7 @@ export function createInitialPaymentField(
         containerActions.classList.add("actionsPayments");
 
         if (createBtnUrl) {
-            const receiptBtn = createBtnUrl(index, receiptUrl);
+            const receiptBtn = createBtnUrl(index, receiptUrl, selectedAmounts);
             containerActions.appendChild(receiptBtn);
         }
     }
@@ -119,10 +132,14 @@ export function createInitialPaymentField(
 
         deleteBtn.addEventListener("click", () => {
             const rows = document.querySelectorAll(".amounts .paymentRow");
-
             // 🗑 Eliminación normal
+            if (selectedAmounts) {
+                const idx = selectedAmounts.findIndex(a => a.id === logicalId);
+                if (idx !== -1) selectedAmounts.splice(idx, 1);
+            }
             const id = tr.dataset.id;
             if (id && arrayDeleteIds) arrayDeleteIds.push(id);
+            console.log(arrayDeleteIds);
             tr.remove();
             calculateDebt(saveState, calculateTotal);
             reindexPayments();
@@ -135,7 +152,7 @@ export function createInitialPaymentField(
     /* ===== ENSAMBLAR ===== */
     tr.append(tdAmount, tdMethod);
     if (createBtnUrl) tr.appendChild(tdActions);
-    else if(amountContainer.children.length != 0) {
+    else if (amountContainer.children.length != 0) {
         tr.appendChild(deleteBtn)
     };
     reindexPayments();
@@ -143,6 +160,13 @@ export function createInitialPaymentField(
 
     fillSelect(select.id, paymentMethodsList, "idPaymentMethod", "methodName", "Metodo de pago");
     select.dataset.filled = true;
+    select.addEventListener("change", () => {
+        if (!selectedAmounts) return;
+        const item = selectedAmounts.find(a => a.id === logicalId);
+        if (item) {
+            item.idPaymentMethod = select.value || null;
+        }
+    });
 
     if (paymentMethodId) select.value = paymentMethodId;
 
@@ -150,8 +174,16 @@ export function createInitialPaymentField(
     input.addEventListener("blur", e => formatOnBlur(e, true));
 
     input.addEventListener("input", () => {
+        if (selectedAmounts) {
+            const item = selectedAmounts.find(a => a.id === logicalId);
+            if (item) {
+                item.amount = safeParseFloat(input.value);
+            }
+            console.log(selectedAmounts)
+        }
         calculateDebt(saveState, calculateTotal);
     });
+
 
     saveState && input.addEventListener("input", saveState);
     saveState && select.addEventListener("change", saveState);
