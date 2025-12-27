@@ -1,6 +1,6 @@
 import { formatWithCommas } from '../../utils.js'
 
-export async function insertSpareParts(
+export function insertSpareParts(
     spareParts,
     idtBody,
     createBtnAdd,
@@ -54,9 +54,8 @@ export async function insertSpareParts(
 
         tdImage.appendChild(image);
         tr.append(tdImage, name, cost, suggestedPriceTd);
-
         if (createBtnAdd) {
-            const btn = await createBtnAdd(sparePart, tr);
+            const btn = createBtnAdd(sparePart, tr);
             tr.appendChild(btn);
         }
 

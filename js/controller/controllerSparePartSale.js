@@ -12,7 +12,9 @@ import {
     allowDecimal,
     getInputsValues,
     showMessage,
-    highlightAndFocus
+    safeParseFloat,
+    initSession,
+    getCurrentEmployeeId
 } from '../utils.js'
 
 /* ---------------------------
@@ -27,12 +29,15 @@ const suggestedPrice = sanitizeParam(params.get('suggestedPrice'));
 const frmSparePartSale = document.getElementById("frmSparePartSale");
 const idSale = sanitizeParam(params.get("idSale"));
 
+let currentIdEmployee = null;
+
 const saleKey = `saleSpareState_customer_${customerId}`;
 
 const btnAddPart = document.getElementById("btnAddPart");
 
 /* Estado local */
-let selectedIds = [];
+const selectedItems = [];
+const selectedPayments = [];
 const itemsToDelete = [];
 const paymentsToDelete = [];
 
@@ -51,7 +56,8 @@ function addPaymentRow() {
         null,
         null,
         calculateTotal,
-        null
+        null,
+        selectedPayments
     );
 }
 
@@ -62,11 +68,14 @@ function sanitizeParam(param) {
     return param === null || param === "null" || param === "undefined" ? null : param;
 }
 
-let addEventsPrice = (price) => {
+let addEventsPrice = (price, arraySelected, id) => {
     price.contentEditable = "plaintext-only";  // ← FIX DEL CURSOR
     allowDecimal(price);
 
     price.addEventListener("input", () => {
+        const cleanValue = safeParseFloat(price.textContent) || 0;
+        const item = arraySelected.find(i => String(i.idSparePart) === String(id));
+        if (item) item.priceApplied = cleanValue;
         calculateTotal();
         saveSaleState();
     });
@@ -81,12 +90,11 @@ let addEventsPrice = (price) => {
 }
 
 let verifyIds = (idSparePart) => {
-    return selectedIds.includes(idSparePart);
+    return selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
 }
 
 
-
-let createTrashOption = async (container, tr, id, idSaleItem) => {
+let createTrashOption = (container, tr, id, idSaleItem) => {
     const btnTrash = document.createElement("button");
     btnTrash.classList.add("btnTrash");
     btnTrash.type = "button";
@@ -95,10 +103,9 @@ let createTrashOption = async (container, tr, id, idSaleItem) => {
     iconImg.src = "../../media/appMedia/trashIcon.png";
 
     btnTrash.appendChild(iconImg);
-
     btnTrash.addEventListener("click", async () => {
-        const deleteId = selectedIds.findIndex(idS => String(idS) === String(id));
-        if (deleteId !== -1) selectedIds.splice(deleteId, 1);
+        const index = selectedItems.findIndex(item => String(item.idSparePart) === String(id));
+        if (index !== -1) selectedItems.splice(index, 1);
         tr.remove();
         calculateTotal();
         saveSaleState();
@@ -115,17 +122,15 @@ let createTrashOption = async (container, tr, id, idSaleItem) => {
         }
         await loadSpareParts();
     });
-    await loadSpareParts();
     return btnTrash;
 }
 
-let createBtnAdd = async (sparePart, tr) => {
+let createBtnAdd = (sparePart, tr) => {
     const btnAddSparePart = document.createElement("button");
     btnAddSparePart.classList.add("btnPrimary", "btnAddPart");
     btnAddSparePart.textContent = "+";
-    btnAddSparePart.addEventListener("click", async () => {
-        selectedIds.push(sparePart.idSpareParts);
-        await createRowTable("tBodySelected", sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal);
+    btnAddSparePart.addEventListener("click", () => {
+        createRowTable("tBodySelected", sparePart.idSpareParts, sparePart.nameSpareParts, sparePart.suggestedPrice, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal, null, selectedItems);
         tr.remove();
         saveSaleState();
     });
@@ -136,6 +141,10 @@ let createBtnAdd = async (sparePart, tr) => {
 DOMContentLoaded
 --------------------------- */
 document.addEventListener("DOMContentLoaded", async () => {
+    const user = await initSession();
+    if (!user) return;
+    currentIdEmployee = getCurrentEmployeeId();
+
     await loadPayMethods();
 
     // Cargar estado guardado (si existe)
@@ -144,7 +153,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         await loadSavedData(saved.selectedParts, saved.payments, saved.notes);
     } else if (idSale) {
         await loadSale()
-        createInitialPaymentField(0, null, null, null, null, null, calculateTotal);
+        createInitialPaymentField(0, null, null, null, null, null, calculateTotal, null, selectedPayments);
     } else {
         // si no hay saved, crear primer campo de abono vacío
         ensureInitialPaymentField();
@@ -174,10 +183,10 @@ let loadSale = async () => {
     document.getElementById("txtNotes").value = sale.notes;
     document.querySelector(".btnSubmitData").value = "Actualizar"
     sale.payments.forEach(payment => {
-        createInitialPaymentField(payment.amount, payment.idPaymentMethod, null, payment.idPayment, null, null, calculateTotal, paymentsToDelete);
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, null, payment.idPayment, null, null, calculateTotal, paymentsToDelete, selectedPayments);
     });
-    sale.sparePartItems.forEach(async item => {
-        await createRowTable("tBodySelected", item.idSparePart, item.sparePartName, item.priceApplied, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal, item.idSaleItem)
+    sale.sparePartItems.forEach(item => {
+        createRowTable("tBodySelected", item.idSparePart, item.sparePartName, item.priceApplied, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal, item.idSaleItem, selectedItems)
     })
 }
 
@@ -205,51 +214,41 @@ frmSparePartSale.addEventListener("submit", async (e) => {
 
     const amountData = [];
 
-    const amounts = document.querySelectorAll('.paymentRow');
+    for (let i = 0; i < selectedPayments.length; i++) {
+        const item = selectedPayments[i];
 
-    for (let i = 0; i < amounts.length; i++) {
-        const amountInput = amounts[i].querySelector('.amountInput');
-        const paymentTypeSelect = amounts[i].querySelector('.paymentTypeSelect');
-        const amountValue = parseFloat(amountInput.value.replace(/[$,]/g, ""));
-        const id = amounts[i].dataset.id;
-
-        if (isNaN(amountValue) || amountValue <= 0) {
-            highlightAndFocus(amountInput);
-            showMessage(`Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'Monto inválido', 'warning');
+        // Validaciones básicas
+        if (!item.amount || item.amount <= 0) {
+            showMessage('Monto no válido', `Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'warning');
             return;
         }
-        if (paymentTypeSelect.value == "") {
-            highlightAndFocus(paymentTypeSelect);
-            showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
+        if (!item.idPaymentMethod) {
+            showMessage('Método de pago faltante', `Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'warning');
             return;
         }
-        const objA = {
-            amount: amountValue,
-            idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: "159ae7b1-dc58-11f0-b474-581122cc1fec" /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
-        }
-        if (id) objA.idPayment = id;
-        amountData.push(objA);
+        // Datos para enviar al backend
+        amountData.push({
+            amount: item.amount,
+            idPaymentMethod: item.idPaymentMethod,
+            idPayment: item.idPayment || null,
+            idEmployee: currentIdEmployee
+        });
     }
 
     const sparePartItems = [];
-    const spareParts = document.querySelectorAll("#tBodySelected tr[data-id]")
-    for (let i = 0; i < spareParts.length; i++) {
-        const id = spareParts[i].dataset.id;
-        const price = spareParts[i].querySelector(".finalPrice");
-        const amountValue = parseFloat(price.textContent.replace(/[$,]/g, ""));
-        const idSaleItem = spareParts[i].dataset.idsaleitem;
-
-        if (isNaN(amountValue) || amountValue <= 0) {
+    for (let i = 0; i < selectedItems.length; i++) {
+        const id = selectedItems[i].idSparePart;
+        const price = safeParseFloat(selectedItems[i].priceApplied);
+        const idSaleItem = selectedItems[i].idSaleItem;
+        if (isNaN(price) || price <= 0) {
             showMessage(`Por favor, ingrese un total válido para el repuesto ${i + 1}.`, 'total inválido', 'warning');
             return;
         }
-
         const objI = {
             idSparePart: id,
-            priceApplied: amountValue
+            priceApplied: price,
+            idSaleItem: idSaleItem || null
         }
-        if (idSaleItem) objI.idSaleItem = idSaleItem;
         sparePartItems.push(objI)
     }
     if (sparePartItems.length == 0) {
@@ -265,8 +264,8 @@ frmSparePartSale.addEventListener("submit", async (e) => {
     const saleData = {
         idCustomer: customerId,
         notes: txtNotes || "",
-        idEmployee: "159ae7b1-dc58-11f0-b474-581122cc1fec", /* Esto se manejara por cookie por lo que por el momento se dejara dato quemado */
         payments: amountData,
+        idEmployee: currentIdEmployee,
         sparePartItems
     }
 
@@ -354,7 +353,7 @@ function ensureInitialPaymentField() {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
     if (amountContainer.children.length === 0) {
-        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
+        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, null, selectedPayments);
     }
 }
 
@@ -375,32 +374,30 @@ function loadSaleState() {
 async function loadSavedData(parts, payments, notes) {
     // parts: [{id,name,price}], payments: [{amount, paymentMethodId, receiptUrl}], notes: string
 
-    // 1. Inicializar selectedIds con los IDs guardados (Síncrono)
-    selectedIds = parts.map(p => p.id);
-
     // 2. Crear las filas de repuestos y esperar a que todas las operaciones asíncronas
     //    (como la creación de la fila y la carga de datos) terminen.
     const partCreationPromises = parts.map(sparePart => {
         return createRowTable(
             "tBodySelected",
-            sparePart.id,
+            sparePart.idSparePart,
             sparePart.name,
-            sparePart.price,
+            sparePart.priceApplied,
             createTrashOption,
             addEventsPrice,
             "sparePartName",
             "finalPrice",
-            calculateTotal
+            calculateTotal,
+            null,
+            selectedItems
         );
     });
 
     await Promise.all(partCreationPromises);
-    // >> Ahora selectedIds está lleno con los IDs guardados.
+    // >> Ahora selectedItems está lleno con los IDs guardados.
 
     // 3. Añadir nuevo repuesto si viene por parámetro
-    if (newPartId && !selectedIds.includes(newPartId)) {
-        selectedIds.push(newPartId);
-        await createRowTable(
+    if (newPartId && !selectedItems.some(item => String(item.idSparePart) === String(newPartId))) {
+        createRowTable(
             "tBodySelected",
             newPartId,
             newPartName,
@@ -409,10 +406,12 @@ async function loadSavedData(parts, payments, notes) {
             addEventsPrice,
             "sparePartName",
             "finalPrice",
-            calculateTotal
+            calculateTotal,
+            null,
+            selectedItems
         );
     }
-    // >> selectedIds ahora incluye los IDs guardados y el posible nuevo ID.
+    // >> selectedItems ahora incluye los IDs guardados y el posible nuevo ID.
 
     // 4. Restaurar abonos (Pagos)
     const amountContainer = document.querySelector(".amounts");
@@ -427,15 +426,15 @@ async function loadSavedData(parts, payments, notes) {
     });
 
     if (paymentsNormalized.length === 0) {
-        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
+        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, null, selectedPayments);
     } else {
         let lastValueWasZero = false;
         paymentsNormalized.forEach((payment) => {
-            createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, null, saveSaleState, null, calculateTotal);
+            createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, null, saveSaleState, null, calculateTotal, paymentsToDelete, selectedPayments);
             lastValueWasZero = (payment.amount === 0);
         });
         // Si el último abono tiene valor, añadimos un campo vacío extra
-        if (!lastValueWasZero) createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
+        if (!lastValueWasZero) createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, null, selectedPayments);
     }
 
     // 5. Restaurar notas
@@ -445,7 +444,7 @@ async function loadSavedData(parts, payments, notes) {
     // 6. Recalcular y guardar el estado final
     calculateDebt(saveSaleState, calculateTotal)
 
-    // 7. El console.log ahora reflejará el estado final y completo de selectedIds
+    // 7. El console.log ahora reflejará el estado final y completo de selectedItems
 }
 
 let cleanWindow = () => {
@@ -460,7 +459,7 @@ let cleanWindow = () => {
     amountContainer.innerHTML = ''; // Elimina todos los abonos
 
     // 5. 🔑 Crear el primer campo de abono vacío usando la función auxiliar
-    createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal);
+    createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, null, selectedPayments);
 
     // 6. Restablecer la deuda a cero
     document.getElementById("due").textContent = "$0";
@@ -468,33 +467,10 @@ let cleanWindow = () => {
 };
 
 function saveSaleState() {
-    // selected parts
-    const parts = [];
-    document.querySelectorAll("#tBodySelected tr[data-id]").forEach(tr => {
-        const id = tr.getAttribute("data-id");
-        const name = tr.querySelector(".sparePartName")?.textContent || "";
-        const priceText = tr.querySelector(".finalPrice")?.textContent.replace(/[$,]/g, "") || "0";
-        const price = parseFloat(priceText) || 0;
-        parts.push(
-            { id, name, price });
-    });
-    selectedIds = parts.map(p => p.id);
-
-    // pagos: objeto con amount y paymentMethodId y opcional receiptUrl
-    const payments = [...document.querySelectorAll(".containerAmount")].map(div => {
-        const input = div.querySelector(".amountInput");
-        const select = div.querySelector(".paymentTypeSelect");
-        const voucherBtn = div.querySelector(".btnVoucher");
-        const amount = parseFloat((input?.value || "").toString().replace(/[$,]/g, "")) || 0;
-        const paymentMethodId = select?.value || null;
-        const receiptUrl = voucherBtn?.dataset?.receiptUrl || null;
-        return { amount, paymentMethodId, receiptUrl };
-    });
-
     const notes = document.getElementById("txtNotes")?.value || "";
     const state = {
-        selectedParts: parts,
-        payments,
+        selectedParts: selectedItems,
+        payments: selectedPayments,
         notes
     };
 

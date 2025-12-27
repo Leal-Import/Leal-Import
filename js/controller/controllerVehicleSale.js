@@ -129,10 +129,6 @@ let createNewSale = async (isWO) => {
             showMessage('Comprobante faltante', `Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'warning');
             return;
         }
-        if (!currentIdEmployee) {
-            showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
-            return false;
-        }
 
         // Datos para enviar al backend
         amountData.push({

@@ -176,6 +176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupModalListeners();
     bindEvents();
     if (isNewPart) {
+        await loadDataVehicle();
         restoreOrderState();
         addNewPartToTable();
     } else if (idWorkOrder) {

@@ -35,7 +35,7 @@ let insertSaleData = (sale) => {
     $("percentage").style.width = percentage;
     $("percentageInfo").textContent = `${percentage} Pagado`;
     sale.payments.forEach(payment => {
-        createRowTable("tBodyAmount", payment.idPayment, payment.paymentMethod, payment.amount, null, null, "tdAmount", "tdTypeAmount", null, true)
+        createRowTable("tBodyAmount", payment.idPayment, payment.paymentMethod, payment.amount, null, null, "tdAmount", "tdTypeAmount", null)
     });
     insertSpareParts(sale.sparePartItems, "tBodyInventory", null, null);
 }
