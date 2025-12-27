@@ -133,7 +133,7 @@ let insertWOrders = (workOrders) => {
         tdCustomer.textContent = wo.employeeName ?? "—";//Por el momento sale el empleado pero aca va el cliente
 
         const tdOrderDate = document.createElement("td");
-        tdOrderDate.textContent = wo.orderDate;
+        tdOrderDate.textContent = wo.estimatedDate;
 
         const tdStatus = document.createElement("td");
         const containerDtStatus = document.createElement("div");

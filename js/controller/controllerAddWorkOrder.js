@@ -2,7 +2,7 @@
 // Reescritura completa - módulo Órdenes de Trabajo
 // Mantén los imports tal como los usas en tu proyecto:
 import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
-import { managePaymentsAndCalculateDebt, createInitialPaymentField, loadPayMethods } from '../controller/salesHelpers/payments.js'
+import { calculateDebt, createInitialPaymentField, loadPayMethods } from '../controller/salesHelpers/payments.js'
 import {
     getServices,
     postWorkOrder,
@@ -11,7 +11,7 @@ import {
     getWorkOrderById,
     putWorkOrder
 } from '../service/serviceAddWorkOrder.js'
-import { appendToDom } from '../controller/salesHelpers/loadTablesWO.js'
+import { appendToDom, addRowToBothTables } from '../controller/salesHelpers/loadTablesWO.js'
 import {
     formatWithCommas,
     showMessage,
@@ -19,7 +19,10 @@ import {
     highlightAndFocus,
     validateDate,
     initSession,
-    getCurrentEmployeeId
+    getCurrentEmployeeId,
+    safeParseFloat,
+    $,
+    qsa
 } from '../utils.js';
 
 /*
@@ -28,39 +31,53 @@ import {
   - Modal para comprobantes, FormData con imágenes y POST a postWorkOrder.
 */
 
-// ---------- Selectores y estado ----------
+/* Buscadores o inputs txt y las cajas de las sugerencias */
 const txtAddService = document.getElementById("txtAddService");
 const boxServ = document.getElementById("suggestionsService");
 
 const txtAddSparePart = document.getElementById("txtSearchSparePart");
 const boxSparePart = document.getElementById("suggestionsSpareParts");
 
+
 const frmAddWorkOrder = document.getElementById("frmWorkOrder");
 const dtEstimated = document.getElementById("dtEstimated");
 
-// URL params
+/* Parametros de la url */
 const params = new URLSearchParams(window.location.search);
 let customerName = params.get("customerName") || null;
 let idVehicle = params.get("idVehicle") || null;
 let idCustomer = params.get("idCustomer") === "null" ? null : params.get("idCustomer");
 let vehiclePrice = params.get("totalPrice") || 0;
-let idSale = params.get("idSale") || null;
+let idSale = params.get("idSale") === "null" ? null : params.get("idSale");
+let idWorkOrder = params.get("idWorkOrder") === "null" ? null : params.get("idWorkOrder");
+const isView = params.get("isView") === "true";
 
+/* Parametros de un repuesto importado */
 const isNewPart = params.get("isNewPart") === "true";
 const newPartId = params.get("newSparePartId");
 const newPartName = params.get("newSparePartName");
 const newSuggestedPrice = params.get("newSuggestedPrice");
-const idWorkOrder = params.get("idWorkOrder") || null;
-const isView = params.get("isView") === "true";
 
-// Local state
-const selectedServices = []; // { id|null, name, price }
-const selectedSpareParts = []; // { id, name, unitPrice, quantity }
+// Arrays que llevan el control de añadir actualizar o eliminar
+const selectedServices = [];
+const selectedSpareParts = [];
+let selectedAmounts = [];
 const sparePartsToDelete = [];
 const servicesToDelete = [];
 const paymentsToDelete = [];
+
+
+/* Variables que sirven para contar las filas */
 let rowsServices = 0;
 let rowsSpareParts = 0;
+
+// ---------- Utilities ----------
+
+
+// ---------- Small UI helpers ----------
+function showElement(el) { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); }
+function hideElement(el) { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); }
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), ms); }; }
 
 
 const btnAddPayment = document.getElementById("btnAddPayment");
@@ -77,12 +94,13 @@ function addPaymentRow() {
         null,       // idPayment
         null,
         createBtnUrl,
-        calculateTotal,
-        null
+        calculateRepairCost,
+        paymentsToDelete,
+        selectedAmounts
     );
 }
 
-let createTrashOptionSpare = (id, idWoItem, nameCell, priceCell) => {
+let createTrashOption = (id, idWoItem, nameCell, priceCell, tr, arrayDelete, arraySelected, extraMethods) => {
     // boton eliminar
     const btn = document.createElement('button');
     btn.className = 'btnTrash';
@@ -91,49 +109,52 @@ let createTrashOptionSpare = (id, idWoItem, nameCell, priceCell) => {
     img.src = '../../media/appMedia/trashIcon.png';
     btn.appendChild(img);
     btn.addEventListener('click', () => {
+        tr.removeAttribute("data-id");
+        tr.removeAttribute('data-id-wo');
         nameCell.textContent = '';
         priceCell.textContent = '';
         priceCell.removeAttribute("contenteditable");
         btn.remove();
-        if (idWoItem) sparePartsToDelete.push(idWoItem);
-        const idx = selectedSpareParts.findIndex(s => s.id === id);
-        if (idx > -1) selectedSpareParts.splice(idx, 1);
-        reindexSpareParts();
-        calculateTotalSpareParts();
-        calculateAmountDue();
-        updateImportButtonPosition();
+        if (idWoItem) arrayDelete.push(idWoItem);
+        const idx = arraySelected.findIndex(item => {
+            // existente (tabla intermedia)
+            if (idWoItem) {
+                return (
+                    item.idWorkOrderService === idWoItem ||
+                    item.idWorkOrderSpareParts === idWoItem
+                );
+            }
+            // nuevo (solo id lógico)
+            return item.id === id;
+        });
+        if (idx !== -1) {
+            arraySelected.splice(idx, 1);
+        }
+
+        extraMethods();
+        calculateDebt(null, calculateRepairCost);
     });
     return btn;
 }
 
-let createTrashOptionService = (id, idWoItem, nameCell, priceCell) => {
-    // boton eliminar
-    const btn = document.createElement('button');
-    btn.className = 'btnTrash';
-    btn.type = 'button';
-    const img = document.createElement('img');
-    img.src = '../../media/appMedia/trashIcon.png';
-    btn.appendChild(img);
-    btn.addEventListener('click', () => {
-        nameCell.textContent = '';
-        priceCell.textContent = '';
-        priceCell.removeAttribute('contenteditable');
-        btn.remove();
-        if (idWoItem) servicesToDelete.push(idWoItem);
-        const idx = selectedServices.findIndex(s => s.id === id);
-        if (idx > -1) selectedServices.splice(idx, 1);
-        reindexServices();
-        calculateTotalService();
-        calculateAmountDue();
-    });
-    return btn;
+let extraMethodsDeleteSpare = () => {
+    reindexSpareParts();
+    calculateTotalSpareParts();
+    updateImportButtonPosition();
 }
 
+let extraMethodsDeleteServices = () => {
+    reindexServices();
+    calculateTotalService();
+}
+
+/* Estos son metodos extra que se ejecuta cuando escribo en la celda de precios de la tabla de repuestos */
 let extraMethodsSpare = () => {
     reindexSpareParts();
     updateImportButtonPosition();
 }
 
+/* Este metodo carga la pagina cuando la orden de trabajo se va actualizar y verifica si tambien ya se habia añadido una venta del vehiculo a reparar */
 let loadInfoPage = () => {
     if (idSale) {
         $("firstBread").textContent = "Ventas >";
@@ -144,7 +165,7 @@ let loadInfoPage = () => {
     }
 }
 
-// ---------- Init ----------
+/* Se carga el DOM */
 document.addEventListener('DOMContentLoaded', async () => {
     const user = await initSession();
     if (!user) return;
@@ -154,30 +175,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadPayMethods();
     setupModalListeners();
     bindEvents();
-    if (isView && idWorkOrder) {
-        loadViewData();
-        await loadWorkOrder()
+    if (isNewPart) {
+        restoreOrderState();
+        addNewPartToTable();
     } else if (idWorkOrder) {
-        alert(7)
         await loadWorkOrder();
-        validateDate(dtEstimated, dtEstimated.value);
     } else {
+        createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost, paymentsToDelete, selectedAmounts); // crea el primer campo de abono
         await loadDataVehicle();
         validateDate(dtEstimated, new Date())
     }
-    createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost); // crea el primer campo de abono
+    if (isView) loadViewData();
+    else validateDate(dtEstimated, dtEstimated.value)
     // Si venimos de "añadir repuesto", revisar params para agregarlo automáticamente
     tryAddSpareFromUrl();
-    if (isNewPart && idWorkOrder) {
-        addNewPartToTable();
-    } else if (isNewPart) {
-        restoreOrderState();
-        addNewPartToTable();
-        saveCurrentOrderState();
-    }
     calculateAllTotals();
 });
 
+
+/* En este metodo se cargara toda la informacion cuando esta interfaz este en modo solo ver */
 let loadViewData = () => {
     $("btnCompleteOrder").classList.remove("hide");
     $("btnSendData").classList.add("hide");
@@ -186,35 +202,27 @@ let loadViewData = () => {
     })
 }
 
+/* Aca se carga la orden de trabajo gracias al id que se manda por parametro */
 let loadWorkOrder = async () => {
     const workOrder = await getWorkOrderById(idWorkOrder);
 
     renderVehicleData(workOrder.vehicleInfo);
 
-    workOrder.payments.forEach(payment => {
-        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, null, createBtnUrl, calculateRepairCost, paymentsToDelete)
-    })
+    loadSavedAmounts(workOrder.payments);
     loadSavedSpareParts(workOrder.spareParts);
     loadSavedServices(workOrder.services);
-
     document.getElementById("txtNotes").value = workOrder.notes || "";
     document.getElementById("dtEstimated").value = workOrder.estimatedDate || "";
 }
 
-// ---------- Utilities ----------
-const $ = id => document.getElementById(id);
-const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
-
 
 let loadDataVehicle = async () => {
-    console.log(idVehicle)
     const vehicleData = await getDataVehicleById(idVehicle)
     renderVehicleData(vehicleData);
 }
 
 
-// ---------- Build static rows (si tu html requiere filas vacías) ----------
+// Este metodo sirve para crear las filas iniciales en cada tabla
 function initStaticRows() {
     const tBodys = qsa('.tBodyData');
     tBodys.forEach(tBody => {
@@ -234,7 +242,7 @@ function initStaticRows() {
     });
 }
 
-// ---------- Events binding ----------
+/* Esta funcion inicializa varios eventos como la busqueda de servicios, repuestos y mandar los datos del form */
 function bindEvents() {
     // Servicios - búsqueda
     txtAddService?.addEventListener('input', debounce(async (e) => {
@@ -251,7 +259,7 @@ function bindEvents() {
             e.preventDefault();
             const val = e.target.value.trim();
             if (!val) return;
-            addService({ id: null, name: val, price: 0 });
+            addService({ idService: null, name: val, price: 0 });
             e.target.value = '';
             hideElement(boxServ);
         }
@@ -280,7 +288,7 @@ function bindEvents() {
     frmAddWorkOrder?.addEventListener('submit', handleSubmit);
 }
 
-// ---------- VehicleData render ----------
+/* Esta funcion inserta los datos solo del vehiculo en la interfaz  */
 const renderVehicleData = (data) => {
     if (!data) return;
     if ($('vin')) $('vin').textContent = data.vin || '-';
@@ -289,16 +297,17 @@ const renderVehicleData = (data) => {
     if ($('year')) $('year').textContent = data.year || '-';
 }
 
-// ---------- Suggestions render ----------
+/* Esta funcion crea las sugerencias de los servicios */
 function renderServiceSuggestions(list) {
     if (!boxServ) return;
     boxServ.innerHTML = '';
     list.forEach(s => {
-        if (selectedServices.some(x => x.id && x.id === s.idService)) return;
-        const div = document.createElement('div'); div.className = 'suggestionItem';
+        if (selectedServices.some(x => x.idService && x.idService === s.idService)) return;
+        const div = document.createElement('div');
+        div.className = 'suggestionItem';
         div.textContent = s.nameService;
         div.addEventListener('click', () => addService({
-            id: s.idService,
+            idService: s.idService,
             name: s.nameService,
             price: 0
         }));
@@ -307,12 +316,12 @@ function renderServiceSuggestions(list) {
     showElement(boxServ);
 }
 
+/* Esta funcion crea las sugerencias de los repuestos */
 function renderSparePartSuggestions(list) {
     if (!boxSparePart) return;
     boxSparePart.innerHTML = '';
-    console.log(list)
     list.forEach(p => {
-        if (selectedSpareParts.some(x => x.id === p.idSpareParts)) return;
+        if (selectedSpareParts.some(x => x.idSparePart === p.idSpareParts)) return;
         const div = document.createElement('div');
         div.classList.add('suggestionItem');
         div.classList.add('suggestionPart');
@@ -330,22 +339,16 @@ function renderSparePartSuggestions(list) {
         containerImgName.append(containerImg, name)
         div.append(containerImgName, suggestedPrice);
         div.addEventListener('click', () => addSparePart({
-            id: p.idSpareParts,
+            idSparePart: p.idSpareParts,
             name: p.nameSpareParts,
-            unitPrice: p.suggestedPrice
+            price: p.suggestedPrice
         }));
-        console.log(div)
         boxSparePart.appendChild(div);
     });
     showElement(boxSparePart);
 }
 
-// ---------- Small UI helpers ----------
-function showElement(el) { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); }
-function hideElement(el) { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); }
-function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), ms); }; }
-
-// Ubica y coloca el botón IMPORTAR en la primera fila vacía de repuestos
+/* Ubica y coloca el botón IMPORTAR en la primera fila vacía de repuestos */
 function updateImportButtonPosition() {
     const tBody = $('tBodySpareParts');
     if (!tBody) return;
@@ -384,22 +387,48 @@ function updateImportButtonPosition() {
     updateImportButtonPosition();
 }
 
-// ---------- Servicios logic ----------
+/* Esta funcion lleva la logica para añadir servicios cuando se le hace click a la sugerencia */
 function addService(service) {
     // validar duplicados por id o nombre
-    if (service.id && selectedServices.some(s => s.id === service.id)) { showMessage('warning', 'El servicio ya fue añadido'); return; }
-    if (!service.id && selectedServices.some(s => s.name.toLowerCase() === service.name.toLowerCase())) { showMessage('warning', 'El servicio ya fue añadido'); return; }
+    if (service.idService && selectedServices.some(s => s.idService === service.idService)) { showMessage('warning', 'El servicio ya fue añadido'); return; }
+    if (!service.idService && selectedServices.some(s => s.name.toLowerCase() === service.name.toLowerCase())) { showMessage('warning', 'El servicio ya fue añadido'); return; }
 
-    const obj = { id: service.id || null, name: service.name, price: service.price || 0, idWo: service.idWoService };
+    const obj = {
+        id: crypto.randomUUID(),
+        idService: service.idService || null,
+        name: service.name,
+        price: service.price || 0,
+        idWorkOrderService: service.idWorkOrderService
+    };
     // si append falla porque no hay fila vacía, appendServiceToDOM ahora añadirá filas y reintentará
-    if (!appendToDom("#tBodyServices", obj, rowsServices, calculateTotalService, reindexServices, createTrashOptionService, calculateAmountDue)) return;
+    if (!appendToDom("tBodyServices", obj, rowsServices, calculateTotalService, reindexServices, createTrashOption, calculateDebt, calculateRepairCost, servicesToDelete, selectedServices, extraMethodsDeleteServices)) return;
     selectedServices.push(obj);
     txtAddService.value = '';
     hideElement(boxServ);
     calculateTotalService();
-    calculateAmountDue();
+    calculateDebt(null, calculateRepairCost);
 }
 
+/* Esta funcion lleva la logica para añadir repuestos cuando se le hace click a la sugerencia */
+function addSparePart(spare) {
+    if (selectedSpareParts.some(x => x.idSparePart === spare.idSparePart)) return;
+    const data = {
+        id: crypto.randomUUID(),
+        idSparePart: spare.idSparePart || null,
+        name: spare.name,
+        price: spare.price || 0,
+        idWorkOrderSpareParts: spare.idWorkOrderSpareParts || null
+    };
+    if (!appendToDom("tBodySpareParts", data, rowsSpareParts, calculateTotalSpareParts, extraMethodsSpare, createTrashOption, calculateDebt, calculateRepairCost, sparePartsToDelete, selectedSpareParts, extraMethodsDeleteSpare)) return;
+    selectedSpareParts.push(data);
+    txtAddSparePart.value = '';
+    hideElement(boxSparePart);
+    calculateTotalSpareParts();
+    calculateDebt(null, calculateRepairCost);
+    updateImportButtonPosition(); // mover el botón IMPORTAR a la siguiente fila vacía
+}
+
+/* Esta funcion reordena los servicios */
 function reindexServices() {
     const rows = qsa('#tBodyServices tr');
     let idx = 0;
@@ -408,9 +437,12 @@ function reindexServices() {
     rows.forEach(r => {
         const nameCell = r.querySelector('.tdName');
         if (nameCell && nameCell.textContent.trim() !== '') {
-            const hidId = r.querySelector('.hidden-service-id'); if (hidId) hidId.name = `servicios[${idx}].id`;
-            const hidName = r.querySelector('.hidden-service-name'); if (hidName) hidName.name = `servicios[${idx}].name`;
-            const hidPrice = r.querySelector('.hidden-service-price'); if (hidPrice) hidPrice.name = `servicios[${idx}].price`;
+            const hidId = r.querySelector('.hidden-service-id');
+            if (hidId) hidId.name = `servicios[${idx}].id`;
+            const hidName = r.querySelector('.hidden-service-name');
+            if (hidName) hidName.name = `servicios[${idx}].name`;
+            const hidPrice = r.querySelector('.hidden-service-price');
+            if (hidPrice) hidPrice.name = `servicios[${idx}].price`;
             active.push(r); idx++;
         } else empty.push(r);
     });
@@ -423,6 +455,32 @@ function reindexServices() {
     rowsServices = idx;
 }
 
+/* Esta funcion reordena los repuestos */
+function reindexSpareParts() {
+    const rows = qsa('#tBodySpareParts tr');
+    let idx = 0;
+    const active = [];
+    const empty = [];
+    rows.forEach(r => {
+        const name = r.querySelector('.tdName');
+        if (name && name.textContent.trim() !== '') {
+            const hidId = r.querySelector('.hidden-part-id');
+            if (hidId) hidId.name = `repuestos[${idx}].id`;
+            const hidUnit = r.querySelector('.hidden-part-unitPrice');
+            if (hidUnit) hidUnit.name = `repuestos[${idx}].unitPrice`;
+            active.push(r); idx++;
+        } else empty.push(r);
+    });
+    const frag = document.createDocumentFragment();
+    active.forEach(r => frag.appendChild(r));
+    empty.forEach(r => frag.appendChild(r));
+    const tbody = $('tBodySpareParts');
+    tbody.innerHTML = '';
+    tbody.appendChild(frag);
+    rowsSpareParts = idx;
+}
+
+/* Esta funcion calcula el total de los servicios */
 function calculateTotalService() {
     const tds = qsa('#tBodyServices tr .tdPrice');
     let total = 0;
@@ -431,40 +489,7 @@ function calculateTotalService() {
     calculateRepairCost();
 }
 
-// ---------- Repuestos logic ----------
-function addSparePart(p) {
-    if (selectedSpareParts.some(x => x.id === p.id)) return;
-    const data = {
-        id: p.id,
-        name: p.name,
-        price: p.unitPrice || 0,
-        idWo: p.idWorkOrder || null
-    };
-    if (!appendToDom("#tBodySpareParts", data, rowsSpareParts, calculateTotalSpareParts, extraMethodsSpare, createTrashOptionSpare, calculateAmountDue)) return;
-    selectedSpareParts.push(data);
-    txtAddSparePart.value = '';
-    hideElement(boxSparePart);
-    calculateTotalSpareParts();
-    calculateAmountDue();
-    updateImportButtonPosition(); // mover el botón IMPORTAR a la siguiente fila vacía
-}
-
-function reindexSpareParts() {
-    const rows = qsa('#tBodySpareParts tr');
-    let idx = 0; const active = []; const empty = [];
-    rows.forEach(r => {
-        const name = r.querySelector('.tdName');
-        if (name && name.textContent.trim() !== '') {
-            const hidId = r.querySelector('.hidden-part-id'); if (hidId) hidId.name = `repuestos[${idx}].id`;
-            const hidUnit = r.querySelector('.hidden-part-unitPrice'); if (hidUnit) hidUnit.name = `repuestos[${idx}].unitPrice`;
-            active.push(r); idx++;
-        } else empty.push(r);
-    });
-    const frag = document.createDocumentFragment(); active.forEach(r => frag.appendChild(r)); empty.forEach(r => frag.appendChild(r));
-    const tbody = $('tBodySpareParts'); tbody.innerHTML = ''; tbody.appendChild(frag);
-    rowsSpareParts = idx;
-}
-
+/* Esta funcion calcula el total de los repuestos */
 function calculateTotalSpareParts() {
     const prices = qsa('#tBodySpareParts tr .tdPrice');
     let total = 0;
@@ -473,7 +498,7 @@ function calculateTotalSpareParts() {
     calculateRepairCost();
 }
 
-// ---------- Totales ----------
+/* Esta funcion calcula el costo de la reparacion */
 function calculateRepairCost() {
     const totalValueService = safeParseFloat(($('totalValueService') || {}).textContent);
     const totalValueSpareParts = safeParseFloat(($('totalValueSpareParts') || {}).textContent);
@@ -484,38 +509,17 @@ function calculateRepairCost() {
     return sum;
 }
 
+/* Esta funcion calcula el total de todo sumando el cuanto vendi el vehiculo y el costo total de la reparacion normalmente es importante cuando la orden de trabajo viene luego de una venta */
 function calculateTotal() {
     const totalRepairCost = safeParseFloat(($('totalRepairCost') || {}).textContent);
     const vehiclePriceEl = safeParseFloat(($('vehiclePrice') || {}).textContent);
     if ($('totalCost')) $('totalCost').textContent = `$${formatWithCommas(totalRepairCost + vehiclePriceEl)}`;
 }
 
+/* Esta funcion lo calcula todo */
 function calculateAllTotals() { calculateTotalService(); calculateTotalSpareParts(); calculateRepairCost(); calculateTotal(); }
 
-let calculateAmountDue = () => {
-    const amountContainer = document.querySelector('.amounts');
-    let payments = Array.from(amountContainer.querySelectorAll('.paymentRow'));
-    let totalPaid = 0;
-    payments.forEach(p => totalPaid += safeParseFloat(p.querySelector('.amountInput').value));
-    const txtTotal = safeParseFloat(($('txtTotal') || {}).value);
-    const debt = txtTotal - totalPaid;
-    const dueText = document.getElementById('due')
-    const paidText = document.getElementById('totalPaid')
-
-    if (paidText) {
-        paidText.textContent = `$${formatWithCommas(totalPaid)}`
-        paidText.style.color =
-            totalPaid > 0 ? 'var(--success-color)' : 'var(--text-muted)'
-    }
-
-    if (dueText) {
-        dueText.textContent = `$${formatWithCommas(debt)}`
-        dueText.style.color =
-            debt > 0 ? 'var(--danger-color)' : 'var(--success-color)'
-    }
-}
-
-// ---------- Submit (FormData + POST) ----------
+/* Este es el handle o el evento que se ejecuta cuando se manda el form de la orden */
 async function handleSubmit(e) {
     e.preventDefault();
 
@@ -535,93 +539,81 @@ async function handleSubmit(e) {
     }
 
     // recolectar pagos
-    const amountContainers = Array.from(document.querySelectorAll('.amounts .paymentRow'));
-    console.log(amountContainers)
-    const amountData = [];
-    const imagesAmounts = [];
+const amountData = [];
+const imagesAmounts = [];
 
-    for (let i = 0; i < amountContainers.length; i++) {
-        const amountInput = amountContainers[i].querySelector('.amountInput');
-        const paymentTypeSelect = amountContainers[i].querySelector('.paymentTypeSelect');
-        const receiptInput = amountContainers[i].querySelector('.receiptInput');
-        const idAmount = amountContainers[i].dataset.id || null;
+for (let i = 0; i < selectedAmounts.length; i++) {
+    const item = selectedAmounts[i];
 
-        const amountValue = safeParseFloat(amountInput.value);
-        if (amountValue <= 0) {
-            highlightAndFocus(amountInput);
-            showMessage('Monto no valido', `Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'warning');
-            return;
-        }
-        if (!paymentTypeSelect.value) {
-            highlightAndFocus(paymentTypeSelect);
-            showMessage('Metodo de pago faltante', `Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'warning');
-            return;
-        }
-        if (!idWorkOrder) {
-            if (!receiptInput || (receiptInput.files && receiptInput.files.length === 0)) {
-                showMessage('Comprobante faltante', `Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'warning');
-                return;
-            }
-        }
-        if (!currentIdEmployee) {
-            showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
-            return false;
-        }
-
-        let obj = {
-            amount: amountValue,
-            idPaymentMethod: paymentTypeSelect.value,
-            idEmployee: currentIdEmployee
-        }
-        if (idAmount) obj.idPayment = idAmount;
-        amountData.push(obj);
-        let imgs = {
-            file: receiptInput.files[0] || null,
-            isOld: amountContainers[i].dataset.id ? true : false
-        }
-        if (idAmount) imgs.idPayment = idAmount;
-        imagesAmounts.push(imgs);
-    }
-
-    if (amountData.length == 0) {
-        showMessage('Ningun abono registrado', 'Por favor, registrar al menos un abono', 'warning');
+    // Validaciones básicas
+    if (!item.amount || item.amount <= 0) {
+        showMessage('Monto no válido', `Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'warning');
         return;
     }
+    if (!item.idPaymentMethod) {
+        showMessage('Método de pago faltante', `Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'warning');
+        return;
+    }
+    if (!idWorkOrder && !item.file) {
+        showMessage('Comprobante faltante', `Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'warning');
+        return;
+    }
+    if (!currentIdEmployee) {
+        showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
+        return false;
+    }
+
+    // Datos para enviar al backend
+    amountData.push({
+        amount: item.amount,
+        idPaymentMethod: item.idPaymentMethod,
+        idPayment: item.idPayment || null,
+        idEmployee: currentIdEmployee
+    });
+
+    // Archivos / URLs de comprobante
+    imagesAmounts.push({
+        file: item.file || null,           // Archivo local
+        paymentURL: item.paymentURL || '', // Archivo remoto si ya existe
+        isOld: !!item.paymentURL,          // Indica si ya está subido
+        idPayment: item.idPayment || null
+    });
+}
+
+// Validación final
+if (amountData.length === 0) {
+    showMessage('Ningún abono registrado', 'Por favor, registre al menos un abono', 'warning');
+    return;
+}
 
     // servicios
     const services = [];
-    const tBodyServices = $('tBodyServices');
-    const activeServices = tBodyServices ? Array.from(tBodyServices.querySelectorAll('tr')).filter(r => r.querySelector('.tdName').textContent.trim() !== '') : [];
-    for (const r of activeServices) {
-        const idService = r.dataset.id;
-        const nameService = r.querySelector('.tdName');
-        const tdPrice = r.querySelector('.tdPrice');
-        if ((idService || nameService) && tdPrice) {
+    for (const service of selectedServices) {
+        const idService = service.idService;
+        const nameService = service.name;
+        const price = service.price;
+        if (idService || nameService) {
             const obj = {
                 idService: idService ? idService : null,
-                nameService: nameService.textContent,
-                priceApplied: safeParseFloat(tdPrice.textContent)
+                nameService,
+                priceApplied: safeParseFloat(price)
             };
-            if (r.dataset.idWo) obj.idWorkOrderService = r.dataset.idWo;
-            if (obj.priceApplied < 0) { showMessage('warning', `El precio del servicio '${obj.nameService}' es inválido.`); return; }
+            if (service.idWorkOrderService) obj.idWorkOrderService = service.idWorkOrderService;
+            if (obj.priceApplied <= 0) { showMessage('Precio invalido', `El precio del servicio '${obj.nameService}' debe ser mayor a 0.`, 'warning'); return; }
             services.push(obj);
         }
     }
-
     // repuestos
     const spareParts = [];
-    const tBodyParts = $('tBodySpareParts');
-    const activeParts = tBodyParts ? Array.from(tBodyParts.querySelectorAll('tr')).filter(r => r.querySelector('.tdName').textContent.trim() !== '') : [];
-    for (const r of activeParts) {
-        const idPart = r.dataset.id;
-        const tdPrice = r.querySelector('.tdPrice');
+    for (const sparePart of selectedSpareParts) {
+        const idPart = sparePart.idSparePart;
+        const price = sparePart.price;
         let obj = {
             idSparePart: idPart,
-            priceApplied: safeParseFloat(tdPrice.textContent)
+            priceApplied: safeParseFloat(price)
         }
-        console.log(r, r.dataset.idWo)
-        if (r.dataset.idWo) obj.idWorkOrderSpareParts = r.dataset.idWo;
-        if (idPart && tdPrice) spareParts.push(obj);
+        if (sparePart.idWorkOrderSpareParts) obj.idWorkOrderSpareParts = sparePart.idWorkOrderSpareParts;
+        if (idPart && price) spareParts.push(obj);
     }
 
     if (spareParts.length == 0 && services.length == 0) {
@@ -659,12 +651,12 @@ async function handleSubmit(e) {
                 fd.append(objFile.idPayment, objFile.file);
             } else {
                 fd.append("newPaymentImages", objFile.file);
+                console.log(objFile)
             }
         } else {
             fd.append('paymentImages', objFile.file);
         }
     });
-
     try {
         let response;
         if (idWorkOrder != null) {
@@ -686,7 +678,7 @@ async function handleSubmit(e) {
     }
 }
 
-// ---------- Detectar repuesto agregado desde otra página ----------
+/* Esta funcion añadade un repuesto que se importo gracias a los parametros que vienen de la url*/
 function tryAddSpareFromUrl() {
     const newSpareId = params.get('newSpareId');
     const newSpareName = params.get('newSpareName');
@@ -694,11 +686,11 @@ function tryAddSpareFromUrl() {
 
     if (newSpareId && newSpareName) {
         // Si ya existe, no duplicar
-        if (!selectedSpareParts.some(s => s.id === newSpareId)) {
+        if (!selectedSpareParts.some(s => s.idSparePart === newSpareId)) {
             addSparePart({
-                id: newSpareId,
+                idSparePart: newSpareId,
                 name: newSpareName,
-                unitPrice: safeParseFloat(newSparePrice || 0)
+                price: safeParseFloat(newSparePrice || 0)
             });
         } else {
             updateImportButtonPosition();
@@ -710,11 +702,12 @@ function tryAddSpareFromUrl() {
     }
 }
 
+/* Este es un borrador de la orden que se ejecuta cuando se va a importar un repuesto */
 function saveCurrentOrderState() {
     const orderState = {
-        spareParts: getCurrentSpareParts(),
-        services: getCurrentServices(),
-        amounts: getCurrentAmounts(),
+        spareParts: selectedSpareParts,
+        services: selectedServices,
+        amounts: selectedAmounts,
         description: document.getElementById("txtNotes")?.value || "",
         estimatedDate: document.getElementById("dtEstimated")?.value
     };
@@ -722,63 +715,15 @@ function saveCurrentOrderState() {
     localStorage.setItem("pendingOrder", JSON.stringify(orderState));
 }
 
-function getCurrentSpareParts() {
-    const rows = document.querySelectorAll("#tBodySpareParts tr");
-    const data = [];
-
-    rows.forEach(row => {
-        const id = row.querySelector(".hidden-part-id")?.value || null;
-        const name = row.querySelector(".tdName")?.textContent || null;
-        const price = row.querySelector(".hidden-part-unitPrice")?.value || null;
-
-        if (id) {
-            data.push({ id, name, price });
-        }
-    });
-
-    return data;
-}
-
-function getCurrentServices() {
-    const rows = document.querySelectorAll("#tBodyServices tr");
-    const data = [];
-
-    rows.forEach(row => {
-        const id = row.querySelector(".hidden-service-id")?.value || null;
-        const name = row.querySelector(".tdName")?.textContent || null;
-        const price = row.querySelector(".hidden-service-price")?.value || null;
-
-        if (id) {
-            data.push({ id, name, price });
-        }
-    });
-
-    return data;
-}
-
-function getCurrentAmounts() {
-    const containers = document.querySelectorAll(".containerAmount");
-    const data = [];
-
-    containers.forEach(c => {
-        const method = c.querySelector(".paymentTypeSelect")?.value || null;
-        const amount = c.querySelector(".amountInput")?.value || null;
-
-        if (method && amount) {
-            data.push({ method, amount });
-        }
-    });
-
-    return data;
-}
-
+/* Esta funcion carga los datos guardados */
 function restoreOrderState() {
     const saved = localStorage.getItem("pendingOrder");
     if (!saved) return;
-
+    
     const state = JSON.parse(saved);
 
     loadSavedSpareParts(state.spareParts);
+    console.log(state.services);
     loadSavedServices(state.services);
     loadSavedAmounts(state.amounts);
 
@@ -788,11 +733,10 @@ function restoreOrderState() {
 
 function addNewPartToTable() {
     if (!newPartId || !newPartName) return;
-    console.log(newSuggestedPrice)
     addSparePart({
-        id: newPartId,
+        idSparePart: newPartId,
         name: newPartName,
-        unitPrice: newSuggestedPrice
+        price: newSuggestedPrice
     });
 }
 
@@ -835,20 +779,19 @@ function loadSavedSpareParts(sparePartsArray) {
     selectedSpareParts.length = 0;
     rowsSpareParts = 0;
     reindexSpareParts(); // orden inicial
-
     // Añadir cada repuesto usando tu función pública (respeta validaciones)
     sparePartsArray.forEach(item => {
-        const id = item.id || item.idSpareParts || item.idSpare || item.idWorkOrderSpareParts || null;
+        const idSparePart = item.idSparePart || item.idSpare || null;
         const name = item.name || item.nameSpareParts || item.nameSparePart || item.nameSpare || item.nameSparePartName || item.sparePartName || '';
-        const unitPrice = safeParseFloat(item.unitPrice || item.price || item.priceApplied || item.suggestedPrice || item.subtotal || 0);
-        const idWorkOrder = item.idWorkOrderSpareParts || null;
+        const price = safeParseFloat(item.unitPrice || item.price || item.priceApplied || item.suggestedPrice || item.subtotal || 0);
+        const idWorkOrderSpareParts = item.idWorkOrderSpareParts || null;
 
         // Usa addSparePart para respetar toda la lógica existente (dup checks, reindex, totals)
         addSparePart({
-            id,
+            idSparePart,
             name,
-            unitPrice,
-            idWorkOrder
+            price,
+            idWorkOrderSpareParts
         });
 
         // si la fuente guardó cantidad/subtotal podrías restaurarlas aquí (opcional)
@@ -873,19 +816,18 @@ function loadSavedServices(servicesArray) {
     selectedServices.length = 0;
     rowsServices = 0;
     reindexServices();
-
     servicesArray.forEach(item => {
-        const id = item.idService || null;
+        const idService = item.idService || null;
         // intentar distintos nombres posibles
-        const name = item.nameService || null;
+        const name = item.nameService || item.name || null;
         const price = safeParseFloat(item.price || item.priceApplied || item.servicePrice || 0);
-        const idWoService = item.idWorkOrderService || null;
+        const idWorkOrderService = item.idWorkOrderService || null;
         // Llamar addService respetando duplicados y la lógica de tu app
         addService({
-            id,
+            idService,
             name,
             price,
-            idWoService
+            idWorkOrderService
         });
     });
 
@@ -899,51 +841,40 @@ function loadSavedServices(servicesArray) {
 function loadSavedAmounts(amountsArray) {
     const container = document.querySelector('.amounts');
     if (!container) return;
-
     // Limpiar todos los existentes y crear sólo el placeholder base
     container.innerHTML = '';
+    selectedAmounts = []; // Reiniciamos para evitar duplicados
+
     // Si no hay amounts guardados, crear el campo inicial vacío
     if (!Array.isArray(amountsArray) || amountsArray.length === 0) {
-        createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost);
+        createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost, paymentsToDelete, selectedAmounts);
         return;
     }
 
-    // Crear campos para cada amount guardado
-    amountsArray.forEach((a, i) => {
-        // createInitialPaymentField crea el campo y llena el select con paymentMethodsList
-        // Pasamos amount y paymentMethodId si los tenemos
+    // 1️⃣ Ordenar por paymentNumber si existe
+    const sortedAmounts = [...amountsArray].sort((a, b) => (a.paymentNumber || 0) - (b.paymentNumber || 0));
+
+    // 2️⃣ Crear campos para cada amount guardado
+    sortedAmounts.forEach((a) => {
         const amt = safeParseFloat(a.amount || a.value || a.amountValue || 0);
         const method = a.method || a.paymentMethodId || a.idPaymentMethod || null;
+        const url = a.paymentURL || a.url || null;
+        const idPayment = a.idPayment || null;
 
-        createInitialPaymentField(amt, method, null, null, null, createBtnUrl, calculateRepairCost);
-
-        // si existiera una URL de comprobante en 'a.receiptUrl' podríamos marcar el botón:
-        const lastIndex = container.children.length;
-        const lastDiv = container.querySelector(`.containerAmount[data-index="${lastIndex}"]`);
-        if (lastDiv && a.receiptUrl) {
-            // buscar el btnVoucher y marcarlo
-            const btn = lastDiv.querySelector('.btnVoucher');
-            if (btn) {
-                btn.classList.add('receipt-loaded');
-                btn.setAttribute('data-receipt-url', a.receiptUrl);
-            }
-        }
+        // Crear la fila en DOM y actualizar selectedAmounts dentro de la función
+        createInitialPaymentField(
+            amt,
+            method,
+            url,
+            idPayment, // Pasamos idPayment para mantener referencia
+            null,
+            createBtnUrl,
+            calculateRepairCost,
+            paymentsToDelete,
+            selectedAmounts
+        );
     });
 
-    // Añadir un campo vacío al final para permitir nuevos abonos (si no lo agregó la función)
-    const payments = Array.from(container.querySelectorAll('.containerAmount'));
-    const last = payments[payments.length - 1];
-    if (last) {
-        const lastVal = safeParseFloat(last.querySelector('.amountInput')?.value);
-        if (!lastVal || lastVal === 0) {
-            // aseguramos que siempre exista un campo vacío al final
-            // (createInitialPaymentField dentro del loop habrá creado uno con valor; aquí agregamos vacía)
-            createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost);
-        }
-    } else {
-        createInitialPaymentField(0, null, null, null, null, createBtnUrl, calculateRepairCost);
-    }
-
     // Recalcular y verificar
-    managePaymentsAndCalculateDebt(null, createBtnUrl, calculateRepairCost);
+    calculateDebt(null, calculateRepairCost);
 }

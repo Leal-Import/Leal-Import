@@ -1,5 +1,5 @@
 import { loadVehicle } from '../controller/salesHelpers/loadInfoVehicle.js'
-import {managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnFocus, formatOnBlur } from '../controller/salesHelpers/payments.js'
+import { calculateDebt, loadPayMethods, createInitialPaymentField, formatOnFocus, formatOnBlur } from '../controller/salesHelpers/payments.js'
 import { createBtnUrl, setupModalListeners } from '../controller/salesHelpers/picsAmounts.js'
 import {
     postVehicle,
@@ -15,10 +15,13 @@ import {
     cleanNumber,
     showMessage,
     initSession,
-    getCurrentEmployeeId
+    getCurrentEmployeeId,
+    safeParseFloat
 } from '../utils.js'
 
 const params = new URLSearchParams(window.location.search);
+let vehicleId = params.get('idVehicle') || null;
+let idSale = params.get('idSale') || null;
 const customerName = params.get('customerName') || "Nombre del cliente";
 const customerId = params.get('idCustomer') || null;
 const saleKey = `saleVehicleState_customer_${customerId}`;
@@ -27,6 +30,9 @@ const txtTotal = document.getElementById("txtTotal");
 const txtCommission = document.getElementById("txtCommission");
 const frmVehicleSale = document.getElementById("frmVehicleSale");
 const btnCreateOrder = document.getElementById("btnCreateOrder");
+
+const selectedAmounts = [];
+const paymentsToDelete = [];
 
 const btnAddPayment = document.getElementById("btnAddPayment");
 
@@ -42,16 +48,11 @@ function addPaymentRow() {
         null,       // idPayment
         null,
         createBtnUrl,
-        null,
-        null
+        getTotal,
+        paymentsToDelete,
+        selectedAmounts
     );
 }
-
-let vehicleId = params.get('idVehicle') || null;
-let idSale = params.get('idSale') || null;
-function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
-
-const paymentsToDelete = [];
 
 document.addEventListener("click", (e) => {
     if (e.target && e.target.classList.contains("containerModal")) {
@@ -109,55 +110,52 @@ let createNewSale = async (isWO) => {
         return false;
     }
 
-    const firstAmount = document.getElementById("amountInput1");
-    if (firstAmount.value.trim() == "") {
-        highlightAndFocus(firstAmount);
-        showMessage('Por favor, ingrese al menos un abono para la venta.', 'Abono requerido', 'warning');
-        return false;
-    }
     const amountData = [];
     const imagesAmounts = [];
 
-    const amounts = document.querySelectorAll('.containerAmount');
+    for (let i = 0; i < selectedAmounts.length; i++) {
+        const item = selectedAmounts[i];
 
-    for (let i = 0; i < amounts.length - 1; i++) {
-        const amountInput = amounts[i].querySelector('.amountInput');
-        const paymentTypeSelect = amounts[i].querySelector('.paymentTypeSelect');
-        const receiptInput = amounts[i].querySelector('.receiptInput');
-        const amountValue = parseFloat(amountInput.value.replace(/[$,]/g, ""));
-        const idAmount = amounts[i].dataset.id || null;
-
-        if (isNaN(amountValue) || amountValue <= 0) {
-            highlightAndFocus(amountInput);
-            showMessage(`Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'Monto inválido', 'warning');
+        // Validaciones básicas
+        if (!item.amount || item.amount <= 0) {
+            showMessage('Monto no válido', `Por favor, ingrese un monto válido para el abono ${i + 1}.`, 'warning');
+            return;
+        }
+        if (!item.idPaymentMethod) {
+            showMessage('Método de pago faltante', `Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'warning');
+            return;
+        }
+        if (!idSale && !item.file) {
+            showMessage('Comprobante faltante', `Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'warning');
+            return;
+        }
+        if (!currentIdEmployee) {
+            showMessage('Su sesión ha expirado. Por favor recargue la página.', 'Sesión inválida', 'error');
             return false;
         }
-        if (paymentTypeSelect.value == "") {
-            highlightAndFocus(paymentTypeSelect);
-            showMessage(`Por favor, seleccione un método de pago para el abono ${i + 1}.`, 'Método de pago requerido', 'warning');
-            return false;
-        }
-        let obj = {
-            amount: amountValue,
-            idPaymentMethod: paymentTypeSelect.value,
+
+        // Datos para enviar al backend
+        amountData.push({
+            amount: item.amount,
+            idPaymentMethod: item.idPaymentMethod,
+            idPayment: item.idPayment || null,
             idEmployee: currentIdEmployee
-        }
-        if (idAmount) obj.idPayment = idAmount;
-        amountData.push(obj);
-        if (!idSale) {
-            if (receiptInput.files.length == 0) {
-                highlightAndFocus(amountInput);
-                showMessage(`Por favor, seleccione un comprobante para el abono ${i + 1}.`, 'Comprobante requerido', 'warning');
-                return false;
-            }
-        }
-        let imgs = {
-            file: receiptInput.files[0],
-            isOld: amounts[i].dataset.id ? true : false,
-        }
-        if (idAmount) imgs.idPayment = idAmount;
-        imagesAmounts.push(imgs);
+        });
+
+        // Archivos / URLs de comprobante
+        imagesAmounts.push({
+            file: item.file || null,           // Archivo local
+            paymentURL: item.paymentURL || '', // Archivo remoto si ya existe
+            isOld: !!item.paymentURL,          // Indica si ya está subido
+            idPayment: item.idPayment || null
+        });
     }
+    // Validación final
+    if (amountData.length === 0) {
+        showMessage('Ningún abono registrado', 'Por favor, registre al menos un abono', 'warning');
+        return;
+    }
+
     const fd = new FormData();
 
     const saleData = {
@@ -237,7 +235,7 @@ let getTotal = () => {
 
 let loadEventsInps = () => {
     txtTotal.addEventListener("input", () => {
-        managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal)
+        calculateDebt(saveSaleState, getTotal)
     });
     txtCommission.addEventListener("input", saveSaleState);
     document.getElementById("txtNotes").addEventListener("input", saveSaleState);
@@ -260,7 +258,7 @@ let loadEventsInps = () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
     const user = await initSession();
-    if(!user)return; // Detenemos la ejecución si no hay usuario
+    if (!user) return; // Detenemos la ejecución si no hay usuario
 
     await loadPayMethods();
     loadEventsInps();
@@ -298,14 +296,13 @@ let loadSale = async () => {
 }
 
 let insertSale = (sale) => {
-    console.log(sale)
     document.getElementById("txtNotes").value = sale.notes;
     document.getElementById("txtCommission").value = sale.commission;
     document.querySelector(".amounts").innerHTML = '';
     sale.payments.forEach(payment => {
-        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, saveSaleState, createBtnUrl, getTotal, paymentsToDelete);
+        createInitialPaymentField(payment.amount, payment.idPaymentMethod, payment.paymentURL, payment.idPayment, saveSaleState, createBtnUrl, getTotal, paymentsToDelete, selectedAmounts);
     })
-    managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal);
+    calculateDebt(saveSaleState, getTotal);
     document.getElementById("due").textContent = `$${formatWithCommas(sale.amountDue)}`;
     document.getElementById("due").style.color = sale.amountDue > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     txtTotal.value = `$${formatWithCommas(sale.fullTotalCost)}`;
@@ -385,7 +382,7 @@ let loadSaleState = async () => {
     if (!savedState) {
         // Si no hay estado guardado, aseguramos que el contenedor de abonos esté limpio
         document.querySelector(".amounts").innerHTML = '';
-        createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Y creamos el campo inicial limpio
+        createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal, paymentsToDelete, selectedAmounts); // Y creamos el campo inicial limpio
         return;
     }
 
@@ -420,7 +417,7 @@ let loadSaleState = async () => {
             const receiptRef = payment.receiptUrl && payment.receiptUrl.startsWith('http') ? payment.receiptUrl : null;
 
             // Aquí pasamos la URL remota (o null)
-            createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef, null, saveSaleState, createBtnUrl, getTotal);
+            createInitialPaymentField(payment.amount, payment.paymentMethodId, receiptRef, null, saveSaleState, createBtnUrl, getTotal, paymentsToDelete, selectedAmounts);
 
             if (payment.amount === 0) lastValueWasZero = true;
             else lastValueWasZero = false;
@@ -428,22 +425,22 @@ let loadSaleState = async () => {
 
         // 4. Asegurar un campo vacío al final si el último abono guardado tenía valor
         if (state.payments.length > 0 && !lastValueWasZero) {
-            createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Campo vacío para el siguiente abono
+            createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal, paymentsToDelete, selectedAmounts); // Campo vacío para el siguiente abono
         }
 
     } else {
         // Si no hay vehículo, limpiamos la venta guardada en localStorage
         localStorage.removeItem(saleKey);
-        createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal); // Crear el primer campo limpio
+        createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal, paymentsToDelete, selectedAmounts); // Crear el primer campo limpio
     }
 
     // 5. Recalcular la deuda para actualizar 'due'
-    managePaymentsAndCalculateDebt(saveSaleState, createBtnUrl, getTotal);
+    calculateDebt(saveSaleState, getTotal);
 };
 
 function saveSaleState() {
     if (idSale) return;
-    const payments = [...document.querySelectorAll(".containerAmount")].map(container => {
+    const payments = [...document.querySelectorAll(".paymentRow")].map(container => {
         const input = container.querySelector(".amountInput");
         const select = container.querySelector(".paymentTypeSelect");
         // Nota: Los inputs de archivo local (receiptInput) solo se usan en la sesión actual
@@ -459,7 +456,6 @@ function saveSaleState() {
     const notes = document.getElementById("txtNotes")?.value || "";
     const commission = parseFloat(document.getElementById("txtCommission")?.value.replace(/[$,]/g, "")) || 0;
     const finalPrice = parseFloat(document.getElementById("txtTotal")?.value.replace(/[$,]/g, "")) || 0;
-
     const state = {
         vehicleId,
         payments,
@@ -492,7 +488,7 @@ let cancelVehicleSelection = () => {
     amountContainer.innerHTML = ''; // Elimina todos los abonos
 
     // 5. 🔑 Crear el primer campo de abono vacío usando la función auxiliar
-    createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal);
+    createInitialPaymentField(0, null, null, null, saveSaleState, createBtnUrl, getTotal, paymentsToDelete, selectedAmounts);
 
     // 6. Restablecer la deuda a cero
     document.getElementById("due").textContent = "$0";

@@ -5,7 +5,7 @@ import {
     putSparePart
 } from '../service/serviceSparePartsSale.js'
 import { insertSpareParts } from '../controller/salesHelpers/loadTableSpareParts.js'
-import { managePaymentsAndCalculateDebt, loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus } from '../controller/salesHelpers/payments.js'
+import { loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus, calculateDebt } from '../controller/salesHelpers/payments.js'
 import { createRowTable } from '../controller/salesHelpers/loadRowTableSales.js'
 import {
     formatWithCommas,
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (firstAmount) {
         allowDecimal(firstAmount);
         firstAmount.addEventListener("input", () => {
-            managePaymentsAndCalculateDebt(saveSaleState, null, calculateTotal);
+            calculateDebt(saveSaleState, calculateTotal)
         });
         firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
     }
@@ -443,7 +443,7 @@ async function loadSavedData(parts, payments, notes) {
     if (notesInput) notesInput.value = notes || "";
 
     // 6. Recalcular y guardar el estado final
-    managePaymentsAndCalculateDebt(saveSaleState, null, calculateTotal);
+    calculateDebt(saveSaleState, calculateTotal)
 
     // 7. El console.log ahora reflejará el estado final y completo de selectedIds
 }

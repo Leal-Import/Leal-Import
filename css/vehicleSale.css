@@ -49,12 +49,8 @@
 
 
 .btnPrimary {
-    padding: 5px 12px;
-    font-size: 1em;
-    text-decoration: none;
-    width: auto;
-    display: grid;
-    place-content: center;
+    padding: 5px 20px !important;
+    width: auto !important;
 }
 
 .imgVehicleTable {
