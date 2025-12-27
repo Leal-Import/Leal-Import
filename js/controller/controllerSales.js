@@ -243,11 +243,11 @@ let insertSales = (sales) => {
             btnEdit.textContent = "Editar";
 
             if (sale.productType == "Vehicle") {
-                btnEdit.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}`;
-                btnView.href = `vehicleViewSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}`;
+                btnEdit.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
+                btnView.href = `vehicleViewSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
             } else {
-                btnEdit.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${sale.customerName}`;
-                btnView.href = `sparePartsSaleView.html?idSale=${sale.idSale}&customerName=${sale.customerName}`;
+                btnEdit.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
+                btnView.href = `sparePartsSaleView.html?idSale=${sale.idSale}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
             }
 
             containerButtonsData.append(btnView, btnEdit);

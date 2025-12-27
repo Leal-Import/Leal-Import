@@ -201,7 +201,7 @@ frmSpareParts.addEventListener("submit", async (e) => {
         }
 
         if (sale) {
-            window.location.href = `sparePartSale.html?idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&sparePartId=${response.data.idSparePart}&sparePartName=${response.data.nameSpareParts}&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}`;
+            window.location.href = `sparePartSale.html?isNewPart=true&idCustomer=${params.get("idCustomer")}&customerName=${params.get("customerName")}&sparePartId=${response.data.idSparePart}&sparePartName=${response.data.nameSpareParts}&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}&idSale=${params.get("idSale") || ""}`;
             return;
         }
         if (workOrder) {

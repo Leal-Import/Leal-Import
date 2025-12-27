@@ -22,12 +22,13 @@ Parámetros y constantes
 --------------------------- */
 const params = new URLSearchParams(window.location.search);
 const customerName = params.get('customerName') || "Nombre del cliente";
-const customerId = params.get('idCustomer') || null;
+const customerId = params.get("idCustomer") === "null" ? null : params.get("idCustomer");
 const newPartId = sanitizeParam(params.get('sparePartId'));
 const newPartName = sanitizeParam(params.get('sparePartName'));
 const suggestedPrice = sanitizeParam(params.get('suggestedPrice'));
 const frmSparePartSale = document.getElementById("frmSparePartSale");
 const idSale = sanitizeParam(params.get("idSale"));
+const isNewPart = params.get("isNewPart") === "true";
 
 let currentIdEmployee = null;
 
@@ -148,14 +149,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadPayMethods();
 
     // Cargar estado guardado (si existe)
-    const saved = await loadSaleState();
-    if (saved && saved.selectedParts && saved.payments && saved.notes !== undefined && !idSale) {
-        await loadSavedData(saved.selectedParts, saved.payments, saved.notes);
+    if (isNewPart) {
+        const saved = await loadSaleState();
+        if (saved && saved.selectedParts && saved.payments && saved.notes !== undefined) {
+            await loadSavedData(saved.selectedParts, saved.payments, saved.notes);
+        }
     } else if (idSale) {
-        await loadSale()
+        await loadSale();
         createInitialPaymentField(0, null, null, null, null, null, calculateTotal, null, selectedPayments);
     } else {
-        // si no hay saved, crear primer campo de abono vacío
         ensureInitialPaymentField();
     }
     // Cargar inventario de repuestos
@@ -164,16 +166,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // mostrar nombre cliente
     const customerEl = document.getElementById("customerName");
     if (customerEl) customerEl.textContent = customerName;
-
-    // Asegurar que el primer campo tenga behavior decimal y listener
-    const firstAmount = document.querySelector('.amounts .amountInput');
-    if (firstAmount) {
-        allowDecimal(firstAmount);
-        firstAmount.addEventListener("input", () => {
-            calculateDebt(saveSaleState, calculateTotal)
-        });
-        firstAmount.closest('.containerAmount')?.setAttribute('data-index', '1');
-    }
     // input notas guarda estado
     document.getElementById("txtNotes")?.addEventListener("input", saveSaleState);
 });
@@ -416,12 +408,12 @@ async function loadSavedData(parts, payments, notes) {
     // 4. Restaurar abonos (Pagos)
     const amountContainer = document.querySelector(".amounts");
     amountContainer.innerHTML = "";
-
+    console.log("Restaurando abonos guardados:", payments);
     const paymentsNormalized = (payments || []).map(p => {
         return {
             amount: p.amount || 0,
-            paymentMethodId: p.paymentMethodId,
-            receiptUrl: p.receiptUrl || null
+            paymentMethodId: p.idPaymentMethod,
+            receiptUrl: p.paymentURL || null
         };
     });
 
@@ -484,7 +476,7 @@ if (btnAddPart) {
     btnAddPart.addEventListener("click", (e) => {
         e.preventDefault();
         saveSaleState();
-        window.location.href = `sparePartsDetails.html?sale=true&idCustomer=${customerId}&customerName=${encodeURIComponent(customerName)}`;
+        window.location.href = `sparePartsDetails.html?sale=true&idCustomer=${customerId}&customerName=${encodeURIComponent(customerName)}&idSale=${idSale || ""}`;
     });
 }
 
