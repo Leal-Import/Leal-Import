@@ -20,15 +20,15 @@
             <div class="modalCustomerBody">
                 <div class="formGroup">
                     <label for="txtFullName" class="lblInputs">Nombre completo</label>
-                    <input type="text" class="txtInputs" id="txtFullName" required maxlength="256">
+                    <input type="text" class="txtInputs" id="txtFullName" name="txtFullName" required maxlength="256">
                 </div>
                 <div class="formGroup">
                     <label for="txtCustomerDUI" class="lblInputs">DUI</label>
-                    <input type="text" class="txtInputs" id="txtCustomerDUI" required maxlength="10">
+                    <input type="text" class="txtInputs" id="txtCustomerDUI" name="txtCustomerDUI" required maxlength="10">
                 </div>
                 <div class="formGroup">
                     <label for="txtCustomerPhone" class="lblInputs">Teléfono</label>
-                    <input type="text" class="txtInputs" id="txtCustomerPhone" required maxlength="9">
+                    <input type="text" class="txtInputs" id="txtCustomerPhone" name="txtCustomerPhone" required maxlength="9">
                 </div>
             </div>
             <input type="submit" class="btnPrimary btnSubmitData" value="Agregar Clientes" id="btnAddNewCustomer">
@@ -90,9 +90,7 @@
     </div>
     <script src="../js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/utils.js"></script>
-    <script type="module" src="../js/controller/controllerCustomer.js"></script>
-    <script type="module" src="../js/service/serviceCustomers.js"></script>
+    <script type="module" src="../js/modules/customers/customers.controller.js"></script>
 </body>
 
 </html>

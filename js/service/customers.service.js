@@ -5,7 +5,7 @@ export let getCustomers = async (page = 0, size = 15, search = "") => {
         const params = new URLSearchParams({ page, size, search });
         const request = await fetch(`${API_URL}/getCustomers?${params.toString()}`, {
             credentials: 'include'
-        }); 
+        });
         if (!request.ok) {
             const errorBody = await request.text();
             throw new Error(`Error ${request.status}: No se pudo obtener la lista de clientes. Detalle: ${errorBody.substring(0, 100)}`);
@@ -65,7 +65,7 @@ export let putCustomer = async (customerData, customerId) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(customerData),
-        }); 
+        });
         if (!request.ok) {
             let errorMessage = `Error al actualizar cliente. Código: ${request.status}.`;
             try {
@@ -93,5 +93,45 @@ export let putCustomer = async (customerData, customerId) => {
             throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
         }
         throw error;
-    }   
+    }
+};
+
+export const patchCustomer = async (id, value) => {
+    try {
+        const response = await fetch(
+            `${API_URL}/${id}/status`,
+            {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { 'Content-Type': 'text/plain' },
+                body: value,
+            }
+        );
+
+        if (!response.ok) {
+            let errorMessage = `Error al actualizar el estado del cliente. Código: ${response.status}.`;
+
+            try {
+                const errorData = await response.json();
+                if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).join('\n');
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch {
+                const text = await response.text();
+                if (text) errorMessage += ` Detalle: ${text.substring(0, 100)}`;
+            }
+
+            throw new Error(errorMessage);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        if (error instanceof TypeError) {
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+        }
+        throw error;
+    }
 };

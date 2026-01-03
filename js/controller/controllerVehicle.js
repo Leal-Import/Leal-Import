@@ -8,7 +8,7 @@ import {
 import {
   getVehicles,
   getStatus,
-} from '../service/serviceVehicle.js';
+} from '../service/vehicles.service.js';
 import { createPagination } from '../pagination.js'
 
 /* ==============================

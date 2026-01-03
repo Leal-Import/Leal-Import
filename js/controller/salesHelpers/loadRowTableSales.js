@@ -12,6 +12,7 @@ export function createRowTable(tBody, id, name, price, createTrashOption, addEve
     const tdPrice = document.createElement("td");
     if (id) tr.setAttribute("data-id", id);
     if (idSaleItem) tr.setAttribute("data-idSaleItem", idSaleItem);
+    console.log(idSaleItem)
     if(arraySelected && id && name && price !== undefined) {
         arraySelected.push({
             idSparePart: id,

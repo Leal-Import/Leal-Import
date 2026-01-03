@@ -534,7 +534,7 @@ export function enableFormUI(frm) {
 
 /* Llenar select */
 export const fillSelect = (selectId, data, valueKey, textKey, defaultText = 'Seleccione una opción') => {
-    const select = document.getElementById(selectId);
+    const select = $(selectId);
     if (!select) return;
 
     //limpiar opciones previas

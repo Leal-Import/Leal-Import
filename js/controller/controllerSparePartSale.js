@@ -57,7 +57,7 @@ function addPaymentRow() {
         null,
         null,
         calculateTotal,
-        null,
+        paymentsToDelete,
         selectedPayments
     );
 }
@@ -152,11 +152,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (isNewPart) {
         const saved = await loadSaleState();
         if (saved && saved.selectedParts && saved.payments && saved.notes !== undefined) {
-            await loadSavedData(saved.selectedParts, saved.payments, saved.notes);
+            await loadSavedData(saved.selectedParts, saved.payments, saved.notes, saved.itemsToDelete, saved.paymentsToDelete);
         }
     } else if (idSale) {
         await loadSale();
-        createInitialPaymentField(0, null, null, null, null, null, calculateTotal, null, selectedPayments);
+        createInitialPaymentField(0, null, null, null, null, null, calculateTotal, paymentsToDelete, selectedPayments);
     } else {
         ensureInitialPaymentField();
     }
@@ -178,6 +178,7 @@ let loadSale = async () => {
         createInitialPaymentField(payment.amount, payment.idPaymentMethod, null, payment.idPayment, null, null, calculateTotal, paymentsToDelete, selectedPayments);
     });
     sale.sparePartItems.forEach(item => {
+        console.log(item)
         createRowTable("tBodySelected", item.idSparePart, item.sparePartName, item.priceApplied, createTrashOption, addEventsPrice, "sparePartName", "finalPrice", calculateTotal, item.idSaleItem, selectedItems)
     })
 }
@@ -345,7 +346,7 @@ function ensureInitialPaymentField() {
     const amountContainer = document.querySelector(".amounts");
     if (!amountContainer) return;
     if (amountContainer.children.length === 0) {
-        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, null, selectedPayments);
+        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, paymentsToDelete, selectedPayments);
     }
 }
 
@@ -363,7 +364,7 @@ function loadSaleState() {
     }
 }
 
-async function loadSavedData(parts, payments, notes) {
+async function loadSavedData(parts, payments, notes, itemsToDel, paymentsToDel) {
     // parts: [{id,name,price}], payments: [{amount, paymentMethodId, receiptUrl}], notes: string
 
     // 2. Crear las filas de repuestos y esperar a que todas las operaciones asíncronas
@@ -379,10 +380,13 @@ async function loadSavedData(parts, payments, notes) {
             "sparePartName",
             "finalPrice",
             calculateTotal,
-            null,
+            sparePart.idSaleItem,
             selectedItems
         );
     });
+
+    itemsToDelete.push(...(itemsToDel || []));
+    paymentsToDelete.push(...(paymentsToDel || []));
 
     await Promise.all(partCreationPromises);
     // >> Ahora selectedItems está lleno con los IDs guardados.
@@ -411,6 +415,7 @@ async function loadSavedData(parts, payments, notes) {
     console.log("Restaurando abonos guardados:", payments);
     const paymentsNormalized = (payments || []).map(p => {
         return {
+            idPayment: p.idPayment || null,
             amount: p.amount || 0,
             paymentMethodId: p.idPaymentMethod,
             receiptUrl: p.paymentURL || null
@@ -418,15 +423,15 @@ async function loadSavedData(parts, payments, notes) {
     });
 
     if (paymentsNormalized.length === 0) {
-        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, null, selectedPayments);
+        createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, paymentsToDelete, selectedPayments);
     } else {
         let lastValueWasZero = false;
         paymentsNormalized.forEach((payment) => {
-            createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, null, saveSaleState, null, calculateTotal, paymentsToDelete, selectedPayments);
+            createInitialPaymentField(payment.amount, payment.paymentMethodId, payment.receiptUrl, payment.idPayment, saveSaleState, null, calculateTotal, paymentsToDelete, selectedPayments);
             lastValueWasZero = (payment.amount === 0);
         });
         // Si el último abono tiene valor, añadimos un campo vacío extra
-        if (!lastValueWasZero) createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, null, selectedPayments);
+        if (!lastValueWasZero) createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, paymentsToDelete, selectedPayments);
     }
 
     // 5. Restaurar notas
@@ -451,7 +456,7 @@ let cleanWindow = () => {
     amountContainer.innerHTML = ''; // Elimina todos los abonos
 
     // 5. 🔑 Crear el primer campo de abono vacío usando la función auxiliar
-    createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, null, selectedPayments);
+    createInitialPaymentField(0, null, null, null, saveSaleState, null, calculateTotal, paymentsToDelete, selectedPayments);
 
     // 6. Restablecer la deuda a cero
     document.getElementById("due").textContent = "$0";
@@ -463,7 +468,9 @@ function saveSaleState() {
     const state = {
         selectedParts: selectedItems,
         payments: selectedPayments,
-        notes
+        notes,
+        itemsToDelete,
+        paymentsToDelete
     };
 
     localStorage.setItem(saleKey, JSON.stringify(state));

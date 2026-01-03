@@ -15,7 +15,7 @@ import {
     getStatus,
     getSparePart,
     putSparePart
-} from "../service/serviceSparePartsDetails.js";
+} from "../service/spareParts.detail.service.js";
 
 const dropZone = document.getElementById("dropZone");
 const placeholderMsg = document.getElementById("placeholderMsg");
