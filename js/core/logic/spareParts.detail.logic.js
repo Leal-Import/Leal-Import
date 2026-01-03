@@ -1,21 +1,23 @@
 import { formatWithCommas } from "../../utils.js";
 import { fillForm } from "../../utils/dom.js"
-import { IMAGE_CONFIG } from "../../utils/images.validators.js";
+import { validateImageSize, validateImageType } from "../../utils/images.validators.js";
+import { safeParseFloat } from "../../utils/validators.js";
+import { sparePartDetailState } from "../state/spareParts.detail.state.js";
 
 export function validateImage(file) {
     if (!(file instanceof File)) {
         return "Archivo inválido";
     }
+    const type = validateImageType(file)
+    const size = validateImageSize(file);
 
     // Tipo
-    if (!IMAGE_CONFIG.ALLOWED_TYPES.includes(file.type)) {
-        return "Formato de imagen no permitido (jpg, png)";
+    if (type) {
+        return type;
     }
-
     // Tamaño
-    const maxBytes = IMAGE_CONFIG.MAX_SIZE_MB * 1024 * 1024;
-    if (file.size > maxBytes) {
-        return `La imagen debe pesar máximo ${IMAGE_CONFIG.MAX_SIZE_MB}MB`;
+    if (size) {
+        return size;
     }
 
     return null;
@@ -96,4 +98,26 @@ export let validateBaseSparePart = ({
     }
 
     return null;
+}
+
+export function mapSparePart(formData) {
+    const sparePart = {
+        nameSpareParts: formData.txtPartName,
+        brand: formData.txtPartBrand,
+        model: formData.txtPartModel,
+        yearPart: formData.txtPartYear,
+        idPartsState: formData.cmbPartStatus,
+        billUrl: sparePartDetailState.links.bill || null,
+        tracking: {
+            numTracking: formData.txtTracking || null,
+            linkTracking: sparePartDetailState.links.tracking|| null
+        },
+        sparePartsCosts: {
+            purchasePrice: safeParseFloat(formData.txtPurchasePrice),
+            taxes: safeParseFloat(formData.txtTaxes),
+            suggestedPrice: safeParseFloat(formData.txtSuggestedPrice)
+        }
+    };
+
+    return sparePart;
 }

@@ -2,24 +2,41 @@ import { sparePartDetailState } from "../../../core/state/spareParts.detail.stat
 import { $, qsa } from "../../../utils/dom.js";
 import {
     fillSparePartsBaseForm,
+    mapSparePart,
     validateBaseSparePart,
+    validateImage,
 } from "../../../core/logic/spareParts.detail.logic.js";
-import { showMessage } from "../../../utils.js";
+import { fillSelect, showMessage } from "../../../utils.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
 import { safeParseFloat } from "../../../utils/validators.js";
 import { initSparePartDetailEvents } from "../event/spareParts.detail.event.js";
 import { initImageEvents } from "../event/spareParts.uploads.event.js";
-import { closeLinkModal, openLinkModal } from "../../../core/dom/spareParts.detail.dom.js";
-import { getSparePart } from "../../../service/spareParts.detail.service.js";
+import { loadImage, openLinkModal, saveLinkModal } from "../../../core/dom/spareParts.detail.dom.js";
+import { getSparePart, postSparePart, putSparePart } from "../../../service/spareParts.detail.service.js";
+import { getStatus } from "../../../service/spareParts.service.js";
 
 const txtCosts = qsa(".txtCosts");
-const txtTotal = $('txtTotal');
+const txtTotal = $('txtTotalCost');
 const frmSpareParts = $('frmSpareParts');
-const imageInput = $('imageInput');
 
 const placeholderMsg = $("placeholderMsg");
 const imgPart = $("imgPart");
 const dropArea = $("dropZone");
+
+async function loadStatusSelect() {
+    try {
+        const status = await getStatus();
+        sparePartDetailState.statusList = status;
+        fillSelect("cmbPartStatus", status, 'idPartsState', 'state', 'Selecciona un estado');
+    } catch (error) {
+        showMessage(
+            'Error',
+            'No se pudieron cargar los estados de los repuestos',
+            'error'
+        );
+        console.error(error);
+    }
+}
 
 export async function loadSparePart() {
     const sparePart = await getSparePart(sparePartDetailState.currentId);
@@ -27,8 +44,13 @@ export async function loadSparePart() {
     $("btnSaveData").value = "Actualizar";
 
     fillSparePartsBaseForm(sparePart)
+    loadImage(sparePart.photoUrl);
     sparePartDetailState.trackingId = sparePart.tracking.idTracking;
     sparePartDetailState.costsId = sparePart.sparePartsCosts.idCostSparePart;
+    sparePartDetailState.links.bill = sparePart.billUrl;
+    sparePartDetailState.links.tracking = sparePart.tracking.linkTracking;
+    $("btnDeleteImg").classList.add("hide");
+    $("btnAddImg").textContent = "Actualizar foto";
 }
 
 export async function onSubmitSparePart(e) {
@@ -36,11 +58,16 @@ export async function onSubmitSparePart(e) {
 
     const formData = Object.fromEntries(new FormData(frmSpareParts));
     const fd = new FormData();
+    let imagesValid;
+    if (sparePartDetailState.currentId && sparePartDetailState.image.file) {
+        imagesValid = validateImage(sparePartDetailState.image.file);
+    } else if (!sparePartDetailState.currentId) {
+        imagesValid = validateImage(sparePartDetailState.image.file);
+    }
 
-    let imagesValid = validateImage();
 
     if (imagesValid) {
-        showMessage(imagesValid.title, imagesValid.message, 'warning');
+        showMessage('Imagen no valida', imagesValid, 'warning');
         return;
     }
     const error = validateBaseSparePart(formData);
@@ -63,19 +90,19 @@ export async function onSubmitSparePart(e) {
 
     try {
         let response;
-        if (currentId != null) {
-            await putSparePart(fd, currentId);
+        if (sparePartDetailState.currentId != null) {
+            await putSparePart(fd, sparePartDetailState.currentId);
             await showMessage('Repuesto actualizado con éxito!', 'Éxito', 'success');
         } else {
             response = await postSparePart(fd);
             await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
 
-        if (sale) {
+        if (sparePartDetailState.sale) {
             window.location.href = `sparePartSale.html?isNewPart=true&idCustomer=${sparePartDetailState.customerParamId}&customerName=${sparePartDetailState.customerNameParam}&sparePartId=${response.data.idSparePart}&sparePartName=${response.data.nameSpareParts}&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}&idSale=${sparePartDetailState.sale || ""}`;
             return;
         }
-        if (workOrder) {
+        if (sparePartDetailState.isWorkOrder) {
             const paramsOrder = new URLSearchParams({
                 isNewPart: true,
                 idSale: sparePartDetailState.sale || null,
@@ -101,7 +128,7 @@ export async function onSubmitSparePart(e) {
 }
 
 
-export let onAddImage = () => imageInput.click();
+export let onAddImage = () => $("fileInput").click();
 
 function onCalculateTotal() {
     let total = 0;
@@ -110,7 +137,7 @@ function onCalculateTotal() {
 }
 
 let onOpenModal = (type) => openLinkModal(type);
-let onCloseModal = () => closeLinkModal();
+let onSaveDataModal = () => saveLinkModal();
 
 let onChangeUpload = (e) => {
     const file = e.target.files[0];
@@ -124,11 +151,13 @@ let onChangeUpload = (e) => {
     sparePartDetailState.image.file = file;
     sparePartDetailState.image.url = URL.createObjectURL(file)
 
-    imageInput.value = "";
+    loadImage(file);
 };
 
 let onDeleteImage = () => {
-    sparePartDetailState.sparePartImage = null;
+    sparePartDetailState.image.file = null;
+    sparePartDetailState.image.url = null;
+
     imgPart.src = "";
     imgPart.style.display = "none";
     placeholderMsg.style.display = "block";
@@ -154,7 +183,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         onSubmit: onSubmitSparePart,
         onCalculateTotal,
         onOpenModal,
-        onCloseModal,
+        onSaveDataModal,
     });
 
     initImageEvents({
@@ -166,7 +195,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         onDragLeave
     });
 
+    await loadStatusSelect();
     if (sparePartDetailState.currentId) {
         await loadSparePart();
     }
+
 });

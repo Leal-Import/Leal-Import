@@ -14,8 +14,6 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <form class="content" id="frmSpareParts">
-            <input type="hidden" id="trackingId">
-            <input type="hidden" id="costId">
             <div class="headerContent">
                 <div class="breadcrumbSection">
                     <a href="spareParts.html" class="breadcrumb" id="titleBread">Repuestos ></a>
@@ -42,28 +40,28 @@
                     <div class="rowFields">
                         <div class="formGroup" style="position: relative;">
                             <label for="txtPartName" class="lblInputs">Nombre</label>
-                            <input type="text" class="txtInputs" id="txtPartName" maxlength="250">
+                            <input type="text" class="txtInputs" id="txtPartName" name="txtPartName" maxlength="250">
                             <button class="btnLink btnPrimary" type="button" id="btnOpenLinkBill">Enlace</button>
                         </div>
                         <div class="formGroup">
                             <label for="txtPartBrand" class="lblInputs">Marca</label>
-                            <input type="text" class="txtInputs" id="txtPartBrand" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtPartBrand" name="txtPartBrand" maxlength="50">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtPartModel" class="lblInputs">Modelo</label>
-                            <input type="text" class="txtInputs" id="txtPartModel" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtPartModel" name="txtPartModel" maxlength="50">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtPartYear" class="lblInputs">Año</label>
-                            <input type="text" class="txtInputs" id="txtPartYear" maxlength="15">
+                            <input type="text" class="txtInputs" id="txtPartYear" name="txtPartYear" maxlength="15">
                         </div>
                         <div class="formGroup">
                             <label for="cmbPartStatus" class="lblInputs">Estado</label>
-                            <select id="cmbPartStatus" class="txtInputs"></select>
+                            <select id="cmbPartStatus" name="cmbPartStatus" class="txtInputs"></select>
                         </div>
                     </div>
                 </fieldset>
@@ -86,27 +84,27 @@
                     <div class="rowFields">
                         <div class="formGroup" style="position: relative;">
                             <label for="txtTracking" class="lblInputs">Tracking</label>
-                            <input type="text" class="txtInputs" id="txtTracking" maxlength="11">
+                            <input type="text" class="txtInputs" id="txtTracking" name="txtTracking" maxlength="11">
                             <button class="btnLink btnPrimary" type="button" id="btnOpenLinkTracking">Enlace</button>
                         </div>
                         <div class="formGroup">
                             <label for="txtPurchasePrice" class="lblInputs">Precio de compra</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtPurchasePrice"
+                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtPurchasePrice" name="txtPurchasePrice"
                                 maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes" name="txtTaxes" maxlength="11">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
-                            <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice" maxlength="11">
+                            <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice" name="txtSuggestedPrice" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTotalCost" class="lblInputs">Costo total</label>
-                            <input type="text" class="txtInputs" id="txtTotalCost" maxlength="11" disabled>
+                            <input type="text" class="txtInputs" id="txtTotalCost" name="txtTotalCost" maxlength="11" disabled>
                         </div>
                     </div>
                 </fieldset>

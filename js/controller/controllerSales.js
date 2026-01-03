@@ -1,5 +1,5 @@
 import { setupModal, showMessage, fillSelect, initSession} from '../utils.js'
-import { getSales, getStateSales } from '../service/serviceSales.js'
+import { getSales, getStateSales } from '../service/sales.service.js'
 import { createPagination } from '../pagination.js'
 
 setupModal("#btnAskSale", "#modalAskSale", "#btnCloseModalAsk", null, "¿Que deseas vender?");

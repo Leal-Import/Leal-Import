@@ -10,12 +10,14 @@ export function initSparePartDetailEvents({
     onSubmit,
     onCalculateTotal,
     onOpenModal,
-    onCloseModal,
+    onSaveDataModal,
 }) {
-    const btnCloseLink = $('modalLink').querySelector('.btnClose');
+    const btnCloseLink = $('btnCloseLink');
 
     const txtFormat = qsa('.txtFormat');
     const txtCosts = qsa('.txtCosts');
+    const modal = $('modalLink');
+    const btnSaveLink = $('btnSaveLink');
 
 
     const frmSpareParts = $('frmSpareParts');
@@ -24,7 +26,16 @@ export function initSparePartDetailEvents({
     $('btnOpenLinkBill').addEventListener("click", () => onOpenModal("bill"));
     $("btnOpenLinkTracking").addEventListener("click", () => onOpenModal("tracking"))
 
-    btnCloseLink.addEventListener("click", () => onCloseModal);
+    btnCloseLink.addEventListener("click", () => {
+        onSaveDataModal()
+    });
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) onSaveDataModal();
+    });
+
+    btnSaveLink .addEventListener("click", () => {
+        onSaveDataModal()
+    });
 
     txtFormat.forEach(txt => {
         txt.addEventListener("focus", e => formatOnFocus(e, true));

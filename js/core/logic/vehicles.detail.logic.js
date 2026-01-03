@@ -1,8 +1,30 @@
 import { $, fillForm, highlightAndFocus } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
-import { validateImagesGeneral, validateImageSize, validateImageType } from "../../utils/images.validators.js";
+import { validateImageSize, validateImageType, validateImagesGeneral } from "../../utils/images.validators.js";
 import { safeParseFloat } from "../../utils/validators.js";
 import { vehicleDetailState } from "../state/vehicles.detail.state.js";
+
+
+function validateMaxImages(currentImages = [], newFiles = [], max = 12) {
+    if (currentImages.length + newFiles.length > max) {
+        return `Máximo ${max} imágenes permitidas`;
+    }
+    return null;
+}
+
+function validateDuplicateImages(currentImages = [], newFiles = []) {
+    const exists = newFiles.find(file =>
+        currentImages.some(img =>
+            img.file?.name === file.name &&
+            img.file?.size === file.size
+        )
+    );
+
+    if (exists) {
+        return 'Una o más imágenes ya fueron agregadas';
+    }
+    return null;
+}
 
 export function calculateTotal(txtCosts, txtTotal) {
     let total = 0;
@@ -14,7 +36,7 @@ export function calculateTotal(txtCosts, txtTotal) {
 }
 
 export let validateImages = (currentImages, newFiles) => {
-    return validateImagesGeneral(currentImages, newFiles);
+    return(validateImagesGeneral(newFiles) || validateDuplicateImages(currentImages, newFiles) || validateMaxImages(currentImages, newFiles));
 };
 
 export let validateCustomer = () => {

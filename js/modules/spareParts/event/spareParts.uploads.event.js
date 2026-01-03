@@ -8,10 +8,8 @@ export function initImageEvents({ onChangeUpload, onDropModal, onAddImage, onDel
 
     if (!dropArea || !inputFile || !btnSelect) return;
 
-    const selectFile = () => inputFile.click();
-
-    dropArea.addEventListener("click", selectFile);
-    btnSelect.addEventListener("click", selectFile);
+    dropArea.addEventListener("click", onAddImage);
+    btnSelect.addEventListener("click", onAddImage);
 
     inputFile.addEventListener("change", onChangeUpload);
 
@@ -20,8 +18,6 @@ export function initImageEvents({ onChangeUpload, onDropModal, onAddImage, onDel
     dropArea.addEventListener("dragleave", onDragLeave);
 
     dropArea.addEventListener("drop", onDropModal);
-
-    inputFile.addEventListener("change", onAddImage);
 
     btnDeleteImg.addEventListener("click", onDeleteImage);
 }

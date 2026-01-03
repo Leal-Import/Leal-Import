@@ -3,7 +3,10 @@ const params = new URLSearchParams(window.location.search);
 export const sparePartDetailState = {
     currentId: params.get("id"),
     sale: params.get("sale") === 'true',
-    workOrder: params.get("idWorkOrder") === 'true',
+    workOrder: params.get("idWorkOrder"),
+    isWorkOrder: params.get("workOrder") === 'true',
+    statusList: [],
+    currentLinkType: null,
 
     customerParamId: params.get("idCustomer"),
     customerNameParam: params.get("customerName"),
