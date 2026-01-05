@@ -16,6 +16,10 @@
     cursor: pointer;
 }
 
+.filterType > * {
+    pointer-events: none;
+}
+
 .filterType span {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);

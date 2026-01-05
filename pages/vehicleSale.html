@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
     <link rel="stylesheet" href="../css/salesStyles/vehicleView.css">
     <link rel="stylesheet" href="../css/salesStyles/modalVoucher.css">
+    <link rel="stylesheet" href="../css/salesStyles/tableSales.css">
+    <link rel="stylesheet" href="../css/pagination.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <title>Agregar venta</title>
 </head>
@@ -171,6 +173,31 @@
                             </thead>
                             <tbody id="tBodyInventory"></tbody>
                         </table>
+                    </div>
+                    <div class="paginationContainer">
+
+                        <!-- Info + page size -->
+                        <div class="paginationLeft">
+                            <span class="paginationInfo"></span>
+
+                            <div class="pageSize">
+                                <select class="txtInputs" id="sizeSelect">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                </select>
+                                <span>por página</span>
+                            </div>
+                        </div>
+
+                        <!-- Page controls -->
+                        <div class="paginationRight">
+                            <button class="pageBtn prev">‹</button>
+                            <button class="pageBtn next">›</button>
+                        </div>
+
                     </div>
                 </div>
             </div>

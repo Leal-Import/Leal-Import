@@ -3,7 +3,7 @@ import {
     getSpareParts,
     postSparePart,
     putSparePart
-} from '../service/serviceSparePartsSale.js'
+} from '../service/spareParts.sale.service.js'
 import { insertSpareParts } from '../controller/salesHelpers/loadTableSpareParts.js'
 import { loadPayMethods, createInitialPaymentField, formatOnBlur, formatOnFocus, calculateDebt } from '../controller/salesHelpers/payments.js'
 import { createRowTable } from '../controller/salesHelpers/loadRowTableSales.js'
@@ -93,7 +93,6 @@ let addEventsPrice = (price, arraySelected, id) => {
 let verifyIds = (idSparePart) => {
     return selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
 }
-
 
 let createTrashOption = (container, tr, id, idSaleItem) => {
     const btnTrash = document.createElement("button");

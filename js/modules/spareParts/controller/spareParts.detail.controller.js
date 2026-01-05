@@ -97,9 +97,20 @@ export async function onSubmitSparePart(e) {
             response = await postSparePart(fd);
             await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
-
         if (sparePartDetailState.sale) {
-            window.location.href = `sparePartSale.html?isNewPart=true&idCustomer=${sparePartDetailState.customerParamId}&customerName=${sparePartDetailState.customerNameParam}&sparePartId=${response.data.idSparePart}&sparePartName=${response.data.nameSpareParts}&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}&idSale=${sparePartDetailState.sale || ""}`;
+            let url = `sparePartSale.html?isNewPart=true` +
+                `&idCustomer=${sparePartDetailState.customerParamId}` +
+                `&customerName=${encodeURIComponent(sparePartDetailState.customerNameParam)}` +
+                `&sparePartId=${response.data.idSparePart}` +
+                `&sparePartName=${encodeURIComponent(response.data.nameSpareParts)}` +
+                `&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}`;
+
+            if (sparePartDetailState.idSale != null && sparePartDetailState.idSale !== '') {
+                url += `&idSale=${sparePartDetailState.idSale}`;
+            }
+
+            window.location.href = url;
+
             return;
         }
         if (sparePartDetailState.isWorkOrder) {

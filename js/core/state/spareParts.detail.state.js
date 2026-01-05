@@ -3,6 +3,7 @@ const params = new URLSearchParams(window.location.search);
 export const sparePartDetailState = {
     currentId: params.get("id"),
     sale: params.get("sale") === 'true',
+    idSale: params.get("idSale"),
     workOrder: params.get("idWorkOrder"),
     isWorkOrder: params.get("workOrder") === 'true',
     statusList: [],

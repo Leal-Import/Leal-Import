@@ -1,12 +1,14 @@
 // modules/sales/sales.controller.js
 
+import { insertSales, selectLineButton, opeAskModal, closeAskModal } from "../../core/dom/sales.dom.js";
 import { salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
-import { showMessage } from "../../utils.js";
+import { fillSelect, showMessage } from "../../utils.js";
+import { qs } from "../../utils/dom.js";
+import { initSalesEvents } from "./sales.event.js";
 
-const tableBody = $('salesTableBody');
-const modalSales = $('modalSales');
+const containerData = qs('.panelContainer');
 
 /* ===============================
    CARGA DE VENTAS
@@ -48,11 +50,9 @@ export async function loadSales() {
         salesState.list = data.content;
         salesState.pagination.total = data.page.totalElements;
         salesState.pagination.totalPages = data.page.totalPages;
-
         insertSales(
-            tableBody,
-            salesState.list,
-            handleSaleActions
+            containerData,
+            salesState.list
         );
 
         pagination.setTotal({
@@ -64,13 +64,16 @@ export async function loadSales() {
     } catch (error) {
         showMessage(
             'Error',
-            'No se pudieron cargar las ventas',
+            error,
             'error'
         );
         console.error(error);
     }
 }
 
+let onClickBtnFilter = (e) => selectLineButton(e);
+let onOpenModal = () => opeAskModal();
+let onCloseModal = () => closeAskModal();
 /* ===============================
    FILTROS
 ================================ */
@@ -90,7 +93,10 @@ export function onSearchSale(filters) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     initSalesEvents({
-        onSearchSale
+        onSearchSale,
+        onClickBtnFilter,
+        onOpenModal,
+        onCloseModal
     });
-    Promise.all([loadSales, loadStateSales]);
+    Promise.all([loadSales(), loadStateSales()]);
 });

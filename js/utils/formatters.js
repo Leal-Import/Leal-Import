@@ -169,28 +169,33 @@ export function formatDecimalInput(el) {
 
     el.addEventListener('input', () => {
         let value = getValue();
+        let caretPos = 0;
 
-        // Permitir solo números y punto
+        if (!isInput) {
+            caretPos = getCaretPosition(el);
+        }
+
         value = value.replace(/[^0-9.]/g, '');
 
-        // Solo un punto decimal
         const parts = value.split('.');
         if (parts.length > 2) {
             value = parts[0] + '.' + parts.slice(1).join('');
         }
 
-        // No permitir ceros a la izquierda (excepto "0.")
         if (/^0\d+/.test(value)) {
             value = value.replace(/^0+/, '');
         }
 
-        // Máximo 2 decimales
         if (value.includes('.')) {
             const [int, dec] = value.split('.');
             value = int + '.' + dec.slice(0, 2);
         }
 
         setValue(value);
+
+        if (!isInput) {
+            setCaretPosition(el, caretPos);
+        }
     });
 
     el.addEventListener('paste', e => {
@@ -201,3 +206,42 @@ export function formatDecimalInput(el) {
         setValue(text);
     });
 }
+
+function getCaretPosition(el) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return 0;
+
+    const range = selection.getRangeAt(0);
+    const preRange = range.cloneRange();
+    preRange.selectNodeContents(el);
+    preRange.setEnd(range.endContainer, range.endOffset);
+    return preRange.toString().length;
+}
+
+function setCaretPosition(el, pos) {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    let currentPos = 0;
+
+    function traverse(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const nextPos = currentPos + node.length;
+            if (pos <= nextPos) {
+                range.setStart(node, pos - currentPos);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                return true;
+            }
+            currentPos = nextPos;
+        } else {
+            for (const child of node.childNodes) {
+                if (traverse(child)) return true;
+            }
+        }
+        return false;
+    }
+
+    traverse(el);
+}
+

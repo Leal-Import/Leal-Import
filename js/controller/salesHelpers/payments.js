@@ -1,4 +1,4 @@
-import { getPaymentMethods } from '../../service/serviceConfiguration.js';
+import { getPaymentMethods } from '../../service/configuration.service.js';
 import { allowDecimal, fillSelect, formatWithCommas, safeParseFloat } from '../../utils.js'
 
 

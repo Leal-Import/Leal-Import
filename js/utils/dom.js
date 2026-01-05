@@ -236,27 +236,47 @@ export const setupModal = (
     });
 };
 
-export const fillSelect = (selectId, data, valueKey, textKey, defaultText = 'Seleccione una opción') => {
-    const select = $(selectId);
+export const fillSelect = (selectOrId, data, valueKey, textKey, selectedValue = null, defaultText = 'Seleccione una opción') => {
+    const select =
+        typeof selectOrId === 'string'
+            ? document.getElementById(selectOrId)
+            : selectOrId;
+
     if (!select) return;
 
-    //limpiar opciones previas
+    // limpiar opciones previas
     while (select.firstChild) {
         select.removeChild(select.firstChild);
     }
 
+    // opción por defecto
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = defaultText;
+
+    // si NO hay valor seleccionado, dejamos la opción por defecto
+    if (selectedValue == null || selectedValue === '') {
+        defaultOption.selected = true;
+    }
+
     select.appendChild(defaultOption);
 
+    // opciones dinámicas
     data.forEach(item => {
         const option = document.createElement('option');
         option.value = item[valueKey];
         option.textContent = item[textKey];
+
+        // marcar como seleccionado si coincide
+        if (String(option.value) === String(selectedValue)) {
+            option.selected = true;
+        }
+
         select.appendChild(option);
     });
-}
+};
+
+
 
 export const highlightAndFocus = (elementOrId) => {
     const element = typeof elementOrId === 'string'

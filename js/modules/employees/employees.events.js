@@ -1,6 +1,5 @@
 import { $, setupModal } from '../../utils/dom.js';
 import { formatPhoneNumber } from '../../utils/formatters.js';
-import { employeesState } from '../../core/state/employees.state.js';
 
 let searchTimeout = null;
 
