@@ -1,11 +1,9 @@
-import { customersState } from '../../core/state/customers.state.js';
 import { setupModal, $ } from '../../utils/dom.js';
 import { formatDUIInput, formatPhoneNumber } from '../../utils/formatters.js';
-import { onSubmitCustomer, onSearchCustomer } from './customers.controller.js';
 
 let searchTimeout = null;
 
-export function initCustomerEvents() {
+export function initCustomerEvents({ onSubmitCustomer, onSearchCustomer, onCleanState }) {
 
     const frmCustomers = $("frmCustomers");
     const txtSearchCustomer = $("txtSearchData");
@@ -18,7 +16,7 @@ export function initCustomerEvents() {
         '#closeAddCustomer',
         '#frmCustomers',
         'Agregar cliente',
-        () => customersState.selectedId = null
+        onCleanState
     );
 
     frmCustomers.addEventListener("submit", onSubmitCustomer);

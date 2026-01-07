@@ -79,7 +79,7 @@ export let createBtnUrl = (index, receiptUrl, selectedAmounts) => {
     receiptInput.classList.add("receiptInput");
     receiptInput.id = `receiptInput${index}`;
     receiptInput.setAttribute("hidden", "true");
-
+    console.log(selectedAmounts)
     receiptInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -92,7 +92,7 @@ export let createBtnUrl = (index, receiptUrl, selectedAmounts) => {
         const item = selectedAmounts.find(a => a.id === logicalId);
         if (item) item.file = file;
         else selectedAmounts.push({ id: logicalId, file: file });
-
+        console.log(selectedAmounts)
         // Actualizar botón del abono para indicar que hay archivo
         const btn = paymentRow.querySelector('.btnVoucher');
         btn.classList.add('receipt-loaded');

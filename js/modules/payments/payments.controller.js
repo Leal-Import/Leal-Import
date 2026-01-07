@@ -19,11 +19,11 @@ export async function loadPayMethods() {
     }
 }
 
-export async function initPaymentsController({ state, totals, totalCalculator, onStateChange, createReceiptBtn }) {
+export async function initPaymentsController({ totalCalculator, onStateChange, createReceiptBtn }) {
     await loadPayMethods();
     paymentsState.onSaveState = onStateChange;
     paymentsState.onCalculateTotal = totalCalculator;
-    render(state.payments, totals, createReceiptBtn);
+    paymentsState.onCreateButton = createReceiptBtn;
 }
 
 
@@ -31,24 +31,25 @@ export async function initPaymentsController({ state, totals, totalCalculator, o
    Acciones públicas
 ====================================================== */
 
-export function addNewPayment({ state, totals, createReceiptBtn, payment }) {
+export function addNewPayment({ state, totals, payment }) {
     addPayment(state, payment || {});
-    render(state.payments, totals, createReceiptBtn);
     totals.totalPaid = state.payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+    render(state.payments, totals, state.paymentsToDelete);
     paymentsState.onSaveState?.();
 }
 
-let onDeletePayment = (payments, index, totals) => {
+let onDeletePayment = (payments, index, totals, paymentsToDelete) => {
     if (index === -1) return;
     const payment = payments[index];
     if (payment.idPayment) {
-        payments.paymentsToDelete.push(payment.idPayment);
+        paymentsToDelete.push(payment.idPayment);
     }
     payments.splice(index, 1);
     totals.totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
-    render(payments, totals);
+    render(payments, totals, paymentsToDelete);
     paymentsState.onSaveState?.();
     paymentsState.onCalculateTotal();
+    console.log(payments)
 }
 
 let onAmountChange = (payments, index, value, totals) => {
@@ -68,8 +69,18 @@ let onMethodChange = (payments, index, value) => {
     paymentsState.onCalculateTotal();
 }
 
+export let onResetPayments = (state, totals) => {
+    // 1. Limpiar payments (manteniendo referencia)
+    state.payments.length = 0;
 
-export function render(payments, totals, createReceiptBtn) {
+    // 2. Resetear totales
+    totals.totalPaid = 0;
+    totals.due = 0;
+    totals.total = 0;
+    addNewPayment({state, totals})
+}
+
+export function render(payments, totals, paymentsToDelete) {
     renderPayments({
         payments: payments,
         totals,
@@ -77,7 +88,8 @@ export function render(payments, totals, createReceiptBtn) {
         onAmountChange,
         onMethodChange,
         onDeletePayment,
+        paymentsToDelete,
         showReceiptBtn: true,
-        createReceiptButton: createReceiptBtn
+        createReceiptButton: paymentsState.onCreateButton
     });
 }

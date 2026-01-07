@@ -213,6 +213,9 @@ export const setupModal = (
     if (!openBtn || !closeBtn || !modal) return;
 
     openBtn.addEventListener("click", () => {
+        if (typeof onClose === 'function') {
+            onClose(); // ← limpia selectedId
+        }
         toggleModal(modal, true);
         form?.reset();
         modal.querySelector('.titleModal').textContent = text;
@@ -287,4 +290,13 @@ export const highlightAndFocus = (elementOrId) => {
 
     element.classList.add('input-error');
     element.focus();
+};
+
+export const asUUID = (v) => (typeof v === 'string' && v.trim() !== '' ? v : null);
+
+export const asBoolean = (v) => v === 'true';
+
+export const asNumber = (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
 };

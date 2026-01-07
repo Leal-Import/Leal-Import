@@ -1,9 +1,9 @@
 const API_URL = "http://127.0.0.1:8080/api/VehicleSale";
 const API_URLVeh = "http://127.0.0.1:8080/api/Vehicle";
 
-export let postVehicle = async (sale, vin) => {
+export let postVehicle = async (sale, id) => {
     try {
-        const request = await fetch(`${API_URL}/postVehicleSale/${vin}`, {
+        const request = await fetch(`${API_URL}/postVehicleSale/${id}`, {
             method: 'POST',
             body: sale,
             credentials: 'include'
@@ -105,9 +105,9 @@ export let getSaleById = async (id) => {
     }
 };
 
-export let getVehiclesAviable = async () => {
+export let getVehiclesAviable = async (page = 0, size = 15, search = '') => {
     try {
-        const request = await fetch(`${API_URLVeh}/getSaleSummary`, {
+        const request = await fetch(`${API_URLVeh}/getSaleSummary?page=${page}&size=${size}&search=${search}`, {
             credentials: 'include'
         });
         if (!request.ok) {

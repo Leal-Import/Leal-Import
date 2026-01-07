@@ -153,7 +153,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btnSecondary btnCancelVehicle">Cancelar</button>
+                            <button class="btnSecondary btnCancelVehicle" id="btnCancelVehicle">Cancelar</button>
                         </div>
                     </div>
                     <div class="filterSection">
@@ -213,9 +213,7 @@
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody id="amounts" class="amounts">
-                                    <!-- Filas generadas por JS -->
-                                </tbody>
+                                <tbody id="amounts" class="amounts"></tbody>
                             </table>
                         </div>
                         <button class="btnPrimary" id="btnAddPayment" type="button">Agregar</button>
@@ -231,11 +229,11 @@
                         </div>
                         <div class="formGroup">
                             <label for="txtCommission" class="lbl">Comision</label>
-                            <input type="text" id="txtCommission" class="txtInputs">
+                            <input type="text" id="txtCommission" class="txtInputs" required>
                         </div>
                         <div class="formGroup">
                             <label for="txtTotal" class="lbl">Precio final del vehiculo</label>
-                            <input type="text" id="txtTotal" class="txtInputs">
+                            <input type="text" id="txtTotal" class="txtInputs" required>
                         </div>
                         <div class="containerButtons">
                             <a class="btnSecondary btnCreateWO" id="btnCreateOrder">Vender y crear orden</a>
@@ -249,8 +247,7 @@
     <script src="../js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/utils.js"></script>
-    <script type="module" src="../js/controller/controllerVehicleSale.js"></script>
+    <script type="module" src="../js/modules/vehicleSales/controller/vehicles.sales.controller.js"></script>
 </body>
 
 </html>

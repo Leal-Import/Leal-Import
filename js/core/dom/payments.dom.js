@@ -6,12 +6,12 @@ import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } fro
 /* ======================================================
    Render principal
 ====================================================== */
-export function renderPayments({ payments = [], totals, paymentsMethods = [], onAmountChange, onMethodChange, onDeletePayment, showReceiptBtn = false, createReceiptButton }) {
+export function renderPayments({ payments = [], totals, paymentsMethods = [], onAmountChange, onMethodChange, onDeletePayment, paymentsToDelete, showReceiptBtn = false, createReceiptButton }) {
     const container = $("amounts");
     if (!container) return;
     container.innerHTML = '';
     payments.forEach((payment, index) => {
-        const row = createPaymentRow({ payment, totals, payments, index, onAmountChange, onMethodChange, onDeletePayment, showReceiptBtn, createReceiptButton })
+        const row = createPaymentRow({ payment, totals, payments, index, onAmountChange, onMethodChange, onDeletePayment, paymentsToDelete, showReceiptBtn, createReceiptButton })
         container.appendChild(row.tr);
         fillSelect(row.select, paymentsMethods, "idPaymentMethod", "methodName", payment.idPaymentMethod, "Metodo de pago");
     });
@@ -20,9 +20,10 @@ export function renderPayments({ payments = [], totals, paymentsMethods = [], on
 /* ======================================================
    Crear fila individual
 ====================================================== */
-function createPaymentRow({ payment, totals, payments, index, onAmountChange, onMethodChange, onDeletePayment, showReceiptBtn, createReceiptButton }) {
+function createPaymentRow({ payment, totals, payments, index, onAmountChange, onMethodChange, onDeletePayment, paymentsToDelete, showReceiptBtn, createReceiptButton }) {
     const tr = document.createElement('tr');
     tr.classList.add('paymentRow');
+    tr.dataset.index = index + 1;
     /* ===== MONTO ===== */
     const tdAmount = document.createElement('td');
     const input = document.createElement('input');
@@ -55,7 +56,7 @@ function createPaymentRow({ payment, totals, payments, index, onAmountChange, on
     actions.classList.add('actionsPayments');
 
     if (showReceiptBtn && createReceiptButton) {
-        const receiptBtn = createReceiptButton(index, payment);
+        const receiptBtn = createReceiptButton(index, payment.paymentURL, payment);
         actions.appendChild(receiptBtn);
     }
 
@@ -64,7 +65,7 @@ function createPaymentRow({ payment, totals, payments, index, onAmountChange, on
         deleteBtn.type = 'button';
         deleteBtn.classList.add('btnTrash');
         deleteBtn.innerHTML = `<img src="../../media/appMedia/trashIcon.png">`;
-        deleteBtn.addEventListener("click", () => onDeletePayment(payments, index, totals))
+        deleteBtn.addEventListener("click", () => onDeletePayment(payments, index, totals, paymentsToDelete))
         actions.appendChild(deleteBtn);
     }
 

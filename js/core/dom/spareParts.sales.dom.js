@@ -1,7 +1,5 @@
 import { $, qs } from "../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } from "../../utils/formatters.js";
-import { verifyIds } from "../logic/spareParts.sales.logic.js";
-import { spareSaleState } from "../state/spareParts.sales.state.js";
 
 
 export function insertSpareParts(
@@ -162,6 +160,10 @@ export let loadBtnOrder = (customerId, customerName, idSale) => {
 export let loadDomData = (notes) => {
     $("txtNotes").value = notes;
     qs(".btnSubmitData").value = "Actualizar venta";
+}
+
+export let loadNotes = (notes) => {
+    $("txtNotes").value = notes;
 }
 
 export function renderTotals({ total, due }) {

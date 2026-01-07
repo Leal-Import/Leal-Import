@@ -14,8 +14,9 @@ import {
 } from '../../../utils/dom.js';
 import { spareSaleState } from '../../../core/state/spareParts.sales.state.js';
 import { initSpareSaleEvents } from '../event/spareParts.sales.event.js';
-import { createNoDataSelectedMessage, createRowTable, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
-import { buildSalePayload, calculateTotals, validateSale, verifyIds } from '../../../core/logic/spareParts.sales.logic.js';
+import { createNoDataSelectedMessage, createRowTable, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
+import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale, verifyIds } from '../../../core/logic/spareParts.sales.logic.js';
+import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { getCurrentEmployeeId, initSession, safeParseFloat } from '../../../utils.js';
 import { addNewPayment, initPaymentsController, render } from '../../payments/payments.controller.js';
 
@@ -117,10 +118,16 @@ async function onSubmitSpareSale(e) {
     e.preventDefault();
     const error = validateSale();
     if (error) {
-        showMessage("Error de validación", error, 'warning');
+        await showMessage("Error de validación", error, 'warning');
         return;
     }
-    const payload = buildSalePayload(spareSaleState);
+
+    let payload;
+    if (spareSaleState.context.idSale) {
+        payload = buildPutSalePayload(spareSaleState);
+    } else {
+        payload = buildPostSalePayload(spareSaleState);
+    }
 
     try {
         let response;
@@ -133,6 +140,8 @@ async function onSubmitSpareSale(e) {
         }
         if (response) {
             cleanWindow();
+            const cleanUrl = window.location.pathname;
+            history.replaceState({}, "", cleanUrl);
         }
         window.location.href = 'sales.html';
     } catch (error) {
@@ -187,7 +196,7 @@ let cleanWindow = () => {
 }
 
 let onSaveNotes = (e) => {
-    spareSaleState.data.notes = e.target.value;
+    spareSaleState.data.notes = e.target.value || '';
     saveSaleState();
 }
 
@@ -231,7 +240,7 @@ async function loadExistingSale() {
         addNewPayment({ state: spareSaleState.data, totals: spareSaleState.totals, payment: paymentToAppend });
     })
 
-    render(spareSaleState.data.payments, spareSaleState.totals)
+    render(spareSaleState.data.payments, spareSaleState.totals, spareSaleState.data.paymentsToDelete)
     saveSaleState();
     recalculateTotals();
 }
@@ -241,11 +250,12 @@ let loadDraft = () => {
     const storageItem = JSON.parse(item);
     spareSaleState.data = storageItem.data;
     spareSaleState.totals = storageItem.totals;
+    loadNotes(spareSaleState.data.notes);
     spareSaleState.data.selectedItems.forEach(part => {
         createRowTable(tBodySelected, part, onDeleteSparePart, onWritePrice);
     });
 
-    render(spareSaleState.data.payments, spareSaleState.totals);
+    render(spareSaleState.data.payments, spareSaleState.totals, spareSaleState.data.paymentsToDelete);
     recalculateTotals();
     saveSaleState();
 }
@@ -270,15 +280,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const user = await initSession();
     if (!user) return;
     spareSaleState.idEmployee = getCurrentEmployeeId();
+    const hydrated = await hydrateContextFromURL(spareSaleState);
+    if (!hydrated) return;
     loadCustomerName(spareSaleState.context.customerName);
     initSpareSaleEvents({ onSubmitSpareSale, onAddPayment, onSearchSparePart, onOrderClick, onSaveNotes });
-    initPaymentsController({ state: spareSaleState.data, totals: spareSaleState.totals, totalCalculator: recalculateTotals, onStateChange: saveSaleState })
+    await initPaymentsController({ totalCalculator: recalculateTotals, onStateChange: saveSaleState })
 
     // 1. Cargar datos base
     if (spareSaleState.context.idSale) {
         await loadExistingSale();
     } else if (existSavedData()) {
         loadDraft();
+    } else {
+        onAddPayment();
     }
 
     // 2. Agregar nuevo repuesto SOLO después

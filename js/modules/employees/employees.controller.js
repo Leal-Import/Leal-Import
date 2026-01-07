@@ -92,15 +92,15 @@ export async function onSubmitEmployee(e) {
 
     const formData = Object.fromEntries(new FormData(form));
 
+    const employee = mapEmployeeForm(formData);
+    const error = validateEmployee(employee);
+
+    if (error) {
+        showMessage('Error', error, 'warning');
+        return;
+    }
+
     try {
-        const employee = mapEmployeeForm(formData);
-        const error = validateEmployee(employee);
-
-        if (error) {
-            showMessage('Error', error, 'warning');
-            return;
-        }
-
         if (employeesState.selectedId) {
             await putEmployee(employee, employeesState.selectedId);
             showMessage('Exito', 'Empleado actualizado exitosamente', 'success');
@@ -109,14 +109,15 @@ export async function onSubmitEmployee(e) {
             showMessage('Exito', 'Empleado agregado exitosamente', 'success');
         }
 
-        toggleModal(modalEmployees, false);
-        pagination.update({});
-
     } catch (err) {
         console.error(err);
         showMessage('Error', err.message || 'Error al guardar empleado', 'error');
     } finally {
+        toggleModal(modalEmployees, false);
+        form.reset();
         employeesState.selectedId = null;
+        pagination.update({});
+
     }
 }
 
@@ -203,7 +204,7 @@ export function onSearchEmployee(filters) {
 ================================ */
 
 document.addEventListener('DOMContentLoaded', async () => {
-    initEmployeeEvents({onSubmitEmployee, onSearchEmployee, onReset: () => employeesState.selectedId = null});
+    initEmployeeEvents({ onSubmitEmployee, onSearchEmployee, onReset: () => employeesState.selectedId = null });
 
     Promise.all([loadRoles(), loadEmployees()]);
 });

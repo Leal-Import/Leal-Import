@@ -114,16 +114,14 @@ export async function onSubmitCustomer(e) {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(form));
+    const customer = mapCustomerForm(formData);
+    const error = validateCustomer(customer);
 
+    if (error) {
+        showMessage('Error', error, 'warning');
+        return;
+    }
     try {
-        const customer = mapCustomerForm(formData);
-        const error = validateCustomer(customer);
-
-        if (error) {
-            showMessage('Error', error, 'warning');
-            return;
-        }
-
         if (customersState.selectedId) {
             await putCustomer(customer, customersState.selectedId);
             showMessage('Exito', 'Cliente actualizado exitosamente', 'success');
@@ -152,7 +150,9 @@ export function onSearchCustomer(filters) {
     loadCustomers();
 }
 
+const onCleanState = () => customersState.selectedId = null
+
 document.addEventListener('DOMContentLoaded', async () => {
-    initCustomerEvents();
+    initCustomerEvents({ onSubmitCustomer, onSearchCustomer, onCleanState });
     await loadCustomers();
 });

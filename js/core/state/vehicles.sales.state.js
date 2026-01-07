@@ -1,20 +1,18 @@
-export const spareSaleState = {
+export const vehicleSaleState = {
     context: {
         idSale: null,
         idCustomer: null,
         customerName: null,
-        isNewPart: null,
-        newPartId: null,
-        newPartName: null,
-        suggestedPrice: null
+        idVehicle: null
     },
     saleKey: null,
     idEmployee: null,
+    idVehicle: null,
     data: {
-        selectedItems: [],
         payments: [],
-        itemsToDelete: [],
         paymentsToDelete: [],
+        salePrice: 0,
+        commission: '',
         notes: ''
     },
     totals: {

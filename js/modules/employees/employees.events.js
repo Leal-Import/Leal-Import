@@ -3,9 +3,9 @@ import { formatPhoneNumber } from '../../utils/formatters.js';
 
 let searchTimeout = null;
 
-export function initEmployeeEvents({onSubmitEmployee, onSearchEmployee, onReset}) {
+export function initEmployeeEvents({ onSubmitEmployee, onSearchEmployee, onReset }) {
 
-    const form = $('frmEmployees');   
+    const form = $('frmEmployees');
     const txtSearchData = $('txtSearchData');
     const cmbSearchByRole = $('cmbSearchByRole');
     const cmbSearchByStatus = $('cmbSearchByStatus');
@@ -17,42 +17,29 @@ export function initEmployeeEvents({onSubmitEmployee, onSearchEmployee, onReset}
         });
     }
 
-    setupModal(
-        '#OpenModalEmployees',
-        '#modalEmployees',
-        '#closeAddEmployee',
-        '#frmEmployees',
-        'Agregar empleado',
-        onReset
-    );
+    setupModal('#OpenModalEmployees', '#modalEmployees', '#closeAddEmployee', '#frmEmployees', 'Agregar empleado', onReset);
 
     const emitFilters = () => {
-        onSearchEmployee({
-            search: txtSearchData?.value.trim() || '',
-            idRole: cmbSearchByRole?.value || '',
-            status: cmbSearchByStatus?.value || ''
-        });
+        clearTimeout(searchTimeout)
+        searchTimeout = setTimeout(() => {
+            onSearchEmployee({
+                search: txtSearchData?.value.trim() || '',
+                idRole: cmbSearchByRole?.value || '',
+                status: cmbSearchByStatus?.value || ''
+            });
+        }, 1000)
     };
 
     if (cmbSearchByStatus) {
-        cmbSearchByStatus.addEventListener('change', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(emitFilters, 1000);
-        });
+        cmbSearchByStatus.addEventListener('change', emitFilters);
     }
 
     if (cmbSearchByRole) {
-        cmbSearchByRole.addEventListener('change', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(emitFilters, 1000);
-        });
+        cmbSearchByRole.addEventListener('change', emitFilters);
     }
 
     if (txtSearchData) {
-        txtSearchData.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(emitFilters, 1000);
-        });
+        txtSearchData.addEventListener('input', emitFilters);
     }
 
     if (form) {

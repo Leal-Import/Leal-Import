@@ -6,7 +6,7 @@ import {
     getVehiclesAviable,
     putVehicle,
     getSaleById
-} from '../service/serviceVehicleSale.js'
+} from '../service/vehicles.sales.service.js'
 import {
     formatWithCommas,
     allowDecimal,
@@ -145,13 +145,17 @@ let createNewSale = async (isWO) => {
             isOld: !!item.paymentURL,          // Indica si ya está subido
             idPayment: item.idPayment || null
         });
+        console.log(amountData)
+        console.log(imagesAmounts)
+
+        console.log(selectedAmounts)
+
     }
     // Validación final
     if (amountData.length === 0) {
         showMessage('Ningún abono registrado', 'Por favor, registre al menos un abono', 'warning');
         return;
     }
-
     const fd = new FormData();
 
     const saleData = {

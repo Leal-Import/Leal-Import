@@ -1,6 +1,7 @@
 // modules/employees/employees.view.js
-import { fillSelect, $ } from '../../utils.js';
-import { fillForm, toggleModal } from '../../utils/dom.js';
+import { fillForm, toggleModal, $, fillSelect } from '../../utils/dom.js';
+
+const modalEmployees = $('modalEmployees');
 
 export function fillEmployeesForm(employee, text) {
     fillForm('#frmEmployees', {
