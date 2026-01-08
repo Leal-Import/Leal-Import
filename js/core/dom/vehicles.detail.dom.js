@@ -1,5 +1,4 @@
 import { $, qs, qsa, setFormReadOnly, toggleModal } from "../../utils/dom.js";
-import { vehicleDetailState } from "../state/vehicles.detail.state.js";
 
 // core/logic/vehicles.upload.config.js
 export const UPLOAD_CONFIG = {
@@ -151,14 +150,14 @@ function initSwipers() {
     });
 }
 
-export function openUploadModal(type) {
+export function openUploadModal(type, state) {
     const modal = $('modalUpload');
     const title = $('uploadTitle');
     const config = UPLOAD_CONFIG[type];
     if (!config) return;
 
-    vehicleDetailState.currentUploadType = type;
-    if (vehicleDetailState.urls[type]) renderUploadPreview(vehicleDetailState.urls[type]);
+    state.currentUploadType = type;
+    if (state.urls[type]) renderUploadPreview(state.urls[type]);
     title.textContent = config.title;
 
     toggleModal(modal, true);
@@ -200,7 +199,7 @@ export function renderUploadPreview(source) {
 }
 
 
-export function closeAndCleanUpdateModal() {
+export function closeAndCleanUpdateModal(state) {
     const modal = $('modalUpload');
     const dropArea = $('uploadDropArea');
     const inputFile = $('uploadFileInput');
@@ -222,5 +221,5 @@ export function closeAndCleanUpdateModal() {
     }
 
     // Importante: limpiar tipo actual
-    vehicleDetailState.currentUploadType = null;
+    state.currentUploadType = null;
 }

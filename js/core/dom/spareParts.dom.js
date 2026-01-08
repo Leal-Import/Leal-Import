@@ -1,8 +1,8 @@
 import { formatWithCommas } from "../../utils/formatters.js";
 
 export let insertSpareParts = (container, spareParts) => {
-    container.innerHTML = "";
     if (!container) return;
+    container.innerHTML = "";
     const fragment = document.createDocumentFragment();
     if (spareParts.length == 0) {
         const noDataDiv = document.createElement("div");

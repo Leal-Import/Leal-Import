@@ -2,6 +2,7 @@ import { sparePartDetailState } from "../../../core/state/spareParts.detail.stat
 import { $, qsa } from "../../../utils/dom.js";
 import {
     fillSparePartsBaseForm,
+    hydrateContextFromURL,
     mapSparePart,
     validateBaseSparePart,
     validateImage,
@@ -39,7 +40,7 @@ async function loadStatusSelect() {
 }
 
 export async function loadSparePart() {
-    const sparePart = await getSparePart(sparePartDetailState.currentId);
+    const sparePart = await getSparePart(sparePartDetailState.context.currentId);
     $("typeAction").textContent = "Actualizar repuesto";
     $("btnSaveData").value = "Actualizar";
 
@@ -59,9 +60,9 @@ export async function onSubmitSparePart(e) {
     const formData = Object.fromEntries(new FormData(frmSpareParts));
     const fd = new FormData();
     let imagesValid;
-    if (sparePartDetailState.currentId && sparePartDetailState.image.file) {
+    if (sparePartDetailState.context.currentId && sparePartDetailState.image.file) {
         imagesValid = validateImage(sparePartDetailState.image.file);
-    } else if (!sparePartDetailState.currentId) {
+    } else if (!sparePartDetailState.context.currentId) {
         imagesValid = validateImage(sparePartDetailState.image.file);
     }
 
@@ -90,41 +91,41 @@ export async function onSubmitSparePart(e) {
 
     try {
         let response;
-        if (sparePartDetailState.currentId != null) {
-            await putSparePart(fd, sparePartDetailState.currentId);
+        if (sparePartDetailState.context.currentId != null) {
+            await putSparePart(fd, sparePartDetailState.context.currentId);
             await showMessage('Repuesto actualizado con éxito!', 'Éxito', 'success');
         } else {
             response = await postSparePart(fd);
             await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
-        if (sparePartDetailState.sale) {
+        if (sparePartDetailState.context.hasSale) {
             let url = `sparePartSale.html?isNewPart=true` +
-                `&idCustomer=${sparePartDetailState.customerParamId}` +
-                `&customerName=${encodeURIComponent(sparePartDetailState.customerNameParam)}` +
+                `&idCustomer=${sparePartDetailState.context.idCustomer}` +
+                `&customerName=${encodeURIComponent(sparePartDetailState.context.customerName)}` +
                 `&sparePartId=${response.data.idSparePart}` +
                 `&sparePartName=${encodeURIComponent(response.data.nameSpareParts)}` +
                 `&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}`;
 
-            if (sparePartDetailState.idSale != null && sparePartDetailState.idSale !== '') {
-                url += `&idSale=${sparePartDetailState.idSale}`;
+            if (sparePartDetailState.context.idSale != null && sparePartDetailState.context.idSale !== '') {
+                url += `&idSale=${sparePartDetailState.context.idSale}`;
             }
 
             window.location.href = url;
 
             return;
         }
-        if (sparePartDetailState.isWorkOrder) {
+        if (sparePartDetailState.context.hasWorkOrder) {
             const paramsOrder = new URLSearchParams({
                 isNewPart: true,
-                idSale: sparePartDetailState.sale || null,
-                customerName: sparePartDetailState.customerNameParam,
-                idVehicle: sparePartDetailState.vehicleParamId,
-                idCustomer: sparePartDetailState.customerParamId,
-                totalPrice: sparePartDetailState.totalPriceParam,
+                idSale: sparePartDetailState.context.idSale || null,
+                customerName: sparePartDetailState.context.customerName,
+                idVehicle: sparePartDetailState.context.idVehicle,
+                idCustomer: sparePartDetailState.context.idCustomer,
+                totalPrice: sparePartDetailState.context.totalPrice,
                 newSparePartId: response.data.idSparePart,
                 newSparePartName: response.data.nameSpareParts,
                 newSuggestedPrice: response.data.sparePartsCosts.suggestedPrice,
-                idWorkOrder: sparePartDetailState.workOrder || null
+                idWorkOrder: sparePartDetailState.context.idWorkOrder || null
             })
             window.location.href = `addWorkOrder.html?${paramsOrder.toString()}`;
         } else {
@@ -147,8 +148,8 @@ function onCalculateTotal() {
     txtTotal.value = formatWithCommas(total);
 }
 
-let onOpenModal = (type) => openLinkModal(type);
-let onSaveDataModal = () => saveLinkModal();
+let onOpenModal = (type) => openLinkModal(type, sparePartDetailState);
+let onSaveDataModal = () => saveLinkModal(sparePartDetailState);
 
 let onChangeUpload = (e) => {
     const file = e.target.files[0];
@@ -190,25 +191,13 @@ let onDragLeave = () => {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    initSparePartDetailEvents({
-        onSubmit: onSubmitSparePart,
-        onCalculateTotal,
-        onOpenModal,
-        onSaveDataModal,
-    });
+    hydrateContextFromURL(sparePartDetailState);
 
-    initImageEvents({
-        onChangeUpload,
-        onDropModal,
-        onAddImage,
-        onDeleteImage,
-        onDragOver,
-        onDragLeave
-    });
+    initSparePartDetailEvents({ onSubmit: onSubmitSparePart, onCalculateTotal, onOpenModal, onSaveDataModal, });
+    initImageEvents({ onChangeUpload, onDropModal, onAddImage, onDeleteImage, onDragOver, onDragLeave });
 
     await loadStatusSelect();
-    if (sparePartDetailState.currentId) {
+    if (sparePartDetailState.context.currentId) {
         await loadSparePart();
     }
-
 });

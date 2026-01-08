@@ -1,4 +1,4 @@
-import { $, fillForm, highlightAndFocus } from "../../utils/dom.js";
+import { $, asUUID, fillForm, highlightAndFocus } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
 import { validateImageSize, validateImageType, validateImagesGeneral } from "../../utils/images.validators.js";
 import { safeParseFloat } from "../../utils/validators.js";
@@ -36,7 +36,7 @@ export function calculateTotal(txtCosts, txtTotal) {
 }
 
 export let validateImages = (currentImages, newFiles) => {
-    return(validateImagesGeneral(newFiles) || validateDuplicateImages(currentImages, newFiles) || validateMaxImages(currentImages, newFiles));
+    return (validateImagesGeneral(newFiles) || validateDuplicateImages(currentImages, newFiles) || validateMaxImages(currentImages, newFiles));
 };
 
 export let validateCustomer = () => {
@@ -343,3 +343,13 @@ export function applyExternalMode(isExternal) {
         customerRequired: false
     };
 }
+
+export const hydrateContextFromURL = async (state) => {
+    const params = new URLSearchParams(window.location.search);
+
+    state.context.currentId = asUUID(params.get('id'));
+    state.context.customerName = params.get('customerName')?.trim() || '';
+    state.context.idCustomer = asUUID(params.get('idCustomer'));
+    state.context.hasSale = params.get('sale') === 'true';
+    state.context.hasWorkOrder = params.get('workOrder') === 'true';
+};

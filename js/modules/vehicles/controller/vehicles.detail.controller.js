@@ -2,7 +2,7 @@ import { vehicleDetailState } from "../../../core/state/vehicles.detail.state.js
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
 import { $, qs, qsa, toggleModal } from "../../../utils/dom.js";
 import { closeAndCleanUpdateModal, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, UPLOAD_CONFIG } from "../../../core/dom/vehicles.detail.dom.js";
-import { applyExternalMode, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
+import { applyExternalMode, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js"
 import { showMessage } from "../../../utils.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
@@ -22,7 +22,7 @@ const isExternalOpt = $("isExternalOpt");
 const txtCustomer = $("txtCustomer");
 
 export async function loadVehicle() {
-    const vehicle = await getVehicles(vehicleDetailState.currentId);
+    const vehicle = await getVehicles(vehicleDetailState.context.currentId);
     $("typeAction").textContent = "Actualizar vehiculo";
     $("btnSaveData").value = "Actualizar"
     fillVehiclesBaseForm(vehicle);
@@ -57,7 +57,7 @@ export async function onSubmitVehicle(e) {
 
     let payloadVehicle;
     let vehiclesImagesValid;
-    if (vehicleDetailState.currentId) {
+    if (vehicleDetailState.context.currentId) {
         vehiclesImagesValid = validateEditImages();
     } else {
         vehiclesImagesValid = validateVehicleImages();
@@ -91,7 +91,7 @@ export async function onSubmitVehicle(e) {
         }
     }
 
-    if (vehicleDetailState.currentId) {
+    if (vehicleDetailState.context.currentId) {
         payloadVehicle.photosToDeleteIds = vehicleDetailState.photosToDeleteIds;
     }
 
@@ -104,20 +104,20 @@ export async function onSubmitVehicle(e) {
 
     try {
         let response;
-        if (vehicleDetailState.currentId != null) {
-            response = await putVehicle(fd, vehicleDetailState.currentId);
+        if (vehicleDetailState.context.currentId != null) {
+            response = await putVehicle(fd, vehicleDetailState.context.currentId);
             await showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
         } else {
             response = await postVehicle(fd);
             await showMessage('Vehiculo agregado con éxito!', 'Exito', 'success');
         }
 
-        if (vehicleDetailState.sale) {
-            window.location.href = `vehicleSale.html?idCustomer=${vehicleDetailState.customerParamId}&customerName=${vehicleDetailState.customerNameParam}&idVehicle=${response.data.idVehicle}`;
+        if (vehicleDetailState.context.hasSale) {
+            window.location.href = `vehicleSale.html?idCustomer=${vehicleDetailState.context.idCustomer}&customerName=${vehicleDetailState.context.customerName}&idVehicle=${response.data.idVehicle}`;
             return;
         }
 
-        if (vehicleDetailState.workOrder) {
+        if (vehicleDetailState.context.hasWorkOrder) {
             window.location.href = `addWorkOrder.html?idVehicle=${response.data.idVehicle}`
             return;
         }
@@ -195,11 +195,11 @@ let closeLinkLoteModal = () => {
 }
 
 let initCloseModalUpload = () => {
-    closeAndCleanUpdateModal();
+    closeAndCleanUpdateModal(vehicleDetailState);
 }
 
 let initOpenModalUpload = (type) => {
-    openUploadModal(type)
+    openUploadModal(type, vehicleDetailState)
 }
 
 let onChangeUpload = (e) => {
@@ -240,6 +240,7 @@ let deleteImage = (index) => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
+    hydrateContextFromURL(vehicleDetailState);
     initVehicleDetailEvents({
         onSubmit: onSubmitVehicle,
         onSearchCustomer: onSearchCustomer,
@@ -251,7 +252,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         cleanCustomer
     });
     initUploadModalEvents({ onChangeUpload, onDropModal, closeModalUpload: initCloseModalUpload, openUploadModal: initOpenModalUpload });
-    if (vehicleDetailState.currentId) {
+    if (vehicleDetailState.context.currentId) {
         await loadVehicle();
     } else {
         renderImages(vehicleDetailState.images, mainSwiperWrapper, thumbsWrapper, deleteImage, () => imageInput.click());

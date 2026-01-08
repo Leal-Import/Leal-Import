@@ -1,28 +1,23 @@
 
-import { fillSelect } from '../../utils/dom.js';
 import { formatWithCommas } from '../../utils/formatters.js';
-import { vehiclesState } from '../state/vehicles.state.js';
 
-export function insertVehicles(container, vehicles) {
+export function insertVehicles(container, vehicles, hasWorkOrder) {
+    if (!Array.isArray(vehicles)) return;
     container.innerHTML = '';
 
     const fragment = document.createDocumentFragment();
 
-    if (!vehicles || vehicles.length === 0) {
+    if (vehicles.length === 0) {
         fragment.appendChild(createNoDataMessage());
         container.appendChild(fragment);
         return;
     }
 
     vehicles.forEach(vehicle => {
-        fragment.appendChild(createVehicleCard(vehicle));
+        fragment.appendChild(createVehicleCard(vehicle, hasWorkOrder));
     });
 
     container.appendChild(fragment);
-}
-
-export function renderStatusSelects() {
-    fillSelect('cmbSearchByStatus', vehiclesState.statusList, 'idStatus', 'statusName', 'Buscar por estado');
 }
 
 /* ===============================
@@ -37,13 +32,13 @@ function createNoDataMessage() {
     return div;
 }
 
-function createVehicleCard(vehicle) {
+function createVehicleCard(vehicle, hasWorkOrder) {
     const card = document.createElement('div');
     card.classList.add('card');
 
     card.appendChild(createHeader(vehicle));
     card.appendChild(createImage(vehicle));
-    card.appendChild(createFooter(vehicle));
+    card.appendChild(createFooter(vehicle, hasWorkOrder));
 
     return card;
 }
@@ -78,7 +73,7 @@ function createImage(vehicle) {
     return container;
 }
 
-function createFooter(vehicle) {
+function createFooter(vehicle, hasWorkOrder) {
     const footer = document.createElement('div');
     footer.classList.add('footerCard');
 
@@ -88,7 +83,7 @@ function createFooter(vehicle) {
 
     footer.appendChild(status);
     footer.appendChild(createVehicleInfo(vehicle));
-    footer.appendChild(createButtons(vehicle));
+    footer.appendChild(createButtons(vehicle, hasWorkOrder));
 
     return footer;
 }
@@ -120,11 +115,11 @@ function createInfoItem(label, value) {
     return item;
 }
 
-function createButtons(vehicle) {
+function createButtons(vehicle, hasWorkOrder) {
     const container = document.createElement('div');
     container.classList.add('containerButtons');
 
-    if (vehiclesState.workOrder) {
+    if (hasWorkOrder) {
         const btnSelect = document.createElement('a');
         btnSelect.textContent = 'Seleccionar';
         btnSelect.classList.add('btnPrimary');

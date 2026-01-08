@@ -11,5 +11,4 @@ export const sparePartsState = {
         totalPages: 0
     },
     statusList: [],
-    workOrder: new URLSearchParams(window.location.search).get("workOrder") || false
 };

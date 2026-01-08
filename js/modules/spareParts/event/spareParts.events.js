@@ -1,5 +1,4 @@
 // spareParts.events.js
-import { sparePartsState } from '../../../core/state/spareParts.state.js';
 import { $ } from '../../../utils/dom.js';
 
 let searchTimeout = null;
@@ -9,26 +8,20 @@ export function initSparePartsEvents({ onSearchSpareParts }) {
     const cmbStatus = $('cmbSearchByStatus');
 
     const emitFilters = () => {
-        sparePartsState.filters = {
-            search: txtSearch?.value.trim() || '',
-            idState: cmbStatus?.value || ''
-        };
-
-        sparePartsState.pagination.page = 1; // 🔑 reset page
-        onSearchSpareParts();
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            onSearchSpareParts({
+                search: txtSearch?.value.trim() || '',
+                idState: cmbStatus?.value || ''
+            });
+        }, 1000)
     };
 
     if (txtSearch) {
-        txtSearch.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(emitFilters, 1000);
-        });
+        txtSearch.addEventListener('input', emitFilters);
     }
 
     if (cmbStatus) {
-        cmbStatus.addEventListener('change', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(emitFilters, 1000);
-        });
+        cmbStatus.addEventListener('change', emitFilters);
     }
 }

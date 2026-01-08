@@ -1,5 +1,4 @@
 // vehicles.events.js
-import { vehiclesState } from '../../../core/state/vehicles.state.js';
 import { $ } from '../../../utils/dom.js';
 
 let searchTimeout = null;
@@ -10,34 +9,25 @@ export function initVehicleEvents({ onSearchVehicles }) {
     const cmbStatus = $('cmbSearchByStatus');
 
     const emitFilters = () => {
-        vehiclesState.filters = {
-            search: txtSearch?.value.trim() || '',
-            year: txtSearchYear?.value.trim() || '',
-            stateId: cmbStatus?.value || ''
-        };
-
-        vehiclesState.pagination.page = 1; // 🔑 reset page
-        onSearchVehicles();
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            onSearchVehicles({
+                search: txtSearch?.value.trim() || '',
+                year: txtSearchYear?.value.trim() || '',
+                stateId: cmbStatus?.value || ''
+            });
+        }, 1000)
     };
 
     if (txtSearch) {
-        txtSearch.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(emitFilters, 1000);
-        });
+        txtSearch.addEventListener('input', emitFilters);
     }
 
     if (txtSearchYear) {
-        txtSearchYear.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(emitFilters, 1000);
-        });
+        txtSearchYear.addEventListener('input', emitFilters);
     }
 
     if (cmbStatus) {
-        cmbStatus.addEventListener('change', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(emitFilters, 1000);
-        });
+        cmbStatus.addEventListener('change', emitFilters);
     }
 }

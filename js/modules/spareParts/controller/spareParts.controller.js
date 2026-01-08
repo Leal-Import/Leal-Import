@@ -71,6 +71,7 @@ export function onSearchSpareParts(filters) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    if (!tableBody) return;
     initSparePartsEvents({ onSearchSpareParts });
-    Promise.all([loadStatusSelect(), loadSpareParts()]);
+    await Promise.all([loadStatusSelect(), loadSpareParts()]);
 });

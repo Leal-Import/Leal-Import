@@ -1,8 +1,8 @@
 import { vehiclesState } from '../../../core/state/vehicles.state.js';
-import { insertVehicles, renderStatusSelects } from '../../../core/dom/vehicles.dom.js';
+import { insertVehicles } from '../../../core/dom/vehicles.dom.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
 import { getVehicles, getStatus } from '../../../service/vehicles.service.js';
-import { showMessage, qs, $ } from '../../../utils/dom.js';
+import { showMessage, qs, $, fillSelect } from '../../../utils/dom.js';
 import { initVehicleEvents } from '../event/vehicles.events.js';
 
 const tableBody = qs('.cardContainer');
@@ -20,7 +20,7 @@ async function loadStatusSelect() {
     try {
         const status = await getStatus();
         vehiclesState.statusList = status;
-        renderStatusSelects();
+        fillSelect('cmbSearchByStatus', vehiclesState.statusList, 'idStatus', 'statusName', 'Buscar por estado');
     } catch (error) {
         showMessage(
             'Error',
@@ -47,7 +47,7 @@ export async function loadVehicles() {
         vehiclesState.pagination.total = data.page.totalElements;
         vehiclesState.pagination.totalPages = data.page.totalPages;
 
-        insertVehicles(tableBody, vehiclesState.list);
+        insertVehicles(tableBody, vehiclesState.list, vehiclesState.context.hasWorkOrder);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -71,13 +71,20 @@ export function onSearchVehicles(filters) {
 }
 
 let workOrderBtn = () => {
-    $("btnAddVehicle").href = `vehicleDetails.html?workOrder=${vehiclesState.workOrder}`;
+    const btn = $("btnAddVehicle");
+    if (!btn) return;
+    btn.href = `vehicleDetails.html?workOrder=${vehiclesState.context.hasWorkOrder}`;
+}
+function hydrateContextFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    vehiclesState.context.hasWorkOrder = !!params.get("workOrder");
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    hydrateContextFromURL();
     initVehicleEvents({ onSearchVehicles });
-    Promise.all([loadStatusSelect(), loadVehicles()]);
-    if(vehiclesState.workOrder){
+    await Promise.all([loadStatusSelect(), loadVehicles()]);
+    if (vehiclesState.context.hasWorkOrder) {
         workOrderBtn();
     }
 });

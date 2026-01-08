@@ -1,5 +1,5 @@
 import { formatWithCommas } from "../../utils.js";
-import { fillForm } from "../../utils/dom.js"
+import { asUUID, fillForm } from "../../utils/dom.js"
 import { validateImageSize, validateImageType } from "../../utils/images.validators.js";
 import { safeParseFloat } from "../../utils/validators.js";
 import { sparePartDetailState } from "../state/spareParts.detail.state.js";
@@ -121,3 +121,18 @@ export function mapSparePart(formData) {
 
     return sparePart;
 }
+
+
+export const hydrateContextFromURL = async (state) => {
+    const params = new URLSearchParams(window.location.search);
+
+    state.context.currentId = asUUID(params.get('id'));
+    state.context.hasSale = params.get('sale') === 'true';
+    state.context.hasWorkOrder = params.get('workOrder') === 'true';
+    state.context.customerName = params.get('customerName')?.trim() || '';
+    state.context.idCustomer = asUUID(params.get('idCustomer'));
+    state.context.idSale = asUUID(params.get('idSale'));
+    state.context.totalPrice = params.get('totalPrice');
+    state.context.idVehicle = asUUID(params.get('idVehicle'));
+
+};

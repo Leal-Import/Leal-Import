@@ -1,6 +1,9 @@
 // core/state/vehicles.state.js
 export const vehiclesState = {
     list: [],
+    context: {
+        hasWorkOrder: null
+    },
     filters: {
         search: '',
         year: '',
@@ -13,5 +16,4 @@ export const vehiclesState = {
         totalPages: 0
     },
     statusList: [],
-    workOrder: new URLSearchParams(window.location.search).get("workOrder") || false
 };

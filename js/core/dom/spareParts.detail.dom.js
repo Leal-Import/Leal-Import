@@ -1,5 +1,4 @@
 import { $, toggleModal } from "../../utils/dom.js";
-import { sparePartDetailState } from "../state/spareParts.detail.state.js";
 
 const LINK_CONFIG = {
     bill: {
@@ -12,31 +11,31 @@ const LINK_CONFIG = {
     }
 };
 
-export function openLinkModal(type) {
+export function openLinkModal(type, state) {
     const config = LINK_CONFIG[type];
     if (!config) return;
 
-    sparePartDetailState.currentLinkType = type;
+    state.currentLinkType = type;
 
     $('modalLinkTitle').textContent = config.title;
-    $('txtLink').value = sparePartDetailState.links?.[config.stateKey] || '';
+    $('txtLink').value = state.links?.[config.stateKey] || '';
 
     toggleModal($('modalLink'), true);
 }
 
-export function closeLinkModal() {
+export function closeLinkModal(state) {
     toggleModal($('modalLink'), false);
     $('txtLink').value = '';
-    sparePartDetailState.currentLinkType = null;
+    state.currentLinkType = null;
 }
 
-export function saveLinkModal() {
-    if (!sparePartDetailState.currentLinkType) return;
+export function saveLinkModal(state) {
+    if (!state.currentLinkType) return;
 
     const value = $('txtLink').value.trim();
-    const { stateKey } = LINK_CONFIG[sparePartDetailState.currentLinkType];
+    const { stateKey } = LINK_CONFIG[state.currentLinkType];
 
-    sparePartDetailState.links[stateKey] = value;
+    state.links[stateKey] = value;
 
     closeLinkModal();
 }

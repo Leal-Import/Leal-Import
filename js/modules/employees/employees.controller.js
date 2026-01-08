@@ -205,6 +205,5 @@ export function onSearchEmployee(filters) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     initEmployeeEvents({ onSubmitEmployee, onSearchEmployee, onReset: () => employeesState.selectedId = null });
-
-    Promise.all([loadRoles(), loadEmployees()]);
+    await Promise.all([loadRoles(), loadEmployees()]);
 });
