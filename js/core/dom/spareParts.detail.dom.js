@@ -26,6 +26,7 @@ export function openLinkModal(type, state) {
 export function closeLinkModal(state) {
     toggleModal($('modalLink'), false);
     $('txtLink').value = '';
+    console.log(state)
     state.currentLinkType = null;
 }
 
@@ -37,7 +38,7 @@ export function saveLinkModal(state) {
 
     state.links[stateKey] = value;
 
-    closeLinkModal();
+    closeLinkModal(state);
 }
 
 export function loadImage(source) {

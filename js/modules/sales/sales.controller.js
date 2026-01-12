@@ -1,6 +1,6 @@
 // modules/sales/sales.controller.js
 
-import { insertSales, selectLineButton, opeAskModal, closeAskModal } from "../../core/dom/sales.dom.js";
+import { insertSales, selectLineButton, openAskModal, closeAskModal } from "../../core/dom/sales.dom.js";
 import { salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
@@ -34,26 +34,17 @@ let loadStateSales = async () => {
     }
 };
 
-export async function loadSales() {
+async function loadSales() {
     try {
         const { page, size } = salesState.pagination;
         const { search, idState, productType } = salesState.filters;
 
-        const data = await getSales(
-            page - 1,
-            size,
-            search || '',
-            idState || '',
-            productType || ''
-        );
+        const data = await getSales(page - 1, size, search || '', idState || '', productType || '');
 
         salesState.list = data.content;
         salesState.pagination.total = data.page.totalElements;
         salesState.pagination.totalPages = data.page.totalPages;
-        insertSales(
-            containerData,
-            salesState.list
-        );
+        insertSales(containerData, salesState.list);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -62,18 +53,11 @@ export async function loadSales() {
             size: data.page.size
         });
     } catch (error) {
-        showMessage(
-            'Error',
-            error,
-            'error'
-        );
+        showMessage('Error', error, 'error');
         console.error(error);
     }
 }
 
-let onClickBtnFilter = (e) => selectLineButton(e);
-let onOpenModal = () => opeAskModal();
-let onCloseModal = () => closeAskModal();
 /* ===============================
    FILTROS
 ================================ */
@@ -92,11 +76,6 @@ export function onSearchSale(filters) {
 ================================ */
 
 document.addEventListener('DOMContentLoaded', async () => {
-    initSalesEvents({
-        onSearchSale,
-        onClickBtnFilter,
-        onOpenModal,
-        onCloseModal
-    });
-    Promise.all([loadSales(), loadStateSales()]);
+    initSalesEvents({ onSearchSale, onClickBtnFilter: selectLineButton, onOpenModal: openAskModal, onCloseModal: closeAskModal });
+    await Promise.all([loadSales(), loadStateSales()]);
 });

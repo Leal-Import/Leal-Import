@@ -88,7 +88,6 @@ export async function onSubmitSparePart(e) {
         fd.append("photo", sparePartDetailState.image.file);
     }
     fd.append("SparePartData", JSON.stringify(payloadSparePart));
-
     try {
         let response;
         if (sparePartDetailState.context.currentId != null) {

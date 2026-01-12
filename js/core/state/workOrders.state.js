@@ -1,4 +1,4 @@
-export const salesState = {
+export const workOrdersState = {
     list: [],
     stateList: [],
     pagination: {
@@ -9,7 +9,6 @@ export const salesState = {
     },
     filters: {
         search: '',
-        idState: '',
-        productType: null
+        idStatus: ''
     }
 };

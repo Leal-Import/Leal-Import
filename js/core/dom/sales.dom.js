@@ -1,8 +1,11 @@
-import { $, qs, qsa, toggleModal } from "../../utils/dom.js";
+import { $, qsa, toggleModal } from "../../utils/dom.js";
 
 export let insertSales = (container, sales) => {
-    const fragment = document.createDocumentFragment();
+    if (!container) return;
     container.innerHTML = "";
+
+    container.innerHTML = "";
+    const fragment = document.createDocumentFragment();
     if (sales.length === 0) {
         const noDataMessage = document.createElement("div");
         noDataMessage.textContent = "No hay ventas registradas";
@@ -125,7 +128,7 @@ export let insertSales = (container, sales) => {
             lblTotal.textContent = "Monto total:";
             const totalSpan = document.createElement("span");
             totalSpan.classList.add("amountQuantity");
-            totalSpan.textContent = `$${sale.totalAmount.toLocaleString('es-SV')}` || "$N/A"; // Monto Total
+            totalSpan.textContent = sale.totalAmount != null ? `$${sale.totalAmount.toLocaleString('es-SV')}` : "$N/A";
             totalAmountData.append(lblTotal, totalSpan);
 
             // Deuda
@@ -176,15 +179,13 @@ export let insertSales = (container, sales) => {
     container.appendChild(fragment);
 }
 
-export let selectLineButton = (e) => {
-    const target = e.target;
-    qsa(".filterType").forEach(btn => {
-        btn.querySelector(".lineSelected").classList.remove("selected");
-    })
-    target.querySelector(".lineSelected").classList.add("selected");
+export let selectLineButton = (filterBtn) => {
+    qsa(".filterType .lineSelected").forEach(l => l.classList.remove("selected"));
+
+    filterBtn.querySelector(".lineSelected")?.classList.add("selected");
 }
 
-export let opeAskModal = () => {
+export let openAskModal = () => {
     toggleModal($("modalAskSale"), true);
 }
 
