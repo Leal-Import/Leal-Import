@@ -79,7 +79,6 @@ let recalculateTotals = () => {
 }
 
 let pushSparePart = (sparePart) => {
-    console.log(sparePart)
     if (verifyIds(sparePart.idSparePart)) return null;
     const normalizedPart = {
         idSparePart: sparePart.idSpareParts || sparePart.idSparePart,

@@ -10,7 +10,7 @@ import {
     getSpareParts,
     getWorkOrderById,
     putWorkOrder
-} from '../service/serviceAddWorkOrder.js'
+} from '../service/workOrder.detail.service.js'
 import { appendToDom, addRowToBothTables } from '../controller/salesHelpers/loadTablesWO.js'
 import {
     formatWithCommas,

@@ -194,8 +194,7 @@ const saveSaleState = () => {
         idVehicle: vehicleSaleState.idVehicle,
         data: vehicleSaleState.data,
         totals: vehicleSaleState.totals
-    })
-    );
+    }));
 };
 
 const existSavedData = () => localStorage.getItem(vehicleSaleState.saleKey) !== null;
@@ -268,17 +267,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!user) return;
 
     vehicleSaleState.idEmployee = getCurrentEmployeeId();
+    const hidrated = await hydrateContextFromURL(vehicleSaleState);
+    if (!hidrated) return;
     await initPaymentsController({
         totalCalculator: recalculateTotals,
         onStateChange: saveSaleState,
         createReceiptBtn: createBtnUrl
     });
-    const hidrated = await hydrateContextFromURL(vehicleSaleState);
-    if (!hidrated) return;
     loadCustomerName(vehicleSaleState.context.customerName);
     initVehicleSaleEvents({ onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle });
 
-    initializeModalListeners();
+    initializeModalListeners(vehicleSaleState.data);
     if (vehicleSaleState.context.idSale) {
         await loadExistingSale();
     } else if (existSavedData()) {

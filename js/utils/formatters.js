@@ -119,7 +119,6 @@ export function formatOnFocus(event, isInput) {
 }
 
 export function formatYearInput(input) {
-
     const currentYear = new Date().getFullYear();
     const maxYear = currentYear + 1;
     const minYear = currentYear - 40;

@@ -78,3 +78,11 @@ function createPaymentRow({ payment, totals, payments, index, onAmountChange, on
         select
     };
 }
+
+export const renderVehicleData = (data) => {
+    if (!data) return;
+    if ($('vin')) $('vin').textContent = data.vin || '-';
+    if ($('model')) $('model').textContent = data.model || '-';
+    if ($('brand')) $('brand').textContent = data.brand || '-';
+    if ($('year')) $('year').textContent = data.year || '-';
+}

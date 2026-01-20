@@ -34,9 +34,7 @@ export function insertCustomers(container, customers, onActions) {
             actionButton.classList.add('actionButton');
             tdActions.appendChild(actionButton);
 
-            actionButton.addEventListener('click', (e) => {
-                onActions(e, customer);
-            });
+            actionButton.addEventListener('click', (e) => onActions(e, customer));
 
             tr.append(tdName, tdDui, tdPhone, tdActions);
             fragment.appendChild(tr);

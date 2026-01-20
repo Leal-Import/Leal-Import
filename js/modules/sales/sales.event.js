@@ -22,7 +22,6 @@ export let initSalesEvents = ({ onSearchSale, onClickBtnFilter, onOpenModal, onC
             })
         }, 1000);
     };
-
     filterContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.filterType');
         if (!btn) return;

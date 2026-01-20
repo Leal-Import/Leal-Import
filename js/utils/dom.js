@@ -2,6 +2,13 @@ export const $ = id => document.getElementById(id);
 export const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 export const qs = (sel, root = document) => root.querySelector(sel);
 
+export function showElement(el) { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); }
+export function hideElement(el) { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); }
+
+export const existsById = (list, id, key) => {
+    return list.some(item => String(item[key]) === String(id));
+};
+
 
 /**
  * Muestra u oculta un modal
@@ -299,4 +306,8 @@ export const asBoolean = (v) => v === 'true';
 export const asNumber = (v) => {
     const n = Number(v);
     return Number.isFinite(n) ? n : null;
+};
+
+export const getNullableParam = (value) => {
+    return value === null || value === 'null' ? null : value;
 };

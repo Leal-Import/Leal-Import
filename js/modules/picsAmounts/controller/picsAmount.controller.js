@@ -13,7 +13,7 @@ export let clearCurrentFile = () => {
     if (!paymentId) return;
 
     // 🔑 Buscar el payment real en el estado
-    const payment = state.payments
+    const payment = paymentsState.payments
         .find(p => String(p.id) === String(paymentId));
 
     if (!payment) return;
