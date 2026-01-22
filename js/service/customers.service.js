@@ -1,54 +1,34 @@
-const API_URL = "http://127.0.0.1:8080/api/spareParts";
-const API_URLSALE = "http://127.0.0.1:8080/api/sparePartsSale";
+const API_URL = "http://127.0.0.1:8080/api/customer";
 
-export let getSpareParts = async (search = "") => {
+export let getCustomers = async (page = 0, size = 15, search = "") => {
     try {
-        const request = await fetch(`${API_URL}/getSaleSummary?search=${search}`, {
+        const params = new URLSearchParams({ page, size, search });
+        const request = await fetch(`${API_URL}/getCustomers?${params.toString()}`, {
             credentials: 'include'
         });
         if (!request.ok) {
             const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener la lista de repuestos. Detalle: ${errorBody.substring(0, 100)}`);
+            throw new Error(`Error ${request.status}: No se pudo obtener la lista de clientes. Detalle: ${errorBody.substring(0, 100)}`);
         }
         return await request.json();
-
     } catch (error) {
-        console.error("Error en getSpareParts:", error);
-        throw new Error("Fallo al conectar con el servicio de repuestos.");
+        console.error("Error en getCustomers:", error);
+        throw new Error("Fallo al conectar con el servicio de clientes.");
     }
 };
 
-export let getSparePartById = async (id) => {
+export let postCustomer = async (customerData) => {
     try {
-        const request = await fetch(`${API_URLSALE}/getSparePartsSaleById/${id}`, {
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener el repuesto. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en getSparePartById:", error);
-        throw new Error("Fallo al conectar con el servicio de repuestos.");
-    }
-};
-
-
-export let postSparePart = async (sale) => {
-    try {
-        const request = await fetch(`${API_URLSALE}/postSparePartsSale`, {
+        const request = await fetch(`${API_URL}/postCustomer`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(sale)
+            body: JSON.stringify(customerData),
         });
         if (!request.ok) {
-            let errorMessage = `Error al ingresar la venta. Código: ${request.status}.`;
-
+            let errorMessage = `Error al crear cliente. Código: ${request.status}.`;
             try {
                 const errorData = await request.json();
                 if (errorData.errors) {
@@ -65,34 +45,29 @@ export let postSparePart = async (sale) => {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
             }
-
-            // Lanza el error capturable por el controlador
             throw new Error(errorMessage);
         }
         return await request.json();
-
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
             throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
         }
-
         throw error;
     }
 };
 
-export let putSparePart = async (sale, id) => {
+export let putCustomer = async (customerData, customerId) => {
     try {
-        const request = await fetch(`${API_URLSALE}/putSparePartsSale/${id}`, {
+        const request = await fetch(`${API_URL}/putCustomer/${customerId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(sale)
+            body: JSON.stringify(customerData),
         });
         if (!request.ok) {
-            let errorMessage = `Error al actualizar la venta. Código: ${request.status}.`;
-
+            let errorMessage = `Error al actualizar cliente. Código: ${request.status}.`;
             try {
                 const errorData = await request.json();
                 if (errorData.errors) {
@@ -109,8 +84,6 @@ export let putSparePart = async (sale, id) => {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
             }
-
-            // Lanza el error capturable por el controlador
             throw new Error(errorMessage);
         }
         return await request.json();
@@ -119,7 +92,46 @@ export let putSparePart = async (sale, id) => {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
             throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
         }
+        throw error;
+    }
+};
 
+export const patchCustomer = async (id, value) => {
+    try {
+        const response = await fetch(
+            `${API_URL}/${id}/status`,
+            {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { 'Content-Type': 'text/plain' },
+                body: value,
+            }
+        );
+
+        if (!response.ok) {
+            let errorMessage = `Error al actualizar el estado del cliente. Código: ${response.status}.`;
+
+            try {
+                const errorData = await response.json();
+                if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).join('\n');
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch {
+                const text = await response.text();
+                if (text) errorMessage += ` Detalle: ${text.substring(0, 100)}`;
+            }
+
+            throw new Error(errorMessage);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        if (error instanceof TypeError) {
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+        }
         throw error;
     }
 };

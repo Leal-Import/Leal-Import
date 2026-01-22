@@ -1,6 +1,6 @@
 import { createPagination } from '../pagination.js'
 import { showMessage } from '../utils.js';
-import { getDetailsOrders, getDashboardWorkorder } from '../service/serviceWODetails.js';
+import { getDetailsOrders, getDashboardWorkorder } from '../service/workOrder.history.service.js';
 import { getWOStatus } from '../service/serviceWorkOrders.js';
 import { formatWithCommas, showFloatingMenu, fillSelect, initSession } from '../utils.js';
 

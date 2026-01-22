@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
     <link rel="stylesheet" href="../css/salesStyles/vehicleView.css">
     <link rel="stylesheet" href="../css/salesStyles/modalVoucher.css">
+    <link rel="stylesheet" href="../css/salesStyles/tableSales.css">
+    <link rel="stylesheet" href="../css/pagination.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <title>Agregar venta</title>
 </head>
@@ -113,19 +115,19 @@
                                     <div class="bodyDataInfo costsBody">
                                         <div class="infoItem">
                                             <span class="infoLabel">Factura:</span>
-                                            <a id="bill" class="infoValue"></a>
+                                            <a id="bill" class="infoValue" target="_blank"></a>
                                         </div>
                                         <div class="infoItem">
                                             <span class="infoLabel">Impuestos:</span>
-                                            <a id="taxes" class="infoValue"></a>
+                                            <a id="taxes" class="infoValue" target="_blank"></a>
                                         </div>
                                         <div class="infoItem">
                                             <span class="infoLabel">Barco:</span>
-                                            <a id="ship" class="infoValue"></a>
+                                            <a id="ship" class="infoValue" target="_blank"></a>
                                         </div>
                                         <div class="infoItem">
                                             <span class="infoLabel">Transporte:</span>
-                                            <a id="towTruck" class="infoValue"></a>
+                                            <a id="towTruck" class="infoValue" target="_blank"></a>
                                         </div>
                                         <div class="infoItem">
                                             <span class="infoLabel">Almacen:</span>
@@ -151,7 +153,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btnSecondary btnCancelVehicle">Cancelar</button>
+                            <button class="btnSecondary btnCancelVehicle" id="btnCancelVehicle">Cancelar</button>
                         </div>
                     </div>
                     <div class="filterSection">
@@ -172,6 +174,31 @@
                             <tbody id="tBodyInventory"></tbody>
                         </table>
                     </div>
+                    <div class="paginationContainer">
+
+                        <!-- Info + page size -->
+                        <div class="paginationLeft">
+                            <span class="paginationInfo"></span>
+
+                            <div class="pageSize">
+                                <select class="txtInputs" id="sizeSelect">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                </select>
+                                <span>por página</span>
+                            </div>
+                        </div>
+
+                        <!-- Page controls -->
+                        <div class="paginationRight">
+                            <button class="pageBtn prev">‹</button>
+                            <button class="pageBtn next">›</button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
             <div class="rightColumn">
@@ -186,9 +213,7 @@
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody id="amounts" class="amounts">
-                                    <!-- Filas generadas por JS -->
-                                </tbody>
+                                <tbody id="amounts" class="amounts"></tbody>
                             </table>
                         </div>
                         <button class="btnPrimary" id="btnAddPayment" type="button">Agregar</button>
@@ -204,11 +229,11 @@
                         </div>
                         <div class="formGroup">
                             <label for="txtCommission" class="lbl">Comision</label>
-                            <input type="text" id="txtCommission" class="txtInputs">
+                            <input type="text" id="txtCommission" class="txtInputs" required>
                         </div>
                         <div class="formGroup">
                             <label for="txtTotal" class="lbl">Precio final del vehiculo</label>
-                            <input type="text" id="txtTotal" class="txtInputs">
+                            <input type="text" id="txtTotal" class="txtInputs" required>
                         </div>
                         <div class="containerButtons">
                             <a class="btnSecondary btnCreateWO" id="btnCreateOrder">Vender y crear orden</a>
@@ -222,8 +247,7 @@
     <script src="../js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/utils.js"></script>
-    <script type="module" src="../js/controller/controllerVehicleSale.js"></script>
+    <script type="module" src="../js/modules/vehicleSales/controller/vehicles.sales.controller.js"></script>
 </body>
 
 </html>

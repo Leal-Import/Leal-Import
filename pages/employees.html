@@ -20,24 +20,24 @@
             <div class="modalEmployeeBody">
                 <div class="formGroup">
                     <label for="txtFullName" class="lblInputs">Nombre completo</label>
-                    <input type="text" class="txtInputs" id="txtFullName" required maxlength="256">
+                    <input type="text" class="txtInputs" name="txtFullName" id="txtFullName" required maxlength="256">
                 </div>
                 <div class="formGroup">
                     <label for="txtEmployeeEmail" class="lblInputs">Correo electronico</label>
-                    <input type="text" class="txtInputs" id="txtEmployeeEmail" required maxlength="100">
+                    <input type="text" class="txtInputs" name="txtEmployeeEmail" id="txtEmployeeEmail" required maxlength="100">
                 </div>
                 <div class="formGroup">
                     <label for="txtEmployeePhone" class="lblInputs">Teléfono</label>
-                    <input type="text" class="txtInputs" id="txtEmployeePhone" required maxlength="9">
+                    <input type="text" class="txtInputs" name="txtEmployeePhone" id="txtEmployeePhone" required maxlength="9">
                 </div>
                 <div class="formGroup">
                     <label for="cmbUserRole" class="lblInputs">Rol de usuario</label>
-                    <select id="cmbUserRole" class="txtInputs" required>
+                    <select id="cmbUserRole" name="cmbUserRole" class="txtInputs" required>
                     </select>
                 </div>
                 <div class="formGroup">
                     <label for="txtUsername" class="lblInputs">Usuario</label>
-                    <input type="text" class="txtInputs" id="txtUsername" required maxlength="30">
+                    <input type="text" class="txtInputs" name="txtUsername" id="txtUsername" required maxlength="30">
                 </div>
             </div>
             <input type="submit" class="btnPrimary btnSubmitData" value="Agregar" id="btnAddEmployee">
@@ -108,9 +108,7 @@
     </div>
     <script src="../js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/utils.js"></script>
-    <script type="module" src="../js/controller/controllerEmployees.js"></script>
-    <script type="module" src="../js/service/serviceEmployees.js"></script>
+    <script type="module" src="../js/modules/employees/employees.controller.js"></script>
 </body>
 
 </html>

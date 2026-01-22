@@ -14,8 +14,6 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <form class="content" id="frmSpareParts">
-            <input type="hidden" id="trackingId">
-            <input type="hidden" id="costId">
             <div class="headerContent">
                 <div class="breadcrumbSection">
                     <a href="spareParts.html" class="breadcrumb" id="titleBread">Repuestos ></a>
@@ -23,56 +21,47 @@
                 </div>
             </div>
             <div>
-                <div class="containerModal hide" id="modalLinkName">
+                <div class="containerModal hide" id="modalLink">
                     <div class="modalAdd">
-                        <button class="btnClose" type="button" id="btnCloseBill">
+                        <button class="btnClose" type="button" id="btnCloseLink">
                             <img src="../media/appMedia/closeIcon.svg" alt="">
                         </button>
-                        <h2 class="titleModal">Agregar enlace de la factura</h2>
-                        <input type="text" id="txtLinkName" class="txtInputs"
-                            placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
-                        <button class="btnPrimary btnSubmitData" id="btnSaveBill" type="button">Guardar enlace</button>
-                    </div>
-                </div>
-                <div class="containerModal hide" id="modalLinkTracking">
-                    <div class="modalAdd">
-                        <button class="btnClose" type="button" id="btnCloseTracking">
-                            <img src="../media/appMedia/closeIcon.svg" alt="">
+                        <h2 class="titleModal" id="modalLinkTitle">Agregar enlace</h2>
+                        <input type="text" id="txtLink" class="txtInputs"
+                            placeholder="Pega tu url aquí ej: https://www.ejemplo.com" maxlength="1000">
+                        <button class="btnPrimary btnSubmitData" id="btnSaveLink" type="button">
+                            Guardar enlace
                         </button>
-                        <h2 class="titleModal">Agregar enlace del tracking</h2>
-                        <input type="text" id="txtLinkTracking" class="txtInputs"
-                            placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
-                        <button class="btnPrimary btnSubmitData" id="btnSaveTracking" type="button">Guardar
-                            enlace</button>
                     </div>
                 </div>
+
                 <fieldset class="sparePartData">
                     <legend>Datos del repuesto</legend>
                     <div class="rowFields">
                         <div class="formGroup" style="position: relative;">
                             <label for="txtPartName" class="lblInputs">Nombre</label>
-                            <input type="text" class="txtInputs" id="txtPartName" maxlength="250">
+                            <input type="text" class="txtInputs" id="txtPartName" name="txtPartName" maxlength="250">
                             <button class="btnLink btnPrimary" type="button" id="btnOpenLinkBill">Enlace</button>
                         </div>
                         <div class="formGroup">
                             <label for="txtPartBrand" class="lblInputs">Marca</label>
-                            <input type="text" class="txtInputs" id="txtPartBrand" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtPartBrand" name="txtPartBrand" maxlength="50">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtPartModel" class="lblInputs">Modelo</label>
-                            <input type="text" class="txtInputs" id="txtPartModel" maxlength="50">
+                            <input type="text" class="txtInputs" id="txtPartModel" name="txtPartModel" maxlength="50">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtPartYear" class="lblInputs">Año</label>
-                            <input type="text" class="txtInputs" id="txtPartYear" maxlength="15">
+                            <input type="text" class="txtInputs" id="txtPartYear" name="txtPartYear" maxlength="15">
                         </div>
                         <div class="formGroup">
                             <label for="cmbPartStatus" class="lblInputs">Estado</label>
-                            <select id="cmbPartStatus" class="txtInputs"></select>
+                            <select id="cmbPartStatus" name="cmbPartStatus" class="txtInputs"></select>
                         </div>
                     </div>
                 </fieldset>
@@ -95,38 +84,38 @@
                     <div class="rowFields">
                         <div class="formGroup" style="position: relative;">
                             <label for="txtTracking" class="lblInputs">Tracking</label>
-                            <input type="text" class="txtInputs" id="txtTracking" maxlength="11">
+                            <input type="text" class="txtInputs" id="txtTracking" name="txtTracking" maxlength="11">
                             <button class="btnLink btnPrimary" type="button" id="btnOpenLinkTracking">Enlace</button>
                         </div>
                         <div class="formGroup">
                             <label for="txtPurchasePrice" class="lblInputs">Precio de compra</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtPurchasePrice" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtPurchasePrice" name="txtPurchasePrice"
+                                maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                            <input type="text" class="txtInputs txtCosts" id="txtTaxes" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes" name="txtTaxes" maxlength="11">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
-                            <input type="text" class="txtInputs" id="txtSuggestedPrice" maxlength="11">
+                            <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice" name="txtSuggestedPrice" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTotalCost" class="lblInputs">Costo total</label>
-                            <input type="text" class="txtInputs" id="txtTotalCost" maxlength="11" disabled>
+                            <input type="text" class="txtInputs" id="txtTotalCost" name="txtTotalCost" maxlength="11" disabled>
                         </div>
                     </div>
                 </fieldset>
             </div>
-            <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" style="padding: 10px 40px;">
+            <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" id="btnSaveData"
+                style="padding: 10px 40px;">
         </form>
         <script src="../js/sidebar.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script type="module" src="../js/utils.js"></script>
-        <script type="module" src="../js/service/serviceSparePartsDetails.js"></script>
-        <script type="module" src="../js/controller/controllerSparePartsDetails.js"></script>
+        <script type="module" src="../js/modules/spareParts/controller/spareParts.detail.controller.js"></script>
 </body>
 
 </html>

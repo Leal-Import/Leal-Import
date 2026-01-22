@@ -1,4 +1,4 @@
-import { getVehicles as getVehicleByVin } from '../../service/serviceVehicleDetails.js'
+import { getVehicles as getVehicleByVin } from '../../service/vehicles.detail.service.js'
 import { formatWithCommas } from '../../utils.js';
 
 const $ = (id) => document.getElementById(id);

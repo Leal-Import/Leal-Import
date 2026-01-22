@@ -1,4 +1,4 @@
-import { getCustomers } from '../service/serviceCustomers.js'
+import { getCustomers } from "../service/customers.service.js";
 
 const params = new URLSearchParams(window.location.search);
 

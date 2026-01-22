@@ -1,5 +1,4 @@
 const API_URL = "http://127.0.0.1:8080/api/spareParts";
-const API_URLSTAT = "http://127.0.0.1:8080/api/PartsState";
 
 export let postSparePart = async (sparePart) => {
     try {
@@ -73,28 +72,6 @@ export let putSparePart = async (sparePart, id) => {
 
             // Lanza el error capturable por el controlador
             throw new Error(errorMessage);
-        }
-        return await request.json();
-
-    } catch (error) {
-        if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
-        }
-
-        throw error;
-    }
-};
-
-export let getStatus = async () => {
-    try {
-        const request = await fetch(`${API_URLSTAT}/getState`, {
-            method: 'GET',
-            credentials: 'include',
-        });
-
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener la lista de los estados del repuesto. Detalle: ${errorBody.substring(0, 100)}`);
         }
         return await request.json();
 

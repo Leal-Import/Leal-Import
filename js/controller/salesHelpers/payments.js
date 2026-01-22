@@ -1,4 +1,4 @@
-import { getPaymentMethods } from '../../service/serviceConfiguration.js';
+import { getPaymentMethods } from '../../service/configuration.service.js';
 import { allowDecimal, fillSelect, formatWithCommas, safeParseFloat } from '../../utils.js'
 
 
@@ -71,6 +71,7 @@ export function createInitialPaymentField(
     const tr = document.createElement("tr");
     tr.classList.add("paymentRow");
     tr.dataset.index = index;
+    console.log(idPayment)
     if (idPayment) tr.dataset.id = idPayment;
     const logicalId = idPayment || crypto.randomUUID();
     tr.dataset.logicalId = logicalId;
@@ -118,7 +119,6 @@ export function createInitialPaymentField(
         containerActions = document.createElement("div");
         tdActions.appendChild(containerActions);
         containerActions.classList.add("actionsPayments");
-
         if (createBtnUrl) {
             const receiptBtn = createBtnUrl(index, receiptUrl, selectedAmounts);
             containerActions.appendChild(receiptBtn);

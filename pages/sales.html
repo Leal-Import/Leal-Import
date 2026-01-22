@@ -32,22 +32,22 @@
                 </div>
                 <div class="dataCardContainer">
                     <div class="containerFilterType">
-                        <div class="filterType" value="" id="all">
+                        <div class="filterType" data-value="" id="all">
                             <span>Todos</span>
                             <div class="lineSelected selected"></div>
                         </div>
-                        <div class="filterType" value="Vehicle" id="vehicles">
+                        <div class="filterType" data-value="Vehicle" id="vehicles">
                             <span>Vehiculos</span>
                             <div class="lineSelected"></div>
                         </div>
-                        <div class="filterType" value="SparePart" id="spareParts">
+                        <div class="filterType" data-value="SparePart" id="spareParts">
                             <span>Repuestos</span>
                             <div class="lineSelected"></div>
                         </div>
                     </div>
                     <div class="filterSectionSales">
                         <div class="filterSection">
-                            <div class="filterContainer">
+                            <div class="filterContainer" id="filterContainer">
                                 <input type="text" id="txtSearchData" class="txtSearchData"
                                     placeholder="Buscar por: cliente o vendedor">
                                 <select id="cmbSearchByStatus" class="cmbFilterData">
@@ -90,9 +90,7 @@
     </div>
     <script src="../js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/utils.js"></script>
-    <script type="module" src="../js/controller/controllerSales.js"></script>
-    <script type="module" src="../js/service/serviceSales.js"></script>
+    <script type="module" src="../js/modules/sales/sales.controller.js"></script>
 </body>
 
 </html>

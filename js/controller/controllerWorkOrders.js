@@ -1,4 +1,4 @@
-import { getVehiclesWOrders, getWOStatus } from '../service/serviceWorkOrders.js'
+import { getVehiclesWOrders, getWOStatus } from '../service/workOrders.service.js'
 import { createPagination } from '../pagination.js'
 import { showMessage, fillSelect, initSession } from '../utils.js'
 
@@ -68,7 +68,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 let insertWorkOrders = (workOrders) => {
     const container = document.querySelector(".cardContainer");
     container.innerHTML = "";
-    console.log(workOrders)
 
     const fragment = document.createDocumentFragment();
 

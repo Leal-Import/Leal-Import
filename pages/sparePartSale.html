@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/sparePartSale.css">
     <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
     <link rel="stylesheet" href="../css/salesStyles/tableSales.css">
+    <link rel="stylesheet" href="../css/pagination.css">
     <title>Agregar venta</title>
 </head>
 
@@ -24,7 +25,7 @@
                     <div class="filterSection">
                         <input type="text" id="txtSearchData" class="txtSearchData"
                             placeholder="Buscar por: nombre, marca o modelo">
-                        <a class="btnPrimary btnOpenModal" id="btnAddPart">Realizar encargo</a>
+                        <a class="btnPrimary btnOpenModal" id="btnOrderPart">Realizar encargo</a>
                     </div>
                 </div>
                 <div class="tableContainer">
@@ -39,6 +40,31 @@
                         </thead>
                         <tbody id="tBodyInventory"></tbody>
                     </table>
+                </div>
+                <div class="paginationContainer">
+
+                    <!-- Info + page size -->
+                    <div class="paginationLeft">
+                        <span class="paginationInfo"></span>
+
+                        <div class="pageSize">
+                            <select class="txtInputs" id="sizeSelect">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                            </select>
+                            <span>por página</span>
+                        </div>
+                    </div>
+
+                    <!-- Page controls -->
+                    <div class="paginationRight">
+                        <button class="pageBtn prev">‹</button>
+                        <button class="pageBtn next">›</button>
+                    </div>
+
                 </div>
             </div>
             <form class="rightColumn" id="frmSparePartSale">
@@ -78,7 +104,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <button class="btnPrimary" id="btnAddPayment" type="button" style="margin-bottom: 10px;">Agregar abono</button>
+                    <button class="btnPrimary" id="btnAddPayment" type="button" style="margin-bottom: 10px;">Agregar
+                        abono</button>
                     <div class="containerAmountDue" id="containerAmountDue">
                         <h3>Deuda pendiente:</h3>
                         <span id="due"></span>
@@ -96,8 +123,7 @@
     </div>
     <script src="../js/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/utils.js"></script>
-    <script type="module" src="../js/controller/controllerSparePartSale.js"></script>
+    <script type="module" src="../js/modules/sparePartsSales/controller/spareParts.sales.controller.js"></script>
 </body>
 
 </html>
