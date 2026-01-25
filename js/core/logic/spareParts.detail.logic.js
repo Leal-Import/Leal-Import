@@ -110,7 +110,7 @@ export function mapSparePart(formData) {
         billUrl: sparePartDetailState.links.bill || null,
         tracking: {
             numTracking: formData.txtTracking || null,
-            linkTracking: sparePartDetailState.links.tracking|| null
+            linkTracking: sparePartDetailState.links.tracking || null
         },
         sparePartsCosts: {
             purchasePrice: safeParseFloat(formData.txtPurchasePrice),
@@ -134,5 +134,5 @@ export const hydrateContextFromURL = async (state) => {
     state.context.idSale = asUUID(params.get('idSale'));
     state.context.totalPrice = params.get('totalPrice');
     state.context.idVehicle = asUUID(params.get('idVehicle'));
-
+    state.context.idWorkOrder = asUUID(params.get('idWorkOrder'));
 };

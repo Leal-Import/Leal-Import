@@ -6,7 +6,7 @@ import { $, hideElement, showMessage } from "../../../utils/dom.js";
 import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
 import { initWorkOrdersEvents } from "../event/workOrder.details.event.js";
 import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validatePutOrder, validatePostOrder, buildPostWorkOrderFormData, buildPutWorkOrderFormData, cleanWindow } from "../../../core/logic/workOrder.details.logic.js";
-import { addNewPayment, initPaymentsController, render } from "../../payments/payments.controller.js";
+import { addNewPayment, initPaymentsController } from "../../payments/payments.controller.js";
 import { createBtnUrl } from "../../../core/dom/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
 import { renderVehicleData } from "../../../core/dom/payments.dom.js";
@@ -99,7 +99,7 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
 
 
     if (item.idWorkOrderService || item.idWorkOrderSpareParts) {
-        arrayDelete.push(item);
+        arrayDelete.push(item.idWorkOrderService || item.idWorkOrderSpareParts);
     }
     cleanRow(row);
     calculateAllTotals();
@@ -116,13 +116,12 @@ const onSearchSpareParts = (e) => {
     onSearch(e, getSpareParts, renderSparePartSuggestions, boxSparePart, onAddSparePart, workOrderDetailsState.data.selectedSpareParts);
 }
 
-const onAddPayment = () => {
-    addNewPayment({ state: workOrderDetailsState.data, totals: workOrderDetailsState.totals });
+const onAddPayment = (payment = null) => {
+    addNewPayment({ state: workOrderDetailsState.data, totals: workOrderDetailsState.totals, payment });
 }
 
 const onSubmitOrder = async (e) => {
     e.preventDefault();
-    console.log(workOrderDetailsState)
     let fd;
     if (workOrderDetailsState.context.idWorkOrder) {
         const errorPut = validatePutOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle);
@@ -180,7 +179,9 @@ const loadDataVehicle = async () => {
     try {
         const vehicle = await getDataVehicleById(workOrderDetailsState.context.idVehicle);
         if (workOrderDetailsState.context.idSale) {
-            loadViewSaleInfo(workOrderDetailsState.vin);
+            loadViewSaleInfo(vehicle.vin);
+        } else if (workOrderDetailsState.context.idWorkOrder) {
+            loadViewUpdateOrder(vehicle.vin);
         }
         renderVehicleData(vehicle);
     } catch (error) {
@@ -221,7 +222,6 @@ const recalculateTotalsPanel = () => {
     });
     workOrderDetailsState.totals.total = total;
     workOrderDetailsState.totals.due = due;
-    alert(7)
     renderTotalsPanel({ total, due, totalPaid: workOrderDetailsState.totals.totalPaid });
 };
 
@@ -237,14 +237,19 @@ const calculateAllTotals = () => {
 let loadDraft = () => {
     const item = localStorage.getItem(workOrderDetailsState.saleKey);
     const storageItem = JSON.parse(item);
-    workOrderDetailsState.data = storageItem.data;
-
+    workOrderDetailsState.data.estimatedDate = storageItem.data.estimatedDate || "";
+    workOrderDetailsState.data.notes = storageItem.data.notes || "";
+    workOrderDetailsState.data.paymentsToDelete = storageItem.data.paymentsToDelete || [];
+    workOrderDetailsState.data.sparePartsToDelete = storageItem.data.sparePartsToDelete || [];
+    workOrderDetailsState.data.servicesToDelete = storageItem.data.servicesToDelete || [];
     workOrderDetailsState.totals = storageItem.totals;
     loadExtraInputs(workOrderDetailsState.data.notes, workOrderDetailsState.data.estimatedDate);
-    workOrderDetailsState.data.selectedSpareParts.forEach(part => {
+    storageItem.data.selectedSpareParts.forEach(part => {
+        const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, part);
+        if (normalizedPart == null) return;
         appendToDom({
             tBody: tBodySpareParts,
-            data: part,
+            data: normalizedPart,
             arraySelected: workOrderDetailsState.data.selectedSpareParts,
             arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
             onWritePrice,
@@ -252,17 +257,21 @@ let loadDraft = () => {
             renderButton: renderImportButton
         });
     });
-    workOrderDetailsState.data.selectedServices.forEach(service => {
+    storageItem.data.selectedServices.forEach(service => {
+        const normalizedService = pushService(workOrderDetailsState.data.selectedServices, service);
+        if (normalizedService == null) return;
         appendToDom({
             tBody: tBodyServices,
-            data: service,
+            data: normalizedService,
             arraySelected: workOrderDetailsState.data.selectedServices,
             arrayDelete: workOrderDetailsState.data.servicesToDelete,
             onWritePrice,
             onDelete
         });
     });
-    render(workOrderDetailsState.data.payments, workOrderDetailsState.totals, workOrderDetailsState.data.paymentsToDelete);
+    storageItem.data.payments.forEach(payment => {
+        onAddPayment(payment);
+    });
 }
 
 const loadWorkOrder = async () => {
@@ -270,7 +279,6 @@ const loadWorkOrder = async () => {
     workOrderDetailsState.context.idVehicle = workOrder.idVehicle
     workOrderDetailsState.data.estimatedDate = workOrder.estimatedDate || "";
     workOrderDetailsState.data.notes = workOrder.notes || "";
-    workOrderDetailsState.data.payments = workOrder.payments;
     loadViewUpdateOrder(workOrder.vehicleInfo.vin);
     renderVehicleData(workOrder.vehicleInfo);
     loadExtraInputs(workOrderDetailsState.data.notes, workOrderDetailsState.data.estimatedDate);
@@ -297,7 +305,9 @@ const loadWorkOrder = async () => {
             onDelete
         });
     });
-    render(workOrderDetailsState.data.payments, workOrderDetailsState.totals, workOrderDetailsState.data.paymentsToDelete);
+    workOrder.payments.forEach(payment => {
+        onAddPayment(payment);
+    });
 };
 
 
@@ -347,8 +357,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         addNewPartToTable();
         loadDraft();
         validateDate(dtEstimated, dtEstimated.value || new Date());
-    }
-    if (workOrderDetailsState.context.idWorkOrder != null) {
+        await loadDataVehicle();
+    } else if (workOrderDetailsState.context.idWorkOrder != null) {
         await loadWorkOrder();
     } else {
         await loadDataVehicle();
@@ -357,5 +367,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     renderImportButton(tBodySpareParts, onImportSparePart);
     calculateAllTotals();
-    //recalculateTotalsPanel();
+    recalculateTotalsPanel();
+    console.log(workOrderDetailsState)
 });

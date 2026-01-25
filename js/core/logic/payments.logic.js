@@ -1,15 +1,18 @@
 // payments.logic.js
 
+import { existsById } from "../../utils/dom.js";
 import { safeParseFloat } from "../../utils/validators.js";
 
 /* ===== CRUD DE PAYMENTS ===== */
 
 export function addPayment(state, {
+    id = null,
     amount = 0,
     idPaymentMethod = null,
     paymentURL = null,
     idPayment = null
 }) {
+    if (existsById(state.payments, id, 'id')) return null;
     const payment = {
         id: idPayment || crypto.randomUUID(),
         idPayment: idPayment || null,
