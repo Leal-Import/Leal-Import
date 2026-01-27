@@ -53,7 +53,6 @@ import { initializeModalListeners } from '../../picsAmounts/controller/picsAmoun
 
 /* ================= DOM ================= */
 const tableBody = $("tBodyInventory");
-const tBodySelected = $("tBodySelected");
 
 /* ================= PAGINATION ================= */
 const pagination = createPagination({
@@ -105,12 +104,17 @@ const recalculateTotals = () => {
 
     vehicleSaleState.totals.total = total;
     vehicleSaleState.totals.due = due;
+    console.log(vehicleSaleState.totals);
     renderTotals({ total, due, totalPaid: vehicleSaleState.totals.totalPaid });
 };
 
 const onAddVehicle = async (vehicle) => {
     vehicleSaleState.idVehicle = vehicle.idVehicle;
     const vehicleToAppend = await getVehicleById(vehicle.idVehicle);
+    if (vehicleToAppend.costs) {
+        vehicleSaleState.data.salePrice = vehicleToAppend.costs.total;
+        vehicleSaleState.totals.total = vehicleToAppend.costs.total;
+    }
     loadVehicle(vehicleToAppend, vehicleSaleState.context.idSale);
     recalculateTotals();
     saveSaleState();
@@ -120,12 +124,15 @@ const onCancelVehicle = () => {
     qs(".viewVechicleContainer").classList.add("hide");
 
     vehicleSaleState.idVehicle = null;
+    vehicleSaleState.data.salePrice = 0;
+    vehicleSaleState.totals.total = 0;
     localStorage.removeItem(vehicleSaleState.saleKey);
 
     const form = $("frmVehicleSale");
     form.reset();
 
     onResetPayments(vehicleSaleState.data, vehicleSaleState.totals);
+    recalculateTotals();
 };
 
 /* ================= PAYMENTS ================= */
@@ -262,6 +269,10 @@ const onSaveComission = (e) => {
     saveSaleState();
 };
 
+const onImportVehicle = () => {
+    window.location.href = `vehicleDetails.html?sale=true&idCustomer=${vehicleSaleState.context.idCustomer}&customerName=${vehicleSaleState.context.customerName}`;
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
     const user = await initSession();
     if (!user) return;
@@ -275,7 +286,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         createReceiptBtn: createBtnUrl
     });
     loadCustomerName(vehicleSaleState.context.customerName);
-    initVehicleSaleEvents({ onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle });
+    initVehicleSaleEvents({ onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
 
     initializeModalListeners(vehicleSaleState.data);
     if (vehicleSaleState.context.idSale) {

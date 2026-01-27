@@ -1,7 +1,7 @@
 import { $ } from "../../../utils/dom.js"
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
-export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAddPayment, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle }) => {
+export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAddPayment, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle }) => {
     const txtSearchData = $("txtSearchData");
     const txtNotes = $("txtNotes");
     const txtCommission = $("txtCommission");
@@ -9,10 +9,15 @@ export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAd
     const frmVehicleSale = $("frmVehicleSale");
     const btnAddPayment = $("btnAddPayment");
     const btnCancelVehicle = $("btnCancelVehicle");
+    const btnAddPart = $("btnAddPart");
     let searchTimeout = null;
 
     if (frmVehicleSale) {
         frmVehicleSale.addEventListener("submit", onSubmitVehicleSale);
+    }
+
+    if (btnAddPart) {
+        btnAddPart.addEventListener("click", onImportVehicle);
     }
 
     if (btnAddPayment) {

@@ -360,6 +360,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadDataVehicle();
     } else if (workOrderDetailsState.context.idWorkOrder != null) {
         await loadWorkOrder();
+        validateDate(dtEstimated, dtEstimated.value || new Date());
     } else {
         await loadDataVehicle();
         onAddPayment();

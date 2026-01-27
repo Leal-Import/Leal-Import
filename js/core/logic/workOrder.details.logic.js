@@ -79,10 +79,10 @@ export function calculateWorkOrderTotals({
     const sparePartsTotal = spareParts.reduce((acc, p) => acc + safeParseFloat(p.priceApplied), 0);
     const total = servicesTotal + sparePartsTotal;
 
-    const totalPaid = payments.reduce((acc, p) => acc + p.amount, 0);
+    const totalPaid = payments.reduce((acc, p) => acc + safeParseFloat(p.amount), 0);
     const due = Math.max(total - totalPaid, 0);
 
-    const orderTotal = total + vehiclePrice;
+    const orderTotal = total + safeParseFloat(vehiclePrice);
 
     return {
         servicesTotal,

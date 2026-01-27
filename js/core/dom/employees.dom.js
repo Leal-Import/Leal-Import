@@ -8,7 +8,7 @@ export function fillEmployeesForm(employee, text) {
         txtFullName: employee.fullName,
         txtEmployeeEmail: employee.email,
         txtEmployeePhone: employee.phoneEmployee,
-        txtUsername: employee.username,
+        txtUsername: employee.username.username,
         cmbUserRole: employee.idRole
     });
     $('btnAddEmployee').value = text;

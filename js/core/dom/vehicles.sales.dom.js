@@ -170,13 +170,13 @@ export let loadDomData = (data) => {
 export function renderTotals({ total, due, totalPaid }) {
     const containerTotal = $("containerTotal");
     const containerDue = $("containerAmountDue");
-    const totalText = $("total");
+    //const totalText = $("total");
     const dueText = $("due");
     const paidText = $('totalPaid');
-    if (totalText) {
+    /*if (totalText) {
         totalText.textContent = `$${formatWithCommas(total)}`;
         totalText.classList.add("show")
-    }
+    }*/
     if (paidText) {
         paidText.textContent = `$${formatWithCommas(totalPaid)}`
         paidText.style.color =

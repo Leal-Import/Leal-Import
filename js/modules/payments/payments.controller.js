@@ -49,7 +49,6 @@ let onDeletePayment = (payments, index, totals, paymentsToDelete) => {
     render(payments, totals, paymentsToDelete);
     paymentsState.onSaveState?.();
     paymentsState.onCalculateTotal();
-    console.log(payments)
 }
 
 let onAmountChange = (payments, index, value, totals) => {

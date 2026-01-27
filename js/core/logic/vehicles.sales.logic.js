@@ -48,6 +48,7 @@ export const hydrateContextFromURL = async (state) => {
     const idVehicle = asUUID(params.get('idVehicle'));
     state.context.idVehicle = idVehicle;
     state.idVehicle = idVehicle; // si lo usás fuera del context
+    console.log(state.idVehicle, idVehicle);
 
     // 🔑 key para drafts (UUID-safe)
     state.saleKey = `vehicleSaleState_customer_${idCustomer}_${state.context.idSale ?? "NewSale"}`;

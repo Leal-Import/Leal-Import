@@ -1,3 +1,5 @@
+import { getCookie } from "../utils/api.utils.js";
+
 const API_URL = "http://127.0.0.1:8080/api/customer";
 
 export let getCustomers = async (page = 0, size = 15, search = "") => {
@@ -24,6 +26,7 @@ export let postCustomer = async (customerData) => {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
             },
             body: JSON.stringify(customerData),
         });
@@ -63,6 +66,7 @@ export let putCustomer = async (customerData, customerId) => {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
             },
             body: JSON.stringify(customerData),
         });
@@ -99,12 +103,14 @@ export let putCustomer = async (customerData, customerId) => {
 export const patchCustomer = async (id, value) => {
     try {
         const response = await fetch(
-            `${API_URL}/${id}/status`,
+            `${API_URL}/${id}/status?value=${value}`,
             {
                 method: 'PATCH',
                 credentials: 'include',
-                headers: { 'Content-Type': 'text/plain' },
-                body: value,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                }
             }
         );
 
