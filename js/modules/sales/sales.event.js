@@ -5,16 +5,15 @@ let searchTimeout = null;
 export let initSalesEvents = ({ onSearchSale, onClickBtnFilter, onOpenModal, onCloseModal }) => {
     const txtSearchData = $("txtSearchData");
     const cmbSearchByStatus = $("cmbSearchByStatus");
-    const filterContainer = $('filterContainer');
+    const filterContainer = qs('.containerFilterType');
     const btnAskSale = $("btnAskSale");
     const modal = $("modalAskSale");
     const btnCloseModal = $("btnCloseModalAsk");
 
-    const selected = qs('.lineSelected.selected')?.closest('.filterType');
-
     const emitFilters = () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
+            const selected = qs('.lineSelected.selected')?.closest('.filterType');
             onSearchSale({
                 search: txtSearchData?.value.trim() || '',
                 idState: cmbSearchByStatus?.value || '',

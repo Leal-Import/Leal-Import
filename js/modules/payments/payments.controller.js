@@ -32,6 +32,7 @@ export async function initPaymentsController({ totalCalculator, onStateChange, c
 ====================================================== */
 
 export function addNewPayment({ state, totals, payment }) {
+    console.log('Adding new payment:', payment);
     addPayment(state, payment || {});
     totals.totalPaid = state.payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
     render(state.payments, totals, state.paymentsToDelete);

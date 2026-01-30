@@ -69,7 +69,7 @@ export function updateModalContent(receiptUrl, payment) {
 
     // Asumimos que la URL remota está en el data-receipt-url del botón clip
 
-    const hasLocalFile = payment?.file || false;
+    const hasLocalFile = (payment?.file && payment.file instanceof File) || false;
     const hasRemoteUrl = receiptUrl && receiptUrl.startsWith('http');
     const isLoaded = hasLocalFile || hasRemoteUrl;
 

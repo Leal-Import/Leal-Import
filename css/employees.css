@@ -1,18 +1,52 @@
-/* Estilos del modal */
+/* ===== EMPLOYEES MODULE - ENHANCED DESIGN ===== */
 
-.modalAdd{
-    width: clamp(100px, 90%, 500px);
-    border-radius: 15px;
-}
-
-.modalEmployeeBody{
+.modalEmployeeBody {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
 }
 
-.containerSelects{
+.txtSearchData{
+    width: 60%;
+    flex: 1;
+}
+
+/* Selectores con estilo moderno */
+.containerSelects {
     display: flex;
-    gap: 10px;
+    flex: 1;
+    gap: 12px;
     align-items: center;
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .breadCrumbSection {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .txtSearchData {
+        width: 100%;
+    }
+
+    .containerSelects {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .cmbFilterData {
+        width: 100%;
+    }
+
+    .btnOpenModal {
+        width: 100%;
+    }
+
+    .modalAdd {
+        width: 95%;
+        padding: 30px 20px;
+    }
 }

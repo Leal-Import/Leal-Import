@@ -104,17 +104,14 @@ const recalculateTotals = () => {
 
     vehicleSaleState.totals.total = total;
     vehicleSaleState.totals.due = due;
-    console.log(vehicleSaleState.totals);
     renderTotals({ total, due, totalPaid: vehicleSaleState.totals.totalPaid });
 };
 
 const onAddVehicle = async (vehicle) => {
     vehicleSaleState.idVehicle = vehicle.idVehicle;
     const vehicleToAppend = await getVehicleById(vehicle.idVehicle);
-    if (vehicleToAppend.costs) {
-        vehicleSaleState.data.salePrice = vehicleToAppend.costs.total;
-        vehicleSaleState.totals.total = vehicleToAppend.costs.total;
-    }
+    vehicleSaleState.data.salePrice = vehicleToAppend.costs ? vehicleToAppend.costs.suggestedPrice : 0;
+    vehicleSaleState.totals.total = vehicleToAppend.costs ? vehicleToAppend.costs.suggestedPrice : 0;
     loadVehicle(vehicleToAppend, vehicleSaleState.context.idSale);
     recalculateTotals();
     saveSaleState();

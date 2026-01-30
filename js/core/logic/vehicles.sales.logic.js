@@ -48,7 +48,6 @@ export const hydrateContextFromURL = async (state) => {
     const idVehicle = asUUID(params.get('idVehicle'));
     state.context.idVehicle = idVehicle;
     state.idVehicle = idVehicle; // si lo usás fuera del context
-    console.log(state.idVehicle, idVehicle);
 
     // 🔑 key para drafts (UUID-safe)
     state.saleKey = `vehicleSaleState_customer_${idCustomer}_${state.context.idSale ?? "NewSale"}`;
@@ -58,7 +57,7 @@ export const hydrateContextFromURL = async (state) => {
 
 
 export function buildPostSalePayload(state) {
-    const { data, context, idEmployee } = state;
+    const { data, context } = state;
     const fd = new FormData();
 
     /* ===== PAYMENTS ===== */
@@ -79,9 +78,7 @@ export function buildPostSalePayload(state) {
         payments.push({
             amount: p.amount,
             idPaymentMethod: p.idPaymentMethod,
-            idEmployee
         });
-
         paymentImages.push(p.file);
         index++;
     }
@@ -96,7 +93,6 @@ export function buildPostSalePayload(state) {
         commission: data.commission || 0,
         notes: data.notes || '',
         idCustomer: context.idCustomer,
-        idEmployee,
         payments
     };
 
