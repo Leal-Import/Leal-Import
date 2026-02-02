@@ -1,7 +1,7 @@
-import { appendToDom, cleanRow, initStaticRows, loadExtraInputs, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderOrderTotal, renderServiceSuggestions, renderSparePartSuggestions, renderTotalRepairCost, renderTotals, renderTotalServices, renderTotalsPanel, renderTotalSpareParts } from "../../../core/dom/workOrder.details.dom.js";
+import { appendToDom, cleanPaymentCamps, cleanRow, initStaticRows, loadExtraInputs, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderOrderTotal, renderServiceSuggestions, renderSparePartSuggestions, renderTotalRepairCost, renderTotals, renderTotalServices, renderTotalsPanel, renderTotalSpareParts } from "../../../core/dom/workOrder.details.dom.js";
 import { workOrderDetailsState } from "../../../core/state/workOrder.details.state.js";
 import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, postWorkOrder, putWorkOrder } from "../../../service/workOrder.detail.service.js";
-import { safeParseFloat, validateDate } from "../../../utils/validators.js";
+import { safeParseFloat, validateDate, validatePayment } from "../../../utils/validators.js";
 import { $, hideElement, showMessage } from "../../../utils/dom.js";
 import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
 import { initWorkOrdersEvents } from "../event/workOrder.details.event.js";
@@ -19,8 +19,6 @@ const tBodySpareParts = $("tBodySpareParts");
 const tBodyServices = $("tBodyServices");
 const txtAddSparePart = $("txtSearchSparePart");
 const txtAddService = $("txtAddService");
-
-const existSavedData = () => localStorage.getItem(workOrderDetailsState.saleKey) !== null;
 
 const addNewPartToTable = () => {
     if (!workOrderDetailsState.context.idNewPart || !workOrderDetailsState.context.newPartName) return;
@@ -116,9 +114,25 @@ const onSearchSpareParts = (e) => {
     onSearch(e, getSpareParts, renderSparePartSuggestions, boxSparePart, onAddSparePart, workOrderDetailsState.data.selectedSpareParts);
 }
 
-const onAddPayment = (payment = null) => {
-    addNewPayment({ state: workOrderDetailsState.data, totals: workOrderDetailsState.totals, payment });
-}
+const onAddPayment = () => {
+    const amount = $('txtAmount').value.trim();
+    const method = $('paymentMethod').value;
+    const errorMsg = validatePayment(safeParseFloat(amount), method);
+    if (errorMsg) {
+        showMessage('Error de validación', errorMsg, 'warning');
+        return;
+    }
+    const payment = {
+        amount: safeParseFloat(amount) || 0,
+        idPaymentMethod: method || null
+    }
+    addNewPayment({
+        state: workOrderDetailsState.data,
+        totals: workOrderDetailsState.totals,
+        payment
+    });
+    cleanPaymentCamps();
+};
 
 const onSubmitOrder = async (e) => {
     e.preventDefault();
@@ -363,7 +377,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         validateDate(dtEstimated, dtEstimated.value || new Date());
     } else {
         await loadDataVehicle();
-        onAddPayment();
         validateDate(dtEstimated, new Date());
     }
     renderImportButton(tBodySpareParts, onImportSparePart);

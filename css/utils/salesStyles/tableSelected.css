@@ -1,0 +1,350 @@
+/* Contenedor de la tabla */
+.tableContainerSelected {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Tabla base */
+.tableSelected {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+}
+
+.tableSelected tr:nth-child(2n) {
+    background: #f0f0f0;
+}
+
+/* Header de la tabla */
+.tableSelected thead {
+    background: linear-gradient(135deg, #f8f9fa 0%, #f3f4f6 100%);
+}
+
+.tableSelected thead th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* Columnas específicas del header */
+.tableSelected thead th.itemName {
+    padding-left: 20px;
+}
+
+.tableSelected thead th.finalPrice {
+    text-align: right;
+    padding-right: 20px;
+}
+
+/* Filas del cuerpo */
+.tableSelected tbody tr.tableRow {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.tableSelected tbody tr.tableRow:hover {
+    background: #fafbfc;
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.tableSelected tbody tr.tableRow:last-child {
+    border-bottom: none;
+}
+
+/* Celdas del cuerpo */
+.tableSelected tbody td {
+    padding: 16px;
+    font-size: 14px;
+    color: #374151;
+    vertical-align: middle;
+}
+
+/* Columna de nombre del repuesto */
+.tableSelected tbody td.itemName {
+    font-weight: 500;
+    color: #1f2937;
+    padding-left: 20px;
+}
+
+/* Columna de precio (editable) */
+.tableSelected tbody td.finalPrice {
+    position: relative;
+    cursor: text;
+    min-width: 120px;
+    font-weight: 600;
+    color: var(--danger-color, #dc3545);
+    background: transparent;
+    transition: all 0.2s ease;
+    padding: 12px 20px 12px 16px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.3px;
+}
+
+.tableSelected tbody td.finalPrice:hover {
+    background: #fff8f8;
+    box-shadow: inset 0 0 0 2px rgba(220, 53, 69, 0.1);
+}
+
+.tableSelected tbody td.finalPrice:focus {
+    outline: none;
+    background: #fff5f5;
+    box-shadow: inset 0 0 0 2px rgba(220, 53, 69, 0.2);
+    color: var(--dark-danger-color, #c82333);
+}
+
+/* Indicador visual de editable */
+.tableSelected tbody td.finalPrice::before {
+    content: '✎';
+    position: absolute;
+    left: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+.tableSelected tbody tr.tableRow:hover td.finalPrice::before {
+    opacity: 1;
+}
+
+/* Highlight cuando está siendo editado */
+.tableSelected tbody td.finalPrice:focus,
+.tableSelected tbody td.finalPrice.editing {
+    background: #fff5f5;
+    box-shadow: inset 0 0 0 2px var(--danger-color, #dc3545);
+    color: var(--dark-danger-color, #c82333);
+}
+
+/* Columna del botón eliminar (última columna) */
+.tableSelected tbody td:last-child {
+    width: 60px;
+    text-align: right;
+    padding-right: 20px;
+}
+
+/* Botón eliminar (trash) - selectores genéricos para mayor compatibilidad */
+.tableSelected tbody td button,
+.tableSelected tbody td .btnTrash,
+.tableSelected tbody td [class*="trash"],
+.tableSelected tbody td [class*="delete"],
+.tableSelected tbody td [class*="eliminar"],
+.tableSelected tbody td [type="button"] {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #9ca3af;
+    padding: 0;
+}
+
+.tableSelected tbody td button:hover,
+.tableSelected tbody td .btnTrash:hover,
+.tableSelected tbody td [class*="trash"]:hover,
+.tableSelected tbody td [class*="delete"]:hover,
+.tableSelected tbody td [class*="eliminar"]:hover,
+.tableSelected tbody td [type="button"]:hover {
+    background: #fee2e2;
+    color: var(--danger-color, #dc3545);
+    transform: scale(1.1);
+}
+
+.tableSelected tbody td button:active,
+.tableSelected tbody td .btnTrash:active,
+.tableSelected tbody td [class*="trash"]:active,
+.tableSelected tbody td [class*="delete"]:active,
+.tableSelected tbody td [class*="eliminar"]:active,
+.tableSelected tbody td [type="button"]:active {
+    transform: scale(0.95);
+}
+
+/* Iconos dentro del botón eliminar */
+.tableSelected tbody td button svg,
+.tableSelected tbody td .btnTrash svg,
+.tableSelected tbody td [class*="trash"] svg,
+.tableSelected tbody td [class*="delete"] svg,
+.tableSelected tbody td [class*="eliminar"] svg {
+    width: 18px;
+    height: 18px;
+}
+
+.tableSelected tbody td button img,
+.tableSelected tbody td .btnTrash img,
+.tableSelected tbody td [class*="trash"] img,
+.tableSelected tbody td [class*="delete"] img,
+.tableSelected tbody td [class*="eliminar"] img {
+    width: 18px;
+    height: 18px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.tableSelected tbody td button:hover img,
+.tableSelected tbody td .btnTrash:hover img,
+.tableSelected tbody td [class*="trash"]:hover img,
+.tableSelected tbody td [class*="delete"]:hover img,
+.tableSelected tbody td [class*="eliminar"]:hover img {
+    opacity: 1;
+}
+
+/* Fila de "No hay datos" */
+.tableSelected tbody tr.rowNoData {
+    height: 120px;
+}
+
+.tableSelected tbody td.noDataMessage {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+/* Animación de entrada para nuevas filas */
+@keyframes slideInRow {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tableSelected tbody tr.tableRow {
+    animation: slideInRow 0.3s ease;
+}
+
+/* Animación de salida para filas eliminadas */
+@keyframes slideOutRow {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+}
+
+.tableSelected tbody tr.tableRow.removing {
+    animation: slideOutRow 0.2s ease forwards;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tableSelected thead th,
+    .tableSelected tbody td {
+        padding: 12px 10px;
+        font-size: 13px;
+    }
+
+    .tableSelected tbody td.sparePartName {
+        padding-left: 12px;
+    }
+
+    .tableSelected tbody td.finalPrice {
+        padding-right: 12px;
+    }
+
+    .tableSelected tbody td:last-child {
+        padding-right: 12px;
+    }
+
+    .tableSelected tbody td.finalPrice::before {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .tableSelected thead th,
+    .tableSelected tbody td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    .tableSelected thead th {
+        font-size: 11px;
+    }
+
+    .tableSelected tbody td.finalPrice {
+        min-width: 90px;
+    }
+}
+
+/* Mejora visual cuando el precio es contenteditable */
+.tableSelected tbody td.finalPrice[contenteditable="true"] {
+    cursor: text;
+}
+
+.tableSelected tbody td.finalPrice[contenteditable="true"]:empty::before {
+    content: '$0.00';
+    color: #d1d5db;
+}
+
+/* Estados de validación (opcional) */
+.tableSelected tbody td.finalPrice.invalid {
+    box-shadow: inset 0 0 0 2px #ef4444;
+    background: #fef2f2;
+}
+
+.tableSelected tbody td.finalPrice.valid {
+    box-shadow: inset 0 0 0 2px #10b981;
+    background: #f0fdf4;
+}
+
+/* Highlight suave en toda la fila cuando se edita el precio */
+.tableSelected tbody tr.tableRow:has(td.finalPrice:focus) {
+    background: #fffbfb;
+}
+
+/* Scrollbar personalizado para el contenedor */
+.tableContainerSelected {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.tableContainerSelected::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tableContainerSelected::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 4px;
+}
+
+.tableContainerSelected::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.tableContainerSelected::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Header sticky (opcional) */
+.tableContainerSelected.sticky-header .tableSelected thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
