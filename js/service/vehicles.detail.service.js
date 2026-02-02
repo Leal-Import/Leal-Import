@@ -1,3 +1,5 @@
+import { getCookie } from "../utils/api.utils.js";
+
 const API_URL = "http://127.0.0.1:8080/api/Vehicle";
 
 export let getVehicles = async (id) => {
@@ -21,6 +23,9 @@ export let postVehicle = async (vehicleData) => {
     try {
         const request = await fetch(`${API_URL}/postVehicle`, {
             method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+            },
             body: vehicleData,
             credentials: 'include'
         });
@@ -62,6 +67,9 @@ export let putVehicle = async (vehicleData, id) => {
     try {
         const request = await fetch(`${API_URL}/putVehicle/${id}`, {
             method: 'PUT',
+            headers: {
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+            },
             body: vehicleData,
             credentials: 'include'
         });

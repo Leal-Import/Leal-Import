@@ -1,0 +1,99 @@
+.leftColumn .tableContainer {
+    height: 65dvh;
+    border: var(--border);
+    overflow-y: auto;
+}
+
+.imgTable {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.imgTable:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.tableContainer {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.leftColumn .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+    max-height: 100%;
+}
+
+.table thead {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.table thead th {
+    padding: 18px 20px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 13px;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody {
+    background: white;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: var(--border) !important;
+}
+
+.tableRow {
+    position: relative;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+    transform: scale(1.005);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.table tbody td {
+    padding: 16px 20px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.btnAddItem {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    border-radius: 50% !important;
+    padding: 8px 11px !important;
+    font-size: 20px !important;
+    background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    line-height: 1;
+}
+
+.btnAddItem:hover {
+    background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+    transform: translateY(-50%) rotate(90deg) scale(1.15);
+    box-shadow: 0 6px 16px rgba(211, 47, 47, 0.5);
+}

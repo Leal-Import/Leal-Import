@@ -40,3 +40,15 @@ export const validateDate = (input, minDate = null) => {
 
     input.min = finalMinDate.toISOString().slice(0, 10);
 };
+
+export const validatePayment = (amount, method) => {
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+        return "El monto del abono debe ser mayor a cero.";
+    }
+
+    if (!method) {
+        return "Debe seleccionar un método de pago.";
+    }
+
+    return null;
+};

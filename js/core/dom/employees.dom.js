@@ -8,7 +8,7 @@ export function fillEmployeesForm(employee, text) {
         txtFullName: employee.fullName,
         txtEmployeeEmail: employee.email,
         txtEmployeePhone: employee.phoneEmployee,
-        txtUsername: employee.username,
+        txtUsername: employee.username.username,
         cmbUserRole: employee.idRole
     });
     $('btnAddEmployee').value = text;
@@ -17,8 +17,8 @@ export function fillEmployeesForm(employee, text) {
 }
 
 export function renderRolesSelects(roles) {
-    fillSelect('cmbUserRole', roles, 'idRole', 'roleName', 'Seleccione un rol');
-    fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', 'Seleccione un rol');
+    fillSelect('cmbUserRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
+    fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
 }
 
 export function insertEmployees(container, employees, onActions) {

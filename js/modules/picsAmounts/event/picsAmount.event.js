@@ -8,7 +8,6 @@ export function initModalListeners({ clearCurrentFile, closeModalAndClean, onCli
     const btnSelectFile = $('btnSelectFile');
     const btnClearFile = $('btnClearFile');
 
-
     // --- 1. Cerrar Modal ---
     btnClose.addEventListener("click", closeModalAndClean);
     modalContainer.addEventListener("click", (e) => {

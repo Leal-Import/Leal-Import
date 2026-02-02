@@ -1,22 +1,31 @@
 import { $ } from "../../../utils/dom.js"
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
-export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAddPayment, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle }) => {
+export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAddPayment, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle }) => {
     const txtSearchData = $("txtSearchData");
     const txtNotes = $("txtNotes");
     const txtCommission = $("txtCommission");
     const txtTotal = $("txtTotal");
     const frmVehicleSale = $("frmVehicleSale");
     const btnAddPayment = $("btnAddPayment");
+    const txtAmount = $("txtAmount");
     const btnCancelVehicle = $("btnCancelVehicle");
+    const btnAddPart = $("btnAddPart");
     let searchTimeout = null;
 
     if (frmVehicleSale) {
         frmVehicleSale.addEventListener("submit", onSubmitVehicleSale);
     }
 
+    if (btnAddPart) {
+        btnAddPart.addEventListener("click", onImportVehicle);
+    }
+
     if (btnAddPayment) {
         btnAddPayment.addEventListener("click", onAddPayment);
+        txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
+        txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
+        formatDecimalInput(txtAmount);
     }
 
     if (btnCancelVehicle) {

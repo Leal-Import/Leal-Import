@@ -1,0 +1,296 @@
+
+
+/* Stats Section - Dashboard Premium */
+.statsSection {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    margin-bottom: 2em;
+}
+
+.statItem {
+    background: linear-gradient(135deg, var(--bg-color-white) 0%, #FAFAFA 100%);
+    border-radius: 16px;
+    border: 1px solid #E5E7EB;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.statItem::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--danger-color), var(--helper-color));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.statItem:hover::before {
+    transform: scaleX(1);
+}
+
+.statItem:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(211, 24, 19, 0.12);
+    border-color: var(--danger-color);
+}
+
+.statIcon {
+    font-size: var(--font-size-lg);
+    opacity: 0.8;
+    line-height: 1;
+}
+
+.statInfo {
+    width: 100%;
+}
+
+.statTitle {
+    font-size: 0.9em;
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statValue {
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-semibold);
+    color: var(--danger-color);
+    line-height: 1.2;
+}
+
+/* Stats Grid Positioning */
+.totalVehicle {
+    grid-column: 1;
+    background: linear-gradient(135deg, #FFF5F5 0%, #FFF 100%);
+}
+
+.stockVehicles {
+    grid-column: 2;
+    background: linear-gradient(135deg, #FEF3C7 0%, #FFF 100%);
+}
+
+.soldVehicles {
+    grid-column: 3;
+    background: linear-gradient(135deg, #D1FAE5 0%, #FFF 100%);
+}
+
+.totalSales {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
+    color: var(--bg-color);
+}
+
+.totalSales .statIcon {
+    font-size: 3em;
+}
+
+.totalSales .statTitle {
+    color: var(--bg-color);
+}
+
+.totalSales .statValue {
+    color: var(--bg-color);
+    font-size: var(--font-size-title);
+}
+
+/* Graphic Section */
+.graphicSection {
+    grid-column: 4 / span 2;
+    grid-row: 1 / span 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    border-radius: 16px;
+    border: 1px solid #E5E7EB;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #FAFAFA 0%, var(--bg-color-white) 100%);
+}
+
+.graphicContainer {
+    max-width: 180px;
+    max-height: 180px;
+    width: 100%;
+    height: 100%;
+}
+
+#vehicleChart {
+    width: 100%;
+    height: 100%;
+}
+
+.containerInfoGraphic {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+}
+
+.infoGraphicItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+}
+
+.colorIdGraphic {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.filtersGroup {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+
+#txtSearchYear {
+    flex: 0.5;
+    max-width: 275px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--bg-color-white);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    border-color: var(--danger-color);
+}
+
+.containerImgVehicle {
+    height: 200px;
+    width: 100%;
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.containerImgVehicle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.4s ease;
+}
+
+.card:hover .containerImgVehicle img {
+    transform: scale(1.08);
+}
+
+.headerCard {
+    padding: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.vehicleBrand {
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    line-height: 1.3;
+}
+
+.vehiclePrice {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--danger-color);
+    white-space: nowrap;
+}
+
+.vehicleStatus {
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.footerCard {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+}
+
+.containerInfoVehicle {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.infoVehicleItem {
+    display: flex;
+    gap: 8px;
+    font-size: 0.95em;
+    color: var(--text-color-secondary);
+}
+
+.infoVehicleItem strong {
+    color: var(--text-color);
+    font-weight: var(--font-weight-medium);
+}
+
+.containerButtons {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #F0F0F0;
+}
+
+.containerButtons .btnPrimary {
+    padding: 10px 18px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(211, 24, 19, 0.2);
+}
+
+.containerButtons .btnPrimary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.3);
+}

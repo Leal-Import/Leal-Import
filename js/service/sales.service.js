@@ -1,5 +1,4 @@
-const API_URL = "http://127.0.0.1:8080/api/SaleSummary";
-const API_URLS = "http://127.0.0.1:8080/api/StateSale"
+const API_URL = "http://127.0.0.1:8080/api/Sales";
 
 export let getSales = async (page = 0, size = 15, search = "", idState = "", productType = "") => {
     try {
@@ -27,7 +26,7 @@ export let getSales = async (page = 0, size = 15, search = "", idState = "", pro
 
 export let getStateSales = async () => {
     try {
-        const request = await fetch(`${API_URLS}/getStateSale`, {
+        const request = await fetch(`${API_URL}/getStateSale`, {
             credentials: 'include'
         });
         if (!request.ok) {

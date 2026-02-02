@@ -25,7 +25,7 @@ export const hydrateContextFromURL = async (state) => {
     }
 
     state.context.idVehicle = idVehicle;
-    state.context.idCustomer = idCustomer;
+    state.context.idCustomer = getNullableParam(idCustomer);
     state.context.idSale = asUUID(getNullableParam(params.get('idSale')));
     state.context.idWorkOrder = asUUID(getNullableParam(params.get('idWorkOrder')));
     state.context.customerName = params.get('customerName')?.trim() || '';
@@ -43,12 +43,12 @@ export const hydrateContextFromURL = async (state) => {
 };
 
 export const pushSparePart = (state, sparePart) => {
-    if (existsById(state, sparePart.idSparePart || sparePart.idSpareParts, 'idSparePart')) return null;
+    if (existsById(state, sparePart.id, 'id')) return null;
     const normalizedPart = {
-        id: crypto.randomUUID(),
+        id: sparePart.idSparePart || sparePart.idSpareParts || crypto.randomUUID(),
         idSparePart: sparePart.idSparePart || sparePart.idSpareParts,
-        name: sparePart.sparePartName || sparePart.nameSpareParts,
-        priceApplied: sparePart.priceApplied || sparePart.suggestedPrice,
+        name: sparePart.sparePartName || sparePart.nameSpareParts || sparePart.name || '',
+        priceApplied: sparePart.priceApplied || sparePart.suggestedPrice || 0,
         idWorkOrderSpareParts: sparePart.idWorkOrderSpareParts || null,
     }
     state.push(normalizedPart);
@@ -57,10 +57,11 @@ export const pushSparePart = (state, sparePart) => {
 
 export const pushService = (state, service) => {
     if (existsById(state, service.id, 'id')) return null;
+
     const normalizedPart = {
-        id: crypto.randomUUID(),
+        id: service.idService || crypto.randomUUID(),
         idService: service.idService || null,
-        name: service.nameService || '',
+        name: service.nameService || service.name || '',
         priceApplied: service.priceApplied || 0.00,
         idWorkOrderService: service.idWorkOrderService || null,
     }
@@ -78,10 +79,10 @@ export function calculateWorkOrderTotals({
     const sparePartsTotal = spareParts.reduce((acc, p) => acc + safeParseFloat(p.priceApplied), 0);
     const total = servicesTotal + sparePartsTotal;
 
-    const totalPaid = payments.reduce((acc, p) => acc + p.amount, 0);
+    const totalPaid = payments.reduce((acc, p) => acc + safeParseFloat(p.amount), 0);
     const due = Math.max(total - totalPaid, 0);
 
-    const orderTotal = total + vehiclePrice;
+    const orderTotal = total + safeParseFloat(vehiclePrice);
 
     return {
         servicesTotal,

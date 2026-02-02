@@ -1,3 +1,5 @@
+import { getCookie } from "../utils/api.utils.js";
+
 const API_URL = "http://127.0.0.1:8080/api/spareParts";
 const API_URLSALE = "http://127.0.0.1:8080/api/sparePartsSale";
 
@@ -43,6 +45,7 @@ export let postSparePart = async (sale) => {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
             },
             body: JSON.stringify(sale)
         });
@@ -87,6 +90,7 @@ export let putSparePart = async (sale, id) => {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
             },
             body: JSON.stringify(sale)
         });

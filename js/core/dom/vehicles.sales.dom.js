@@ -1,6 +1,13 @@
 import { $, qs } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
 
+export const cleanPaymentCamps = () => {
+    const amountInput = $('txtAmount');
+    const methodSelect = $('paymentMethod');
+    if (amountInput) amountInput.value = '';
+    if (methodSelect) methodSelect.value = '';
+}
+
 export let insertVehicles = (container, vehicles, onAddVehicle) => {
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
@@ -40,8 +47,8 @@ export let insertVehicles = (container, vehicles, onAddVehicle) => {
             }
 
             tr.classList.add("tableRow");
-            btnAddVehicle.classList.add("btnPrimary", "btnAddVehicle");
-            image.classList.add("imgVehicleTable");
+            btnAddVehicle.classList.add("btnPrimary", "btnAddItem");
+            image.classList.add("imgTable");
 
             btnAddVehicle.textContent = "+";
 
@@ -160,7 +167,7 @@ export let loadDomData = (data) => {
     $("txtNotes").value = data.notes;
     $("txtTotal").value = `$${formatWithCommas(data.salePrice)}`;
     $("txtCommission").value = `$${formatWithCommas(data.commission)}`
-    qs(".btnSubmitData").value = "Actualizar venta";
+    $("btnSaveSale").textContent = "Actualizar venta";
     $("btnCreateOrder").classList.add("hide");
     $("btnCancelVehicle").classList.add("hide");
 }
@@ -168,36 +175,17 @@ export let loadDomData = (data) => {
 
 //A esto todavia le falta diseño
 export function renderTotals({ total, due, totalPaid }) {
-    const containerTotal = $("containerTotal");
-    const containerDue = $("containerAmountDue");
-    const totalText = $("total");
+    //const totalText = $("total");
     const dueText = $("due");
     const paidText = $('totalPaid');
-    if (totalText) {
-        totalText.textContent = `$${formatWithCommas(total)}`;
-        totalText.classList.add("show")
-    }
+    const totalText = $('totalVehicle');
     if (paidText) {
         paidText.textContent = `$${formatWithCommas(totalPaid)}`
-        paidText.style.color =
-            totalPaid > 0 ? 'var(--success-color)' : 'var(--text-muted)'
     }
-
     if (dueText) {
         dueText.textContent = `$${formatWithCommas(due)}`;
-        dueText.style.color =
-            due > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     }
-    const isUpper = total > 0;
-    if (!isUpper) {
-        containerTotal?.classList.remove("show");
-        containerDue?.classList.remove("show");
-        containerTotal?.classList.add("hide");
-        containerDue?.classList.add("hide");
-    } else {
-        containerTotal?.classList.add("show");
-        containerDue?.classList.add("show");
-        containerTotal?.classList.remove("hide");
-        containerDue?.classList.remove("hide");
+    if (totalText) {
+        totalText.textContent = `$${formatWithCommas(total)}`;
     }
 }

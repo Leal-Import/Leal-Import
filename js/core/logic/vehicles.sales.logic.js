@@ -57,7 +57,7 @@ export const hydrateContextFromURL = async (state) => {
 
 
 export function buildPostSalePayload(state) {
-    const { data, context, idEmployee } = state;
+    const { data, context } = state;
     const fd = new FormData();
 
     /* ===== PAYMENTS ===== */
@@ -78,9 +78,7 @@ export function buildPostSalePayload(state) {
         payments.push({
             amount: p.amount,
             idPaymentMethod: p.idPaymentMethod,
-            idEmployee
         });
-
         paymentImages.push(p.file);
         index++;
     }
@@ -95,7 +93,6 @@ export function buildPostSalePayload(state) {
         commission: data.commission || 0,
         notes: data.notes || '',
         idCustomer: context.idCustomer,
-        idEmployee,
         payments
     };
 
@@ -159,7 +156,7 @@ export function buildPutSalePayload(state) {
             fd.append(p.idPayment, p.file);
         } else {
             // nuevo comprobante
-            fd.append('newPaymentImages', p.file);
+            fd.append('paymentImages', p.file);
         }
     }
 

@@ -19,7 +19,9 @@ export function mapEmployeeForm(formData) {
         fullName: formData.txtFullName,
         email: formData.txtEmployeeEmail,
         phoneEmployee: formData.txtEmployeePhone,
-        username: formData.txtUsername,
+        username: {
+            username: formData.txtUsername
+        },
         idRole: formData.cmbUserRole
     };
 }

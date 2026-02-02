@@ -1,0 +1,56 @@
+.containerTable {
+    background: var(--bg-color-white);
+    flex: 1;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #F0F0F0;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+
+.table thead tr {
+    background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+}
+
+.table th {
+    padding: 18px 16px;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    font-size: 0.95em;
+    color: var(--text-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--danger-color);
+}
+
+.table tbody tr {
+    transition: all 0.25s ease;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #FAFBFC;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(211, 24, 19, 0.03) 0%, rgba(205, 144, 143, 0.05) 100%);
+    transform: scale(1.002);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.table td {
+    padding: 16px;
+    font-size: var(--font-size-base);
+}
+
+.noDataMessage {
+    font-size: var(--font-size-lg);
+    color: var(--text-color-secondary);
+    width: 100%;
+}

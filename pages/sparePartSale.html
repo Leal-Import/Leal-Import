@@ -5,10 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/sparePartSale.css">
-    <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
-    <link rel="stylesheet" href="../css/salesStyles/tableSales.css">
-    <link rel="stylesheet" href="../css/pagination.css">
+    <link rel="stylesheet" href="../css/modules/sparePartsSale/sparePartSale.css">
+    <link rel="stylesheet" href="../css/utils/salesStyles/panelSalesStyles.css">
+    <link rel="stylesheet" href="../css/utils/salesStyles/tableSales.css">
+    <link rel="stylesheet" href="../css/utils/pagination.css">
+    <link rel="stylesheet" href="../css/utils/table.css">
+    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/globalStyles.css">
     <title>Agregar venta</title>
 </head>
 
@@ -67,7 +70,79 @@
 
                 </div>
             </div>
-            <form class="rightColumn" id="frmSparePartSale">
+            <div class="rightColumn">
+                <form class="formRightColumn" id="frmSparePartSale">
+
+                    <div class="headerPanel">
+                        <h3 class="titlePanel">Repuestos añadidos</h3>
+                    </div>
+                    <div class="tableContainerSelectedParts">
+                        <table class="tableSelectedParts">
+                            <thead>
+                                <tr>
+                                    <th class="sparePartName">Repuesto</th>
+                                    <th class="finalPrice">Precio final</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tBodySelected">
+                                <tr class="rowNoData">
+                                    <td colspan="2" style="height: 100%;" class="noDataMessage">No hay repuestos
+                                        seleccionados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="headerPanel">
+                        <h3 class="titlePanel">Resumen de Pago</h3>
+                        <p class="subtitlePanel">Gestiona los abonos y métodos de pago</p>
+                    </div>
+                    <!-- Payment Form -->
+                    <div class="paymentForm">
+                        <div class="formGroup">
+                            <label class="lblInputs" for="txtAmount">Abono</label>
+                            <input type="text" class="txtInputs" placeholder="Abono" id="txtAmount">
+                        </div>
+                        <div class="formGroup">
+                            <label class="lblInputs" for="paymentMethod">Método de pago</label>
+                            <select name="paymentMethod" class="txtInputs" id="paymentMethod"></select>
+                        </div>
+                        <button id="btnAddPayment" class="btnPrimary" type="button">Añadir abono</button>
+                    </div>
+
+                    <!-- Payments List -->
+                    <div class="paymentsList" id="paymentsList"></div>
+
+                    <!-- Summary -->
+                    <div class="summarySection">
+                        <div class="summaryRow">
+                            <span class="summaryLabel">Total:</span>
+                            <span class="summaryValue" id="totalSale"></span>
+                        </div>
+                        <div class="summaryRow">
+                            <span class="summaryLabel">Total abonado:</span>
+                            <span class="summaryValue" id="totalPaid"></span>
+                        </div>
+                        <div class="summaryRow">
+                            <span class="summaryLabel">Deuda:</span>
+                            <span class="summaryValue summaryTotal" id="due"></span>
+                        </div>
+                    </div>
+
+                    <!-- Additional Notes -->
+                    <div class="formGroup">
+                        <label class="lblInputs" for="txtNotes">Notas adicionales</label>
+                        <textarea class="txtInputs" id="txtNotes" placeholder="Agrega notas sobre la venta..."
+                            rows="4"></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="actionButtons">
+                        <button class="btnPrimary" id="btnSaveSale">Vender</button>
+                    </div>
+                </form>
+            </div>
+            <!--             <form class="rightColumn" id="frmSparePartSale">
                 <div class="headerRightColumn">
                     <div class="containerTotal" id="containerTotal">
                         <h3>Total a pagar:</h3>
@@ -100,7 +175,6 @@
                                 </tr>
                             </thead>
                             <tbody id="amounts" class="amounts">
-                                <!-- Filas generadas por JS -->
                             </tbody>
                         </table>
                     </div>
@@ -118,7 +192,7 @@
                     </div>
                     <input type="submit" value="Guardar" class="btnPrimary btnSubmitData">
                 </div>
-            </form>
+            </form> -->
         </div>
     </div>
     <script src="../js/sidebar.js"></script>

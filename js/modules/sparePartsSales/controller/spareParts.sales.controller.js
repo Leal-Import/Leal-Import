@@ -14,11 +14,12 @@ import {
 } from '../../../utils/dom.js';
 import { spareSaleState } from '../../../core/state/spareParts.sales.state.js';
 import { initSpareSaleEvents } from '../event/spareParts.sales.event.js';
-import { createNoDataSelectedMessage, createRowTable, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
+import { cleanPaymentCamps, createNoDataSelectedMessage, createRowTable, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale, verifyIds } from '../../../core/logic/spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { getCurrentEmployeeId, initSession, safeParseFloat } from '../../../utils.js';
 import { addNewPayment, initPaymentsController, render } from '../../payments/payments.controller.js';
+import { validatePayment } from '../../../utils/validators.js';
 
 const tableBody = $("tBodyInventory");
 const tBodySelected = $("tBodySelected");
@@ -75,7 +76,7 @@ let recalculateTotals = () => {
     spareSaleState.totals.total = total;
     spareSaleState.totals.due = due;
 
-    renderTotals({ total, due });
+    renderTotals({ total, due, totalPaid: spareSaleState.totals.totalPaid });
 }
 
 let pushSparePart = (sparePart) => {
@@ -152,10 +153,25 @@ async function onSubmitSpareSale(e) {
         );
     }
 }
-
-let onAddPayment = () => {
-    addNewPayment({ state: spareSaleState.data, totals: spareSaleState.totals });
-}
+const onAddPayment = () => {
+    const amount = $('txtAmount').value.trim();
+    const method = $('paymentMethod').value;
+    const errorMsg = validatePayment(safeParseFloat(amount), method);
+    if (errorMsg) {
+        showMessage('Error de validación', errorMsg, 'warning');
+        return;
+    }
+    const payment = {
+        amount: safeParseFloat(amount) || 0,
+        idPaymentMethod: method || null
+    }
+    addNewPayment({
+        state: spareSaleState.data,
+        totals: spareSaleState.totals,
+        payment
+    });
+    cleanPaymentCamps();
+};
 
 let onWritePrice = (price, id) => {
     const cleanValue = safeParseFloat(price.textContent) || 0;
@@ -253,8 +269,9 @@ let loadDraft = () => {
     spareSaleState.data.selectedItems.forEach(part => {
         createRowTable(tBodySelected, part, onDeleteSparePart, onWritePrice);
     });
-
-    render(spareSaleState.data.payments, spareSaleState.totals, spareSaleState.data.paymentsToDelete);
+    spareSaleState.data.payments.forEach(payment => {
+        addNewPayment({ state: spareSaleState.data, totals: spareSaleState.totals, payment });
+    })
     recalculateTotals();
     saveSaleState();
 }
@@ -290,8 +307,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         await loadExistingSale();
     } else if (existSavedData()) {
         loadDraft();
-    } else {
-        onAddPayment();
     }
 
     // 2. Agregar nuevo repuesto SOLO después
@@ -301,5 +316,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     await loadInventory();
-
 })

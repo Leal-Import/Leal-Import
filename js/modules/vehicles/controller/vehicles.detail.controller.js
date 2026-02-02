@@ -1,7 +1,7 @@
 import { vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
 import { $, qs, qsa, toggleModal } from "../../../utils/dom.js";
-import { closeAndCleanUpdateModal, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, UPLOAD_CONFIG } from "../../../core/dom/vehicles.detail.dom.js";
+import { closeAndCleanUpdateModal, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview } from "../../../core/dom/vehicles.detail.dom.js";
 import { applyExternalMode, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js"
 import { showMessage } from "../../../utils.js";
@@ -96,7 +96,7 @@ export async function onSubmitVehicle(e) {
     }
 
     if (vehicleDetailState.loteId) {
-        payloadVehicle.costs.idLote = vehicleDetailState.loteId;
+        payloadVehicle.lote.idLote = vehicleDetailState.loteId;
     }
 
     mapVehicleImages(fd);

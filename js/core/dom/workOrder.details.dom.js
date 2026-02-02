@@ -182,13 +182,13 @@ export function renderImportButton(tBody, onImport) {
 
     const rows = [...tBody.querySelectorAll('tr')];
     let targetRow = rows.find(r =>
-        r.querySelector('.tdName')?.textContent.trim() === ''
+        r.querySelector('.tdName')?.textContent.trim() === '' && r.querySelector('.tdPrice')?.textContent.trim() === ''
     );
 
     if (!targetRow) {
         addRowToBothTables();
         targetRow = [...tBody.querySelectorAll('tr')]
-            .find(r => r.querySelector('.tdName')?.textContent.trim() === '');
+            .find(r => r.querySelector('.tdName')?.textContent.trim() === '' && r.querySelector('.tdPrice')?.textContent.trim() === '');
     }
 
     if (!targetRow) return;

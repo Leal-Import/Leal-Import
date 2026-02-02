@@ -1,0 +1,15 @@
+/* ===== EMPLOYEES MODULE - ENHANCED DESIGN ===== */
+
+.modalEmployeeBody {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Selectores con estilo moderno */
+.containerSelects {
+    display: flex;
+    flex: 1;
+    gap: 12px;
+    align-items: center;
+}

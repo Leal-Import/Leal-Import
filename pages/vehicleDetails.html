@@ -6,7 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="../css/vehicleDetails.css">
+    <link rel="stylesheet" href="../css/modules/vehicles/vehicleDetails.css">
+    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/suggestions.css">
+    <link rel="stylesheet" href="../css/utils/modal.css">
+    <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/utils/modalLinkExtra.css">
     <title>Vehiculos</title>
 </head>
 
@@ -14,163 +19,259 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <form class="content" id="frmVehicles">
+            <!-- Header -->
             <div class="headerContent">
-                <div class="breadcrumbSection">
-                    <a href="vehicle.html" class="breadcrumb">Vehiculos ></a>
-                    <a class="breadcrumb" id="typeAction">Agregar vehiculos</a>
+                <div class="breadCrumbSection">
+                    <a href="vehicle.html" class="breadcrumb">Vehículos ></a>
+                    <a class="breadcrumb active" id="typeAction">Agregar vehículo</a>
                 </div>
             </div>
-            <div class="gridPlace">
-                <div class="modalAdd hide" id="modalLinkLote">
+
+            <!-- Modals -->
+            <div class="containerModal hide" id="modalLinkLote">
+                <div class="modalAdd">
                     <button class="btnClose" type="button">
                         <img src="../media/appMedia/closeIcon.svg" alt="">
                     </button>
-                    <h2 class="titleModal">Agregar enlace del lote</h2>
-                    <input type="text" id="txtLink" name="txtLink" class="txtInputs"
-                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45" maxlength="1000">
-                    <button class="btnPrimary btnSubmitData" id="btnSaveLinkLote" type="button">Guardar enlace</button>
-                </div>
-                <div class="containerModal hide" id="modalUpload">
-                    <div class="modalAdd">
-                        <button class="btnClose" type="button" id="btnCloseUpload">
-                            <img src="../media/appMedia/closeIcon.svg" alt="">
-                        </button>
-                        <h2 class="titleModal" id="uploadTitle"></h2>
-                        <div class="bodyModal">
-                            <div class="dropArea" id="uploadDropArea">
-                                <div class="dropContent">
-                                    <span class="dropIcon">☁️</span>
-                                    <p id="uploadDropText">Arrastra el archivo aquí</p>
-                                </div>
-                                <input type="file" id="uploadFileInput" hidden>
-                            </div>
+                    <div class="modalHeader">
+                        <h2 class="titleModal">Enlace del lote</h2>
+                        <p class="subtitleModal">Ingresa la URL del lote que deseas vincular a este registro</p>
+                    </div>
 
-                            <button type="button" class="btnPrimary btnFullWidth" id="btnSelectFile">
-                                Seleccionar archivo
+                    <div class="inputGroup">
+                        <label for="txtLink" class="lblInputs">URL del lote</label>
+                        <div class="inputWrapper">
+                            <input type="url" id="txtLink" name="txtLink" class="txtInputs txtInputWithIcon"
+                                placeholder="https://www.ejemplo.com/lote/45" maxlength="1000">
+                            <button class="btnPaste" type="button" id="btnPasteLote">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Pegar
                             </button>
                         </div>
+                        <p class="helpText">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Debe ser una URL válida que comience con https://
+                        </p>
+                        <p class="errorMessage" id="errorLinkLote" style="display: none;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            Por favor ingresa una URL válida
+                        </p>
+                    </div>
+                    <button class="btnPrimary btnSubmitData btnSaveLink" id="btnSaveLinkLote" type="button">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Guardar enlace
+                    </button>
+                </div>
+            </div>
+
+            <div class="containerModal hide" id="modalUpload">
+                <div class="modalAdd">
+                    <button class="btnClose" type="button" id="btnCloseUpload">
+                        <img src="../media/appMedia/closeIcon.svg" alt="">
+                    </button>
+                    <h2 class="titleModal" id="uploadTitle">Subir archivo</h2>
+                    <div class="bodyModal">
+                        <div class="dropArea" id="uploadDropArea">
+                            <div class="dropContent">
+                                <span class="dropIcon">☁️</span>
+                                <p id="uploadDropText">Arrastra el archivo aquí</p>
+                                <span class="dropHint">o haz clic para seleccionar</span>
+                            </div>
+                            <input type="file" id="uploadFileInput" hidden>
+                        </div>
+                        <button type="button" class="btnPrimary btnFullWidth" id="btnSelectFile">
+                            Seleccionar archivo
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <fieldset class="vehicleData">
-                    <legend>Datos del vehiculo</legend>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtVin" class="lblInputs">Vin</label>
-                            <input type="text" class="txtInputs" id="txtVin" name="txtVin" maxlength="50" required>
+            <!-- Main Grid Layout -->
+            <div class="wrapper">
+                <!-- Left Column -->
+                <div class="leftColumn">
+                    <!-- Vehicle Data Card -->
+                    <div class="vehicleData formCard">
+                        <div class="cardHeader">
+                            <h3>Información del vehículo</h3>
                         </div>
-                        <div class="formGroup">
-                            <label for="txtBrand" class="lblInputs">Marca</label>
-                            <input type="text" class="txtInputs" id="txtBrand" name="txtBrand" maxlength="50" required>
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtModel" class="lblInputs">Modelo</label>
-                            <input type="text" class="txtInputs" id="txtModel" name="txtModel" maxlength="50" required>
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtYear" class="lblInputs">Año</label>
-                            <input type="text" class="txtInputs" id="txtYear" name="txtYear" maxlength="4" required>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtMileage" class="lblInputs">Millaje</label>
-                            <input type="text" class="txtInputs" id="txtMileage" name="txtMileage" maxlength="50" required>
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup" style="position: relative;">
-                            <label for="txtLote" class="lblInputs">Lote</label>
-                            <input type="text" class="txtInputs" id="txtLote" name="txtLote" maxlength="50" required>
-                            <button class="btnLinkLote btnPrimary" type="button">Enlace</button>
-                        </div>
-                    </div>
-                    <div class="formGroup">
-                        <label for="txtDescription" class="lblInputs">Descripción</label>
-                        <textarea type="text" class="txtInputs" id="txtDescription" name="txtDescription" rows="7" maxlength="1000"
-                            style="flex: 1"></textarea>
-                    </div>
-                    <div class="formGroup groupCustomer hide" style="position: relative;">
-                        <label for="txtCustomer" class="lblInputs">Cliente</label>
-                        <input type="text" class="txtInputs" id="txtCustomer" name="txtCustomer" maxlength="50">
-                        <div class="suggestions hide" id="suggestionsCustomer"></div>
-                    </div>
-                </fieldset>
-                <div class="imgData">
-                    <div class="vehicleImagesSection">
-                        <div>
-                            <div class="swiper" id="mainSwiper">
-                                <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
-                                <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
-                                <div class="swiper-button-next" style="color: var(--danger-color);"></div>
-                            </div>
-
-                            <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
-                                <div class="swiper thumbs-swiper" id="thumbsSwiper">
-                                    <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                        <div class="cardBody">
+                            <div class="rowFields">
+                                <div class="formGroup">
+                                    <label for="txtVin" class="lblInputs">VIN</label>
+                                    <input type="text" class="txtInputs" id="txtVin" name="txtVin" maxlength="50"
+                                        placeholder="1HGBH41JXMN109186" required>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtBrand" class="lblInputs">Marca</label>
+                                    <input type="text" class="txtInputs" id="txtBrand" name="txtBrand" maxlength="50"
+                                        placeholder="Toyota" required>
                                 </div>
                             </div>
+                            <div class="rowFields">
+                                <div class="formGroup fullWidth">
+                                    <label for="txtModel" class="lblInputs">Modelo</label>
+                                    <input type="text" class="txtInputs" id="txtModel" name="txtModel" maxlength="50"
+                                        placeholder="Camry" required>
+                                </div>
+                            </div>
+                            <div class="rowFields">
+                                <div class="formGroup">
+                                    <label for="txtYear" class="lblInputs">Año</label>
+                                    <input type="text" class="txtInputs" id="txtYear" name="txtYear" maxlength="4"
+                                        placeholder="2020" required>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtMileage" class="lblInputs">Millaje</label>
+                                    <input type="text" class="txtInputs" id="txtMileage" name="txtMileage"
+                                        maxlength="50" placeholder="50,000" required>
+                                </div>
+                            </div>
+                            <div class="rowFields">
+                                <div class="formGroup fullWidth inputWithButton">
+                                    <label for="txtLote" class="lblInputs">Lote</label>
+                                    <div class="inputButtonWrapper">
+                                        <input type="text" class="txtInputs" id="txtLote" name="txtLote" maxlength="50"
+                                            placeholder="Número de lote" required>
+                                        <button class="btnLinkLote btnPrimary" type="button">🔗 Enlace</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="formGroup fullWidth">
+                                <label for="txtDescription" class="lblInputs">Descripción</label>
+                                <textarea type="text" class="txtInputs" id="txtDescription" name="txtDescription"
+                                    rows="5" maxlength="1000"
+                                    placeholder="Describe las características del vehículo..."></textarea>
+                            </div>
+                            <div class="formGroup groupCustomer hide fullWidth">
+                                <label for="txtCustomer" class="lblInputs">Cliente</label>
+                                <input type="text" class="txtInputs" id="txtCustomer" name="txtCustomer" maxlength="50">
+                                <div class="suggestions hide" id="suggestionsCustomer"></div>
+                            </div>
+                        </div>
+                    </div>
 
-                            <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                    <!-- Costs Card -->
+                    <fieldset class="costsData formCard">
+                        <legend>Costos de importación</legend>
+                        <div class="cardBody">
+
+                            <div class="rowFields">
+                                <div class="formGroup">
+                                    <label for="txtBill" class="lblInputs">Factura</label>
+                                    <div class="inputButtonWrapper">
+                                        <input type="text" class="txtInputs txtCosts txtFormat" id="txtBill"
+                                            name="txtBill" maxlength="11" placeholder="$0.00" required>
+                                        <button type="button" class="btnImgs btnPrimary" id="btnBill">🔗</button>
+                                    </div>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtTaxes" class="lblInputs">Impuestos</label>
+                                    <div class="inputButtonWrapper">
+                                        <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes"
+                                            name="txtTaxes" maxlength="11" placeholder="$0.00" required>
+                                        <button type="button" class="btnImgs btnPrimary" id="btnTaxes">🔗</button>
+                                    </div>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtShip" class="lblInputs">Barco</label>
+                                    <div class="inputButtonWrapper">
+                                        <input type="text" class="txtInputs txtCosts txtFormat" id="txtShip"
+                                            name="txtShip" maxlength="11" placeholder="$0.00" required>
+                                        <button type="button" class="btnImgs btnPrimary btnsTransport">🔗</button>
+                                    </div>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtTowTruck" class="lblInputs">Transporte</label>
+                                    <div class="inputButtonWrapper">
+                                        <input type="text" class="txtInputs txtCosts txtFormat" id="txtTowTruck"
+                                            name="txtTowTruck" maxlength="11" placeholder="$0.00" required>
+                                        <button type="button" class="btnImgs btnPrimary btnsTransport">🔗</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rowFields">
+                                <div class="formGroup">
+                                    <label for="txtStorage" class="lblInputs">Almacenamiento</label>
+                                    <input type="text" class="txtInputs txtCosts txtFormat" id="txtStorage"
+                                        name="txtStorage" maxlength="11" placeholder="$0.00" required>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtTransfer" class="lblInputs">Transferencia</label>
+                                    <input type="text" class="txtInputs txtCosts txtFormat" id="txtTransfer"
+                                        name="txtTransfer" maxlength="11" placeholder="$0.00" required>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtIva" class="lblInputs">IVA</label>
+                                    <input type="text" class="txtInputs txtCosts txtFormat" id="txtIva" name="txtIva"
+                                        maxlength="11" placeholder="$0.00" required>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtPa" class="lblInputs">P.A</label>
+                                    <input type="text" class="txtInputs txtCosts txtFormat" id="txtPa" name="txtPa"
+                                        maxlength="11" placeholder="$0.00" required>
+                                </div>
+                            </div>
+                            <div class="rowFields costsSummary">
+                                <div class="formGroup">
+                                    <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
+                                    <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice"
+                                        name="txtSuggestedPrice" maxlength="11" placeholder="$0.00" required>
+                                </div>
+                                <div class="formGroup">
+                                    <label for="txtTotal" class="lblInputs">Total</label>
+                                    <input type="text" class="txtInputs" id="txtTotal" name="txtTotal" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <!-- Right Column - Images -->
+                <div class="imgData formCard">
+                    <div class="cardHeader">
+                        <h3>Galería de imágenes</h3>
+                    </div>
+                    <div class="cardBody">
+                        <div class="vehicleImagesSection">
+                            <div>
+                                <div class="swiper" id="mainSwiper">
+                                    <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                                    <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
+                                    <div class="swiper-button-next" style="color: var(--danger-color);"></div>
+                                </div>
+
+                                <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                                    <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                        <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                                    </div>
+                                </div>
+
+                                <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <fieldset class="costsData">
-                    <legend>Costos de importacion</legend>
-                    <div class="rowFields">
-                        <div class="formGroup" style="position: relative;">
-                            <label for="txtBill" class="lblInputs">Factura</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtBill" name="txtBill" maxlength="11" required>
-                            <button type="button" class="btnImgs btnPrimary" id="btnBill">+</button>
-                        </div>
-                        <div class="formGroup" style="position: relative;">
-                            <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes" name="txtTaxes" maxlength="11" required>
-                            <button type="button" class="btnImgs btnPrimary" id="btnTaxes">+</button>
-                        </div>
-                        <div class="formGroup" style="position: relative;">
-                            <label for="txtShip" class="lblInputs">Barco</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtShip" name="txtShip" maxlength="11" required>
-                            <button type="button" class="btnImgs btnPrimary btnsTransport">+</button>
-                        </div>
-                        <div class="formGroup" style="position: relative;">
-                            <label for="txtTowTruck" class="lblInputs">Transporte</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTowTruck" name="txtTowTruck" maxlength="11" required>
-                            <button type="button" class="btnImgs btnPrimary btnsTransport">+</button>
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtStorage" class="lblInputs">Almacenamiento</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtStorage" name="txtStorage" maxlength="11" required>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtTransfer" class="lblInputs">Transferencia</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTransfer" name="txtTransfer" maxlength="11" required>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtIva" class="lblInputs">IVA</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtIva" name="txtIva" maxlength="11" required>
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtPa" class="lblInputs">P.A</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtPa" name="txtPa" maxlength="11" required>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
-                            <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice" name="txtSuggestedPrice" maxlength="11" required>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtTotal" class="lblInputs">Total</label>
-                            <input type="text" class="txtInputs" id="txtTotal" name="txtTotal" disabled>
-                        </div>
-                    </div>
-                </fieldset>
             </div>
+
+            <!-- Footer -->
             <div class="containerOptions">
                 <div class="isExternalContainer">
                     <span class="lbl">¿Es externo?</span>
@@ -179,13 +280,16 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" id="btnSaveData" style="padding: 10px 40px;">
+                <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" id="btnSaveData"
+                    style="padding: 10px 40px;">
             </div>
         </form>
-        <script src="../js/sidebar.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script type="module" src="../js/modules/vehicles/controller/vehicles.detail.controller.js"></script>
+    </div>
+
+    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/modules/vehicles/controller/vehicles.detail.controller.js"></script>
 </body>
 
 </html>

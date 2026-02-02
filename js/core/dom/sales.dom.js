@@ -181,7 +181,6 @@ export let insertSales = (container, sales) => {
 
 export let selectLineButton = (filterBtn) => {
     qsa(".filterType .lineSelected").forEach(l => l.classList.remove("selected"));
-
     filterBtn.querySelector(".lineSelected")?.classList.add("selected");
 }
 

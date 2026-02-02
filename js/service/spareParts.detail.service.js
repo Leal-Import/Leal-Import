@@ -1,9 +1,14 @@
+import { getCookie } from "../utils/api.utils.js";
+
 const API_URL = "http://127.0.0.1:8080/api/spareParts";
 
 export let postSparePart = async (sparePart) => {
     try {
         const request = await fetch(`${API_URL}/postSparepart`, {
             method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+            },
             credentials: 'include',
             body: sparePart
         });
@@ -46,6 +51,9 @@ export let putSparePart = async (sparePart, id) => {
     try {
         const request = await fetch(`${API_URL}/putSparepart/${id}`, {
             method: 'PUT',
+            headers: {
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+            },
             credentials: 'include',
             body: sparePart
         });

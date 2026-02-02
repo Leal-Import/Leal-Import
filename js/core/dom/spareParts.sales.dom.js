@@ -1,4 +1,4 @@
-import { $, qs } from "../../utils/dom.js";
+import { $ } from "../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } from "../../utils/formatters.js";
 
 
@@ -50,7 +50,7 @@ export function insertSpareParts(
         suggestedPriceTd.textContent = `$${formatWithCommas(sparePart.suggestedPrice || sparePart.priceApplied || 0)}`;
 
         tr.classList.add("tableRow");
-        image.classList.add("imgSparePart");
+        image.classList.add("imgTable");
 
         tdImage.appendChild(image);
         tr.append(tdImage, name, cost, suggestedPriceTd);
@@ -68,7 +68,7 @@ export function insertSpareParts(
 
 let createBtnAdd = (sparePart, tr, onAddSparePart) => {
     const btnAddSparePart = document.createElement("button");
-    btnAddSparePart.classList.add("btnPrimary", "btnAddPart");
+    btnAddSparePart.classList.add("btnPrimary", "btnAddItem");
     btnAddSparePart.textContent = "+";
     btnAddSparePart.addEventListener("click", () => onAddSparePart(sparePart, tr));
     return btnAddSparePart;
@@ -87,6 +87,7 @@ export function createRowTable(container, sparePart, onDeleteSparePart, onWriteP
     const tr = document.createElement("tr");
     const partName = document.createElement("td");
     const tdPrice = document.createElement("td");
+    const tdTrash = document.createElement("td");
 
     partName.textContent = name;
     tdPrice.textContent = "$" + formatWithCommas(priceApplied);
@@ -96,9 +97,9 @@ export function createRowTable(container, sparePart, onDeleteSparePart, onWriteP
     tr.classList.add("tableRow");
 
     let btnTrash = createTrashOption(container, tr, idSparePart, idSaleItem, onDeleteSparePart);
+    if (btnTrash) tdTrash.appendChild(btnTrash);
     if (addEventsPrice) addEventsPrice(tdPrice, idSparePart, onWritePrice);
-    tr.append(partName, tdPrice);
-    if (btnTrash) tr.appendChild(btnTrash);
+    tr.append(partName, tdPrice, tdTrash);
     container.appendChild(tr);
 
 }
@@ -120,13 +121,19 @@ let addEventsPrice = (price, id, onWritePrice) => {
 
 let createTrashOption = (container, tr, id, idSaleItem, onDeleteSparePart) => {
     const btnTrash = document.createElement("button");
-    btnTrash.classList.add("btnTrash");
+    btnTrash.className = "btnTrash";
     btnTrash.type = "button";
-    const iconImg = document.createElement("img");
 
-    iconImg.src = "../../media/appMedia/trashIcon.png";
+    btnTrash.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" 
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"/>
+        </svg>
+    `;
 
-    btnTrash.appendChild(iconImg);
     btnTrash.addEventListener("click", () => onDeleteSparePart(container, tr, id, idSaleItem));
     return btnTrash;
 }
@@ -159,36 +166,32 @@ export let loadBtnOrder = (customerId, customerName, idSale) => {
 
 export let loadDomData = (notes) => {
     $("txtNotes").value = notes;
-    qs(".btnSubmitData").value = "Actualizar venta";
+    $("btnSaveSale").textContent = "Actualizar venta";
 }
 
 export let loadNotes = (notes) => {
     $("txtNotes").value = notes;
 }
 
-export function renderTotals({ total, due }) {
-    const containerTotal = $("containerTotal");
-    const containerDue = $("containerAmountDue");
-    const totalText = $("total");
+//A esto todavia le falta diseño
+export function renderTotals({ total, due, totalPaid }) {
     const dueText = $("due");
-
-    if (totalText) totalText.textContent = `$${formatWithCommas(total)}`;
-
+    const paidText = $('totalPaid');
+    const totalText = $('totalSale');
+    if (paidText) {
+        paidText.textContent = `$${formatWithCommas(totalPaid)}`
+    }
     if (dueText) {
         dueText.textContent = `$${formatWithCommas(due)}`;
-        dueText.style.color =
-            due > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     }
-    const isUpper = total > 0;
-    if (!isUpper) {
-        containerTotal?.classList.remove("show");
-        containerDue?.classList.remove("show");
-        containerTotal?.classList.add("hide");
-        containerDue?.classList.add("hide");
-    } else {
-        containerTotal?.classList.add("show");
-        containerDue?.classList.add("show");
-        containerTotal?.classList.remove("hide");
-        containerDue?.classList.remove("hide");
+    if (totalText) {
+        totalText.textContent = `$${formatWithCommas(total)}`;
     }
+}
+
+export const cleanPaymentCamps = () => {
+    const amountInput = $('txtAmount');
+    const methodSelect = $('paymentMethod');
+    if (amountInput) amountInput.value = '';
+    if (methodSelect) methodSelect.value = '';
 }

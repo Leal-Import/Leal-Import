@@ -1,0 +1,103 @@
+.modalAdd .lblInputs {
+    font-size: var(--font-size-sm);
+    display: block;
+    margin-bottom: 10px;
+}
+
+.modalHeader {
+    text-align: center;
+}
+.txtInputWithIcon{
+    width: 100%;
+}
+
+.btnSaveLink {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btnPaste {
+    position: absolute;
+    right: 8px;
+    padding: 5px 14px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+.btnPaste:hover {
+    background: #e5e5e5;
+    color: #333;
+}
+
+.btnPaste svg {
+    width: 14px;
+    height: 14px;
+}
+
+.helpText {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.helpText svg {
+    flex-shrink: 0;
+}
+
+.errorMessage {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #dc2626;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.errorMessage svg {
+    flex-shrink: 0;
+}
+
+.titleModal {
+    margin-bottom: 0 !important;
+}
+
+.subtitleModal {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Input Group */
+.inputGroup {
+    margin-bottom: 10px;
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.txtInputs.error {
+    border-color: #dc2626;
+}
+
+.txtInputs.success {
+    border-color: #16a34a;
+}
