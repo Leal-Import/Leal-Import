@@ -2,6 +2,7 @@
 
 import { existsById } from "../../utils/dom.js";
 import { safeParseFloat } from "../../utils/validators.js";
+import { paymentsState } from "../state/payments.state.js";
 
 /* ===== CRUD DE PAYMENTS ===== */
 
@@ -36,4 +37,9 @@ export function buildPaymentsPayload(state) {
         })),
         paymentsToDelete: state.paymentsToDelete
     };
+}
+
+export function getMethodNameById(idPaymentMethod) {
+    const method = paymentsState.paymentMethods.find(m => m.idPaymentMethod === idPaymentMethod);
+    return method ? method.methodName : 'Desconocido';
 }

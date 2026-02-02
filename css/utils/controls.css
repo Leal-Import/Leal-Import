@@ -1,0 +1,186 @@
+.txtSearchData {
+    padding: 7px 16px 7px 44px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23a0aec0' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 20px;
+    font-size: var(--font-size-base);
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    max-width: 60%;
+    flex: 1;
+}
+
+.txtSearchData:focus {
+    outline: none;
+    border-color: var(--danger-color);
+    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.15);
+    transform: translateY(-1px);
+}
+
+.cmbFilterData {
+    padding: 8px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #2d3748;
+    min-width: 200px;
+}
+
+.cmbFilterData:hover {
+    border-color: var(--helper-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.cmbFilterData:focus {
+    outline: none;
+    border-color: var(--danger-color);
+    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.15);
+}
+
+.btnPrimary {
+    background-color: var(--danger-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: var(--border-radius-btn);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+    text-decoration: none;
+}
+
+.btnSecondary {
+    border: 1px solid var(--danger-color);
+    cursor: pointer;
+    color: var(--danger-color);
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all 0.3s ease;
+    background: var(--bg-color-white);
+}
+
+.btnSecondary:hover {
+    background: rgba(211, 24, 19, 0.05);
+    transform: translateY(-2px);
+}
+
+
+.btnOpenModal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 30px;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(211, 24, 19, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.btnOpenModal::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btnOpenModal:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btnOpenModal:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(211, 24, 19, 0.35);
+}
+
+.btnIcon {
+    font-size: 1.4em;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Botón submit */
+.btnSubmitData {
+    margin-top: 15px;
+    padding: 7px 25px;
+    font-size: var(--font-size-base);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(211, 24, 19, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    align-self: end;
+}
+
+.btnSubmitData:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(211, 24, 19, 0.35);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.rowFields {
+    display: flex;
+    gap: 10px;
+}
+
+.lblInputs {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+}
+
+.txtInputs {
+    padding: 7px 12px !important;
+    border: 2px solid #E8E8E8;
+    border-radius: 12px;
+    font-size: var(--font-size-sm);
+    transition: all 0.3s ease;
+    background: var(--bg-color);
+}
+
+.txtInputs:focus {
+    outline: none;
+    border-color: var(--danger-color);
+    background: var(--bg-color-white);
+    box-shadow: 0 0 0 4px rgba(211, 24, 19, 0.08);
+}
+
+.txtInputs:disabled {
+    background: #edf2f7;
+    color: #718096;
+    cursor: not-allowed;
+}
+
+.txtInputs::placeholder {
+    color: var(--text-color-secondary);
+    opacity: 0.6;
+}
+
+textarea {
+    resize: none;
+}

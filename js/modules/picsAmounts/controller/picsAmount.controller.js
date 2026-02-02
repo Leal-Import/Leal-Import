@@ -27,8 +27,8 @@ export let clearCurrentFile = () => {
 
     const btn = inputElement?.nextElementSibling;
     btn?.classList.remove("receipt-loaded");
-
-    closeModalAndClean();
+    btn.innerHTML = `<span class="icon">Añadir comprobante</span>`;
+    updateModalContent(null, payment);
 };
 
 
@@ -37,15 +37,16 @@ export let selectFile = (e, payment) => {
     if (!file) return;
 
     const inputId = inputIdField.value;
-    const paymentRow = $(inputId).closest('.paymentRow');
+    const paymentItem = $(inputId).closest('.paymentItem');
     // Guardar archivo en selectedAmounts
     payment.file = file;
     updateModalContent(null, payment);
 
     // Actualizar botón del abono para indicar que hay archivo
     $(inputId).dataset.payId = payment.id;
-    const btn = paymentRow.querySelector('.btnVoucher');
+    const btn = paymentItem.querySelector('.btnAddPayment');
     btn.classList.add('receipt-loaded');
+    btn.innerHTML = `<span class="icon">Ver comprobante</span>`;
 }
 
 export const closeModalAndClean = () => {

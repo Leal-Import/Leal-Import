@@ -1,0 +1,239 @@
+.rightColumn,
+.rightColumn form {
+    display: flex;
+    flex-direction: column;
+}
+
+.rightColumn {
+    width: 450px !important;
+    padding: 24px;
+    background: var(--bg-color-white);
+    border: var(--border);
+    border-radius: 16px;
+    position: sticky;
+    top: 24px;
+    height: fit-content;
+}
+
+.formRightColumn{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.headerPanel {
+    padding-bottom: 16px;
+    border-bottom: var(--border);
+}
+
+.titlePanel {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.subtitlePanel {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.paymentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: #f7fafc;
+    border-radius: 12px;
+}
+
+.paymentsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.paymentItem {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    background: #f7fafc;
+    border-radius: 10px;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.paymentItemActions{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: end;
+    align-items: end;
+    height: 100%;
+}
+
+.paymentItem:hover {
+    background: #e6f2ff;
+    border-color: var(--danger-color);
+}
+
+.paymentInfo {
+    flex: 1;
+}
+
+.paymentMethod {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.paymentAmount {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--danger-color);
+}
+
+.lblInputs {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 8px;
+}
+
+.summarySection {
+    padding: 16px;
+    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    color: var(--bg-color-white);
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.summaryRow:last-child {
+    margin-bottom: 0;
+    padding-top: 12px;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.summaryLabel {
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+}
+
+.summaryValue {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+}
+
+.summaryTotal {
+    font-size: var(--font-size-lg);
+}
+
+.actionButtons{
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-lg);
+}
+
+/* ================================
+   HEADER
+   ================================ */
+
+
+.viewVechicleContainer a[href] {
+    color: var(--danger-color);
+}
+
+/* Tabla general del panel */
+.rightColumn .tableContainer {
+    width: 100%;
+    border-radius: 2px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border: var(--border);
+    padding: 0 !important;
+    margin-bottom: 10px;
+}
+
+.rightColumn .table th,
+.rightColumn .table td {
+    padding: 10px;
+    text-align: left;
+    font-size: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.rightColumn .table tr:nth-child(2n) {
+    background-color: #eee
+}
+
+.rightColumn .table th {
+    background: #eee;
+    font-weight: 600;
+}
+
+.rightColumn .rowNoData td {
+    text-align: center;
+    padding: 25px 0;
+}
+
+/* ================================
+   BODY
+   ================================ */
+
+.actionsPayments .btnTrash {
+    position: static;
+}
+
+.rightColumn .tableContainer .txtInputs {
+    padding: 8px 5px;
+    width: 100%;
+}
+
+.tdMethod {
+    width: 45%;
+}
+
+.rightColumn th {
+    border-bottom: var(--border) !important;
+}
+
+.btnTrash {
+    border: none;
+    height: 24px;
+    width: 24px;
+    background-color: transparent;
+}
+
+.containerImgSuggest img,
+.btnTrash img {
+    width: 100%;
+    height: 100%;
+}
+
+/* ================================
+   FOOTER
+   ================================ */
+.lbl {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+}
+
+#btnAddPayment {
+    align-self: end;
+    padding: 0px 20px;
+}

@@ -6,8 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="../css/sparePartsDetails.css">
-    <title>Repuestos</title>
+    <link rel="stylesheet" href="../css/modules/spareParts/sparePartsDetails.css">
+    <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/modal.css">
+    <link rel="stylesheet" href="../css/utils/modalLinkExtra.css">
+    <title>Repuestos - Detalles</title>
 </head>
 
 <body>
@@ -15,60 +19,73 @@
         <div id="sidebar"></div>
         <form class="content" id="frmSpareParts">
             <div class="headerContent">
-                <div class="breadcrumbSection">
+                <div class="breadCrumbSection">
                     <a href="spareParts.html" class="breadcrumb" id="titleBread">Repuestos ></a>
                     <a class="breadcrumb" id="typeAction">Agregar repuesto</a>
                 </div>
             </div>
+
             <div>
+                <!-- Modal para enlaces -->
+
                 <div class="containerModal hide" id="modalLink">
                     <div class="modalAdd">
                         <button class="btnClose" type="button" id="btnCloseLink">
                             <img src="../media/appMedia/closeIcon.svg" alt="">
                         </button>
-                        <h2 class="titleModal" id="modalLinkTitle">Agregar enlace</h2>
-                        <input type="text" id="txtLink" class="txtInputs"
-                            placeholder="Pega tu url aquí ej: https://www.ejemplo.com" maxlength="1000">
-                        <button class="btnPrimary btnSubmitData" id="btnSaveLink" type="button">
+                        <div class="modalHeader">
+                            <h2 class="titleModal" id="modalLinkTitle">Enlace del lote</h2>
+                            <p class="subtitleModal">Ingresa la URL del lote que deseas vincular a este registro</p>
+                        </div>
+
+                        <div class="inputGroup">
+                            <label for="txtLink" class="lblInputs">URL del lote</label>
+                            <div class="inputWrapper">
+                                <input type="url" id="txtLink" name="txtLink" class="txtInputs txtInputWithIcon"
+                                    placeholder="https://www.ejemplo.com/lote/45" maxlength="1000">
+                                <button class="btnPaste" type="button" id="btnPasteLote">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                    Pegar
+                                </button>
+                            </div>
+                            <p class="helpText">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                Debe ser una URL válida que comience con https://
+                            </p>
+                            <p class="errorMessage" id="errorLinkLote" style="display: none;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                Por favor ingresa una URL válida
+                            </p>
+                        </div>
+                        <button class="btnPrimary btnSubmitData btnSaveLink" id="btnSaveLink" type="button">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
                             Guardar enlace
                         </button>
                     </div>
                 </div>
 
-                <fieldset class="sparePartData">
-                    <legend>Datos del repuesto</legend>
-                    <div class="rowFields">
-                        <div class="formGroup" style="position: relative;">
-                            <label for="txtPartName" class="lblInputs">Nombre</label>
-                            <input type="text" class="txtInputs" id="txtPartName" name="txtPartName" maxlength="250">
-                            <button class="btnLink btnPrimary" type="button" id="btnOpenLinkBill">Enlace</button>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtPartBrand" class="lblInputs">Marca</label>
-                            <input type="text" class="txtInputs" id="txtPartBrand" name="txtPartBrand" maxlength="50">
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtPartModel" class="lblInputs">Modelo</label>
-                            <input type="text" class="txtInputs" id="txtPartModel" name="txtPartModel" maxlength="50">
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtPartYear" class="lblInputs">Año</label>
-                            <input type="text" class="txtInputs" id="txtPartYear" name="txtPartYear" maxlength="15">
-                        </div>
-                        <div class="formGroup">
-                            <label for="cmbPartStatus" class="lblInputs">Estado</label>
-                            <select id="cmbPartStatus" name="cmbPartStatus" class="txtInputs"></select>
-                        </div>
-                    </div>
-                </fieldset>
+                <!-- Sección de imagen -->
                 <div class="imgData">
                     <div class="containerImgPart" id="dropZone">
                         <span id="placeholderMsg">Arrastra una imagen aquí o haz clic en "Añadir"</span>
-                        <img id="imgPart" style="display: none;">
+                        <img id="imgPart" style="display: none;" alt="Vista previa">
                     </div>
 
                     <div class="containerActionsImg">
@@ -79,43 +96,92 @@
                     <input type="file" id="fileInput" accept="image/*" hidden>
                 </div>
 
+                <!-- Datos del repuesto -->
+                <fieldset class="sparePartData">
+                    <legend>Datos del repuesto</legend>
+                    <div class="rowFields">
+                        <div class="formGroup" style="position: relative;">
+                            <label for="txtPartName" class="lblInputs">Nombre</label>
+                            <input type="text" class="txtInputs" id="txtPartName" name="txtPartName"
+                                placeholder="Ej: Filtro de aire" maxlength="250">
+                            <button class="btnLink btnPrimary" type="button" id="btnOpenLinkBill">Enlace</button>
+                        </div>
+                        <div class="formGroup">
+                            <label for="txtPartBrand" class="lblInputs">Marca</label>
+                            <input type="text" class="txtInputs" id="txtPartBrand" name="txtPartBrand"
+                                placeholder="Ej: Toyota, Honda" maxlength="50">
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtPartModel" class="lblInputs">Modelo</label>
+                            <input type="text" class="txtInputs" id="txtPartModel" name="txtPartModel"
+                                placeholder="Ej: Corolla 2020" maxlength="50">
+                        </div>
+                    </div>
+                    <div class="rowFields">
+                        <div class="formGroup">
+                            <label for="txtPartYear" class="lblInputs">Año</label>
+                            <input type="text" class="txtInputs" id="txtPartYear" name="txtPartYear" placeholder="2024"
+                                maxlength="15">
+                        </div>
+                        <div class="formGroup">
+                            <label for="cmbPartStatus" class="lblInputs">Estado</label>
+                            <select id="cmbPartStatus" name="cmbPartStatus" class="txtInputs">
+                                <option value="">Selecciona un estado</option>
+                                <option value="nuevo">Nuevo</option>
+                                <option value="usado-excelente">Usado - Excelente</option>
+                                <option value="usado-bueno">Usado - Bueno</option>
+                                <option value="reparado">Reparado</option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Costos de importación -->
                 <fieldset class="costsData">
-                    <legend>Costos de importacion</legend>
+                    <legend>Costos de importación</legend>
                     <div class="rowFields">
                         <div class="formGroup" style="position: relative;">
                             <label for="txtTracking" class="lblInputs">Tracking</label>
-                            <input type="text" class="txtInputs" id="txtTracking" name="txtTracking" maxlength="11">
+                            <input type="text" class="txtInputs" id="txtTracking" name="txtTracking"
+                                placeholder="TRK-000000" maxlength="11">
                             <button class="btnLink btnPrimary" type="button" id="btnOpenLinkTracking">Enlace</button>
                         </div>
                         <div class="formGroup">
                             <label for="txtPurchasePrice" class="lblInputs">Precio de compra</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtPurchasePrice" name="txtPurchasePrice"
-                                maxlength="11">
+                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtPurchasePrice"
+                                name="txtPurchasePrice" placeholder="0.00" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes" name="txtTaxes" maxlength="11">
+                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes" name="txtTaxes"
+                                placeholder="0.00" maxlength="11">
                         </div>
                     </div>
                     <div class="rowFields">
                         <div class="formGroup">
                             <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
-                            <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice" name="txtSuggestedPrice" maxlength="11">
+                            <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice"
+                                name="txtSuggestedPrice" placeholder="0.00" maxlength="11">
                         </div>
                         <div class="formGroup">
                             <label for="txtTotalCost" class="lblInputs">Costo total</label>
-                            <input type="text" class="txtInputs" id="txtTotalCost" name="txtTotalCost" maxlength="11" disabled>
+                            <input type="text" class="txtInputs txtFormat" id="txtTotalCost" name="txtTotalCost"
+                                placeholder="0.00" maxlength="11" disabled>
                         </div>
                     </div>
                 </fieldset>
             </div>
-            <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" id="btnSaveData"
-                style="padding: 10px 40px;">
+
+            <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" id="btnSaveData">
         </form>
-        <script src="../js/sidebar.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script type="module" src="../js/modules/spareParts/controller/spareParts.detail.controller.js"></script>
+    </div>
+
+    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/modules/spareParts/controller/spareParts.detail.controller.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,51 @@
+
+.suggestions {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--bg-color);
+    border: var(--border);
+    border-top: none;
+    border-bottom-left-radius: var(--border-radius-btn);
+    border-bottom-right-radius: var(--border-radius-btn);
+    box-shadow: var(--bx-shadow-modal);
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10;
+}
+
+.suggestionItem {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    cursor: pointer;
+    width: 100%;
+    border-bottom: var(--border);
+}
+
+.suggestionItem:nth-child(2n) {
+    background-color: #f3f3f3;
+}
+
+.suggestionItem:hover {
+    opacity: .5;
+}
+
+.suggestionItem .clientName {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-lg);
+    color: #222;
+}
+
+.suggestionItem .clientDui {
+    font-size: var(--font-size-sm);
+    color: #666;
+}
+
+.containerSuggest {
+    position: relative;
+}

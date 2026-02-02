@@ -6,6 +6,7 @@ import {
 import { renderPayments } from '../../core/dom/payments.dom.js';
 import { getPaymentMethods } from '../../service/configuration.service.js';
 import { paymentsState } from '../../core/state/payments.state.js';
+import { $, fillSelect } from '../../utils/dom.js';
 
 /* Aca se cargan todos los metodos de pago */
 export async function loadPayMethods() {
@@ -13,6 +14,7 @@ export async function loadPayMethods() {
         const roles = await getPaymentMethods();
         // Tu API puede devolver array o { content: [...] }
         paymentsState.paymentMethods = Array.isArray(roles) ? roles : (roles?.content || []);
+        fillSelect($("paymentMethod"), paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Metodo de pago");
     } catch (error) {
         console.error('Error al cargar métodos de pago:', error);
         paymentsState.paymentMethods = [];
@@ -32,11 +34,11 @@ export async function initPaymentsController({ totalCalculator, onStateChange, c
 ====================================================== */
 
 export function addNewPayment({ state, totals, payment }) {
-    console.log('Adding new payment:', payment);
     addPayment(state, payment || {});
     totals.totalPaid = state.payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
     render(state.payments, totals, state.paymentsToDelete);
     paymentsState.onSaveState?.();
+    paymentsState.onCalculateTotal();
 }
 
 let onDeletePayment = (payments, index, totals, paymentsToDelete) => {
@@ -77,7 +79,6 @@ export let onResetPayments = (state, totals) => {
     totals.totalPaid = 0;
     totals.due = 0;
     totals.total = 0;
-    addNewPayment({state, totals})
 }
 
 export function render(payments, totals, paymentsToDelete) {

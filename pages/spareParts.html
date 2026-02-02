@@ -5,92 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/spareParts.css">
-    <link rel="stylesheet" href="../css/pagination.css">
+    <link rel="stylesheet" href="../css/modules/spareParts/spareParts.css">
+    <link rel="stylesheet" href="../css/utils/pagination.css">
+    <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/cards.css">
     <title>Repuestos</title>
 </head>
 
 <body>
-    <div class="containerModal hide" id="modalSpareParts">
-        <form class="modalAdd">
-            <div class="headContentModal">
-                <button id="closeAddEmployee" type="button" class="btnClose">
-                    <img src="../media/appMedia/closeIcon.svg" alt="Boton cerrar modal">
-                </button>
-                <div class="breadCrumbSeccionModal">
-                    <h2 class="breadcrumbModal">
-                        <img src="../media/appMedia/BoxParts.svg" alt="icono repuesto" class="iconModal">
-                        Registrar un nuevo repuesto
-                    </h2>
-                    <p class="date">Última actualización: <span id="lastUpdateDate">29 oct 2025</span></p>
-                </div>
-            </div>
-            <div action="" class="formModal">
-                <div class="seccionGrid">
-                    <div class="partsImg">
-                        <div class="borderImg">
-                            <img src="../media/appMedia/defaultImg.svg" alt="Imagen previa" class="previewimg">
-                            <input type="file" class="inputFileImg" id="fileInput" hidden>
-                        </div>
-                        <div class="btnGroup">
-                            <button type="button" class="btn btnPrimary">Subir foto</button>
-                            <button type="button" class="btn btnDelete">Eliminar</button>
-                        </div>
-                    </div>
-                    <div class="formInputs">
-                        <div class="formGroup">
-                            <label for="" class="lblInputs">Nombre</label>
-                            <input type="text" class="txtInputs" placeholder="Filtro de aire" required>
-                        </div>
-                        <div class="formGroup">
-                            <label for="" class="lblInputs">Marca</label>
-                            <input type="text" class="txtInputs" placeholder="Yamaha" required>
-                        </div>
-                        <div class="formGroup">
-                            <label for="" class="lblInputs">Año</label>
-                            <input type="text" class="txtInputs" placeholder="2025" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="seccionGrid2">
-                    <div class="formGroup">
-                        <label for="descripcion" class="lblInputs">Descripción</label>
-                        <textarea class="txtInputs descripcion" placeholder="Yamaha" required></textarea>
-                    </div>
-                    <div class="formGroupGrid">
-                        <div class="inputGroup">
-                            <label for="tipo" class="lblInputs">Tipo de repuesto</label>
-                            <select class="selectInput" required>
-                                <option value="Mecanica">Mecánica</option>
-                                <option value="Electrica">Eléctrica</option>
-                            </select>
-                        </div>
-                        <div class="inputGroup">
-                            <label for="precio" class="lblInputs">Precio</label>
-                            <input type="number" step="0.01" min="0" placeholder="0.00" class="txtInputs" required>
-                        </div>
-                        <div class="inputGroup">
-                            <label for="stock" class="lblInputs">Stock</label>
-                            <input type="number" class="txtInputs" placeholder="150" required>
-                        </div>
-                    </div>
-                    <div class="formGroup radioGroup">
-                        <div class="radioOptions">
-                            <label class="lblInputs">
-                                <input type="radio" name="estado" value="nuevo"> Nuevo
-                            </label>
-                            <label class="lblInputs">
-                                <input type="radio" name="estado" value="reparado"> Reparado
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="btnGroupModal">
-                    <input type="submit" class="btn btnPrimary" value="Guardar">
-                </div>
-            </div>
-        </form>
-    </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
@@ -119,9 +42,8 @@
                                 <select id="cmbSearchByStatus" class="cmbFilterData">
                                     <option value="">Filtrar por estado</option>
                                 </select>
-                                <a href="sparePartsDetails.html" class="btnPrimary btnOpenModal"
-                                    style="display: grid; place-content: center; text-decoration: none;">Añadir</a>
                             </div>
+                            <a href="sparePartsDetails.html" class="btnPrimary btnOpenModal">Añadir</a>
                         </div>
                     </div>
                 </div>

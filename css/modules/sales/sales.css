@@ -1,6 +1,3 @@
-.breadCrumbSection {
-    margin-bottom: 1em;
-}
 
 .containerFilterType {
     display: flex;
@@ -51,10 +48,6 @@
     display: flex;
     width: 100%;
     gap: 10px;
-}
-
-.txtSearchData {
-    flex: 1;
 }
 
 .panelContainer {
@@ -237,14 +230,31 @@
     font-weight: var(--font-weight-medium);
 }
 
-/* Modal */
 
-.containerModal{
-    --width-modal: clamp(300px, 65%, 650px);
+/* Modal Header */
+.modalHeader {
+    text-align: center;
+    margin-bottom: 15px;
 }
 
-.titleModal{
-    font-size: 1.9em;
+/* Option Card with Image Background */
+.optionSale {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: var(--bg-color);
+    border: 3px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: var(--danger-color);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-title);
 }
 
 .containerOptions{
@@ -254,17 +264,98 @@
     gap: 10px;
 }
 
-.optionSale{
-    flex: 1;
-    border: solid 1px;
+.optionSale:hover {
+    border-color: #e53e3e;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(229, 62, 62, 0.15);
+}
+
+.optionSale:active {
+    transform: translateY(-2px);
+}
+
+/* Option Image Container */
+.optionImageContainer {
+    min-height: 100px;
+    width: 100%;
+    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
     display: flex;
-    justify-content: center;
     align-items: center;
-    text-decoration: none;
-    border-radius: 10px;
-    height: 200px;
-    background-color: #c6c6c669;
-    color: var(--danger-color);
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-title);
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Pattern overlay */
+.optionImageContainer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+}
+
+.optionImageContainer svg {
+    width: 70px;
+    height: 70px;
+    color: white;
+    z-index: 1;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.optionSale:hover .optionImageContainer svg {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Alternative gradient for second card */
+.optionSale:nth-child(2) .optionImageContainer {
+    background: linear-gradient(135deg, var(--warning-color) 0%, #f5576c 100%);
+}
+
+/* Option Content */
+.optionContent {
+    padding: 24px;
+    text-align: center;
+}
+
+.titleOption {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 8px;
+}
+
+.optionDescription {
+    font-size: 14px;
+    color: #718096;
+    line-height: 1.6;
+}
+
+/* Additional hover effects */
+.optionSale:hover .optionContent {
+    background: linear-gradient(to bottom, transparent 0%, rgba(229, 62, 62, 0.02) 100%);
+}
+
+/* Focus states for accessibility */
+.btnClose:focus,
+.optionSale:focus {
+    outline: 2px solid #e53e3e;
+    outline-offset: 2px;
+}
+
+/* Loading state (optional) */
+.optionSale.loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.optionSale.loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

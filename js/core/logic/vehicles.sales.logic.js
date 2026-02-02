@@ -156,7 +156,7 @@ export function buildPutSalePayload(state) {
             fd.append(p.idPayment, p.file);
         } else {
             // nuevo comprobante
-            fd.append('newPaymentImages', p.file);
+            fd.append('paymentImages', p.file);
         }
     }
 

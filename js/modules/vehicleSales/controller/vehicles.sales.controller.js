@@ -21,6 +21,7 @@ import { initVehicleSaleEvents } from '../event/vehicles.sales.events.js';
 import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
 
 import {
+    cleanPaymentCamps,
     insertVehicles,
     loadCustomerName,
     loadDomData,
@@ -134,10 +135,23 @@ const onCancelVehicle = () => {
 
 /* ================= PAYMENTS ================= */
 const onAddPayment = () => {
+    const amount = $('txtAmount').value.trim();
+    const method = $('paymentMethod').value;
+    const errorMsg = validatePayment(safeParseFloat(amount), method);
+    if (errorMsg) {
+        showMessage('Error de validación', errorMsg, 'warning');
+        return;
+    }
+    const payment = {
+        amount: safeParseFloat(amount) || 0,
+        idPaymentMethod: method || null
+    }
     addNewPayment({
         state: vehicleSaleState.data,
-        totals: vehicleSaleState.totals
+        totals: vehicleSaleState.totals,
+        payment
     });
+    cleanPaymentCamps();
 };
 
 /* ================= SUBMIT ================= */
@@ -225,8 +239,6 @@ async function loadExistingSale() {
             payment: p
         });
     });
-
-    render(vehicleSaleState.data.payments, vehicleSaleState.totals, vehicleSaleState.data.paymentsToDelete);
     recalculateTotals();
     saveSaleState();
 }
@@ -243,8 +255,13 @@ const loadDraft = async () => {
         const vehicle = await getVehicleById(vehicleSaleState.idVehicle);
         loadVehicle(vehicle);
     }
-
-    render(vehicleSaleState.data.payments, vehicleSaleState.totals, vehicleSaleState.data.paymentsToDelete);
+    vehicleSaleState.data.payments.forEach(p => {
+        addNewPayment({
+            state: vehicleSaleState.data,
+            totals: vehicleSaleState.totals,
+            payment: p
+        });
+    });
     recalculateTotals();
 };
 
@@ -283,16 +300,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         createReceiptBtn: createBtnUrl
     });
     loadCustomerName(vehicleSaleState.context.customerName);
-    initVehicleSaleEvents({ onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
-
-    initializeModalListeners(vehicleSaleState.data);
+    
     if (vehicleSaleState.context.idSale) {
         await loadExistingSale();
+    } else if (vehicleSaleState.context.idVehicle) {
+        const vehicle = await getVehicleById(vehicleSaleState.context.idVehicle);
+        loadVehicle(vehicle);
     } else if (existSavedData()) {
         loadDraft();
-    } else {
-        onAddPayment();
     }
-
+    
+    initVehicleSaleEvents({ onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
+    initializeModalListeners(vehicleSaleState.data);
     await loadInventory();
 });

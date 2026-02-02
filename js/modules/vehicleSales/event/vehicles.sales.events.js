@@ -8,6 +8,7 @@ export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAd
     const txtTotal = $("txtTotal");
     const frmVehicleSale = $("frmVehicleSale");
     const btnAddPayment = $("btnAddPayment");
+    const txtAmount = $("txtAmount");
     const btnCancelVehicle = $("btnCancelVehicle");
     const btnAddPart = $("btnAddPart");
     let searchTimeout = null;
@@ -22,6 +23,9 @@ export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAd
 
     if (btnAddPayment) {
         btnAddPayment.addEventListener("click", onAddPayment);
+        txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
+        txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
+        formatDecimalInput(txtAmount);
     }
 
     if (btnCancelVehicle) {

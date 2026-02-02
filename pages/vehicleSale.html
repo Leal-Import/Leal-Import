@@ -4,14 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/vehicleSale.css">
-    <link rel="stylesheet" href="../css/salesStyles/panelSalesStyles.css">
-    <link rel="stylesheet" href="../css/salesStyles/vehicleView.css">
-    <link rel="stylesheet" href="../css/salesStyles/modalVoucher.css">
-    <link rel="stylesheet" href="../css/salesStyles/tableSales.css">
-    <link rel="stylesheet" href="../css/pagination.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/modules/vehicleSale/vehicleSale.css">
+    <link rel="stylesheet" href="../css/utils/salesStyles/panelSalesStyles.css">
+    <link rel="stylesheet" href="../css/utils/salesStyles/vehicleView.css">
+    <link rel="stylesheet" href="../css/utils/salesStyles/modalVoucher.css">
+    <link rel="stylesheet" href="../css/utils/salesStyles/tableSales.css">
+    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/pagination.css">
+    <link rel="stylesheet" href="../css/utils/modal.css">
+    <link rel="stylesheet" href="../css/globalStyles.css">
     <title>Agregar venta</title>
 </head>
 
@@ -21,18 +24,78 @@
             <button id="closeVoucherModal" class="btnClose" type="button">
                 <img src="../media/appMedia/closeIcon.svg" alt="Cerrar">
             </button>
-            <h2>
-                Comprobante de abono
-                <span id="modalAbonoTitle" style="font-weight: 400; font-size: 0.9em; color: #777;"></span>
-            </h2>
-            <div id="modalPreviewArea" class="preview-area"></div>
-            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: center;">
-                <button id="btnSelectFile" class="btnPrimary" type="button">Seleccionar comprobante</button>
-                <button id="btnClearFile" class="btnSecondary hide" type="button">
-                    Eliminar Comprobante
-                </button>
+
+            <div class="headerModalVoucher">
+                <div class="header-content">
+                    <h2>Comprobante de Abono</h2>
+                    <p class="header-subtitle">
+                        Abono <span id="modalAbonoTitle"></span> • Sube tu comprobante de pago
+                    </p>
+                </div>
             </div>
+
+            <div class="bodyModalVoucher">
+                <div id="modalPreviewArea" class="preview-area">
+                    <!-- Estado vacío - se muestra cuando no hay archivo -->
+                    <div class="empty-state">
+                        <div class="upload-icon-wrapper">
+                            <div class="upload-icon"></div>
+                        </div>
+                        <div class="upload-content">
+                            <h3 class="upload-title">Selecciona tu comprobante</h3>
+                            <p class="upload-description">Arrastra y suelta tu archivo aquí o haz clic en el botón</p>
+                            <p class="upload-formats">JPG, PNG o PDF • Máximo 10MB</p>
+                        </div>
+                    </div>
+
+                    <!-- Estado con imagen - se muestra cuando hay archivo (añadir clase 'has-file' al preview-area) -->
+                    <!-- Este contenido se añadirá dinámicamente por JS
+                <div class="preview-content">
+                    <div class="preview-image-wrapper">
+                        <button class="zoom-btn" type="button" aria-label="Ampliar imagen">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM13 10l4 4M13 6l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <img src="" alt="Comprobante" class="preview-image">
+                        <div class="preview-overlay">
+                            <div class="file-details">
+                                <svg class="file-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M9 1H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-6-6z" stroke="currentColor" stroke-width="1.5"/>
+                                    <path d="M9 1v6h6" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <div class="file-info">
+                                    <span class="file-name">documento.jpg</span>
+                                    <span class="file-size">2.4 MB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+                </div>
+
+                <div class="modal-actions">
+                    <button id="btnSelectFile" class="btnPrimary" type="button">
+                        <svg class="btn-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M9 1v16M16 9H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                        <span>Seleccionar comprobante</span>
+                    </button>
+                    <button id="btnClearFile" class="btnSecondary hide" type="button">
+                        <svg class="btn-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        <span>Eliminar Comprobante</span>
+                    </button>
+                </div>
+            </div>
+
             <input type="hidden" id="currentReceiptInputId">
+
+            <!-- Input file oculto para selección de archivos -->
+            <input type="file" id="fileInputHidden" accept="image/*,.pdf" style="display: none;">
         </div>
     </div>
     <div class="bodyContent">
@@ -203,42 +266,66 @@
             </div>
             <div class="rightColumn">
                 <form class="formRightColumn" id="frmVehicleSale">
-                    <div class="bodyRightColumn">
-                        <div class="tableContainer">
-                            <table class="paymentsTable table">
-                                <thead>
-                                    <tr>
-                                        <th>Monto</th>
-                                        <th class="tdMethod">Método</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="amounts" class="amounts"></tbody>
-                            </table>
+                    <div class="headerPanel">
+                        <h3 class="titlePanel">Resumen de Pago</h3>
+                        <p class="subtitlePanel">Gestiona los abonos y métodos de pago</p>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <div class="paymentForm">
+                        <div class="formGroup">
+                            <label class="lblInputs" for="txtAmount">Abono</label>
+                            <input type="text" class="txtInputs" placeholder="Abono" id="txtAmount">
                         </div>
-                        <button class="btnPrimary" id="btnAddPayment" type="button">Agregar</button>
-                        <div class="containerAmountDue" id="containerAmountDue">
-                            <h3>Deuda:</h3>
-                            <span id="due"></span>
+                        <div class="formGroup">
+                            <label class="lblInputs" for="paymentMethod">Método de pago</label>
+                            <select name="paymentMethod" class="txtInputs" id="paymentMethod"></select>
+                        </div>
+                        <button id="btnAddPayment" class="btnPrimary" type="button">Añadir abono</button>
+                    </div>
+
+                    <!-- Payments List -->
+                    <div class="paymentsList" id="paymentsList"></div>
+
+                    <!-- Summary -->
+                    <div class="summarySection">
+                        <div class="summaryRow">
+                            <span class="summaryLabel">Total:</span>
+                            <span class="summaryValue" id="totalVehicle"></span>
+                        </div>
+                        <div class="summaryRow">
+                            <span class="summaryLabel">Total abonado:</span>
+                            <span class="summaryValue" id="totalPaid"></span>
+                        </div>
+                        <div class="summaryRow">
+                            <span class="summaryLabel">Deuda:</span>
+                            <span class="summaryValue summaryTotal" id="due"></span>
                         </div>
                     </div>
-                    <div class="footerRightColumn">
-                        <div class="formGroup">
-                            <label for="txtNotes" class="lbl">Notas adicionales</label>
-                            <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtCommission" class="lbl">Comision</label>
-                            <input type="text" id="txtCommission" class="txtInputs" required>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtTotal" class="lbl">Precio final del vehiculo</label>
-                            <input type="text" id="txtTotal" class="txtInputs" required>
-                        </div>
-                        <div class="containerButtons">
-                            <a class="btnSecondary btnCreateWO" id="btnCreateOrder">Vender y crear orden</a>
-                            <input type="submit" value="Vender" class="btnPrimary btnSubmitData" id="btnAddSale">
-                        </div>
+
+                    <!-- Additional Notes -->
+                    <div class="formGroup">
+                        <label class="lblInputs" for="txtNotes">Notas adicionales</label>
+                        <textarea class="txtInputs" id="txtNotes" placeholder="Agrega notas sobre la venta..."
+                            rows="4"></textarea>
+                    </div>
+
+                    <!-- Commission -->
+                    <div class="formGroup">
+                        <label class="lblInputs" for="txtCommission">Comisión</label>
+                        <input type="text" class="txtInputs" id="txtCommission" placeholder="$0.00">
+                    </div>
+
+                    <!-- Final Price -->
+                    <div class="formGroup">
+                        <label class="lblInputs" for="txtTotal">Precio final del vehículo</label>
+                        <input type="text" class="txtInputs" id="txtTotal" placeholder="$0.00">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="actionButtons">
+                        <button class="btnSecondary" id="btnCreateOrder">Vender y crear orden</button>
+                        <button class="btnPrimary" id="btnSaveSale">Vender</button>
                     </div>
                 </form>
             </div>

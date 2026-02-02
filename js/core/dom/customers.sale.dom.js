@@ -1,25 +1,5 @@
-import { getCustomers } from "../service/customers.service.js";
 
-const params = new URLSearchParams(window.location.search);
-
-const type = params.get("type");
-
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadCustomers();
-})
-
-let loadCustomers = async () => {
-    const customers = await getCustomers();
-    insertCustomers(customers.content);
-}
-
-/* ========================================
-   FUNCIÓN insertCustomers ADAPTADA
-   Solo usando createElement, append y createDocumentFragment
-   ======================================== */
-
-let insertCustomers = (customers) => {
-    const container = document.querySelector(".containerCustomers");
+export let insertCustomers = (container, customers, type) => {
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
     
