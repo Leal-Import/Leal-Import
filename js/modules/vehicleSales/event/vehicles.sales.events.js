@@ -23,6 +23,9 @@ export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAd
 
     if (btnAddPayment) {
         btnAddPayment.addEventListener("click", onAddPayment);
+    }
+
+    if (txtAmount) {
         txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
         txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
         formatDecimalInput(txtAmount);

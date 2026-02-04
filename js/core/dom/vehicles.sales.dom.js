@@ -168,8 +168,7 @@ export let loadDomData = (data) => {
     $("txtTotal").value = `$${formatWithCommas(data.salePrice)}`;
     $("txtCommission").value = `$${formatWithCommas(data.commission)}`
     $("btnSaveSale").textContent = "Actualizar venta";
-    $("btnCreateOrder").classList.add("hide");
-    $("btnCancelVehicle").classList.add("hide");
+    $("btnCreateOrder").replaceWith(document.createElement("div"));
 }
 
 

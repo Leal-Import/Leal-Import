@@ -15,6 +15,17 @@
     height: fit-content;
 }
 
+.rightColumn .btnAddPayment {
+    align-self: end;
+    padding: 8px 16px;
+}
+
+.actionButtons .btnPrimary {
+    align-self: end;
+    font-size: var(--font-size-sm);
+    padding: 5px 20px;
+}
+
 .formRightColumn{
     display: flex;
     flex-direction: column;
@@ -231,9 +242,4 @@
 .lbl {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
-}
-
-#btnAddPayment {
-    align-self: end;
-    padding: 0px 20px;
 }

@@ -1,0 +1,389 @@
+/* =======================
+   Layout general
+======================= */
+.content {
+    flex-direction: row;
+}
+
+.leftColumn {
+    flex: 1;
+}
+
+/* =======================
+   Contenedor principal
+======================= */
+.bodyLeftPart {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* =======================
+   Sección vehículo
+======================= */
+.moreDataContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 25px;
+    background: var(--bg-color-white);
+    border: var(--border);
+    border-radius: 12px;
+    box-shadow: var(--bx-shadow-primary);
+    transition: all 0.3s ease;
+}
+
+.moreDataContainer:hover {
+    box-shadow: 0 4px 12px rgba(205, 144, 143, 0.3);
+}
+
+.moreDataContainer h2 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--danger-color);
+    margin-bottom: 0;
+    letter-spacing: -0.3px;
+}
+
+/* =======================
+   Estructura base
+======================= */
+.rowInfo,
+.rowVehicle,
+.rowCosts {
+    display: flex;
+    width: 100%;
+}
+
+.dataInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =======================
+   Labels & valores
+======================= */
+.lblInfo {
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-semibold);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.valueInfo {
+    font-weight: var(--font-weight-regular);
+    font-size: 1.125rem;
+    color: var(--text-color);
+    background: var(--bg-color-white);
+}
+
+/* =======================
+   Fila de vehículo
+======================= */
+.rowVehicle {
+    border-radius: 10px;
+    gap: 10px;
+}
+
+.rowVehicle .dataInfo {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 10px;
+    padding: 15px 20px;
+    overflow: hidden;
+    transition: all 0.5s ease;
+}
+
+.rowVehicle .dataInfo:hover {
+    background: rgba(211, 24, 19, 0.02);
+    border-color: var(--danger-color);
+    box-shadow: 0 6px 16px rgba(211, 24, 19, 0.15);
+    transform: translateY(-2px);
+}
+
+.rowVehicle .dataInfo::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    width: 4px;
+    background: var(--danger-color);
+    transition: opacity 0.3s ease;
+}
+
+/* =======================
+   Fila de costos
+======================= */
+.rowCosts {
+    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 0;
+    box-shadow: var(--bx-shadow-btn-primary);
+    gap: 10px;
+    padding: 10px;
+}
+
+.rowCosts .dataInfo {
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    gap: 10px;
+}
+
+.rowCosts .dataInfo:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.rowCosts .lblInfo {
+    background: transparent;
+    border-bottom: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.75rem;
+    padding: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.rowCosts .valueInfo {
+    background: transparent;
+    color: var(--bg-color-white);
+    font-size: 1.75rem;
+    font-weight: var(--font-weight-semibold);
+    padding: 0;
+}
+
+.rowCosts .totalHighlight {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.rowCosts .valueInfo.danger {
+    font-size: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* =======================
+   Contenedor de tablas
+======================= */
+.tablesDataContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.containerTables {
+    display: flex;
+    gap: 20px;
+}
+
+.containerTables>* {
+    flex: 1;
+}
+
+/* =======================
+   Tabla Container
+======================= */
+.tableContainer {
+    padding: 20px;
+    border-radius: 12px;
+    background-color: var(--bg-color-white);
+    border: var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: var(--bx-shadow-primary);
+    transition: all 0.3s ease;
+}
+
+.tableContainer:hover {
+    box-shadow: 0 4px 12px rgba(205, 144, 143, 0.3);
+}
+
+.tableContainer h2 {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-lg);
+    color: var(--text-color);
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--danger-color);
+    margin-bottom: 0;
+}
+
+.tableContainer .dataInfo {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: var(--bg-color);
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.containerInput {
+    position: relative;
+}
+
+.containerInput input {
+    width: 100%;
+}
+
+.containerInput input::placeholder {
+    color: var(--text-color-secondary);
+    opacity: 0.7;
+}
+
+/* =======================
+   Botón Import
+======================= */
+.btnImport {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    padding: 3px 12px;
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--border-radius-btn);
+    background-color: var(--danger-color);
+    border: none;
+    color: var(--bg-color-white);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+.btnImport:hover {
+    background-color: var(--dark-danger-color);
+    transform: translateY(-50%) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.4);
+}
+
+.btnImport:active {
+    transform: translateY(-50%) translateY(0);
+}
+
+.tdPrice {
+    width: 35%;
+}
+
+.tableSelected{
+    border: var(--border);
+}
+
+.tableSelected tbody td {
+    padding: 0 12px !important;
+}
+
+tr {
+    position: relative;
+    height: 35px !important;
+}
+
+/* =======================
+   Labels de totales
+======================= */
+.lblInfoTotals {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+}
+
+.tableContainer .dataInfo .valueInfo {
+    color: var(--danger-color);
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-semibold);
+    padding: 0;
+}
+
+/* =======================
+   Estados vacíos
+======================= */
+.tBodyData:empty::after {
+    content: 'No hay elementos agregados';
+    display: block;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    font-style: italic;
+}
+
+/* =======================
+   Responsive
+======================= */
+@media (max-width: 1024px) {
+    .containerTables {
+        flex-direction: column;
+    }
+
+    .rowVehicle {
+        flex-wrap: wrap;
+    }
+
+    .rowVehicle .dataInfo {
+        min-width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .moreDataContainer {
+        padding: 20px;
+    }
+
+    .rowVehicle .dataInfo {
+        min-width: 100%;
+    }
+
+    .rowVehicle .dataInfo:not(:first-child) .lblInfo,
+    .rowVehicle .dataInfo:not(:first-child) .valueInfo {
+        border-left: none;
+        border-top: var(--border);
+    }
+
+    .rowCosts {
+        flex-direction: column;
+    }
+
+    .rowCosts .dataInfo:not(:last-child) {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tableContainer {
+        padding: 15px;
+    }
+}
+
+/* =======================
+   Sugerencias
+======================= */
+.containerImgSuggest {
+    height: 40px;
+    width: 40px;
+}
+
+.suggestionPart {
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.containerImgNameSuggest {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}

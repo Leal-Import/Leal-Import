@@ -1,4 +1,7 @@
-
+.modalAdd{
+    padding: 40px !important;
+    --width-modal: clamp(250px, 90%, 550px);
+}
 .modalCustomerBody{
     display: flex;
     flex-direction: column;

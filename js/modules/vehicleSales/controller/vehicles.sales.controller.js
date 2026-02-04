@@ -10,46 +10,21 @@ import { getVehicles as getVehicleById } from '../../../service/vehicles.detail.
 
 import { createPagination } from '../../../pagination/pagination.controller.js';
 
-import {
-    showMessage,
-    $,
-    qs
-} from '../../../utils/dom.js';
+import { showMessage, $, qs } from '../../../utils/dom.js';
 
 import { vehicleSaleState } from '../../../core/state/vehicles.sales.state.js';
 import { initVehicleSaleEvents } from '../event/vehicles.sales.events.js';
 import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
 
-import {
-    cleanPaymentCamps,
-    insertVehicles,
-    loadCustomerName,
-    loadDomData,
-    loadVehicle,
-    renderTotals
-} from '../../../core/dom/vehicles.sales.dom.js';
+import { cleanPaymentCamps, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals } from '../../../core/dom/vehicles.sales.dom.js';
 
-import {
-    buildPostSalePayload,
-    buildPutSalePayload,
-    hydrateContextFromURL,
-    validateSale
-} from '../../../core/logic/vehicles.sales.logic.js';
+import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from '../../../core/logic/vehicles.sales.logic.js';
 
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 
-import {
-    getCurrentEmployeeId,
-    initSession,
-    safeParseFloat
-} from '../../../utils.js';
+import { getCurrentEmployeeId, initSession, safeParseFloat } from '../../../utils.js';
 
-import {
-    addNewPayment,
-    initPaymentsController,
-    onResetPayments,
-    render
-} from '../../payments/payments.controller.js';
+import { addNewPayment, initPaymentsController, onResetPayments } from '../../payments/payments.controller.js';
 import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
 
 /* ================= DOM ================= */
@@ -300,7 +275,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         createReceiptBtn: createBtnUrl
     });
     loadCustomerName(vehicleSaleState.context.customerName);
-    
+
     if (vehicleSaleState.context.idSale) {
         await loadExistingSale();
     } else if (vehicleSaleState.context.idVehicle) {
@@ -309,7 +284,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else if (existSavedData()) {
         loadDraft();
     }
-    
+
     initVehicleSaleEvents({ onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
     initializeModalListeners(vehicleSaleState.data);
     await loadInventory();

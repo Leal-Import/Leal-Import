@@ -1,5 +1,109 @@
-.breadCrumbSection {
-    margin-bottom: 1.5em;
+.statsSection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.statItem {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.statItem::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    opacity: 0.1;
+    transform: translate(30%, -30%);
+}
+
+.statItem:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Estilos específicos para cada estadística */
+.totalVehicle {
+    border-left-color: #10b981;
+}
+
+.totalVehicle::before {
+    background: #10b981;
+}
+
+.stockVehicles {
+    border-left-color: #f59e0b;
+}
+
+.stockVehicles::before {
+    background: #f59e0b;
+}
+
+.soldVehicles {
+    border-left-color: #ef4444;
+}
+
+.soldVehicles::before {
+    background: #ef4444;
+}
+
+.totalSales {
+    border-left-color: #3b82f6;
+    grid-column: span 2;
+}
+
+.totalSales::before {
+    background: #3b82f6;
+}
+
+.statTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statValue {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .statsSection {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .statItem {
+        padding: 20px;
+    }
+    
+    .statValue {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .statsSection {
+        grid-template-columns: 1fr;
+    }
 }
 
 .statTitle {

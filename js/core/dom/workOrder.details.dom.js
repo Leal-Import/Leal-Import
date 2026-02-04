@@ -2,7 +2,7 @@ import { formatDecimalInput, formatWithCommas, formatOnFocus, formatOnBlur } fro
 import { $, existsById, qs, qsa, showElement } from "../../utils/dom.js";
 
 export const loadViewUpdateOrder = (vin) => {
-    qs(".btnSubmitData").value = "Actualizar";
+    $("btnSaveSale").textContent = "Actualizar";
     $("firstBread").textContent = "Actualizar orden >";
     $("firstBread").href = "workOrders.html";
     $("secondBread").textContent = vin;
@@ -15,6 +15,21 @@ export const loadViewSaleInfo = (vin) => {
     $("secondBread").textContent = vin;
 }
 
+export const renderVehicleData = (data) => {
+    if (!data) return;
+    if ($('vin')) $('vin').textContent = data.vin || '-';
+    if ($('model')) $('model').textContent = data.model || '-';
+    if ($('brand')) $('brand').textContent = data.brand || '-';
+    if ($('year')) $('year').textContent = data.year || '-';
+}
+
+export const cleanPaymentCamps = () => {
+    const amountInput = $('txtAmount');
+    const methodSelect = $('paymentMethod');
+    if (amountInput) amountInput.value = '';
+    if (methodSelect) methodSelect.value = '';
+}
+
 export const initStaticRows = () => {
     const tBodys = qsa('.tBodyData');
     tBodys.forEach(tBody => {
@@ -24,10 +39,12 @@ export const initStaticRows = () => {
         for (let i = 0; i < 7; i++) {
             const tr = document.createElement('tr');
             const tdName = document.createElement('td');
-            tdName.className = 'tdName';
+            tdName.classList.add('tdName', 'itemName');
             const tdPrice = document.createElement('td');
-            tdPrice.className = 'tdPrice';
-            tr.append(tdName, tdPrice);
+            tdPrice.classList.add('tdPrice');
+            const tdTrash = document.createElement('td'); // Celda vacía para el botón
+            tdTrash.classList.add('tdTrash');
+            tr.append(tdName, tdPrice, tdTrash);
             frag.appendChild(tr);
         }
         tBody.appendChild(frag);
@@ -101,9 +118,11 @@ export const appendToDom = ({
 
     const nameCell = emptyRow.querySelector('.tdName');
     const priceCell = emptyRow.querySelector('.tdPrice');
+    const tdTrash = emptyRow.querySelector('.tdTrash');
     nameCell.textContent = data.name;
     priceCell.textContent = `$${formatWithCommas(data.priceApplied)}`;
     priceCell.setAttribute('contenteditable', 'true');
+    priceCell.classList.add('finalPrice');
 
     // Botón eliminar
     if (createTrashOption) {
@@ -116,7 +135,7 @@ export const appendToDom = ({
             renderButton,
             tBody
         });
-        emptyRow.appendChild(btn);
+        tdTrash.appendChild(btn);
     }
 
     // Eventos de edición de precio
@@ -143,11 +162,20 @@ export function createTrashOption({
     const btn = document.createElement('button');
     btn.className = 'btnTrash';
     btn.type = 'button';
-    const img = document.createElement('img');
-    img.src = '../../media/appMedia/trashIcon.png';
-    btn.appendChild(img);
+    btn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" 
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"/>
+        </svg>
+    `;
 
-    btn.addEventListener('click', () => onDelete(item, arraySelected, arrayDelete, row, tBody, renderButton));
+    btn.addEventListener('click', () => {
+        onDelete(item, arraySelected, arrayDelete, row, tBody, renderButton)
+        row.querySelector('.tdPrice').classList.remove("finalPrice");
+    });
 
     return btn;
 }
@@ -203,38 +231,20 @@ export function renderImportButton(tBody, onImport) {
 }
 
 
+//A esto todavia le falta diseño
 export function renderTotalsPanel({ total, due, totalPaid }) {
-    const containerTotal = $("containerTotal");
-    const containerDue = $("containerAmountDue");
-    const totalText = $("total");
+    //const totalText = $("total");
     const dueText = $("due");
     const paidText = $('totalPaid');
-    if (totalText) {
-        totalText.textContent = `$${formatWithCommas(total)}`;
-        totalText.classList.add("show")
-    }
+    const totalText = $('totalOrder');
     if (paidText) {
         paidText.textContent = `$${formatWithCommas(totalPaid)}`
-        paidText.style.color =
-            totalPaid > 0 ? 'var(--success-color)' : 'var(--text-muted)'
     }
-
     if (dueText) {
         dueText.textContent = `$${formatWithCommas(due)}`;
-        dueText.style.color =
-            due > 0 ? 'var(--danger-color)' : 'var(--success-color)';
     }
-    const isUpper = total > 0;
-    if (!isUpper) {
-        containerTotal?.classList.remove("show");
-        containerDue?.classList.remove("show");
-        containerTotal?.classList.add("hide");
-        containerDue?.classList.add("hide");
-    } else {
-        containerTotal?.classList.add("show");
-        containerDue?.classList.add("show");
-        containerTotal?.classList.remove("hide");
-        containerDue?.classList.remove("hide");
+    if (totalText) {
+        totalText.textContent = `$${formatWithCommas(total)}`;
     }
 }
 

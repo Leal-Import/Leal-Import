@@ -1,7 +1,8 @@
 export const workOrderHistoryState = {
     list: [],
     context: {
-        idVehicle: null
+        idVehicle: null,
+        idCustomer: null
     },
     stateList: [],
     pagination: {

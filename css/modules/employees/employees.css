@@ -1,5 +1,9 @@
 /* ===== EMPLOYEES MODULE - ENHANCED DESIGN ===== */
 
+.modalAdd{
+    --width-modal: clamp(250px, 90%, 550px);
+}
+
 .modalEmployeeBody {
     display: flex;
     flex-direction: column;

@@ -1,0 +1,95 @@
+
+/* ========================================
+   ESTILOS PARA .btnTrash - VERSIÓN IMAGEN
+   ======================================== */
+
+/* Botón eliminar con imagen */
+.btnTrash {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #9ca3af;
+    padding: 0;
+}
+
+.btnTrash:hover {
+    background: #fee2e2;
+    transform: scale(1.15);
+}
+
+.btnTrash:active {
+    transform: scale(1.05);
+    background: #fecaca;
+}
+
+
+/* Asegurar que la celda del botón esté bien alineada */
+td:has(.btnTrash) {
+    width: 60px;
+    text-align: center;
+    padding: 8px;
+}
+
+/* Focus para accesibilidad */
+.btnTrash:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+    border-radius: 8px;
+}
+
+.btnTrash:focus:not(:focus-visible) {
+    box-shadow: none;
+}
+
+
+/* ========================================
+   ESTILOS PARA .btnTrash - VERSIÓN SVG (RECOMENDADA)
+   ======================================== */
+
+/* Si decides usar SVG, usa esta versión en su lugar */.btnTrash svg {
+    width: 20px;
+    height: 20px;
+    transition: all 0.25s ease;
+    color: #6b7280;
+}
+
+.tableSelectedParts tbody .btnTrash:hover svg {
+    color: var(--danger-color, #dc3545);
+    transform: translateY(-1px);
+}
+
+/* Animación sutil de entrada */
+@keyframes fadeInButton {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.tableSelectedParts tbody .btnTrash {
+    animation: fadeInButton 0.2s ease;
+}
+
+/* Efecto de "shake" al hacer hover (opcional - descomenta si lo quieres) */
+/*
+@keyframes shakeTrash {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+.tableSelectedParts tbody .btnTrash:hover {
+    animation: shakeTrash 0.3s ease;
+}
+*/
