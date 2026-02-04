@@ -95,7 +95,7 @@ export const cleanWindow = () => {
     $("frmWorkOrder").reset();
 };
 
-export function validatePostOrder(data, idVehicle, idCustomer) {
+export function validatePostOrder(data, idVehicle) {
     const {
         selectedServices,
         selectedSpareParts,
@@ -105,10 +105,6 @@ export function validatePostOrder(data, idVehicle, idCustomer) {
 
     if (!idVehicle) {
         return 'Debe seleccionar un vehículo.';
-    }
-
-    if (!idCustomer) {
-        return 'Cliente invalido.';
     }
 
     if (!estimatedDate) {

@@ -1,0 +1,874 @@
+/* =======================
+   Grid Principal Mejorado
+======================= */
+.mainContent {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+/* =======================
+   Breadcrumb
+======================= */
+.breadcrumbSection {
+    display: inline-flex;
+    width: 100%;
+    gap: 10px;
+    align-items: center;
+    background: var(--bg-color-white);
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: var(--bx-shadow-primary);
+    margin-bottom: 20px;
+}
+
+.breadcrumb {
+    font-size: var(--font-size-breadcrumb);
+    color: var(--text-color-secondary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    transition: all 0.3s ease;
+}
+
+.breadcrumb:hover {
+    color: var(--danger-color);
+}
+
+.breadcrumb:last-child {
+    color: var(--danger-color);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* =======================
+   Modal Enlace
+======================= */
+.modalAdd {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-color-white);
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: var(--bx-shadow-modal);
+    z-index: 1000;
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modalAdd.hide {
+    display: none;
+}
+
+.btnClose {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s ease;
+}
+
+.btnClose:hover {
+    transform: rotate(90deg);
+}
+
+.btnClose img {
+    width: 24px;
+    height: 24px;
+}
+
+.titleModal {
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+/* =======================
+   Sección de Datos del Vehículo
+======================= */
+.vehicleData {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    border-radius: 12px;
+    grid-column: 5 / 9;
+    grid-row: 1 / 5;
+    background: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-primary);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.vehicleData:hover {
+    box-shadow: 0 6px 20px rgba(205, 144, 143, 0.3);
+}
+
+/* =======================
+   Sección de Imágenes
+======================= */
+.imgData {
+    padding: 25px;
+    grid-column: 1 / 5;
+    grid-row: 1 / 9;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    border-radius: 12px;
+    overflow-y: auto;
+    max-height: 100%;
+    background: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-primary);
+    transition: all 0.3s ease;
+}
+
+.imgData:hover {
+    box-shadow: 0 6px 20px rgba(205, 144, 143, 0.3);
+}
+
+.vehicleImagesSection {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* =======================
+   Sección de Costos
+======================= */
+.costsData {
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    grid-column: 5 / 9;
+    grid-row: 5 / 9;
+    background: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-primary);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.costsData:hover {
+    box-shadow: 0 6px 20px rgba(205, 144, 143, 0.3);
+}
+
+/* =======================
+   Textarea Específico
+======================= */
+.txtAreaSpecific {
+    height: auto;
+    border: none;
+    background-color: transparent;
+    resize: none;
+    max-height: 140px;
+    font-family: var(--font-text);
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+    padding: 5px 0;
+    line-height: 1.6;
+}
+
+.txtAreaSpecific:focus {
+    outline: none;
+}
+
+/* =======================
+   Header de Datos
+======================= */
+.headerData {
+    padding: 20px 25px;
+    border-bottom: 3px solid var(--danger-color);
+    background: var(--bg-color);
+}
+
+.titleData {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-lg);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.titleData::before {
+    content: '🚗';
+    font-size: 24px;
+}
+
+.costsData .titleData::before {
+    content: '📋';
+}
+
+/* =======================
+   Body de Datos
+======================= */
+.bodyData {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: var(--bg-color-white);
+}
+
+.data {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    border: var(--border);
+    padding: 15px 20px;
+    gap: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.data::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--danger-color);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.data:hover {
+    background: rgba(211, 24, 19, 0.03);
+}
+
+.data:hover::before {
+    opacity: 1;
+}
+
+.bodyData .infoRow {
+    flex: 1;
+    display: flex;
+}
+
+.bodyData .infoRow:last-child .data {
+    border-bottom: none;
+}
+
+/* =======================
+   Labels y Valores
+======================= */
+.lblData {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 140px;
+}
+
+.infoRow {
+    display: flex;
+}
+
+.values {
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    flex: 1;
+}
+
+.values:empty::after {
+    content: '—';
+    opacity: 0.5;
+}
+
+/* Enlaces especiales */
+#lote,
+#bill,
+#transport,
+#ship,
+#taxes {
+    color: var(--danger-color);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+    transition: all 0.3s ease;
+}
+
+#lote:hover,
+#bill:hover,
+#transport:hover,
+#ship:hover,
+#taxes:hover {
+    color: var(--dark-danger-color);
+    text-decoration: underline;
+}
+
+/* Precio sugerido y total destacados */
+#suggestedPrice {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--bg-color);
+}
+
+#total {
+    color: var(--bg-color-white) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    font-size: 1.5rem !important;
+}
+
+/* Fila del total con fondo destacado */
+.costsData .infoRow:last-child {
+    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
+}
+
+.costsData .infoRow:last-child .data {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.costsData .infoRow:last-child .lblData {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.costsData .infoRow:last-child .data::before {
+    background: var(--bg-color-white);
+}
+
+/* =======================
+   CARRUSEL SWIPER
+======================= */
+
+/* Imagen grande principal */
+#mainSwiper {
+    width: 100%;
+    max-height: 450px;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--bx-shadow-primary);
+    transition: all 0.3s ease;
+}
+
+#mainSwiper:hover {
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 3px rgba(211, 24, 19, 0.1);
+}
+
+#mainSwiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+#mainSwiper .swiper-wrapper {
+    height: 450px;
+}
+
+#mainSwiper .swiper-slide {
+    height: 100% !important;
+    width: 100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-color);
+}
+
+/* Placeholder cuando no hay imagen */
+#mainSwiper .swiper-slide:empty::after {
+    content: '🚗';
+    font-size: 80px;
+    opacity: 0.3;
+}
+
+/* =======================
+   Contenedor de Miniaturas
+======================= */
+.thumbnailImagesContainer {
+    margin-top: 20px;
+    border: var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    background: var(--bg-color);
+}
+
+.thumbs-swiper {
+    height: 100px;
+}
+
+.thumbs-swiper .swiper-slide {
+    width: 100px;
+    height: 100px;
+    opacity: 0.5;
+    border: 2px solid transparent;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.thumbs-swiper .swiper-slide:hover {
+    opacity: 0.8;
+    transform: translateY(-3px);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.thumbs-swiper .swiper-slide-thumb-active {
+    opacity: 1;
+    border-color: var(--danger-color);
+    border-width: 3px;
+    transform: scale(1.05);
+}
+
+.thumbs-swiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* =======================
+   Flechas de Navegación
+======================= */
+.swiper-button-prev,
+.swiper-button-next {
+    color: var(--danger-color) !important;
+    background: var(--bg-color-white);
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    box-shadow: var(--bx-shadow-primary);
+    transition: all 0.3s ease;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+    font-size: 18px !important;
+    font-weight: bold;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    background: var(--danger-color);
+    color: var(--bg-color-white) !important;
+    transform: scale(1.1);
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+/* =======================
+   Grid de Imágenes
+======================= */
+.imageGrid {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.imageGrid img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+}
+
+.imageGrid img:hover {
+    border-color: var(--danger-color);
+    border-width: 3px;
+    transform: scale(1.05);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.imageGrid img.selected {
+    border-color: var(--danger-color);
+    border-width: 3px;
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+/* =======================
+   Botones
+======================= */
+.btnPrimary {
+    padding: 12px 24px;
+    background: var(--danger-color);
+    color: var(--bg-color-white);
+    border: none;
+    border-radius: var(--border-radius-btn);
+    font-family: var(--font-text);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+.btnPrimary:hover {
+    background: var(--dark-danger-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(211, 24, 19, 0.4);
+}
+
+.btnPrimary:active {
+    transform: translateY(0);
+}
+
+.btnSubmitData {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* =======================
+   Inputs
+======================= */
+.txtInputs {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    border-radius: var(--border-radius-input);
+    font-size: var(--font-size-base);
+    font-family: var(--font-text);
+    transition: all 0.3s ease;
+    background: var(--bg-color-white);
+    color: var(--text-color);
+}
+
+.txtInputs::placeholder {
+    color: var(--text-color-secondary);
+    opacity: 0.7;
+}
+
+.txtInputs:focus {
+    outline: none;
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 3px rgba(211, 24, 19, 0.1);
+}
+
+.txtInputs:hover {
+    border-color: var(--helper-color);
+}
+
+/* =======================
+   Scrollbar personalizado
+======================= */
+.imgData::-webkit-scrollbar {
+    width: 8px;
+}
+
+.imgData::-webkit-scrollbar-track {
+    background: var(--bg-color);
+    border-radius: 10px;
+}
+
+.imgData::-webkit-scrollbar-thumb {
+    background: var(--helper-color);
+    border-radius: 10px;
+}
+
+.imgData::-webkit-scrollbar-thumb:hover {
+    background: var(--danger-color);
+}
+
+/* =======================
+   Responsive Design
+======================= */
+@media (max-width: 1400px) {
+    .content > div + div {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: auto;
+    }
+
+    .imgData {
+        grid-column: 1 / 5;
+        grid-row: 1 / 2;
+        max-height: 600px;
+    }
+
+    .vehicleData {
+        grid-column: 1 / 5;
+        grid-row: 2 / 3;
+    }
+
+    .costsData {
+        grid-column: 1 / 5;
+        grid-row: 3 / 4;
+    }
+}
+
+@media (max-width: 768px) {
+    .content > div + div {
+        padding: 15px;
+        gap: 15px;
+        grid-template-columns: 1fr;
+    }
+
+    .breadcrumbSection {
+        padding: 15px 20px;
+    }
+
+    .breadcrumb {
+        font-size: 1.5em;
+    }
+
+    .imgData,
+    .vehicleData,
+    .costsData {
+        grid-column: 1 / 2;
+    }
+
+    .imgData {
+        grid-row: 1 / 2;
+        padding: 15px;
+    }
+
+    .vehicleData {
+        grid-row: 2 / 3;
+    }
+
+    .costsData {
+        grid-row: 3 / 4;
+    }
+
+    .infoRow {
+        flex-direction: column;
+    }
+
+    .data {
+        border-left: none;
+        border-right: none;
+    }
+
+    .lblData {
+        min-width: auto;
+    }
+
+    .modalAdd {
+        min-width: 90%;
+        padding: 25px;
+    }
+
+    #mainSwiper .swiper-wrapper {
+        height: 300px;
+    }
+
+    .imageGrid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .imageGrid img {
+        height: 100px;
+    }
+}
+
+/* =======================
+   Animaciones sutiles
+======================= */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.vehicleData,
+.imgData,
+.costsData {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.vehicleData {
+    animation-delay: 0.1s;
+}
+
+.costsData {
+    animation-delay: 0.2s;
+}   
+
+/* =======================
+   BARRA DE ACCIONES
+======================= */
+.actionsBar {
+    background: var(--bg-color-white);
+    border-radius: 12px;
+    padding: 20px 30px;
+    box-shadow: var(--bx-shadow-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    transition: all 0.3s ease;
+}
+
+.actionsBar:hover {
+    box-shadow: 0 6px 20px rgba(205, 144, 143, 0.3);
+}
+
+/* =======================
+   STATUS BADGE
+======================= */
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: rgba(109, 190, 69, 0.1);
+    color: var(--success-color);
+    border: 2px solid var(--success-color);
+}
+
+.statusBadge.disponible {
+    background: rgba(109, 190, 69, 0.1);
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.statusBadge.vendido {
+    background: rgba(211, 24, 19, 0.1);
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.statusBadge.reservado {
+    background: rgba(255, 178, 53, 0.1);
+    color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+.statusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+}
+
+/* =======================
+   GRUPO DE BOTONES
+======================= */
+.btnGroup {
+    display: flex;
+    gap: 15px;
+}
+
+.btnAction {
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--border-radius-btn);
+    font-family: var(--font-text);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 150px;
+    justify-content: center;
+}
+
+.btnIcon {
+    font-size: 18px;
+    display: inline-block;
+}
+
+/* Botón Primario (Rojo) */
+.btnAction.btnPrimary {
+    background: var(--danger-color);
+    color: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+.btnAction.btnPrimary:hover {
+    background: var(--dark-danger-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(211, 24, 19, 0.4);
+}
+
+.btnAction.btnPrimary:active {
+    transform: translateY(-1px);
+}
+
+/* Botón Secundario (Outline) */
+.btnAction.btnSecondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 2px solid rgba(129, 133, 158, 0.3);
+}
+
+.btnAction.btnSecondary:hover {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    background: rgba(211, 24, 19, 0.05);
+    transform: translateY(-3px);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+/* Botón Success (Verde) */
+.btnAction.btnSuccess {
+    background: var(--success-color);
+    color: var(--bg-color-white);
+}
+
+.btnAction.btnSuccess:hover {
+    background: #5dad35;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(109, 190, 69, 0.4);
+}
+
+.btnAction.btnSuccess:active {
+    transform: translateY(-1px);
+}
+
+/* =======================
+   RESPONSIVE BARRA DE ACCIONES
+======================= */
+@media (max-width: 768px) {
+    .actionsBar {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .statusBadge {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btnGroup {
+        width: 100%;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btnAction {
+        width: 100%;
+        min-width: auto;
+    }
+}

@@ -26,6 +26,7 @@ import { getCurrentEmployeeId, initSession, safeParseFloat } from '../../../util
 
 import { addNewPayment, initPaymentsController, onResetPayments } from '../../payments/payments.controller.js';
 import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
+import { validatePayment } from '../../../utils/validators.js';
 
 /* ================= DOM ================= */
 const tableBody = $("tBodyInventory");

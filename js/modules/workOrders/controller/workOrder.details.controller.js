@@ -144,7 +144,7 @@ const onSubmitOrder = async (e) => {
         }
         fd = buildPutWorkOrderFormData(workOrderDetailsState);
     } else {
-        const errorPost = validatePostOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle, workOrderDetailsState.context.idCustomer);
+        const errorPost = validatePostOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle);
         if (errorPost) {
             showMessage('Error de validación', errorPost, 'warning');
             return;
