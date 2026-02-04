@@ -12,11 +12,6 @@ export const hydrateContextFromURL = async (state) => {
     const idCustomer = asUUID(getNullableParam(params.get('idCustomer')));
     const idVehicle = asUUID(params.get("idVehicle"));
     const idWorkOrder = asUUID(getNullableParam(params.get('idWorkOrder')));
-    if (!idCustomer && !idWorkOrder) {
-        await showMessage("Cliente no seleccionado", "Acceso inválido. Falta el cliente.", "warning");
-        history.back();
-        return false;
-    }
 
     if (!idVehicle) {
         await showMessage("Vehiculo no seleccionado", "Acceso inválido. Falta el vehiculo.", "warning");
