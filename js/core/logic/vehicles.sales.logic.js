@@ -1,4 +1,4 @@
-import { asUUID, showMessage } from "../../utils/dom.js";
+import { asUUID, getNullableParam, showMessage } from "../../utils/dom.js";
 
 export const validateSale = (state, idVehicle, idCustomer, idSale) => {
     if (!idVehicle) {
@@ -39,13 +39,13 @@ export const hydrateContextFromURL = async (state) => {
     state.context.idCustomer = idCustomer;
 
     // 🟡 Opcional
-    state.context.idSale = asUUID(params.get('idSale'));
+    state.context.idSale = asUUID(getNullableParam(params.get('idSale')));
 
     // UX
     state.context.customerName = params.get('customerName')?.trim() || '';
 
     // 🔵 Opcional (vehículo)
-    const idVehicle = asUUID(params.get('idVehicle'));
+    const idVehicle = asUUID(getNullableParam(params.get('idVehicle')));
     state.context.idVehicle = idVehicle;
     state.idVehicle = idVehicle; // si lo usás fuera del context
 

@@ -44,6 +44,16 @@ export const loadVehicleData = (vehicle) => {
 const loadDownButtons = (vehicle) => {
     btnEdit.href = `vehicleDetails.html?id=${vehicle.idVehicle}`
     btnSell.href = `addCustomerSale.html?type=vehicle&id=${vehicle.idVehicle}`;
+    btnHistorial.href = `workOrderDetails.html?idVehicle=${vehicle.idVehicle}&idCustomer=${vehicle.idOwnerCustomer}`;
+    if (vehicle.status == "Disponible") {
+        vehicleStatus.querySelector(".statusText").textContent = "Disponible";
+        vehicleStatus.classList.add("aviable");
+    } else if (vehicle.status == "Vendido") {
+        vehicleStatus.querySelector(".statusText").textContent = "Vendido";
+        vehicleStatus.classList.add("sold");
+    } else {
+
+    }
 }
 
 const loadVehicleInfo = (vehicle) => {

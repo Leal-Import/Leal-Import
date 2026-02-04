@@ -1,9 +1,9 @@
 const API_URL = "http://127.0.0.1:8080/api/Vehicle";
 const API_URLS = "http://127.0.0.1:8080/api/Status";
 
-export let getVehicles = async (page = 0, size = 15, search = "", stateId = "", year = "") => {
+export let getVehicles = async (page = 0, size = 15, search = "", statusId = "", year = "") => {
     try {
-        const params = new URLSearchParams({ page, size, search, stateId, year });
+        const params = new URLSearchParams({ page, size, search, statusId, year });
         const request = await fetch(`${API_URL}/getVehicleSummary?${params.toString()}`, {
             credentials: 'include'
         });

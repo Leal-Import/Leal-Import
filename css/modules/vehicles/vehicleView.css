@@ -729,19 +729,19 @@
     border: 2px solid var(--success-color);
 }
 
-.statusBadge.disponible {
+.statusBadge.aviable {
     background: rgba(109, 190, 69, 0.1);
     color: var(--success-color);
     border-color: var(--success-color);
 }
 
-.statusBadge.vendido {
+.statusBadge.sold {
     background: rgba(211, 24, 19, 0.1);
     color: var(--danger-color);
     border-color: var(--danger-color);
 }
 
-.statusBadge.reservado {
+.statusBadge.reserved {
     background: rgba(255, 178, 53, 0.1);
     color: var(--warning-color);
     border-color: var(--warning-color);
