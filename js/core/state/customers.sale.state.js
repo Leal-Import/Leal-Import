@@ -4,6 +4,9 @@ export const customerSaleState = {
     filters: {
         search: ''
     },
+    context: {
+        id: null
+    },
     pagination: {
         page: 1,
         size: 10,

@@ -263,7 +263,6 @@
     font-size: var(--font-size-sm);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    min-width: 140px;
 }
 
 .infoRow {
@@ -777,6 +776,7 @@
 
 .btnAction {
     padding: 12px 24px;
+    text-decoration: none;
     border: none;
     border-radius: var(--border-radius-btn);
     font-family: var(--font-text);

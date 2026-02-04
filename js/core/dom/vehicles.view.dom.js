@@ -23,6 +23,12 @@ const pa = $("pa");
 const total = $("total");
 const suggestedPrice = $("suggestedPrice");
 
+const vehicleStatus = $("vehicleStatus");
+const btnEdit = $("btnEdit");
+const btnSell = $("btnSell");
+const btnHistorial = $("btnHistorial");
+
+
 // Imágenes
 const mainSwiperWrapper = $("mainSwiperWrapper");
 const imageGrid = $("imageGrid");
@@ -30,6 +36,17 @@ const imageGrid = $("imageGrid");
 let mainSwiper;
 
 export const loadVehicleData = (vehicle) => {
+    loadVehicleInfo(vehicle);
+    loadDownButtons(vehicle);
+    loadImages(vehicle.photos);
+}
+
+const loadDownButtons = (vehicle) => {
+    btnEdit.href = `vehicleDetails.html?id=${vehicle.idVehicle}`
+    btnSell.href = `addCustomerSale.html?type=vehicle&id=${vehicle.idVehicle}`;
+}
+
+const loadVehicleInfo = (vehicle) => {
     vin.textContent = vehicle.vin;
     brand.textContent = vehicle.brand;
     model.textContent = vehicle.model;
@@ -61,7 +78,6 @@ export const loadVehicleData = (vehicle) => {
         vehicle.costs.suggestedPrice != null ? suggestedPrice.textContent = `$${vehicle.costs.suggestedPrice}` : suggestedPrice.style.display = "none";
         total.textContent = `$${formatWithCommas(vehicle.costs.total)}`;
     }
-    loadImages(vehicle.photos);
 }
 
 const loadImages = (photos) => {
