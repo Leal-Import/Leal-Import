@@ -16,7 +16,6 @@ const loadData = async () => {
 
 export const hydrateContextFromURL = async () => {
     const params = new URLSearchParams(window.location.search);
-
     vehicleViewState.context.idVehicle = asUUID(params.get('id'));
 };
 

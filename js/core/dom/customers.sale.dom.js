@@ -1,5 +1,5 @@
 
-export let insertCustomers = (container, customers, type) => {
+export let insertCustomers = (container, customers, type, idVehicle) => {
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
     
@@ -32,7 +32,7 @@ export let insertCustomers = (container, customers, type) => {
         emptyState.append(svg, title, description);
         fragment.appendChild(emptyState);
     } else {
-        customers.forEach((customer, index) => {
+        customers.forEach((customer) => {
             // Crear elemento principal
             const customerLink = document.createElement("a");
             customerLink.classList.add("customer");
@@ -42,7 +42,7 @@ export let insertCustomers = (container, customers, type) => {
             if (type == "sparePart") {
                 customerLink.href = `sparePartSale.html?idCustomer=${customer.idCustomer}&customerName=${encodeURIComponent(customer.fullName)}`;
             } else if (type == "vehicle") {
-                customerLink.href = `vehicleSale.html?idCustomer=${customer.idCustomer}&customerName=${encodeURIComponent(customer.fullName)}`;
+                customerLink.href = `vehicleSale.html?idCustomer=${customer.idCustomer}&customerName=${encodeURIComponent(customer.fullName)}&idVehicle=${idVehicle}`;
             }
             
             // Crear indicador de selección

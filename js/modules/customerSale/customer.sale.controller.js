@@ -28,7 +28,7 @@ let loadCustomers = async () => {
         customerSaleState.list = data.content;
         customerSaleState.pagination.total = data.page.totalElements;
         customerSaleState.pagination.totalPages = data.page.totalPages;
-        insertCustomers(qs(".containerCustomers"), customerSaleState.list, customerSaleState.type);
+        insertCustomers(qs(".containerCustomers"), customerSaleState.list, customerSaleState.type, customerSaleState.context.id);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -47,6 +47,7 @@ const hydrateContextFromURL = () => {
     const params = new URLSearchParams(window.location.search);
     const type = params.get("type");
     customerSaleState.type = type;
+    customerSaleState.context.id = params.get("id");
 }
 
 export function onSearchCustomer(filters) {
