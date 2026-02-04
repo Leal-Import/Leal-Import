@@ -1,4 +1,4 @@
-import { appendToDom, cleanPaymentCamps, cleanRow, initStaticRows, loadExtraInputs, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderOrderTotal, renderServiceSuggestions, renderSparePartSuggestions, renderTotalRepairCost, renderTotals, renderTotalServices, renderTotalsPanel, renderTotalSpareParts } from "../../../core/dom/workOrder.details.dom.js";
+import { appendToDom, cleanPaymentCamps, cleanRow, initStaticRows, loadExtraInputs, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderOrderTotal, renderServiceSuggestions, renderSparePartSuggestions, renderTotalRepairCost, renderTotals, renderTotalServices, renderTotalsPanel, renderTotalSpareParts, renderVehicleData } from "../../../core/dom/workOrder.details.dom.js";
 import { workOrderDetailsState } from "../../../core/state/workOrder.details.state.js";
 import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, postWorkOrder, putWorkOrder } from "../../../service/workOrder.detail.service.js";
 import { safeParseFloat, validateDate, validatePayment } from "../../../utils/validators.js";
@@ -9,7 +9,6 @@ import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTo
 import { addNewPayment, initPaymentsController } from "../../payments/payments.controller.js";
 import { createBtnUrl } from "../../../core/dom/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
-import { renderVehicleData } from "../../../core/dom/payments.dom.js";
 import { getCurrentEmployeeId, initSession } from "../../../utils.js";
 
 const dtEstimated = $("dtEstimated");
@@ -284,7 +283,11 @@ let loadDraft = () => {
         });
     });
     storageItem.data.payments.forEach(payment => {
-        onAddPayment(payment);
+        addNewPayment({
+            state: workOrderDetailsState.data,
+            totals: workOrderDetailsState.totals,
+            payment
+        });
     });
 }
 
@@ -320,7 +323,11 @@ const loadWorkOrder = async () => {
         });
     });
     workOrder.payments.forEach(payment => {
-        onAddPayment(payment);
+        addNewPayment({
+            state: workOrderDetailsState.data,
+            totals: workOrderDetailsState.totals,
+            payment
+        });
     });
 };
 
@@ -382,5 +389,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderImportButton(tBodySpareParts, onImportSparePart);
     calculateAllTotals();
     recalculateTotalsPanel();
-    console.log(workOrderDetailsState)
 });

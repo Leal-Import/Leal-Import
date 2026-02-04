@@ -9,14 +9,14 @@ export const verifyIds = (state, idSparePart) => {
 export const hydrateContextFromURL = async (state) => {
     const params = new URLSearchParams(window.location.search);
 
-    const idCustomer = asUUID(params.get('idCustomer'));
+    const idCustomer = asUUID(getNullableParam(params.get('idCustomer')));
     const idVehicle = asUUID(params.get("idVehicle"));
-    //por el momento no se pedira el id del cliente
-    /*if (!idCustomer) {
+    const idWorkOrder = asUUID(getNullableParam(params.get('idWorkOrder')));
+    if (!idCustomer && !idWorkOrder) {
         await showMessage("Cliente no seleccionado", "Acceso inválido. Falta el cliente.", "warning");
         history.back();
         return false;
-    }*/
+    }
 
     if (!idVehicle) {
         await showMessage("Vehiculo no seleccionado", "Acceso inválido. Falta el vehiculo.", "warning");
@@ -27,7 +27,7 @@ export const hydrateContextFromURL = async (state) => {
     state.context.idVehicle = idVehicle;
     state.context.idCustomer = getNullableParam(idCustomer);
     state.context.idSale = asUUID(getNullableParam(params.get('idSale')));
-    state.context.idWorkOrder = asUUID(getNullableParam(params.get('idWorkOrder')));
+    state.context.idWorkOrder = idWorkOrder;
     state.context.customerName = params.get('customerName')?.trim() || '';
     state.context.vehiclePrice = asNumber(params.get("totalPrice"));
     state.context.isView = params.get('isView') === 'true';

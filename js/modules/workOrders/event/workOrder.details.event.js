@@ -1,4 +1,5 @@
 import { $ } from "../../../utils/dom.js"
+import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
 export const initWorkOrdersEvents = ({ onSearchSpareParts, onSearchService, onAddPayment, onSubmitOrder, onSaveNotes, onSaveDate, onAddNewService }) => {
     const txtSearchSparePart = $("txtSearchSparePart");
@@ -7,6 +8,7 @@ export const initWorkOrdersEvents = ({ onSearchSpareParts, onSearchService, onAd
     const frmWorkOrder = $("frmWorkOrder");
     const txtNotes = $("txtNotes");
     const dtEstimated = $("dtEstimated");
+    const txtAmount = $("txtAmount");
     let searchTimeOut = null;
 
     const search = (e, onSearch) => {
@@ -16,6 +18,11 @@ export const initWorkOrdersEvents = ({ onSearchSpareParts, onSearchService, onAd
         }, 1000)
     }
 
+    if (txtAmount) {
+        txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
+        txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
+        formatDecimalInput(txtAmount);
+    }
     txtSearchSparePart.addEventListener("input", (e) => search(e, onSearchSpareParts));
     txtAddService.addEventListener("input", (e) => search(e, onSearchService));
     txtAddService.addEventListener("keydown", onAddNewService)

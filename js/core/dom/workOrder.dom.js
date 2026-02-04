@@ -86,7 +86,7 @@ export let insertWorkOrders = (container, workOrders) => {
             const btnView = document.createElement("a");
             btnView.classList.add("btnPrimary");
             btnView.textContent = "Ver más";
-            btnView.href = `workOrderDetails.html?idVehicle=${workOrder.idVehicle}`;
+            btnView.href = `workOrderDetails.html?idVehicle=${workOrder.idVehicle}&idCustomer=${workOrder.idCustomer}&customerName=${workOrder.customerName}`;
 
             moreInfoContainer.append(moreInfoText, btnView);
 

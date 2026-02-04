@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -197,7 +196,7 @@
                             <label class="lblInputs" for="paymentMethod">Método de pago</label>
                             <select name="paymentMethod" class="txtInputs" id="paymentMethod"></select>
                         </div>
-                        <button id="btnAddPayment" class="btnPrimary" type="button">Añadir abono</button>
+                        <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
                     </div>
 
                     <!-- Payments List -->
@@ -222,7 +221,7 @@
                     <!-- Additional Notes -->
                     <div class="formGroup">
                         <label class="lblInputs" for="txtNotes">Notas adicionales</label>
-                        <textarea class="txtInputs" id="txtNotes" placeholder="Agrega notas sobre la venta..."
+                        <textarea class="txtInputs" id="txtNotes" placeholder="Agrega notas sobre la orden..."
                             rows="4"></textarea>
                     </div>
 
@@ -234,63 +233,16 @@
                     <!-- Final Price -->
                     <div class="formGroup">
                         <label class="lblInputs" for="txtTotal">Total:</label>
-                        <input type="text" class="txtInputs" id="txtTotal" placeholder="$0.00">
+                        <input type="text" class="txtInputs" id="txtTotal" placeholder="$0.00" disabled>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="actionButtons">
-                        <button class="btnPrimary" id="btnSaveSale">Vender</button>
+                        <div></div>
+                        <button class="btnPrimary" id="btnSaveSale">Crear orden</button>
                     </div>
                 </form>
             </div>
-            <!--             <div class="rightColumn">
-                <form class="formRightColumn" id="frmWorkOrder">
-                    <div class="bodyRightColumn">
-                        <div class="tableContainer">
-                            <table class="paymentsTable table">
-                                <thead>
-                                    <tr>
-                                        <th>Monto</th>
-                                        <th class="tdMethod">Método</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="amounts" class="amounts">
-                                </tbody>
-                            </table>
-                        </div>
-                        <button class="btnPrimary" id="btnAddPayment" type="button">Agregar abono</button>
-                        <div class="containerAmountInfo">
-                            <div class="dataInfo" style="border-bottom: var(--border);">
-                                <h3>Total abonado:</h3>
-                                <span id="totalPaid">$0.00</span>
-                            </div>
-                            <div class="dataInfo">
-                                <h3>Deuda restante:</h3>
-                                <span id="due">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="footerRightColumn">
-                        <div class="formGroup">
-                            <label for="txtNotes" class="lbl">Notas adicionales</label>
-                            <textarea id="txtNotes" rows="4" class="txtInputs"></textarea>
-                        </div>
-                        <div class="formGroup">
-                            <label for="dtEstimated" class="lbl">Fecha estimada</label>
-                            <input type="date" id="dtEstimated" class="txtInputs">
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtTotal" class="lbl">Precio de la orden</label>
-                            <input type="text" id="txtTotal" class="txtInputs" disabled>
-                        </div>
-                        <div class="containerButtons">
-                            <input type="submit" value="Crear orden" class="btnPrimary btnSubmitData" id="btnSendData">
-                            <button type="button" value="Crear orden" class="btnPrimary btnSubmitData hide" id="btnCompleteOrder">Marcar completado</button>
-                        </div>
-                    </div>
-                </form>
-            </div> -->
         </div>
     </div>
     <script src="../js/sidebar.js"></script>

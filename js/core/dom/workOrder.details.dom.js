@@ -2,7 +2,7 @@ import { formatDecimalInput, formatWithCommas, formatOnFocus, formatOnBlur } fro
 import { $, existsById, qs, qsa, showElement } from "../../utils/dom.js";
 
 export const loadViewUpdateOrder = (vin) => {
-    qs(".btnSubmitData").value = "Actualizar";
+    $("btnSaveSale").textContent = "Actualizar";
     $("firstBread").textContent = "Actualizar orden >";
     $("firstBread").href = "workOrders.html";
     $("secondBread").textContent = vin;
@@ -13,6 +13,14 @@ export const loadViewSaleInfo = (vin) => {
     $("firstBread").textContent = "Ventas >";
     $("firstBread").href = "sales.html";
     $("secondBread").textContent = vin;
+}
+
+export const renderVehicleData = (data) => {
+    if (!data) return;
+    if ($('vin')) $('vin').textContent = data.vin || '-';
+    if ($('model')) $('model').textContent = data.model || '-';
+    if ($('brand')) $('brand').textContent = data.brand || '-';
+    if ($('year')) $('year').textContent = data.year || '-';
 }
 
 export const cleanPaymentCamps = () => {
@@ -33,7 +41,7 @@ export const initStaticRows = () => {
             const tdName = document.createElement('td');
             tdName.classList.add('tdName', 'itemName');
             const tdPrice = document.createElement('td');
-            tdPrice.classList.add('tdPrice', 'finalPrice');
+            tdPrice.classList.add('tdPrice');
             const tdTrash = document.createElement('td'); // Celda vacía para el botón
             tdTrash.classList.add('tdTrash');
             tr.append(tdName, tdPrice, tdTrash);
@@ -114,6 +122,7 @@ export const appendToDom = ({
     nameCell.textContent = data.name;
     priceCell.textContent = `$${formatWithCommas(data.priceApplied)}`;
     priceCell.setAttribute('contenteditable', 'true');
+    priceCell.classList.add('finalPrice');
 
     // Botón eliminar
     if (createTrashOption) {
@@ -163,7 +172,10 @@ export function createTrashOption({
         </svg>
     `;
 
-    btn.addEventListener('click', () => onDelete(item, arraySelected, arrayDelete, row, tBody, renderButton));
+    btn.addEventListener('click', () => {
+        onDelete(item, arraySelected, arrayDelete, row, tBody, renderButton)
+        row.querySelector('.tdPrice').classList.remove("finalPrice");
+    });
 
     return btn;
 }

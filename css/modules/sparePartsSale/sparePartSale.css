@@ -29,8 +29,3 @@
 .headerRightColumn .table:has(.noDataMessage) {
     height: 100%;
 }
-
-.btnPrimary {
-    padding: 8px 20px !important;
-    font-size: var(--font-size-sm) !important;
-}

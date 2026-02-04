@@ -120,10 +120,11 @@ function onSearchWorkOrderHistory(filters) {
 const hydrateContextFromURL = () => {
     const params = new URLSearchParams(window.location.search);
     workOrderHistoryState.context.idVehicle = asUUID(params.get('idVehicle'));
+    workOrderHistoryState.context.idCustomer = asUUID(params.get('idCustomer'));
 };
 
 const loadBtnAdd = () => {
-    btnAddOrder.href = `addWorkOrder.html?idVehicle=${workOrderHistoryState.context.idVehicle}`;
+    btnAddOrder.href = `addWorkOrder.html?idVehicle=${workOrderHistoryState.context.idVehicle}&idCustomer=${workOrderHistoryState.context.idCustomer}`;
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
