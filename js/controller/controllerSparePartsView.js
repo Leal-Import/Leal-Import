@@ -1,5 +1,7 @@
-import { getSparePart } from '../service/serviceSparePartsDetails.js'
+import { loadSparePart } from '../core/dom/spareParts.view.dom.js';
+import { getSparePart } from '../service/spareParts.detail.service.js'
 import { formatWithCommas } from '../utils.js'
+import { showMessage } from '../utils/dom.js';
 
 const pictureSparePart = document.getElementById('pictureSparePart');
 const name = document.getElementById('name');
@@ -17,8 +19,13 @@ const params = new URLSearchParams(window.location.search)
 const currentId = params.get("id");
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const sparePart = await getSparePart(currentId);
-    loadData(sparePart)
+    try {
+        const sparePart = await getSparePart(currentId);
+        loadSparePart(sparePart)
+    } catch (error) {
+        console.error(error);
+        showMessage("Error", "No se pudo cargar el repuesto", "error");
+    }
 })
 
 let loadData = (sparePart) => {
