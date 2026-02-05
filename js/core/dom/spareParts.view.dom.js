@@ -1,3 +1,4 @@
+import { formatWithCommas } from "../../utils/formatters.js";
 import { $ } from "../../utils/dom.js";
 
 const pictureSparePart = $('pictureSparePart');
@@ -12,7 +13,28 @@ const purchasePrice = $('purchasePrice');
 const taxes = $('taxes');
 const totalCost = $('totalCost');
 
+const btnEditSparePart = $("btnEditSparePart");
+const statusPart = $("statusBadgeSparePart");
+
 export const loadSparePart = (sparePart) => {
+    loadSparePartInfo(sparePart);
+    loadDownButtons(sparePart);
+}
+
+const loadDownButtons = (sparePart) => {
+    btnEditSparePart.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
+    if (sparePart.status == "Disponible") {
+        statusPart.querySelector(".statusText").textContent = "Disponible";
+        statusPart.classList.add("aviable");
+    } else if (sparePart.status == "Vendido") {
+        statusPart.querySelector(".statusText").textContent = "Vendido";
+        statusPart.classList.add("sold");
+    } else {
+
+    }
+}
+
+const loadSparePartInfo = (sparePart) => {
     pictureSparePart.src = sparePart.photoUrl;
     name.textContent = sparePart.nameSpareParts;
     sparePart.billUrl ? name.href = sparePart.billUrl : null;

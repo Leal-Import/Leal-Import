@@ -1,11 +1,11 @@
 import { loadSparePart } from "../../../core/dom/spareParts.view.dom.js";
 import { sparePartViewState } from "../../../core/state/spareParts.view.state.js";
 import { getSparePart } from "../../../service/spareParts.detail.service.js";
-import { asUUID } from "../../../utils/dom.js"
+import { asUUID, showMessage } from "../../../utils/dom.js"
 
 const loadData = async() => {
     try {
-        const sparePart = await getSparePart(currentId);
+        const sparePart = await getSparePart(sparePartViewState.context.idSparePart);
         loadSparePart(sparePart);
     } catch (error) {
         console.error(error);
