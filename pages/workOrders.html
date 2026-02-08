@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/utils/cards.css">
     <link rel="stylesheet" href="../css/utils/controls.css">
     <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Ordenes de trabajo</title>
 </head>
 
@@ -44,14 +45,20 @@
                         <input type="text" id="txtSearchData" class="txtSearchData"
                             placeholder="Buscar por vehiculo, empleado o cliente asociado">
                         <select id="cmbSearchByStatus" class="cmbFilterData">
-                            <option value="">Estado</option>
+                            <option value="">Cargando...</option>
                         </select>
                     </div>
                     <a id="OpenModalVehicles" href="vehicle.html?workOrder=true"
                         class="btnPrimary btnOpenModal">Añadir</a>
                 </div>
             </div>
-            <div class="cardContainer"></div>
+            <div class="containerWorkOrder">
+                <div class="containerLoader show" style="z-index: 10;" id="loaderWorkOrders">
+                    <div class="loader"></div>
+                    <div>Cargando lista de ordenes de trabajo...</div>
+                </div>
+                <div class="cardContainer"></div>
+            </div>
             <div class="paginationContainer">
 
                 <!-- Info + page size -->

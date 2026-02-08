@@ -1,5 +1,5 @@
 import { formatWithCommas } from "../../utils/formatters.js";
-import { $ } from "../../utils/dom.js";
+import { $, qs } from "../../utils/dom.js";
 
 const pictureSparePart = $('pictureSparePart');
 const name = $('name');
@@ -14,7 +14,8 @@ const taxes = $('taxes');
 const totalCost = $('totalCost');
 
 const btnEditSparePart = $("btnEditSparePart");
-const statusPart = $("statusBadgeSparePart");
+const btnSellSparePart = $("btnSellSparePart");
+const statusPart = qs(".statusBadgeSparePart");
 
 export const loadSparePart = (sparePart) => {
     loadSparePartInfo(sparePart);
@@ -23,11 +24,13 @@ export const loadSparePart = (sparePart) => {
 
 const loadDownButtons = (sparePart) => {
     btnEditSparePart.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
+    btnSellSparePart.href = `addCustomerSale.html?type=sparePart&id=${sparePart.idSparePart}&`
+    console.log(statusPart)
     if (sparePart.status == "Disponible") {
-        statusPart.querySelector(".statusText").textContent = "Disponible";
+        statusPart.querySelector(".statusTextSparePart").textContent = "Disponible";
         statusPart.classList.add("aviable");
     } else if (sparePart.status == "Vendido") {
-        statusPart.querySelector(".statusText").textContent = "Vendido";
+        statusPart.querySelector(".statusTextSparePart").textContent = "Vendido";
         statusPart.classList.add("sold");
     } else {
 

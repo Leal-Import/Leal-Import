@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/utils/pagination.css">
     <link rel="stylesheet" href="../css/utils/controls.css">
     <link rel="stylesheet" href="../css/utils/cards.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Vehiculos</title>
 </head>
 
@@ -75,7 +76,7 @@
                         <input type="text" id="txtSearchData" class="txtSearchData"
                             placeholder="Buscar vehículo por VIN, marca o modelo...">
                         <select id="cmbSearchByStatus" class="cmbFilterData">
-                            <option value="">Seleccione una opción</option>
+                            <option value="">Cargando...</option>
                         </select>
                         <input type="text" class="txtSearchData" id="txtSearchYear" maxlength="4" placeholder="Año">
                     </div>
@@ -87,7 +88,13 @@
             </div>
 
             <!-- Cards Container -->
-            <div class="cardContainer"></div>
+            <div class="containerVehicles">
+                <div class="containerLoader show" style="z-index: 20;" id="loaderVehicles">
+                    <div class="loader"></div>
+                    <div>Cargando lista de vehiculos...</div>
+                </div>
+                <div class="cardContainer"></div>
+            </div>
 
             <!-- Pagination -->
             <div class="paginationContainer">

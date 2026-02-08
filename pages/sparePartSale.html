@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../css/utils/controls.css">
     <link rel="stylesheet" href="../css/globalStyles.css">
     <link rel="stylesheet" href="../css/utils/salesStyles/tableSelected.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Agregar venta</title>
 </head>
 
@@ -24,7 +25,7 @@
                 <div class="headerContent">
                     <div class="breadCrumbSection">
                         <a href="sales.html" class="breadcrumb">Ventas ></a>
-                        <a class="breadcrumb" id="customerName"></a>
+                        <a class="breadcrumb" id="customerName">Cargando...</a>
                     </div>
                     <div class="filterSection">
                         <input type="text" id="txtSearchData" class="txtSearchData"
@@ -33,6 +34,10 @@
                     </div>
                 </div>
                 <div class="tableContainer">
+                    <div class="containerLoader show" style="z-index: 20;" id="loaderSpareParts">
+                        <div class="loader"></div>
+                        <div>Cargando lista de repuestos...</div>
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -105,7 +110,9 @@
                         </div>
                         <div class="formGroup">
                             <label class="lblInputs" for="paymentMethod">Método de pago</label>
-                            <select name="paymentMethod" class="txtInputs" id="paymentMethod"></select>
+                            <select name="paymentMethod" class="txtInputs" id="paymentMethod">
+                                <option value="">Cargando...</option>
+                            </select>
                         </div>
                         <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
                     </div>
@@ -117,15 +124,15 @@
                     <div class="summarySection">
                         <div class="summaryRow">
                             <span class="summaryLabel">Total:</span>
-                            <span class="summaryValue" id="totalSale"></span>
+                            <span class="summaryValue" id="totalSale">$0.00</span>
                         </div>
                         <div class="summaryRow">
                             <span class="summaryLabel">Total abonado:</span>
-                            <span class="summaryValue" id="totalPaid"></span>
+                            <span class="summaryValue" id="totalPaid">$0.00</span>
                         </div>
                         <div class="summaryRow">
                             <span class="summaryLabel">Deuda:</span>
-                            <span class="summaryValue summaryTotal" id="due"></span>
+                            <span class="summaryValue summaryTotal" id="due">$0.00</span>
                         </div>
                     </div>
 

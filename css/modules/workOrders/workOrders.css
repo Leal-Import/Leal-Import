@@ -5,6 +5,11 @@
     margin-bottom: 30px;
 }
 
+.containerWorkOrder{
+    position: relative;
+    flex: 1;
+}
+
 .statItem {
     background: white;
     border-radius: 12px;

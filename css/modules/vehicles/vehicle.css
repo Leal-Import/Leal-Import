@@ -9,6 +9,11 @@
     margin-bottom: 2em;
 }
 
+.containerVehicles{
+    flex: 1;
+    position: relative;
+}
+
 .statItem {
     background: linear-gradient(135deg, var(--bg-color-white) 0%, #FAFAFA 100%);
     border-radius: 16px;

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../css/utils/modal.css">
     <link rel="stylesheet" href="../css/globalStyles.css">
     <link rel="stylesheet" href="../css/utils/modalLinkExtra.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Vehiculos</title>
 </head>
 
@@ -280,8 +281,10 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" id="btnSaveData"
-                    style="padding: 10px 40px;">
+                <button class="btnPrimary btnSubmitData" id="btnSaveData" style="padding: 10px 40px;">
+                    <span>Guardar</span>
+                    <div class="loader hide" id="loaderSaveVehicle"></div>
+                </button>
             </div>
         </form>
     </div>

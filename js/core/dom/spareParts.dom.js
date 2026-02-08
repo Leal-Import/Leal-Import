@@ -1,4 +1,17 @@
+import { qs, $ } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            cardContainer: qs('.cardContainer'),
+            loaderSpareParts: $('loaderSpareParts'),
+        };
+        return this.refs;
+    }
+};
 
 export let insertSpareParts = (container, spareParts) => {
     if (!container) return;

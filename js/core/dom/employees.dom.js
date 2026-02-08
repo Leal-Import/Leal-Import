@@ -3,6 +3,22 @@ import { fillForm, toggleModal, $, fillSelect } from '../../utils/dom.js';
 
 const modalEmployees = $('modalEmployees');
 
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            employeesTableBody: $('employeesTableBody'),
+            modalEmployees: $('modalEmployees'),
+            frmEmployees: $('frmEmployees'),
+            loaderEmployees: $("loaderEmployees"),
+            btnAddEmployeeLoader: $("btnAddEmployeeLoader"),
+            btnAddEmployee: $("btnAddEmployee")
+        };
+        return this.refs;
+    }
+};
+
 export function fillEmployeesForm(employee, text) {
     fillForm('#frmEmployees', {
         txtFullName: employee.fullName,
@@ -11,7 +27,7 @@ export function fillEmployeesForm(employee, text) {
         txtUsername: employee.username.username,
         cmbUserRole: employee.idRole
     });
-    $('btnAddEmployee').value = text;
+    $('btnAddEmployee').querySelector("span").textContent = text;
     modalEmployees.querySelector('.titleModal').textContent = text;
     toggleModal(modalEmployees, true);
 }

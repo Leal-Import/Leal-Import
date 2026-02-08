@@ -1,14 +1,13 @@
 // modules/sales/sales.controller.js
 
-import { insertSales, selectLineButton, openAskModal, closeAskModal } from "../../core/dom/sales.dom.js";
+import { insertSales, selectLineButton, openAskModal, closeAskModal, DOMRefs } from "../../core/dom/sales.dom.js";
 import { salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
 import { fillSelect, showMessage } from "../../utils.js";
-import { qs } from "../../utils/dom.js";
+import { initSession } from "../../utils/api.utils.js";
+import { hideElement, qs, showElement } from "../../utils/dom.js";
 import { initSalesEvents } from "./sales.event.js";
-
-const containerData = qs('.panelContainer');
 
 /* ===============================
    CARGA DE VENTAS
@@ -36,6 +35,7 @@ let loadStateSales = async () => {
 
 async function loadSales() {
     try {
+        showElement(DOMRefs.refs.loaderSales);
         const { page, size } = salesState.pagination;
         const { search, idState, productType } = salesState.filters;
 
@@ -44,7 +44,7 @@ async function loadSales() {
         salesState.list = data.content;
         salesState.pagination.total = data.page.totalElements;
         salesState.pagination.totalPages = data.page.totalPages;
-        insertSales(containerData, salesState.list);
+        insertSales(DOMRefs.refs.panelContainer, salesState.list);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -55,6 +55,8 @@ async function loadSales() {
     } catch (error) {
         showMessage('Error', error, 'error');
         console.error(error);
+    } finally {
+        hideElement(DOMRefs.refs.loaderSales);
     }
 }
 
@@ -75,7 +77,34 @@ export function onSearchSale(filters) {
    INIT
 ================================ */
 
-document.addEventListener('DOMContentLoaded', async () => {
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
+
+    return true;
+};
+
+const initializeUI = () => {
     initSalesEvents({ onSearchSale, onClickBtnFilter: selectLineButton, onOpenModal: openAskModal, onCloseModal: closeAskModal });
+}
+
+const loadDataFlow = async () => {
     await Promise.all([loadSales(), loadStateSales()]);
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const isReady = await setupApplication();
+        if (!isReady) return;
+
+        initializeUI();
+
+        DOMRefs.init();
+
+        loadDataFlow();
+    } catch (error) {
+        console.error('Error inicializando la aplicación: ', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
 });

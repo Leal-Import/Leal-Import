@@ -1,15 +1,14 @@
 // modules/workOrders/workOrders.controller.js
 
 
-import { insertWorkOrders } from "../../../core/dom/workOrder.dom.js";
+import { DOMRefs, insertWorkOrders } from "../../../core/dom/workOrder.dom.js";
 import { workOrdersState } from "../../../core/state/workOrders.state.js";
 import { createPagination } from "../../../pagination/pagination.controller.js";
 import { getVehiclesWOrders, getWOStatus } from "../../../service/workOrders.service.js";
+import { initSession } from "../../../utils/api.utils.js";
 
-import { fillSelect, qs, showMessage } from "../../../utils/dom.js";
+import { fillSelect, hideElement, showElement, showMessage } from "../../../utils/dom.js";
 import { initWorkOrdersEvents } from "../event/workOrder.event.js";
-
-const containerData = qs('.cardContainer');
 
 /* ===============================
    CARGA DE ÓRDENES DE TRABAJO
@@ -38,6 +37,7 @@ const loadStateWorkOrders = async () => {
 
 async function loadWorkOrders() {
     try {
+        showElement(DOMRefs.refs.loaderWorkOrders);
         const { page, size } = workOrdersState.pagination;
         const { search, idStatus } = workOrdersState.filters;
 
@@ -47,7 +47,7 @@ async function loadWorkOrders() {
         workOrdersState.pagination.total = data.page.totalElements;
         workOrdersState.pagination.totalPages = data.page.totalPages;
 
-        insertWorkOrders(containerData, workOrdersState.list);
+        insertWorkOrders(DOMRefs.refs.cardContainer, workOrdersState.list);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -58,6 +58,8 @@ async function loadWorkOrders() {
     } catch (error) {
         showMessage('Error', 'No se pudieron cargar las órdenes de trabajo', 'error');
         console.error(error);
+    } finally {
+        hideElement(DOMRefs.refs.loaderWorkOrders);
     }
 }
 
@@ -75,14 +77,35 @@ export function onSearchWorkOrder(filters) {
     loadWorkOrders();
 }
 
-/* ===============================
-   INIT
-================================ */
+
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
+
+    return true;
+};
+
+const initializeUI = async () => {
+    initWorkOrdersEvents({ onSearchWorkOrder });
+};
+
+const loadDataFlow = async () => {
+    await Promise.all([loadWorkOrders(), loadStateWorkOrders()]);
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    initWorkOrdersEvents({
-        onSearchWorkOrder,
-    });
+    try {
+        const isReady = await setupApplication();
+        if (!isReady) return;
 
-    await Promise.all([loadWorkOrders(), loadStateWorkOrders()]);
+        DOMRefs.init();
+
+        initializeUI();
+
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error inicializando la aplicación:', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
 });

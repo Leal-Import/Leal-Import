@@ -123,7 +123,7 @@ export function mapSparePart(formData) {
 }
 
 
-export const hydrateContextFromURL = async (state) => {
+export const hydrateContextFromURL = (state) => {
     const params = new URLSearchParams(window.location.search);
 
     state.context.currentId = asUUID(params.get('id'));

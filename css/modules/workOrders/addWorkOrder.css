@@ -9,6 +9,12 @@
     flex: 1;
 }
 
+.valueInfo .loader{
+    border: 3px solid var(--dark-danger-color);
+    width: 20px;
+    height: 20px;
+}
+
 /* =======================
    Contenedor principal
 ======================= */

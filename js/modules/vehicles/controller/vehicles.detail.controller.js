@@ -1,30 +1,18 @@
 import { vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
-import { $, qs, qsa, toggleModal } from "../../../utils/dom.js";
-import { closeAndCleanUpdateModal, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview } from "../../../core/dom/vehicles.detail.dom.js";
+import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage } from "../../../utils/dom.js";
+import { closeAndCleanUpdateModal, DOMRefs, loadDomData, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview } from "../../../core/dom/vehicles.detail.dom.js";
 import { applyExternalMode, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js"
-import { showMessage } from "../../../utils.js";
+import { initSession } from "../../../utils/api.utils.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
 import { safeParseFloat } from "../../../utils/validators.js";
 import { initUploadModalEvents } from "../event/vehicles.uploads.events.js";
 import { getVehicles, postVehicle, putVehicle } from "../../../service/vehicles.detail.service.js";
 
-const previewImage = qs("#mainSwiper .previewImg");
-const txtCosts = qsa(".txtCosts");
-const txtTotal = $('txtTotal');
-const mainSwiperWrapper = $('mainSwiperWrapper');
-const thumbsWrapper = $('thumbsWrapper');
-const frmVehicles = $('frmVehicles');
-const boxCustomer = $('suggestionsCustomer');
-const imageInput = $('imageInput');
-const isExternalOpt = $("isExternalOpt");
-const txtCustomer = $("txtCustomer");
-
 export async function loadVehicle() {
     const vehicle = await getVehicles(vehicleDetailState.context.currentId);
-    $("typeAction").textContent = "Actualizar vehiculo";
-    $("btnSaveData").value = "Actualizar"
+    loadDomData();
     fillVehiclesBaseForm(vehicle);
     if (vehicle.costs) {
         fillVehicleCosts(vehicle.costs)
@@ -33,14 +21,14 @@ export async function loadVehicle() {
         vehicleDetailState.urls.ship = vehicle.costs.costPhoto.shipPhoto;
         vehicleDetailState.costsId = vehicle.costs.idCost
     } else {
-        isExternalOpt.checked = true;
-        isExternalOpt.dispatchEvent(new Event('change'));
+        DOMRefs.refs.isExternalOpt.checked = true;
+        DOMRefs.refs.isExternalOpt.dispatchEvent(new Event('change'));
         vehicleDetailState.customerId = vehicle.idOwnerCustomer;
-        txtCustomer.value = vehicle.customerName;
+        DOMRefs.refs.txtCustomer.value = vehicle.customerName;
     }
     vehicleDetailState.loteId = vehicle.lote.idLote;
     loadBackendImages(vehicle.photos);
-    renderImages(vehicleDetailState.images, mainSwiperWrapper, thumbsWrapper, deleteImage, () => imageInput.click())
+    renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click())
 }
 
 export function onExternalChange(isExternal) {
@@ -52,7 +40,7 @@ export function onExternalChange(isExternal) {
 
 export async function onSubmitVehicle(e) {
     e.preventDefault();
-    const formData = Object.fromEntries(new FormData(frmVehicles));
+    const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmVehicles));
     const fd = new FormData();
 
     let payloadVehicle;
@@ -90,6 +78,8 @@ export async function onSubmitVehicle(e) {
             payloadVehicle.costs.idCost = vehicleDetailState.costsId
         }
     }
+    showElement(DOMRefs.refs.loaderSaveVehicle);
+    disableElement(DOMRefs.refs.btnSaveData);
 
     if (vehicleDetailState.context.currentId) {
         payloadVehicle.photosToDeleteIds = vehicleDetailState.photosToDeleteIds;
@@ -127,23 +117,26 @@ export async function onSubmitVehicle(e) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar el vehiculo.';
         showMessage(errorMessage, 'error', 'error');
+    } finally {
+        removeDisable(DOMRefs.refs.btnSaveData);
+        hideElement(DOMRefs.refs.loaderSaveVehicle)
     }
 }
 
 export let onSearchCustomer = async (e) => {
     const q = e.target.value.trim();
-    if (!q) { boxCustomer.classList.add("hide"); return; }
+    if (!q) { DOMRefs.refs.DOMRefs.refs.boxCustomer.classList.add("hide"); return; }
     try {
         const res = await getCustomers(0, 15, q);
-        renderCustomersSuggestions(boxCustomer, res.content || [], onSelectCustomer);
+        renderCustomersSuggestions(DOMRefs.refs.boxCustomer, res.content || [], onSelectCustomer);
     } catch (err) { console.error(err); }
 };
 
 let onSelectCustomer = (customer) => {
-    $("txtCustomer").value = customer.fullName;
+    DOMRefs.refs.txtCustomer.value = customer.fullName;
     vehicleDetailState.customerId = customer.idCustomer;
-    boxCustomer.classList.add("hide");
-    boxCustomer.classList.remove("show");
+    DOMRefs.refs.boxCustomer.classList.add("hide");
+    DOMRefs.refs.boxCustomer.classList.remove("show");
 }
 
 export let onAddImage = (e) => {
@@ -165,9 +158,9 @@ export let onAddImage = (e) => {
     });
 
 
-    renderImages(vehicleDetailState.images, mainSwiperWrapper, thumbsWrapper, deleteImage, () => imageInput.click());
-    previewImage ? mainSwiperWrapper.classList.add("mainSwiperUsed") : mainSwiperWrapper.classList.remove("mainSwiperUsed")
-    imageInput.value = "";
+    renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click());
+    DOMRefs.refs.previewImage ? DOMRefs.refs.mainSwiperWrapper.classList.add("mainSwiperUsed") : DOMRefs.refs.mainSwiperWrapper.classList.remove("mainSwiperUsed")
+    DOMRefs.refs.imageInput.value = "";
 }
 
 export let cleanCustomer = () => {
@@ -177,21 +170,21 @@ export let cleanCustomer = () => {
 function onCalculateTotal() {
     let total = 0;
 
-    txtCosts.forEach(input => {
+    DOMRefs.refs.txtCosts.forEach(input => {
         // Quitar comas antes de convertir a número
         const cleanValue = safeParseFloat(input.value);
 
         total += cleanValue;
     });
-    txtTotal.value = formatWithCommas(total);
+    DOMRefs.refs.txtTotal.value = formatWithCommas(total);
 }
 
 let openLinkLoteModal = () => {
-    toggleModal($('modalLinkLote'), true);
+    toggleModal(DOMRefs.refs.modalLinkLote, true);
 }
 
 let closeLinkLoteModal = () => {
-    toggleModal($('modalLinkLote'), false);
+    toggleModal(DOMRefs.refs.modalLinkLote, false);
 }
 
 let initCloseModalUpload = () => {
@@ -219,7 +212,7 @@ let onChangeUpload = (e) => {
 
 let onDropModal = (e) => {
     e.preventDefault();
-    $("uploadDropArea").classList.remove("dragover");
+    DOMRefs.refs.uploadDropArea.classList.remove("dragover");
 
     const file = e.dataTransfer.files[0];
     if (!file) return;
@@ -236,11 +229,21 @@ let deleteImage = (index) => {
     }
 
     vehicleDetailState.images.splice(index, 1);
-    renderImages(vehicleDetailState.images, mainSwiperWrapper, thumbsWrapper, deleteImage, () => imageInput.click());
+    renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click());
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
+
     hydrateContextFromURL(vehicleDetailState);
+    return true;
+};
+
+const initializeUI = () => {
+    initUploadModalEvents({ onChangeUpload, onDropModal, closeModalUpload: initCloseModalUpload, openUploadModal: initOpenModalUpload });
+
     initVehicleDetailEvents({
         onSubmit: onSubmitVehicle,
         onSearchCustomer: onSearchCustomer,
@@ -251,10 +254,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         closeLinkLoteModal,
         cleanCustomer
     });
-    initUploadModalEvents({ onChangeUpload, onDropModal, closeModalUpload: initCloseModalUpload, openUploadModal: initOpenModalUpload });
-    if (vehicleDetailState.context.currentId) {
+};
+
+const loadDataFlow = async () => {
+    const { context } = vehicleDetailState;
+    // Determinar qué flujo ejecutar
+    if (context.currentId) {
         await loadVehicle();
     } else {
-        renderImages(vehicleDetailState.images, mainSwiperWrapper, thumbsWrapper, deleteImage, () => imageInput.click());
+        renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click());
+    }
+};
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const isReady = await setupApplication();
+        if (!isReady) return;
+
+        DOMRefs.init();
+
+        initializeUI();
+
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error inicializando la aplicación: ', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
     }
 });

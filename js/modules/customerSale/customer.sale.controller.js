@@ -1,9 +1,10 @@
 import { getCustomers } from "../../service/customers.service.js";
-import { insertCustomers } from "../../core/dom/customers.sale.dom.js";
+import { DOMRefs, insertCustomers } from "../../core/dom/customers.sale.dom.js";
 import { customerSaleState } from "../../core/state/customers.sale.state.js";
-import { qs, showMessage } from "../../utils/dom.js";
+import { hideElement, showElement, showMessage } from "../../utils/dom.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { initCustomerSaleEvents } from "./customer.sale.event.js";
+import { initSession } from "../../utils/api.utils.js";
 
 const pagination = createPagination({
     initialSize: customerSaleState.pagination.size,
@@ -17,6 +18,7 @@ const pagination = createPagination({
 
 let loadCustomers = async () => {
     try {
+        showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customerSaleState.pagination;
         const { search } = customerSaleState.filters;
         const data = await getCustomers(
@@ -28,7 +30,7 @@ let loadCustomers = async () => {
         customerSaleState.list = data.content;
         customerSaleState.pagination.total = data.page.totalElements;
         customerSaleState.pagination.totalPages = data.page.totalPages;
-        insertCustomers(qs(".containerCustomers"), customerSaleState.list, customerSaleState.type, customerSaleState.context.id);
+        insertCustomers(DOMRefs.refs.cardContainer, customerSaleState.list, customerSaleState.type, customerSaleState.context.id);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -39,6 +41,8 @@ let loadCustomers = async () => {
     } catch (error) {
         console.error("Error al cargar los clientes:", error);
         showMessage('Error', 'No se pudieron cargar los clientes. Inténtalo de nuevo más tarde.', 'error');
+    } finally {
+        hideElement(DOMRefs.refs.loaderCustomers);
     }
 }
 
@@ -59,8 +63,42 @@ export function onSearchCustomer(filters) {
     loadCustomers();
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
+
+    // 3. Hidratar contexto desde URL
     hydrateContextFromURL();
+
+    return true;
+};
+
+const initializeUI = () => {
     initCustomerSaleEvents({ onSearchCustomer });
+
+}
+
+const loadDataFlow = async () => {
     await loadCustomers();
-})
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // 1. Configurar aplicación
+        const isReady = await setupApplication();
+        if (!isReady) return;
+
+        // 2. Inicializar referencias del DOMRefs
+        DOMRefs.init();
+
+        // 3. Inicializar componentes UI
+        initializeUI();
+
+        // 4. Cargar datos según el flujo
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error initializing application:', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
+});

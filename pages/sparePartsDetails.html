@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../css/utils/controls.css">
     <link rel="stylesheet" href="../css/utils/modal.css">
     <link rel="stylesheet" href="../css/utils/modalLinkExtra.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Repuestos - Detalles</title>
 </head>
 
@@ -128,11 +129,6 @@
                         <div class="formGroup">
                             <label for="cmbPartStatus" class="lblInputs">Estado</label>
                             <select id="cmbPartStatus" name="cmbPartStatus" class="txtInputs">
-                                <option value="">Selecciona un estado</option>
-                                <option value="nuevo">Nuevo</option>
-                                <option value="usado-excelente">Usado - Excelente</option>
-                                <option value="usado-bueno">Usado - Bueno</option>
-                                <option value="reparado">Reparado</option>
                             </select>
                         </div>
                     </div>
@@ -173,8 +169,10 @@
                     </div>
                 </fieldset>
             </div>
-
-            <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" id="btnSaveData">
+            <button class="btnPrimary btnSubmitData" id="btnSaveSparePart">
+                <span>Guardar</span>
+                <div class="loader hide" id="loaderAddSparePart"></div>
+            </button>
         </form>
     </div>
 

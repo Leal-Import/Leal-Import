@@ -1,5 +1,6 @@
 .containerTable {
     background: var(--bg-color-white);
+    position: relative;
     flex: 1;
     border-radius: 16px;
     overflow: hidden;

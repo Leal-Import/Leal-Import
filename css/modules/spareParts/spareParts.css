@@ -15,6 +15,11 @@
     margin-bottom: 24px;
 }
 
+.containerSpareParts{
+    position: relative;
+    flex: 1;
+}
+
 .statTitle {
     font-size: var(--font-size-base);
     color: #718096;

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/utils/pagination.css">
     <link rel="stylesheet" href="../css/utils/controls.css">
     <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Agregar cliente</title>
 </head>
 
@@ -26,7 +27,13 @@
                         placeholder="Buscar por: nombre, DUI o teléfono">
                 </div>
             </div>
-            <div class="containerCustomers"></div>
+            <div class="customersContainer">
+                <div class="containerLoader show" style="z-index: 20;" id="loaderCustomers">
+                    <div class="loader"></div>
+                    <div>Cargando lista de clientes...</div>
+                </div>
+                <div class="cardContainer"></div>
+            </div>
             <div class="paginationContainer">
                 <!-- Info + page size -->
                 <div class="paginationLeft">

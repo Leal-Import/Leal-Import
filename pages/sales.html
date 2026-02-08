@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/globalStyles.css">
     <link rel="stylesheet" href="../css/utils/controls.css">
     <link rel="stylesheet" href="../css/utils/modal.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Ventas</title>
 </head>
 
@@ -92,7 +93,7 @@
                                 <input type="text" id="txtSearchData" class="txtSearchData"
                                     placeholder="Buscar por: cliente o vendedor">
                                 <select id="cmbSearchByStatus" class="cmbFilterData">
-                                    <option value="">Filtrar por estado</option>
+                                    <option value="">Cargando...</option>
                                 </select>
                             </div>
                             <button class="btnPrimary btnOpenModal" id="btnAskSale">Añadir</button>
@@ -100,7 +101,14 @@
                     </div>
                 </div>
             </div>
-            <div class="panelContainer"></div>
+
+            <div class="containerSales">
+                <div class="containerLoader show" style="z-index: 20;" id="loaderSales">
+                    <div class="loader"></div>
+                    <div>Cargando lista de repuestos...</div>
+                </div>
+                <div class="panelContainer"></div>
+            </div>
             <div class="paginationContainer">
 
                 <!-- Info + page size -->

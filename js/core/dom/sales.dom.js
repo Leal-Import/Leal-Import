@@ -1,4 +1,16 @@
-import { $, qsa, toggleModal } from "../../utils/dom.js";
+import { $, qsa, qs, toggleModal } from "../../utils/dom.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            panelContainer: qs('.panelContainer'),
+            loaderSales: $('loaderSales')
+        };
+        return this.refs;
+    }
+};
 
 export let insertSales = (container, sales) => {
     if (!container) return;

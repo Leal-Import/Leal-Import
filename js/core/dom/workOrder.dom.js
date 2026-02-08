@@ -1,3 +1,17 @@
+import { $, qs } from "../../utils/dom.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            cardContainer: qs('.cardContainer'),
+            loaderWorkOrders: $('loaderWorkOrders'),
+        };
+
+        return this.refs;
+    }
+};
 
 export let insertWorkOrders = (container, workOrders) => {
     container.innerHTML = "";

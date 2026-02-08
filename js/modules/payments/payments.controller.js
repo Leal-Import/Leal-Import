@@ -14,18 +14,22 @@ export async function loadPayMethods() {
         const roles = await getPaymentMethods();
         // Tu API puede devolver array o { content: [...] }
         paymentsState.paymentMethods = Array.isArray(roles) ? roles : (roles?.content || []);
-        fillSelect($("paymentMethod"), paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Metodo de pago");
+        const cmbPaymentMethod = $("paymentMethod");
+        if(cmbPaymentMethod){
+            fillSelect(cmbPaymentMethod, paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Metodo de pago");
+        }
     } catch (error) {
         console.error('Error al cargar métodos de pago:', error);
         paymentsState.paymentMethods = [];
     }
 }
 
-export async function initPaymentsController({ totalCalculator, onStateChange, createReceiptBtn }) {
+export async function initPaymentsController({ totalCalculator, onStateChange, createReceiptBtn, isView }) {
     await loadPayMethods();
     paymentsState.onSaveState = onStateChange;
     paymentsState.onCalculateTotal = totalCalculator;
     paymentsState.onCreateButton = createReceiptBtn;
+    paymentsState.context.isView = isView
 }
 
 
@@ -36,7 +40,7 @@ export async function initPaymentsController({ totalCalculator, onStateChange, c
 export function addNewPayment({ state, totals, payment }) {
     addPayment(state, payment || {});
     totals.totalPaid = state.payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
-    render(state.payments, totals, state.paymentsToDelete);
+    renderPaymentsController(state.payments, totals, state.paymentsToDelete);
     paymentsState.onSaveState?.();
     paymentsState.onCalculateTotal();
 }
@@ -49,24 +53,7 @@ let onDeletePayment = (payments, index, totals, paymentsToDelete) => {
     }
     payments.splice(index, 1);
     totals.totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
-    render(payments, totals, paymentsToDelete);
-    paymentsState.onSaveState?.();
-    paymentsState.onCalculateTotal();
-}
-
-let onAmountChange = (payments, index, value, totals) => {
-    const payment = payments[index];
-    if (!payment) return;
-    payment.amount = value;
-    totals.totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
-    paymentsState.onSaveState?.();
-    paymentsState.onCalculateTotal();
-}
-
-let onMethodChange = (payments, index, value) => {
-    const payment = payments[index];
-    if (!payment) return;
-    payment.idPaymentMethod = value;
+    renderPaymentsController(payments, totals, paymentsToDelete);
     paymentsState.onSaveState?.();
     paymentsState.onCalculateTotal();
 }
@@ -81,16 +68,15 @@ export let onResetPayments = (state, totals) => {
     totals.total = 0;
 }
 
-export function render(payments, totals, paymentsToDelete) {
+function renderPaymentsController(payments, totals, paymentsToDelete) {
     renderPayments({
         payments: payments,
         totals,
         paymentsMethods: paymentsState.paymentMethods,
-        onAmountChange,
-        onMethodChange,
         onDeletePayment,
         paymentsToDelete,
         showReceiptBtn: true,
-        createReceiptButton: paymentsState.onCreateButton
+        createReceiptButton: paymentsState.onCreateButton,
+        isView: paymentsState.context.isView
     });
 }

@@ -12,8 +12,14 @@
 }
 
 
+.customersContainer{
+    flex: 1;
+    position: relative;
+    border-radius: 10px;
+}
+
 /* Container Customers - Grid Layout */
-.containerCustomers {
+.cardContainer {
     display: grid;
     flex: 1;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

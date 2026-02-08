@@ -1,6 +1,20 @@
 import { $ } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
 
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            woDetailsTBody: $('woDetailsTBody'),
+            loaderWorkOrders: $('loaderWorkOrders'),
+            btnAddOrder: $('btnAddOrder'),
+        };
+
+        return this.refs;
+    }
+};
+
 export const loadStats = (data) => {
     $("finalized").textContent = data.statistics.finalized;
     $("pending").textContent = data.statistics.pending;

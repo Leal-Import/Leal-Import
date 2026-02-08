@@ -1,6 +1,20 @@
 import { $ } from "../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } from "../../utils/formatters.js";
 
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            tableBody: $('tBodyInventory'),
+            tBodySelected: $('tBodySelected'),
+            loaderSpareParts: $('loaderSpareParts')
+        };
+
+        return this.refs;
+    }
+};
+
 
 export function insertSpareParts(
     spareParts,

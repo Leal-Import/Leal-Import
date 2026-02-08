@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/globalStyles.css">
     <link rel="stylesheet" href="../css/utils/controls.css">
     <link rel="stylesheet" href="../css/utils/cards.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Repuestos</title>
 </head>
 
@@ -40,7 +41,7 @@
                                 <input type="text" id="txtSearchData" class="txtSearchData"
                                     placeholder="Buscar por: nombre, marca, modelo o año">
                                 <select id="cmbSearchByStatus" class="cmbFilterData">
-                                    <option value="">Filtrar por estado</option>
+                                    <option value="">Cargando...</option>
                                 </select>
                             </div>
                             <a href="sparePartsDetails.html" class="btnPrimary btnOpenModal">Añadir</a>
@@ -48,13 +49,18 @@
                     </div>
                 </div>
             </div>
-            <div class="cardContainer"></div>
-            <div class="paginationContainer">
 
+            <div class="containerSpareParts">
+                <div class="containerLoader show" style="z-index: 20;" id="loaderSpareParts">
+                    <div class="loader"></div>
+                    <div>Cargando lista de repuestos...</div>
+                </div>
+                <div class="cardContainer"></div>
+            </div>
+            <div class="paginationContainer">
                 <!-- Info + page size -->
                 <div class="paginationLeft">
                     <span class="paginationInfo"></span>
-
                     <div class="pageSize">
                         <select class="txtInputs" id="sizeSelect">
                             <option value="5">5</option>
@@ -66,13 +72,11 @@
                         <span>por página</span>
                     </div>
                 </div>
-
                 <!-- Page controls -->
                 <div class="paginationRight">
                     <button class="pageBtn prev">‹</button>
                     <button class="pageBtn next">›</button>
                 </div>
-
             </div>
         </div>
     </div>

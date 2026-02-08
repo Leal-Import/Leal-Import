@@ -16,6 +16,34 @@ export const UPLOAD_CONFIG = {
     }
 };
 
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            previewImage: qs("#mainSwiper .previewImg"),
+            txtCosts: qsa(".txtCosts"),
+            txtTotal: $("txtTotal"),
+            mainSwiperWrapper: $("mainSwiperWrapper"),
+            thumbsWrapper: $("thumbsWrapper"),
+            frmVehicles: $("frmVehicles"),
+            boxCustomer: $("suggestionsCustomer"),
+            imageInput: $("imageInput"),
+            isExternalOpt: $("isExternalOpt"),
+            modalLinkLote: $("modalLinkLote"),  
+            uploadDropArea: $("uploadDropArea"),
+            loaderSaveVehicle: $("loaderSaveVehicle"),
+            btnSaveData: $("btnSaveData")
+        };
+
+        return this.refs;
+    }
+};
+
+export function loadDomData() {
+    $("typeAction").textContent = "Actualizar vehiculo";
+    $("btnSaveData").querySelector("span").textContent = "Actualizar"
+}
 
 let mainSwiperInstance = null;
 let thumbsSwiperInstance = null;

@@ -1,5 +1,4 @@
 import { sparePartDetailState } from "../../../core/state/spareParts.detail.state.js";
-import { $, qsa } from "../../../utils/dom.js";
 import {
     fillSparePartsBaseForm,
     hydrateContextFromURL,
@@ -7,22 +6,15 @@ import {
     validateBaseSparePart,
     validateImage,
 } from "../../../core/logic/spareParts.detail.logic.js";
-import { fillSelect, showMessage } from "../../../utils.js";
+import { disableElement, fillSelect, hideElement, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
 import { safeParseFloat } from "../../../utils/validators.js";
 import { initSparePartDetailEvents } from "../event/spareParts.detail.event.js";
 import { initImageEvents } from "../event/spareParts.uploads.event.js";
-import { loadImage, openLinkModal, saveLinkModal } from "../../../core/dom/spareParts.detail.dom.js";
+import { DOMRefs, loadImage, loadUpdateInfo, openLinkModal, saveLinkModal } from "../../../core/dom/spareParts.detail.dom.js";
 import { getSparePart, postSparePart, putSparePart } from "../../../service/spareParts.detail.service.js";
 import { getStatus } from "../../../service/spareParts.service.js";
-
-const txtCosts = qsa(".txtCosts");
-const txtTotal = $('txtTotalCost');
-const frmSpareParts = $('frmSpareParts');
-
-const placeholderMsg = $("placeholderMsg");
-const imgPart = $("imgPart");
-const dropArea = $("dropZone");
+import { initSession } from "../../../utils/api.utils.js";
 
 async function loadStatusSelect() {
     try {
@@ -40,24 +32,26 @@ async function loadStatusSelect() {
 }
 
 export async function loadSparePart() {
-    const sparePart = await getSparePart(sparePartDetailState.context.currentId);
-    $("typeAction").textContent = "Actualizar repuesto";
-    $("btnSaveData").value = "Actualizar";
+    try {
+        const sparePart = await getSparePart(sparePartDetailState.context.currentId);
+        loadUpdateInfo();
 
-    fillSparePartsBaseForm(sparePart)
-    loadImage(sparePart.photoUrl);
-    sparePartDetailState.trackingId = sparePart.tracking.idTracking;
-    sparePartDetailState.costsId = sparePart.sparePartsCosts.idCostSparePart;
-    sparePartDetailState.links.bill = sparePart.billUrl;
-    sparePartDetailState.links.tracking = sparePart.tracking.linkTracking;
-    $("btnDeleteImg").classList.add("hide");
-    $("btnAddImg").textContent = "Actualizar foto";
+        fillSparePartsBaseForm(sparePart)
+        loadImage(sparePart.photoUrl);
+        sparePartDetailState.trackingId = sparePart.tracking.idTracking;
+        sparePartDetailState.costsId = sparePart.sparePartsCosts.idCostSparePart;
+        sparePartDetailState.links.bill = sparePart.billUrl;
+        sparePartDetailState.links.tracking = sparePart.tracking.linkTracking;
+    } catch (error) {
+        console.error("No se pudo cargar el repuestp: ", error);
+        showMessage("Error", "Error al cargar el repuesto", "error");
+    }
 }
 
 export async function onSubmitSparePart(e) {
     e.preventDefault();
 
-    const formData = Object.fromEntries(new FormData(frmSpareParts));
+    const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmSpareParts));
     const fd = new FormData();
     let imagesValid;
     if (sparePartDetailState.context.currentId && sparePartDetailState.image.file) {
@@ -76,6 +70,8 @@ export async function onSubmitSparePart(e) {
         showMessage('Datos no válidos', error, 'warning');
         return;
     }
+    showElement(DOMRefs.refs.loaderAddSparePart);
+    disableElement(DOMRefs.refs.btnSaveSparePart);
     let payloadSparePart = mapSparePart(formData);
 
 
@@ -135,16 +131,19 @@ export async function onSubmitSparePart(e) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar el repuesto.';
         showMessage(errorMessage, 'error', 'error');
+    } finally {
+        hideElement(DOMRefs.refs.loaderAddSparePart);
+        removeDisable(DOMRefs.refs.btnSaveSparePart);
     }
 }
 
 
-export let onAddImage = () => $("fileInput").click();
+export let onAddImage = () => DOMRefs.refs.fileInput.click();
 
 function onCalculateTotal() {
     let total = 0;
-    txtCosts.forEach(input => total += safeParseFloat(input.value));
-    txtTotal.value = formatWithCommas(total);
+    DOMRefs.refs.DOMRefs.forEach(input => total += safeParseFloat(input.value));
+    DOMRefs.refs.DOMRefs.value = formatWithCommas(total);
 }
 
 let onOpenModal = (type) => openLinkModal(type, sparePartDetailState);
@@ -169,34 +168,61 @@ let onDeleteImage = () => {
     sparePartDetailState.image.file = null;
     sparePartDetailState.image.url = null;
 
-    imgPart.src = "";
-    imgPart.style.display = "none";
-    placeholderMsg.style.display = "block";
-    $("fileInput").value = "";
+    DOMRefs.refs.imgPart.src = "";
+    DOMRefs.refs.imgPart.style.display = "none";
+    DOMRefs.refs.placeholderMsg.style.display = "block";
+    DOMRefs.refs.fileInput.value = "";
 };
 
 let onDropModal = (e) => {
     e.preventDefault();
-    dropArea.classList.remove("dragover");
+    DOMRefs.refs.dropArea.classList.remove("dragover");
 }
 
 let onDragOver = (e) => {
     e.preventDefault();
-    dropArea.classList.add("dragover");
+    DOMRefs.refs.dropArea.classList.add("dragover");
 }
 
 let onDragLeave = () => {
-    dropArea.classList.remove("dragover");
+    DOMRefs.refs.dropArea.classList.remove("dragover");
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    hydrateContextFromURL(sparePartDetailState);
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
 
+    // 3. Hidratar contexto desde URL
+    hydrateContextFromURL();
+
+    return true;
+};
+
+const initializeUI = () => {
     initSparePartDetailEvents({ onSubmit: onSubmitSparePart, onCalculateTotal, onOpenModal, onSaveDataModal, });
     initImageEvents({ onChangeUpload, onDropModal, onAddImage, onDeleteImage, onDragOver, onDragLeave });
+}
 
+const loadDataFlow = async () => {
     await loadStatusSelect();
     if (sparePartDetailState.context.currentId) {
         await loadSparePart();
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const isReady = await setupApplication();
+        if (!isReady) return;
+
+        DOMRefs.init();
+
+        initializeUI();
+
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error initializing application:', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
     }
 });

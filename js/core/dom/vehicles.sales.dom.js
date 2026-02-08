@@ -1,5 +1,24 @@
-import { $, qs } from "../../utils/dom.js";
+import { $, hideElement, qs, showElement } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
+import { vehicleSaleState } from "../state/vehicles.sales.state.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            tBodyInventory: $("tBodyInventory"),
+            frmVehicleSale: $("frmVehicleSale"),
+            txtAmount: $("txtAmount"),
+            cmbPaymentMethod: $("paymentMethod"),
+            addVehicleLoader: $("loaderAddVehicle"),
+            tableVehiclesLoader: $("tableVehiclesLoader"),
+            btnSaveSaleLoader: $("btnSaveSaleLoader"),
+            btnSaveSale: $("btnSaveSale")
+        };
+        return this.refs;
+    }
+};
 
 export const cleanPaymentCamps = () => {
     const amountInput = $('txtAmount');
@@ -65,8 +84,9 @@ export let insertVehicles = (container, vehicles, onAddVehicle) => {
     container.appendChild(fragment);
 }
 
-export let loadVehicle = (vehicle, idSale) => {
-
+export const loadVehicle = (vehicle, idSale) => {
+    hideElement(qs(".dataLeft"));
+    vehicleSaleState.data.salePrice = vehicle.costs.suggestedPrice || 0; 
     qs(".viewVechicleContainer")?.classList.remove("hide");
 
     $("vehicleVin").textContent = vehicle.vin;
@@ -167,7 +187,7 @@ export let loadDomData = (data) => {
     $("txtNotes").value = data.notes;
     $("txtTotal").value = `$${formatWithCommas(data.salePrice)}`;
     $("txtCommission").value = `$${formatWithCommas(data.commission)}`
-    $("btnSaveSale").textContent = "Actualizar venta";
+    $("btnSaveSale").querySelector("span").textContent = "Actualizar venta";
     $("btnCreateOrder").replaceWith(document.createElement("div"));
 }
 

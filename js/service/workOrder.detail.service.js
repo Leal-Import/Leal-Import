@@ -22,6 +22,48 @@ export let getServices = async (search) => {
     }
 };
 
+export const patchWorkOrder = async (idWorkOrder) => {
+    try {
+        const response = await fetch(
+            `${API_URL}/patchWorkOrder/${idWorkOrder}/complete`,
+            {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                }
+            }
+        );
+
+        if (!response.ok) {
+            let errorMessage = `Error al completar la orden. Código: ${response.status}.`;
+
+            try {
+                const errorData = await response.json();
+                if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).join('\n');
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch {
+                const text = await response.text();
+                if (text) errorMessage += ` Detalle: ${text.substring(0, 100)}`;
+            }
+
+            throw new Error(errorMessage);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        if (error instanceof TypeError) {
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+        }
+        throw error;
+    }
+};
+
 export let getDataVehicleById = async (id) => {
     try {
         const request = await fetch(`${API_URLVE}/getWorkOrderVehicle/${id}`, {

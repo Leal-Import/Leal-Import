@@ -1,4 +1,31 @@
-import { $, toggleModal } from "../../utils/dom.js";
+import { $, toggleModal, qsa } from "../../utils/dom.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            txtCosts: qsa('.txtCosts'),
+            txtTotal: $('txtTotalCost'),
+            frmSpareParts: $('frmSpareParts'),
+            placeholderMsg: $('placeholderMsg'),
+            imgPart: $('imgPart'),
+            dropArea: $('dropZone'),
+            fileInput: $('fileInput'),
+            loaderAddSparePart: $('loaderAddSparePart'),
+            btnSaveSparePart: $('btnSaveSparePart')
+        };
+
+        return this.refs;
+    }
+};
+
+export function loadUpdateInfo() {
+    $("typeAction").textContent = "Actualizar repuesto";
+    $("btnSaveSparePart").querySelector("span").textContent = "Actualizar";
+    $("btnDeleteImg").classList.add("hide");
+    $("btnAddImg").textContent = "Actualizar foto";
+}
 
 const LINK_CONFIG = {
     bill: {
