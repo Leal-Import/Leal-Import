@@ -194,7 +194,7 @@ const setupApplication = async () => {
     if (!user) return false;
 
     // 3. Hidratar contexto desde URL
-    hydrateContextFromURL();
+    hydrateContextFromURL(sparePartDetailState);
 
     return true;
 };

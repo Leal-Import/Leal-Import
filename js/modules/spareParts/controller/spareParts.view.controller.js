@@ -1,6 +1,7 @@
 import { loadSparePart } from "../../../core/dom/spareParts.view.dom.js";
 import { sparePartViewState } from "../../../core/state/spareParts.view.state.js";
 import { getSparePart } from "../../../service/spareParts.detail.service.js";
+import { initSession } from "../../../utils/api.utils.js";
 import { asUUID, showMessage } from "../../../utils/dom.js"
 
 const loadData = async () => {
