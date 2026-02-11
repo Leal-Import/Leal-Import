@@ -12,24 +12,30 @@
     overflow: hidden;
     transform: translateY(0) scale(1);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    padding: 0 !important;
+    width: clamp(200px, 90%, 650px) !important;
+    container-type: inline-size;
+    container-name: modalVoucher;
 }
 
 .modalVoucher .btnSecondary,
 .modalVoucher .btnPrimary{
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     padding: 7px 10px !important;
+    font-size: var(--font-size-base);
+    flex: 1;
+}
+
+.modalVoucher .btnSecondary span,
+.modalVoucher .btnPrimary span{
+    text-wrap: nowrap;
 }
 
 .containerModal:not(.hide) .modalVoucher {
     animation: modalAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.modalAdd {
-    max-width: 650px;
-    width: 90%;
-    padding: 0 !important;
 }
 
 /* Header with Gradient */
@@ -93,18 +99,11 @@
 
 /* Close Button - Solo estilos específicos del modal */
 .modalVoucher .btnClose {
-    position: absolute;
     top: 20px;
     right: 20px;
     width: 36px;
     height: 36px;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    background: transparent;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
     z-index: 10;
 }
 
@@ -555,5 +554,23 @@
     to {
         transform: translateY(0) scale(1);
         opacity: 1;
+    }
+}
+
+@container modalVoucher (max-width: 475px){
+    .headerModalVoucher h2{
+        font-size: var(--font-size-base);
+    }
+
+    .bodyModalVoucher{
+        padding: 20px 15px;
+    }
+
+    .header-subtitle{
+        font-size: var(--font-size-sm);
+    }
+
+    .modalVoucher .btnClose{
+        margin: 0;
     }
 }
