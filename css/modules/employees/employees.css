@@ -10,10 +10,210 @@
     gap: 20px;
 }
 
-/* Selectores con estilo moderno */
-.containerSelects {
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE CSS PARA TABLA DE EMPLEADOS
+   Añade este código al final de tu archivo employees.css
+═══════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════
+   MOBILE CARDS - Hidden by default
+═══════════════════════════════════════ */
+.mobileCards {
+    display: none;
+}
+
+.employeeCard {
+    background-color: var(--bg-color-white, #FFFFFF);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(205, 144, 143, 0.15);
+    transition: box-shadow 0.2s;
+}
+
+.employeeCard:hover {
+    box-shadow: 0 4px 12px rgba(205, 144, 143, 0.25);
+}
+
+.cardHeader {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.cardHeaderLeft {
     flex: 1;
-    gap: 12px;
-    align-items: center;
+    min-width: 0;
+}
+
+.cardName {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color, #0D0503);
+    margin-bottom: 5px;
+    word-wrap: break-word;
+}
+
+.cardRole {
+    display: inline-block;
+    padding: 4px 12px;
+    background-color: rgba(211, 24, 19, 0.1);
+    color: var(--danger-color, #D31813);
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.cardActions {
+    flex-shrink: 0;
+}
+
+.cardInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cardInfoItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.cardInfoLabel {
+    font-weight: 500;
+    color: var(--helper-color, #CD908F);
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+.cardInfoValue {
+    color: var(--text-color-secondary, #81859E);
+    word-wrap: break-word;
+    flex: 1;
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════════ */
+
+/* Tablets y móviles grandes (< 1225px) */
+@media screen and (max-width: 1224px) {
+    .content {
+        padding-top: 70px; /* Espacio para el mobile header */
+    }
+
+    .headerContent {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .breadCrumbSection {
+        width: 100%;
+    }
+
+    .filterSection {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .txtSearchData,
+    .cmbFilterData,
+    .btnOpenModal {
+        width: 100%;
+    }
+
+    /* Mantener tabla visible en tablets */
+    .containerTable {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        min-width: 600px;
+    }
+}
+
+/* Móviles (< 768px) - Cambiar a cards */
+@media screen and (max-width: 767px) {
+    /* Ocultar tabla */
+    .containerTable {
+        overflow-x: visible;
+    }
+
+    .table {
+        display: none;
+    }
+
+    /* Mostrar cards */
+    .mobileCards {
+        display: block;
+    }
+
+    /* Ajustar paginación */
+    .paginationContainer {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .paginationLeft {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .pageSize {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .paginationRight {
+        justify-content: center;
+    }
+
+    /* Ajustar modal en móvil */
+    .modalAdd {
+        width: 95%;
+        max-width: 500px;
+        margin: 10px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modalEmployeeBody {
+        padding: 15px 0;
+    }
+}
+
+/* Móviles pequeños (< 500px) */
+@media screen and (max-width: 499px) {
+    .content {
+        padding: 70px 15px 15px;
+    }
+
+    .employeeCard {
+        padding: 15px;
+    }
+
+    .cardName {
+        font-size: 15px;
+    }
+
+    .cardInfoItem {
+        font-size: 13px;
+    }
+
+    .cardInfoLabel {
+        min-width: 70px;
+    }
+
+    .btnOpenModal {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
 }

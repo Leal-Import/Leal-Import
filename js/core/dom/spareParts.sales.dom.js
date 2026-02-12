@@ -8,7 +8,9 @@ export const DOMRefs = {
         this.refs = {
             tableBody: $('tBodyInventory'),
             tBodySelected: $('tBodySelected'),
-            loaderSpareParts: $('loaderSpareParts')
+            loaderSpareParts: $('loaderSpareParts'),
+            loaderAddSale: $('loaderAddSale'),
+            btnSaveSale: $('btnSaveSale')
         };
 
         return this.refs;
@@ -180,7 +182,7 @@ export let loadBtnOrder = (customerId, customerName, idSale) => {
 
 export let loadDomData = (notes) => {
     $("txtNotes").value = notes;
-    $("btnSaveSale").textContent = "Actualizar venta";
+    $("btnSaveSale").querySelector("span").textContent = "Actualizar venta";
 }
 
 export let loadNotes = (notes) => {

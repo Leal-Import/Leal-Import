@@ -115,6 +115,8 @@
     width: 90%;
     margin: auto;
     flex-direction: column;
+    padding: 24px;
+    gap: 10px;
 }
 
 /* Images Section */
@@ -153,11 +155,6 @@
 .thumbs-swiper .swiper-slide-thumb-active {
     opacity: 1;
     box-shadow: 0 0 0 3px #d32f2f;
-}
-
-/* Vehicle Info */
-.vehicleInfo {
-    padding: 24px;
 }
 
 .mainInfoContainer {

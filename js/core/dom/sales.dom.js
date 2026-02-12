@@ -170,10 +170,10 @@ export let insertSales = (container, sales) => {
 
             if (sale.productType == "Vehicle") {
                 btnEdit.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
-                btnView.href = `vehicleViewSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
+                btnView.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}&isView=true`;
             } else {
                 btnEdit.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
-                btnView.href = `sparePartsSaleView.html?idSale=${sale.idSale}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
+                btnView.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}&isView=true`;
             }
 
             containerButtonsData.append(btnView, btnEdit);

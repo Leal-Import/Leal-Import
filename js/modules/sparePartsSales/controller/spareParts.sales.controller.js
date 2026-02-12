@@ -12,7 +12,9 @@ import {
     showMessage,
     $,
     showElement,
-    hideElement
+    hideElement,
+    disableElement,
+    removeDisable
 } from '../../../utils/dom.js';
 import { spareSaleState } from '../../../core/state/spareParts.sales.state.js';
 import { initSpareSaleEvents } from '../event/spareParts.sales.event.js';
@@ -126,7 +128,8 @@ async function onSubmitSpareSale(e) {
     } else {
         payload = buildPostSalePayload(spareSaleState);
     }
-
+    showElement(DOMRefs.refs.loaderAddSale);
+    disableElement(DOMRefs.refs.btnSaveSale);
     try {
         let response;
         if (spareSaleState.context.idSale) {
@@ -149,6 +152,9 @@ async function onSubmitSpareSale(e) {
             error,
             'error'
         );
+    } finally {
+        hideElement(DOMRefs.refs.loaderAddSale);
+        removeDisable(DOMRefs.refs.btnSaveSale);
     }
 }
 const onAddPayment = () => {

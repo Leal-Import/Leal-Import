@@ -56,23 +56,22 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
+            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadCrumbSection">
                     <a class="breadcrumb">Empleados</a>
                 </div>
                 <div class="filterSection">
-                    <div class="containerSelects">
-                        <input type="text" id="txtSearchData" class="txtSearchData"
-                            placeholder="Buscar por: nombre, correo o teléfono">
-                        <select id="cmbSearchByRole" class="cmbFilterData">
-                            <option value="">Cargando...</option>
-                        </select>
-                        <select id="cmbSearchByStatus" class="cmbFilterData">
-                            <option value="T">Activo</option>
-                            <option value="F">Inactivo</option>
-                            <option value="">Todos</option>
-                        </select>
-                    </div>
+                    <input type="text" id="txtSearchData" class="txtSearchData"
+                        placeholder="Buscar por: nombre, correo o teléfono">
+                    <select id="cmbSearchByRole" class="cmbFilterData">
+                        <option value="">Cargando...</option>
+                    </select>
+                    <select id="cmbSearchByStatus" class="cmbFilterData">
+                        <option value="T">Activo</option>
+                        <option value="F">Inactivo</option>
+                        <option value="">Todos</option>
+                    </select>
                     <button id="OpenModalEmployees" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
             </div>

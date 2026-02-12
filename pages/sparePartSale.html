@@ -21,6 +21,7 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
+            <div class="containerMobileHeader"></div>
             <div class="leftColumn">
                 <div class="headerContent">
                     <div class="breadCrumbSection">
@@ -146,7 +147,10 @@
                     <!-- Action Buttons -->
                     <div class="actionButtons">
                         <div></div>
-                        <button class="btnPrimary" id="btnSaveSale">Vender</button>
+                        <button class="btnPrimary" id="btnSaveSale">
+                            <span>Vender</span>
+                            <div class="loader hide" id="loaderAddSale"></div>
+                        </button>
                     </div>
                 </form>
             </div>

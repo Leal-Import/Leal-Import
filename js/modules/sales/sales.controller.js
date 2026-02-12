@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         DOMRefs.init();
 
-        loadDataFlow();
+        await loadDataFlow();
     } catch (error) {
         console.error('Error inicializando la aplicación: ', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');

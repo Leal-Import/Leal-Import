@@ -142,8 +142,8 @@ export let onAddImage = () => DOMRefs.refs.fileInput.click();
 
 function onCalculateTotal() {
     let total = 0;
-    DOMRefs.refs.DOMRefs.forEach(input => total += safeParseFloat(input.value));
-    DOMRefs.refs.DOMRefs.value = formatWithCommas(total);
+    DOMRefs.refs.txtCosts.forEach(input => total += safeParseFloat(input.value));
+    DOMRefs.refs.txtTotal.value = formatWithCommas(total);
 }
 
 let onOpenModal = (type) => openLinkModal(type, sparePartDetailState);
