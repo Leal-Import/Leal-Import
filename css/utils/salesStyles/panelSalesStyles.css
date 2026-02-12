@@ -1,5 +1,4 @@
-.rightColumn,
-.rightColumn form {
+.rightColumn{
     display: flex;
     flex-direction: column;
 }
@@ -13,6 +12,10 @@
     position: sticky;
     top: 24px;
     height: fit-content;
+}
+
+.rightColumn .formGroup{
+    flex: 0;
 }
 
 .rightColumn .btnAddPayment {
