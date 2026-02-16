@@ -79,6 +79,10 @@
     min-width: 120px;
 }
 
+.btnPrimary:disabled{
+    opacity: .5;
+}
+
 .btnSecondary {
     border: 1px solid var(--danger-color);
     cursor: pointer;
@@ -237,5 +241,13 @@ textarea {
 
     .cmbFilterData {
         font-size: 13px;
+    }
+
+    .filterSection{
+        padding: 15px 10px;
+    }
+
+    .txtSearchData{
+        flex: 1;
     }
 }

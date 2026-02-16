@@ -7,3 +7,194 @@
     flex-direction: column;
     gap: 10px;
 }
+
+.modalAdd .formGroup {
+    flex-basis: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE CSS PARA TABLA DE CLIENTES
+   Convierte las filas <tr> en cards en móvil SIN cambiar el HTML
+   Añade este código al final de tu archivo customers.css
+═══════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════════ */
+
+/* Móviles (< 768px) - Transformar tabla en cards */
+@media screen and (max-width: 767px) {
+    /* Ocultar thead */
+    .table thead {
+        display: none;
+    }
+
+    /* Convertir tbody en contenedor flex/grid */
+    .table,
+    .table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    /* Convertir cada TR en una card */
+    .table tbody tr {
+        display: grid;
+        position: relative;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto auto;
+        gap: 12px;
+        background-color: var(--bg-color-white, #FFFFFF);
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(205, 144, 143, 0.15);
+        border: none;
+        transition: box-shadow 0.2s;
+    }
+
+    .table tbody tr:hover {
+        box-shadow: 0 4px 12px rgba(205, 144, 143, 0.25);
+    }
+
+    /* Mensaje de "No hay datos" */
+    .table tbody tr td[colspan] {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px 20px !important;
+        color: var(--text-color-secondary, #81859E) !important;
+    }
+
+    /* Convertir cada TD en un item de la card */
+    .table tbody tr td {
+        display: flex;
+        max-height: 30px;
+        align-items: center;
+        gap: 8px;
+        padding: 0;
+        border: none;
+        font-size: 14px;
+        word-wrap: break-word;
+    }
+
+    /* Añadir labels antes de cada TD usando ::before */
+    .table tbody tr td:nth-child(1)::before { content: "Nombre: "; }
+    .table tbody tr td:nth-child(2)::before { content: "DUI: "; }
+    .table tbody tr td:nth-child(3)::before { content: "Teléfono: "; }
+
+    .table tbody tr td::before {
+        font-weight: 600;
+        color: var(--helper-color, #CD908F);
+        min-width: 80px;
+        flex-shrink: 0;
+    }
+
+    /* Layout de la grid - 3 columnas (nombre, dui, teléfono, acciones) */
+    
+    /* Nombre completo - primera fila, columna completa */
+    .table tbody tr td:nth-child(1) {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-color, #0D0503);
+    }
+
+    .table tbody tr td:nth-child(1)::before {
+        display: none; /* No mostrar label para nombre */
+    }
+
+    /* DUI - segunda fila */
+    .table tbody tr td:nth-child(2) {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        font-weight: 400;
+        color: var(--text-color-secondary, #81859E);
+    }
+
+    /* Teléfono - tercera fila */
+    .table tbody tr td:nth-child(3) {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        font-weight: 400;
+        color: var(--text-color-secondary, #81859E);
+    }
+
+    /* Acciones - esquina superior derecha */
+    .table tbody tr td:nth-child(4) {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .table tbody tr td:nth-child(4)::before {
+        display: none;
+    }
+
+    /* Ajustar botón de acciones */
+    .table tbody tr td:nth-child(4) .actionButton {
+        padding: 8px 12px;
+    }
+
+    /* Ajustar paginación */
+    .paginationContainer {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .paginationLeft {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .pageSize {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .paginationRight {
+        justify-content: center;
+    }
+
+    /* Ajustar modal en móvil */
+    .modalAdd {
+        width: 95% !important;
+        max-width: 500px !important;
+        margin: 10px !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modalCustomerBody {
+        padding: 15px 0;
+    }
+}
+
+/* Móviles pequeños (< 500px) */
+@media screen and (max-width: 499px) {
+    .content {
+        padding: 70px 15px 15px;
+    }
+
+    .table tbody tr {
+        padding: 15px;
+    }
+
+    .table tbody tr td:nth-child(1) {
+        font-size: 15px;
+    }
+
+    .table tbody tr td {
+        font-size: 13px;
+    }
+
+    .table tbody tr td::before {
+        min-width: 70px;
+        font-size: 13px;
+    }
+
+    .btnOpenModal {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}

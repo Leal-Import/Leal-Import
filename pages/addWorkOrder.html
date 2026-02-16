@@ -77,187 +77,190 @@
         <div id="sidebar"></div>
         <div class="content">
             <div class="containerMobileHeader"></div>
-            <div class="leftColumn">
-                <div class="headerContent">
-                    <div class="breadCrumbSection">
-                        <a href="workOrders.html" class="breadcrumb" id="firstBread">Ordenes ></a>
-                        <a class="breadcrumb" id="secondBread">Presupuesto</a>
+            <div class="wrapperColumns">
+                <div class="leftColumn">
+                    <div class="headerContent">
+                        <div class="breadCrumbSection">
+                            <a href="workOrders.html" class="breadcrumb" id="firstBread">Ordenes ></a>
+                            <a class="breadcrumb" id="secondBread">Presupuesto</a>
+                        </div>
+                    </div>
+                    <div class="bodyLeftPart">
+                        <div class="moreDataContainer">
+                            <h2>Datos del vehiculo</h2>
+
+                            <!-- Datos principales del vehículo -->
+                            <div class="rowInfo rowVehicle">
+                                <div class="dataInfo">
+                                    <span class="lblInfo">VIN</span>
+                                    <div class="valueInfo" id="vin">
+                                        <div class="loader"></div>
+                                    </div>
+                                </div>
+
+                                <div class="dataInfo">
+                                    <span class="lblInfo">Marca</span>
+                                    <div class="valueInfo" id="brand">
+                                        <div class="loader"></div>
+                                    </div>
+                                </div>
+
+                                <div class="dataInfo">
+                                    <span class="lblInfo">Modelo</span>
+                                    <div class="valueInfo" id="model">
+                                        <div class="loader"></div>
+                                    </div>
+                                </div>
+
+                                <div class="dataInfo">
+                                    <span class="lblInfo">Año</span>
+                                    <div class="valueInfo" id="year">
+                                        <div class="loader"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Costos -->
+                            <div class="rowInfo rowCosts">
+                                <div class="dataInfo">
+                                    <span class="lblInfo">Precio del vehículo:</span>
+                                    <span class="valueInfo" id="vehiclePrice">$0.00</span>
+                                </div>
+
+                                <div class="dataInfo">
+                                    <span class="lblInfo">Costos de reparación:</span>
+                                    <span class="valueInfo" id="totalRepairCost">$0.00</span>
+                                </div>
+
+                                <!-- Total destacado -->
+                                <div class="dataInfo totalHighlight">
+                                    <span class="lblInfo">Total reparado:</span>
+                                    <span class="valueInfo danger" id="totalCost">$0.00</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="tablesDataContainer">
+                            <div class="containerTables">
+                                <div class="tableContainer">
+                                    <h2>Repuestos</h2>
+                                    <div class="containerInput">
+                                        <input type="text" id="txtSearchSparePart" class="txtInputs"
+                                            placeholder="Buscar repuestos">
+                                        <div class="suggestions hide" id="suggestionsSpareParts"></div>
+                                    </div>
+                                    <table class="tableSelected">
+                                        <thead>
+                                            <tr>
+                                                <th class="tdName">Repuesto</th>
+                                                <th class="tdPrice">Precio</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tBodySpareParts" class="tBodyData"></tbody>
+                                    </table>
+                                    <div class="dataInfo">
+                                        <span class="lblInfoTotals">Total repuestos: </span>
+                                        <span class="valueInfo" id="totalValueSpareParts">$0.00</span>
+                                    </div>
+                                </div>
+                                <div class="tableContainer">
+                                    <h2>Servicios</h2>
+                                    <div class="containerInput">
+                                        <input type="text" id="txtAddService" class="txtInputs"
+                                            placeholder="Añadir servicios">
+                                        <div class="suggestions hide" id="suggestionsService"></div>
+                                    </div>
+                                    <table class="tableSelected">
+                                        <thead>
+                                            <tr>
+                                                <th class="tdName">Servicio</th>
+                                                <th class="tdPrice">Precio</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tBodyServices" class="tBodyData"></tbody>
+                                    </table>
+                                    <div class="dataInfo">
+                                        <span class="lblInfoTotals">Total servicios: </span>
+                                        <span class="valueInfo" id="totalValueService">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="bodyLeftPart">
-                    <div class="moreDataContainer">
-                        <h2>Datos del vehiculo</h2>
+                <div class="rightColumn">
+                    <form class="formRightColumn" id="frmWorkOrder">
+                        <div class="headerPanel">
+                            <h3 class="titlePanel">Resumen de Pago</h3>
+                            <p class="subtitlePanel">Gestiona los abonos y métodos de pago</p>
+                        </div>
 
-                        <!-- Datos principales del vehículo -->
-                        <div class="rowInfo rowVehicle">
-                            <div class="dataInfo">
-                                <span class="lblInfo">VIN</span>
-                                <div class="valueInfo" id="vin">
-                                    <div class="loader"></div>
-                                </div>
+                        <!-- Payment Form -->
+                        <div class="paymentForm">
+                            <div class="formGroup">
+                                <label class="lblInputs" for="txtAmount">Abono</label>
+                                <input type="text" class="txtInputs" placeholder="Abono" id="txtAmount">
                             </div>
-
-                            <div class="dataInfo">
-                                <span class="lblInfo">Marca</span>
-                                <div class="valueInfo" id="brand">
-                                    <div class="loader"></div>
-                                </div>
+                            <div class="formGroup">
+                                <label class="lblInputs" for="paymentMethod">Método de pago</label>
+                                <select name="paymentMethod" class="txtInputs" id="paymentMethod">
+                                    <option value="">Cargando...</option>
+                                </select>
                             </div>
+                            <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir
+                                abono</button>
+                        </div>
 
-                            <div class="dataInfo">
-                                <span class="lblInfo">Modelo</span>
-                                <div class="valueInfo" id="model">
-                                    <div class="loader"></div>
-                                </div>
+                        <!-- Payments List -->
+                        <div class="paymentsList" id="paymentsList"></div>
+
+                        <!-- Summary -->
+                        <div class="summarySection">
+                            <div class="summaryRow">
+                                <span class="summaryLabel">Total:</span>
+                                <span class="summaryValue" id="totalOrder">$0.00</span>
                             </div>
-
-                            <div class="dataInfo">
-                                <span class="lblInfo">Año</span>
-                                <div class="valueInfo" id="year">
-                                    <div class="loader"></div>
-                                </div>
+                            <div class="summaryRow">
+                                <span class="summaryLabel">Total abonado:</span>
+                                <span class="summaryValue" id="totalPaid">$0.00</span>
+                            </div>
+                            <div class="summaryRow">
+                                <span class="summaryLabel">Deuda:</span>
+                                <span class="summaryValue summaryTotal" id="due">$0.00</span>
                             </div>
                         </div>
 
-                        <!-- Costos -->
-                        <div class="rowInfo rowCosts">
-                            <div class="dataInfo">
-                                <span class="lblInfo">Precio del vehículo:</span>
-                                <span class="valueInfo" id="vehiclePrice">$0.00</span>
-                            </div>
-
-                            <div class="dataInfo">
-                                <span class="lblInfo">Costos de reparación:</span>
-                                <span class="valueInfo" id="totalRepairCost">$0.00</span>
-                            </div>
-
-                            <!-- Total destacado -->
-                            <div class="dataInfo totalHighlight">
-                                <span class="lblInfo">Total reparado:</span>
-                                <span class="valueInfo danger" id="totalCost">$0.00</span>
-                            </div>
+                        <!-- Additional Notes -->
+                        <div class="formGroup">
+                            <label class="lblInputs" for="txtNotes">Notas adicionales</label>
+                            <textarea class="txtInputs" id="txtNotes" placeholder="Agrega notas sobre la orden..."
+                                rows="4"></textarea>
                         </div>
 
-                    </div>
-
-                    <div class="tablesDataContainer">
-                        <div class="containerTables">
-                            <div class="tableContainer">
-                                <h2>Repuestos</h2>
-                                <div class="containerInput">
-                                    <input type="text" id="txtSearchSparePart" class="txtInputs"
-                                        placeholder="Buscar repuestos">
-                                    <div class="suggestions hide" id="suggestionsSpareParts"></div>
-                                </div>
-                                <table class="tableSelected">
-                                    <thead>
-                                        <tr>
-                                            <th class="tdName">Repuesto</th>
-                                            <th class="tdPrice">Precio</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tBodySpareParts" class="tBodyData"></tbody>
-                                </table>
-                                <div class="dataInfo">
-                                    <span class="lblInfoTotals">Total repuestos: </span>
-                                    <span class="valueInfo" id="totalValueSpareParts">$0.00</span>
-                                </div>
-                            </div>
-                            <div class="tableContainer">
-                                <h2>Servicios</h2>
-                                <div class="containerInput">
-                                    <input type="text" id="txtAddService" class="txtInputs"
-                                        placeholder="Añadir servicios">
-                                    <div class="suggestions hide" id="suggestionsService"></div>
-                                </div>
-                                <table class="tableSelected">
-                                    <thead>
-                                        <tr>
-                                            <th class="tdName">Servicio</th>
-                                            <th class="tdPrice">Precio</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tBodyServices" class="tBodyData"></tbody>
-                                </table>
-                                <div class="dataInfo">
-                                    <span class="lblInfoTotals">Total servicios: </span>
-                                    <span class="valueInfo" id="totalValueService">$0.00</span>
-                                </div>
-                            </div>
+                        <div class="formGroup">
+                            <label for="dtEstimated" class="lbl">Fecha estimada</label>
+                            <input type="date" id="dtEstimated" class="txtInputs">
                         </div>
-                    </div>
+
+                        <!-- Final Price -->
+                        <div class="formGroup">
+                            <label class="lblInputs" for="txtTotal">Total:</label>
+                            <input type="text" class="txtInputs" id="txtTotal" placeholder="$0.00" disabled>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="actionButtons">
+                            <div></div>
+                            <button class="btnPrimary" id="btnSaveOrder">
+                                <span>Crear orden</span>
+                                <div class="loader hide" id="loaderAddOrder"></div>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </div>
-            <div class="rightColumn">
-                <form class="formRightColumn" id="frmWorkOrder">
-                    <div class="headerPanel">
-                        <h3 class="titlePanel">Resumen de Pago</h3>
-                        <p class="subtitlePanel">Gestiona los abonos y métodos de pago</p>
-                    </div>
-
-                    <!-- Payment Form -->
-                    <div class="paymentForm">
-                        <div class="formGroup">
-                            <label class="lblInputs" for="txtAmount">Abono</label>
-                            <input type="text" class="txtInputs" placeholder="Abono" id="txtAmount">
-                        </div>
-                        <div class="formGroup">
-                            <label class="lblInputs" for="paymentMethod">Método de pago</label>
-                            <select name="paymentMethod" class="txtInputs" id="paymentMethod">
-                                <option value="">Cargando...</option>
-                            </select>
-                        </div>
-                        <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
-                    </div>
-
-                    <!-- Payments List -->
-                    <div class="paymentsList" id="paymentsList"></div>
-
-                    <!-- Summary -->
-                    <div class="summarySection">
-                        <div class="summaryRow">
-                            <span class="summaryLabel">Total:</span>
-                            <span class="summaryValue" id="totalOrder">$0.00</span>
-                        </div>
-                        <div class="summaryRow">
-                            <span class="summaryLabel">Total abonado:</span>
-                            <span class="summaryValue" id="totalPaid">$0.00</span>
-                        </div>
-                        <div class="summaryRow">
-                            <span class="summaryLabel">Deuda:</span>
-                            <span class="summaryValue summaryTotal" id="due">$0.00</span>
-                        </div>
-                    </div>
-
-                    <!-- Additional Notes -->
-                    <div class="formGroup">
-                        <label class="lblInputs" for="txtNotes">Notas adicionales</label>
-                        <textarea class="txtInputs" id="txtNotes" placeholder="Agrega notas sobre la orden..."
-                            rows="4"></textarea>
-                    </div>
-
-                    <div class="formGroup">
-                        <label for="dtEstimated" class="lbl">Fecha estimada</label>
-                        <input type="date" id="dtEstimated" class="txtInputs">
-                    </div>
-
-                    <!-- Final Price -->
-                    <div class="formGroup">
-                        <label class="lblInputs" for="txtTotal">Total:</label>
-                        <input type="text" class="txtInputs" id="txtTotal" placeholder="$0.00" disabled>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="actionButtons">
-                        <div></div>
-                        <button class="btnPrimary" id="btnSaveOrder">
-                            <span>Crear orden</span>
-                            <div class="loader hide" id="loaderAddOrder"></div>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>

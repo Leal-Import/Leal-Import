@@ -4,7 +4,7 @@
 }
 
 .rightColumn {
-    width: 450px !important;
+    min-width: 450px;
     padding: 24px;
     background: var(--bg-color-white);
     border: var(--border);
@@ -12,6 +12,7 @@
     position: sticky;
     top: 24px;
     height: fit-content;
+    flex: 1;
 }
 
 .rightColumn .formGroup{

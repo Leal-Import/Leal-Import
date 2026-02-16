@@ -1,12 +1,12 @@
 import { vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
 import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage } from "../../../utils/dom.js";
-import { closeAndCleanUpdateModal, DOMRefs, loadDomData, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview } from "../../../core/dom/vehicles.detail.dom.js";
+import { closeAndCleanUpdateModal, DOMRefs, hideCustomerSelected, loadDomData, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, showInvalidUrl, showCustomerSelected, showValidUrl, showDefaultText } from "../../../core/dom/vehicles.detail.dom.js";
 import { applyExternalMode, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js"
 import { initSession } from "../../../utils/api.utils.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
-import { safeParseFloat } from "../../../utils/validators.js";
+import { isValidURL, safeParseFloat } from "../../../utils/validators.js";
 import { initUploadModalEvents } from "../event/vehicles.uploads.events.js";
 import { getVehicles, postVehicle, putVehicle } from "../../../service/vehicles.detail.service.js";
 
@@ -14,6 +14,7 @@ export async function loadVehicle() {
     const vehicle = await getVehicles(vehicleDetailState.context.currentId);
     loadDomData();
     fillVehiclesBaseForm(vehicle);
+    onValidateUrl(vehicle.lote.linkLote);
     if (vehicle.costs) {
         fillVehicleCosts(vehicle.costs)
         vehicleDetailState.urls.bill = vehicle.costs.costPhoto.billPhoto;
@@ -25,6 +26,7 @@ export async function loadVehicle() {
         DOMRefs.refs.isExternalOpt.dispatchEvent(new Event('change'));
         vehicleDetailState.customerId = vehicle.idOwnerCustomer;
         DOMRefs.refs.txtCustomer.value = vehicle.customerName;
+        showCustomerSelected();
     }
     vehicleDetailState.loteId = vehicle.lote.idLote;
     loadBackendImages(vehicle.photos);
@@ -125,7 +127,7 @@ export async function onSubmitVehicle(e) {
 
 export let onSearchCustomer = async (e) => {
     const q = e.target.value.trim();
-    if (!q) { DOMRefs.refs.DOMRefs.refs.boxCustomer.classList.add("hide"); return; }
+    if (!q) { DOMRefs.refs.boxCustomer.classList.add("hide"); return; }
     try {
         const res = await getCustomers(0, 15, q);
         renderCustomersSuggestions(DOMRefs.refs.boxCustomer, res.content || [], onSelectCustomer);
@@ -137,6 +139,7 @@ let onSelectCustomer = (customer) => {
     vehicleDetailState.customerId = customer.idCustomer;
     DOMRefs.refs.boxCustomer.classList.add("hide");
     DOMRefs.refs.boxCustomer.classList.remove("show");
+    showCustomerSelected();
 }
 
 export let onAddImage = (e) => {
@@ -164,7 +167,10 @@ export let onAddImage = (e) => {
 }
 
 export let cleanCustomer = () => {
-    if (vehicleDetailState.customerId) vehicleDetailState.customerId = null;
+    if (vehicleDetailState.customerId) {
+        vehicleDetailState.customerId = null;
+        hideCustomerSelected();
+    }
 }
 
 function onCalculateTotal() {
@@ -193,6 +199,19 @@ let initCloseModalUpload = () => {
 
 let initOpenModalUpload = (type) => {
     openUploadModal(type, vehicleDetailState)
+}
+
+const onValidateUrl = (url) => {
+    if (url != "") {
+        const isValid = isValidURL(url);
+        if (isValid) {
+            showValidUrl();
+        } else {
+            showInvalidUrl();
+        }
+    } else {
+        showDefaultText();
+    }
 }
 
 let onChangeUpload = (e) => {
@@ -252,7 +271,8 @@ const initializeUI = () => {
         onCalculateTotal,
         openLinkLoteModal,
         closeLinkLoteModal,
-        cleanCustomer
+        cleanCustomer,
+        onValidateUrl
     });
 };
 

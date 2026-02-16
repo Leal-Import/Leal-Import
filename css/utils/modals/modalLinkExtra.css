@@ -55,6 +55,10 @@
     gap: 6px;
 }
 
+.successUrl{
+    color: var(--success-color) !important;
+}
+
 .helpText svg {
     flex-shrink: 0;
 }

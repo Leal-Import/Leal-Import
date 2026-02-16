@@ -6,8 +6,16 @@
     flex-wrap: wrap;
 }
 
+.wrapperColumns{
+    display: flex;
+    width: 100%;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
 .leftColumn {
-    flex: 1;
+    flex: 3;
+    flex-basis: 600px;
 }
 
 .valueInfo .loader{

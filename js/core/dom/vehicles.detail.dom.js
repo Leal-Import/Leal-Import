@@ -30,10 +30,11 @@ export const DOMRefs = {
             boxCustomer: $("suggestionsCustomer"),
             imageInput: $("imageInput"),
             isExternalOpt: $("isExternalOpt"),
-            modalLinkLote: $("modalLinkLote"),  
+            modalLinkLote: $("modalLinkLote"),
             uploadDropArea: $("uploadDropArea"),
             loaderSaveVehicle: $("loaderSaveVehicle"),
-            btnSaveData: $("btnSaveData")
+            btnSaveData: $("btnSaveData"),
+            txtCustomer: $("txtCustomer")
         };
 
         return this.refs;
@@ -101,6 +102,35 @@ export function renderCustomersSuggestions(boxCustomer, customers, onSelect) {
     boxCustomer.classList.remove("hide");
 }
 
+const hideDefaultText = () => {
+    $("defaultText").classList.add("hide");
+}
+
+export const showDefaultText = () => {
+    $("defaultText").classList.remove("hide");
+    $("errorLinkLote").classList.add("hide");
+    $("validateUrlMessage").classList.add("hide");
+}
+
+export const hideCustomerSelected = () => {
+    $("selectedCustomerText").classList.add("hide");
+}
+
+export const showCustomerSelected = () => {
+    $("selectedCustomerText").classList.remove("hide");
+}
+
+export const showValidUrl = () => {
+    hideDefaultText();
+    $("errorLinkLote").classList.add("hide");
+    $("validateUrlMessage").classList.remove("hide");
+}
+
+export const showInvalidUrl = () => {
+    hideDefaultText();
+    $("errorLinkLote").classList.remove("hide");
+    $("validateUrlMessage").classList.add("hide");
+}
 
 export function renderImages(images, mainWrapper, thumbsWrapper, onDelete, onAddClick) {
     mainWrapper.innerHTML = '';

@@ -1,7 +1,7 @@
 import { $, asUUID, fillForm, highlightAndFocus } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
 import { validateImageSize, validateImageType, validateImagesGeneral } from "../../utils/images.validators.js";
-import { safeParseFloat } from "../../utils/validators.js";
+import { isValidURL, safeParseFloat } from "../../utils/validators.js";
 import { vehicleDetailState } from "../state/vehicles.detail.state.js";
 
 
@@ -53,7 +53,8 @@ export function validateBaseVehicle({
     txtModel,
     txtYear,
     txtMileage,
-    txtLote
+    txtLote,
+    txtLink
 }) {
 
     if (!txtVin) {
@@ -94,6 +95,10 @@ export function validateBaseVehicle({
     if (!txtLote) {
         highlightAndFocus('txtLote');
         return 'El lote es obligatorio.';
+    }
+
+    if(txtLink.trim() != ""){
+        if(!isValidURL(txtLink)) return "Link del lote no valido";
     }
 
     return null;

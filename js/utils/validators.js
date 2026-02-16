@@ -52,3 +52,14 @@ export const validatePayment = (amount, method) => {
 
     return null;
 };
+
+export const isValidURL = (url) => {
+    if (!url) return false;
+
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === "https:";
+    } catch (e) {
+        return false;
+    }
+}

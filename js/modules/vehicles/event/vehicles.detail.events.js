@@ -2,7 +2,7 @@ import { qsa } from "../../../utils.js";
 import { $, qs } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatYearInput } from "../../../utils/formatters.js";
 
-export function initVehicleDetailEvents({ onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, closeLinkLoteModal, cleanCustomer }) {
+export function initVehicleDetailEvents({ onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, closeLinkLoteModal, cleanCustomer, onValidateUrl }) {
     const isExternalOpt = $('isExternalOpt');
     const btnLink = qs('.btnLinkLote');
     const modalLinkLote = $('modalLinkLote');
@@ -11,6 +11,7 @@ export function initVehicleDetailEvents({ onSubmit, onSearchCustomer, onAddImage
     const txtFormat = qsa('.txtFormat');
     const txtCosts = qsa('.txtCosts');
     const txtMileage = $("txtMileage");
+    const txtLink = $("txtLink");
 
     let searchTimeout = null;
 
@@ -25,6 +26,10 @@ export function initVehicleDetailEvents({ onSubmit, onSearchCustomer, onAddImage
         cleanCustomer();
         searchTimeout = setTimeout(() => onSearchCustomer(e), 1500);
     });
+
+    txtLink.addEventListener("input", (e) => {
+        onValidateUrl(e.target.value.trim());
+    })
 
     if (isExternalOpt) {
         isExternalOpt.addEventListener('change', e => {
