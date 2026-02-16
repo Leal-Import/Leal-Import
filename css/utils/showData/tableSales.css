@@ -4,6 +4,11 @@
     overflow-y: auto;
 }
 
+.dataLeft{
+    display: flex;
+    flex-direction: column;
+}
+
 .imgTable {
     width: 60px;
     height: 60px;
@@ -21,6 +26,7 @@
 
 .tableContainer {
     background: white;
+    position: relative;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid #e9ecef;

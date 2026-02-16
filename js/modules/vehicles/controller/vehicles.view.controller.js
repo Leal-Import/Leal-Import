@@ -19,8 +19,12 @@ export const hydrateContextFromURL = async () => {
     vehicleViewState.context.idVehicle = asUUID(params.get('id'));
 };
 
-
 document.addEventListener("DOMContentLoaded", async () => {
-    hydrateContextFromURL();
-    await loadData();
+    try {
+        hydrateContextFromURL();
+        await loadData();
+    } catch (error) {
+        console.error('Error inicializando la aplicación: ', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
 });

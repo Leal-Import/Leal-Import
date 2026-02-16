@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <link rel="stylesheet" href="../css/modules/vehicles/vehicle.css">
     <link rel="stylesheet" href="../css/utils/pagination.css">
-    <link rel="stylesheet" href="../css/utils/controls.css">
-    <link rel="stylesheet" href="../css/utils/cards.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
+    <link rel="stylesheet" href="../css/utils/showData/cards.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Vehiculos</title>
 </head>
 
@@ -17,6 +18,7 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
+            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadCrumbSection">
                     <a class="breadcrumb">Vehículos</a>
@@ -75,7 +77,7 @@
                         <input type="text" id="txtSearchData" class="txtSearchData"
                             placeholder="Buscar vehículo por VIN, marca o modelo...">
                         <select id="cmbSearchByStatus" class="cmbFilterData">
-                            <option value="">Seleccione una opción</option>
+                            <option value="">Cargando...</option>
                         </select>
                         <input type="text" class="txtSearchData" id="txtSearchYear" maxlength="4" placeholder="Año">
                     </div>
@@ -87,7 +89,13 @@
             </div>
 
             <!-- Cards Container -->
-            <div class="cardContainer"></div>
+            <div class="containerVehicles">
+                <div class="containerLoader show" style="z-index: 20;" id="loaderVehicles">
+                    <div class="loader"></div>
+                    <div>Cargando lista de vehiculos...</div>
+                </div>
+                <div class="cardContainer"></div>
+            </div>
 
             <!-- Pagination -->
             <div class="paginationContainer">

@@ -1,11 +1,10 @@
 import { sparePartsState } from '../../../core/state/spareParts.state.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
-import { showMessage, qs, fillSelect } from '../../../utils/dom.js';
+import { showMessage, fillSelect, showElement, hideElement } from '../../../utils/dom.js';
 import { initSparePartsEvents } from '../event/spareParts.events.js';
 import { getSpareParts, getStatus } from '../../../service/spareParts.service.js';
-import { insertSpareParts} from '../../../core/dom/spareParts.dom.js'
-
-const tableBody = qs('.cardContainer');
+import { DOMRefs, insertSpareParts } from '../../../core/dom/spareParts.dom.js'
+import { initSession } from '../../../utils/api.utils.js';
 
 const pagination = createPagination({
     initialSize: sparePartsState.pagination.size,
@@ -33,6 +32,7 @@ async function loadStatusSelect() {
 
 export async function loadSpareParts() {
     try {
+        showElement(DOMRefs.refs.loaderSpareParts);
         const { page, size } = sparePartsState.pagination;
         const { search, idState } = sparePartsState.filters;
 
@@ -47,7 +47,7 @@ export async function loadSpareParts() {
         sparePartsState.pagination.total = data.page.totalElements;
         sparePartsState.pagination.totalPages = data.page.totalPages;
 
-        insertSpareParts(tableBody, sparePartsState.list);
+        insertSpareParts(DOMRefs.refs.cardContainer, sparePartsState.list);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -58,6 +58,8 @@ export async function loadSpareParts() {
     } catch (error) {
         showMessage('Error', 'No se pudieron cargar los repuestos', 'error');
         console.error(error);
+    } finally {
+        hideElement(DOMRefs.refs.loaderSpareParts);
     }
 }
 
@@ -70,8 +72,35 @@ export function onSearchSpareParts(filters) {
     loadSpareParts();
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    if (!tableBody) return;
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
+
+    return true;
+};
+
+const initializeUI = () => {
     initSparePartsEvents({ onSearchSpareParts });
+}
+
+const loadDataFlow = async () => {
     await Promise.all([loadStatusSelect(), loadSpareParts()]);
+
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const isReady = await setupApplication();
+        if (!isReady) return;
+
+        DOMRefs.init();
+
+        initializeUI();
+
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error inicializando la aplicación: ', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
 });

@@ -1,14 +1,11 @@
 import { postCustomer, putCustomer, getCustomers, patchCustomer } from '../../service/customers.service.js';
 import { customersState } from '../../core/state/customers.state.js';
-import { $, toggleModal, showMessage, showFloatingMenu, setFormReadOnly } from '../../utils/dom.js';
+import { $, toggleModal, showMessage, showFloatingMenu, setFormReadOnly, showElement, hideElement, disableElement, removeDisable } from '../../utils/dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateCustomer, mapCustomerForm } from '../../core/logic/customers.logic.js';
 import { initCustomerEvents } from './customers.events.js';
-import { fillCustomerForm, insertCustomers } from '../../core/dom/customers.dom.js';
-
-const tableBody = $('CustomersTableBody');
-const modalCustomers = $('modalCustomers');
-const form = $('frmCustomers');
+import { DOMRefs, fillCustomerForm, insertCustomers } from '../../core/dom/customers.dom.js';
+import { initSession } from '../../utils/api.utils.js';
 
 const pagination = createPagination({
     initialSize: customersState.pagination.size,
@@ -21,6 +18,7 @@ const pagination = createPagination({
 
 export async function loadCustomers() {
     try {
+        showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customersState.pagination;
         const { search } = customersState.filters;
         const data = await getCustomers(
@@ -34,7 +32,7 @@ export async function loadCustomers() {
         customersState.pagination.totalPages = data.page.totalPages;
 
         insertCustomers(
-            tableBody,
+            DOMRefs.refs.CustomersTableBody,
             customersState.list,
             handleCustomerActions
         );
@@ -52,6 +50,8 @@ export async function loadCustomers() {
             'error'
         );
         console.error(error);
+    } finally {
+        hideElement(DOMRefs.refs.loaderCustomers);
     }
 }
 
@@ -113,14 +113,15 @@ function viewCustomer(customer) {
 export async function onSubmitCustomer(e) {
     e.preventDefault();
 
-    const formData = Object.fromEntries(new FormData(form));
+    const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmCustomers));
     const customer = mapCustomerForm(formData);
     const error = validateCustomer(customer);
-
     if (error) {
         showMessage('Error', error, 'warning');
         return;
     }
+    showElement(DOMRefs.refs.loaderAddCustomer);
+    disableElement(DOMRefs.refs.btnAddNewCustomer);
     try {
         if (customersState.selectedId) {
             await putCustomer(customer, customersState.selectedId);
@@ -130,14 +131,17 @@ export async function onSubmitCustomer(e) {
             showMessage('Exito', 'Cliente agregado exitosamente', 'success');
         }
 
-        toggleModal(modalCustomers, false);
-        pagination.update({});
-
+        
     } catch (err) {
         console.error(err);
         showMessage('Error', err.message || 'Error al guardar cliente', 'error');
     } finally {
+        hideElement(DOMRefs.refs.loaderAddCustomer);
         customersState.selectedId = null;
+        DOMRefs.refs.frmCustomers.reset();
+        removeDisable(DOMRefs.refs.btnAddNewCustomer);
+        toggleModal(DOMRefs.refs.modalCustomers, false);
+        pagination.update({});
     }
 }
 
@@ -152,7 +156,38 @@ export function onSearchCustomer(filters) {
 
 const onCleanState = () => customersState.selectedId = null
 
-document.addEventListener('DOMContentLoaded', async () => {
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
+
+    return true;
+};
+
+const initializeUI = () => {
     initCustomerEvents({ onSubmitCustomer, onSearchCustomer, onCleanState });
+}
+
+const loadDataFlow = async () => {
     await loadCustomers();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // 1. Configurar aplicación
+        const isReady = await setupApplication();
+        if (!isReady) return;
+
+        // 2. Inicializar referencias del DOMRefs
+        DOMRefs.init();
+
+        // 3. Inicializar componentes UI
+        initializeUI();
+
+        // 4. Cargar datos según el flujo
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error initializing application:', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
 });

@@ -78,11 +78,6 @@ fieldset .cardBody {
     margin-bottom: 0;
 }
 
-.formGroup.fullWidth {
-    grid-column: 1 / -1;
-}
-
-
 /* Input with Button */
 .inputWithButton .inputButtonWrapper,
 .inputButtonWrapper {
@@ -101,7 +96,8 @@ fieldset .cardBody {
     right: 6px;
     top: 50%;
     transform: translateY(-50%);
-    padding: 5px 14px;
+    padding: 2px 14px;
+    font-size: var(--font-size-sm) !important;
     border-radius: 8px;
     font-size: 0.85em;
     font-weight: var(--font-weight-semibold);
@@ -119,13 +115,9 @@ fieldset .cardBody {
     top: 50%;
     transform: translateY(-50%);
     width: 30px;
+    min-width: 0 !important;
     height: 30px;
     padding: 0;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1em;
     box-shadow: 0 2px 8px rgba(211, 24, 19, 0.2);
     transition: all 0.2s ease;
 }
@@ -470,4 +462,18 @@ input:checked + .slider::before {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.statusSuccess {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #2e7d32;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+.statusSuccess svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 3;
 }

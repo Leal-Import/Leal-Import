@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/modules/employees/employees.css">
     <link rel="stylesheet" href="../css/utils/pagination.css">
-    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/utils/floatingMenu.css">
-    <link rel="stylesheet" href="../css/utils/table.css">
-    <link rel="stylesheet" href="../css/utils/modal.css">
+    <link rel="stylesheet" href="../css/utils/showData/table.css">
+    <link rel="stylesheet" href="../css/utils/modals/modal.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Empleados</title>
 </head>
 
@@ -46,31 +47,39 @@
                     <input type="text" class="txtInputs" name="txtUsername" id="txtUsername" required maxlength="30">
                 </div>
             </div>
-            <input type="submit" class="btnPrimary btnSubmitData" value="Agregar" id="btnAddEmployee">
+            <button class="btnPrimary btnSubmitData btnAddData" value="Agregar" id="btnAddEmployee">
+                <span>Agregar</span>
+                <div class="loader hide" id="btnAddEmployeeLoader"></div>
+            </button>
         </form>
     </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
+            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadCrumbSection">
                     <a class="breadcrumb">Empleados</a>
                 </div>
                 <div class="filterSection">
-                    <div class="containerSelects">
-                        <input type="text" id="txtSearchData" class="txtSearchData"
-                            placeholder="Buscar por: nombre, correo o teléfono">
-                        <select id="cmbSearchByRole" class="cmbFilterData"></select>
-                        <select id="cmbSearchByStatus" class="cmbFilterData">
-                            <option value="T">Activo</option>
-                            <option value="F">Inactivo</option>
-                            <option value="">Todos</option>
-                        </select>
-                    </div>
+                    <input type="text" id="txtSearchData" class="txtSearchData"
+                        placeholder="Buscar por: nombre, correo o teléfono">
+                    <select id="cmbSearchByRole" class="cmbFilterData">
+                        <option value="">Cargando...</option>
+                    </select>
+                    <select id="cmbSearchByStatus" class="cmbFilterData">
+                        <option value="T">Activo</option>
+                        <option value="F">Inactivo</option>
+                        <option value="">Todos</option>
+                    </select>
                     <button id="OpenModalEmployees" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
             </div>
             <div class="containerTable">
+                <div class="containerLoader show" style="z-index: 10;" id="loaderEmployees">
+                    <div class="loader"></div>
+                    <div>Cargando lista de empleados...</div>
+                </div>
                 <table class="table">
                     <thead>
                         <tr>

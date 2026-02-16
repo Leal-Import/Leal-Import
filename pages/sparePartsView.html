@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/sparePartsView.css">
+    <link rel="stylesheet" href="../css/modules/spareParts/sparePartsView.css">
     <title>Repuestos</title>
 </head>
 
@@ -13,6 +13,7 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
+            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadcrumbSection">
                     <a href="spareParts.html" class="breadcrumb">Repuestos ></a>
@@ -52,7 +53,8 @@
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Precio sugerido:</span>
-                                    <span id="suggestedPrice" class="value redColor" style="font-weight: var(--font-weight-medium);"></span>
+                                    <span id="suggestedPrice" class="value redColor"
+                                        style="font-weight: var(--font-weight-medium);"></span>
                                 </div>
                             </div>
                         </div>
@@ -73,19 +75,36 @@
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Costo total:</span>
-                                    <span id="totalCost" class="value redColor" style="font-weight: var(--font-weight-medium);"></span>
+                                    <span id="totalCost" class="value redColor"
+                                        style="font-weight: var(--font-weight-medium);"></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- BARRA DE ACCIONES -->
+            <div class="actionsBarSparePart">
+                <div class="statusBadgeSparePart disponible">
+                    <span class="statusDotSparePart"></span>
+                    <span class="statusTextSparePart">Disponible</span>
+                </div>
+                <div class="btnGroupSparePart">
+                    <a type="button" class="btnActionSparePart btnSecondarySparePart" id="btnEditSparePart">
+                        <span class="btnIconSparePart">✏️</span>
+                        <span>Editar</span>
+                    </a>
+                    <a type="button" class="btnActionSparePart btnDangerSparePart" id="btnSellSparePart">
+                        <span>Vender</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>
-    <script type="module" src="../js/utils.js"></script>
-    <script type="module" src="../js/service/serviceSparePartsDetails.js"></script>
-    <script type="module" src="../js/controller/controllerSparePartsView.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/modules/spareParts/controller/spareParts.view.controller.js"></script>
 </body>
 
 </html>

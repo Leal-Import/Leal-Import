@@ -1,8 +1,40 @@
 import { formatDecimalInput, formatWithCommas, formatOnFocus, formatOnBlur } from "../../utils/formatters.js";
-import { $, existsById, qs, qsa, showElement } from "../../utils/dom.js";
+import { $, existsById, hideElement, qs, qsa, showElement } from "../../utils/dom.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            txtAmount: $("txtAmount"),
+            cmbPaymentMethod: $("paymentMethod"),
+            dtEstimated: $("dtEstimated"),
+            boxServ: $("suggestionsService"),
+            boxSparePart: $("suggestionsSpareParts"),
+            tBodySpareParts: $("tBodySpareParts"),
+            tBodyServices: $("tBodyServices"),
+            txtAddSparePart: $("txtSearchSparePart"),
+            txtAddService: $("txtAddService"),
+            loaderAddOrder: $("loaderAddOrder"),
+            btnSaveOrder: $("btnSaveOrder"),
+            btnCompleteOrder: $("btnCompleteOrder"),
+            loaderCompleteOrder: $("loaderCompleteOrder")
+        };
+        return this.refs;
+    }
+};
+
+const SELECTORS = {
+    TD_NAME: '.tdName',
+    TD_PRICE: '.tdPrice',
+    TD_TRASH: '.tdTrash',
+    TBODY_DATA: '.tBodyData',
+    BTN_IMPORT: '.btnImport',
+    BTN_TRASH: '.btnTrash'
+};
 
 export const loadViewUpdateOrder = (vin) => {
-    $("btnSaveSale").textContent = "Actualizar";
+    $("btnSaveOrder").querySelector("span").textContent = "Actualizar";
     $("firstBread").textContent = "Actualizar orden >";
     $("firstBread").href = "workOrders.html";
     $("secondBread").textContent = vin;
@@ -23,6 +55,34 @@ export const renderVehicleData = (data) => {
     if ($('year')) $('year').textContent = data.year || '-';
 }
 
+export const loadViewDom = (onCompleteOrder) => {
+    const txts = qsa(".rightColumn .txtInputs");
+    txts.forEach(txt => {
+        txt.disabled = true;
+    })
+    hideElement(qs(".paymentForm"));
+    hideElement($("txtSearchSparePart"));
+    hideElement($("txtAddService"));
+    $("firstBread").textContent = "Ver orden >";
+    const btnCompleteOrder = createCompleteBtn(onCompleteOrder);
+    $("btnSaveOrder").replaceWith(btnCompleteOrder);
+}
+
+const createCompleteBtn = (onCompleteOrder) => {
+    const btn = document.createElement("button");
+    const text = document.createElement("span");
+    const loader = document.createElement("div");
+    loader.classList.add("loader", "hide");
+    loader.id = "loaderCompleteOrder";
+    btn.id = "btnCompleteOrder";
+    btn.type = "button";
+    btn.classList.add("btnPrimary");
+    text.textContent = "Completar orden";
+    btn.append(text, loader);
+    btn.addEventListener("click", onCompleteOrder)
+    return btn;
+}
+
 export const cleanPaymentCamps = () => {
     const amountInput = $('txtAmount');
     const methodSelect = $('paymentMethod');
@@ -30,22 +90,14 @@ export const cleanPaymentCamps = () => {
     if (methodSelect) methodSelect.value = '';
 }
 
+const MIN_STATIC_ROWS = 7;
 export const initStaticRows = () => {
-    const tBodys = qsa('.tBodyData');
+    const tBodys = qsa(SELECTORS.TBODY_DATA);
     tBodys.forEach(tBody => {
-        // Si ya tiene filas suficientes, no duplicar
-        if (tBody.querySelectorAll('tr').length >= 7) return;
+        if (tBody.querySelectorAll('tr').length >= MIN_STATIC_ROWS) return;
         const frag = document.createDocumentFragment();
-        for (let i = 0; i < 7; i++) {
-            const tr = document.createElement('tr');
-            const tdName = document.createElement('td');
-            tdName.classList.add('tdName', 'itemName');
-            const tdPrice = document.createElement('td');
-            tdPrice.classList.add('tdPrice');
-            const tdTrash = document.createElement('td'); // Celda vacía para el botón
-            tdTrash.classList.add('tdTrash');
-            tr.append(tdName, tdPrice, tdTrash);
-            frag.appendChild(tr);
+        for (let i = 0; i < MIN_STATIC_ROWS; i++) {
+            frag.appendChild(createEmptyRow());
         }
         tBody.appendChild(frag);
     });
@@ -92,6 +144,31 @@ export function renderServiceSuggestions(selectedServices, boxServ, list, onAddS
     showElement(boxServ);
 }
 
+const findOrCreateEmptyRow = (tBody) => {
+    let emptyRow = [...tBody.querySelectorAll('tr')]
+        .find(r => r.querySelector(SELECTORS.TD_NAME)?.textContent.trim() === '');
+    
+    if (!emptyRow) {
+        emptyRow = createEmptyRow();
+        tBody.appendChild(emptyRow);
+    }
+    
+    return emptyRow;
+};
+
+const setupPriceCell = (priceCell, data, onWritePrice, isView) => {
+    priceCell.textContent = `$${formatWithCommas(data.priceApplied)}`;
+    priceCell.classList.add('finalPrice');
+    
+    if (!isView) {
+        priceCell.setAttribute('contenteditable', 'true');
+        formatDecimalInput(priceCell);
+        priceCell.addEventListener('input', (e) => onWritePrice(e, data));
+        priceCell.addEventListener('focus', formatOnFocus);
+        priceCell.addEventListener('blur', formatOnBlur);
+    }
+};
+
 export const appendToDom = ({
     tBody,
     data,
@@ -99,35 +176,24 @@ export const appendToDom = ({
     arrayDelete,
     onWritePrice,
     onDelete,
-    renderButton
+    renderButton,
+    isView
 }) => {
     if (!tBody) return false;
 
-    // Buscar fila vacía
-    let emptyRow = [...tBody.querySelectorAll('tr')]
-        .find(r => r.querySelector('.tdName')?.textContent.trim() === '');
+    const row = findOrCreateEmptyRow(tBody);
+    if (!row) return false;
 
-    // Si no existe, crearla
-    if (!emptyRow) {
-        addRowToBothTables();
-        emptyRow = [...tBody.querySelectorAll('tr')]
-            .find(r => r.querySelector('.tdName')?.textContent.trim() === '');
-    }
+    const nameCell = row.querySelector(SELECTORS.TD_NAME);
+    const priceCell = row.querySelector(SELECTORS.TD_PRICE);
+    const tdTrash = row.querySelector(SELECTORS.TD_TRASH);
 
-    if (!emptyRow) return false;
-
-    const nameCell = emptyRow.querySelector('.tdName');
-    const priceCell = emptyRow.querySelector('.tdPrice');
-    const tdTrash = emptyRow.querySelector('.tdTrash');
     nameCell.textContent = data.name;
-    priceCell.textContent = `$${formatWithCommas(data.priceApplied)}`;
-    priceCell.setAttribute('contenteditable', 'true');
-    priceCell.classList.add('finalPrice');
+    setupPriceCell(priceCell, data, onWritePrice, isView);
 
-    // Botón eliminar
-    if (createTrashOption) {
+    if (!isView) {
         const btn = createTrashOption({
-            row: emptyRow,
+            row,
             item: data,
             arraySelected,
             arrayDelete,
@@ -138,17 +204,8 @@ export const appendToDom = ({
         tdTrash.appendChild(btn);
     }
 
-    // Eventos de edición de precio
-    formatDecimalInput(priceCell);
-
-    priceCell.addEventListener('input', (e) => onWritePrice(e, data));
-
-    priceCell.addEventListener('focus', formatOnFocus);
-    priceCell.addEventListener('blur', formatOnBlur);
-
     return true;
-}
-
+};
 
 export function createTrashOption({
     row,
@@ -160,7 +217,7 @@ export function createTrashOption({
     tBody
 }) {
     const btn = document.createElement('button');
-    btn.className = 'btnTrash';
+    btn.classList.add(SELECTORS.BTN_TRASH.slice(1));
     btn.type = 'button';
     btn.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -174,7 +231,7 @@ export function createTrashOption({
 
     btn.addEventListener('click', () => {
         onDelete(item, arraySelected, arrayDelete, row, tBody, renderButton)
-        row.querySelector('.tdPrice').classList.remove("finalPrice");
+        row.querySelector(SELECTORS.TD_PRICE).classList.remove("finalPrice");
     });
 
     return btn;
@@ -188,7 +245,7 @@ export function reindexTable(tBody) {
     const empty = [];
 
     rows.forEach(row => {
-        const nameCell = row.querySelector('.tdName');
+        const nameCell = row.querySelector(SELECTORS.TD_NAME);
         if (nameCell && nameCell.textContent.trim() !== '') {
             active.push(row);
         } else {
@@ -206,24 +263,24 @@ export function reindexTable(tBody) {
 export function renderImportButton(tBody, onImport) {
     if (!tBody) return;
 
-    tBody.querySelectorAll('.btnImport').forEach(b => b.remove());
+    tBody.querySelectorAll(SELECTORS.BTN_IMPORT).forEach(b => b.remove());
 
     const rows = [...tBody.querySelectorAll('tr')];
     let targetRow = rows.find(r =>
-        r.querySelector('.tdName')?.textContent.trim() === '' && r.querySelector('.tdPrice')?.textContent.trim() === ''
+        r.querySelector(SELECTORS.TD_NAME)?.textContent.trim() === '' && r.querySelector(SELECTORS.TD_PRICE)?.textContent.trim() === ''
     );
 
     if (!targetRow) {
         addRowToBothTables();
         targetRow = [...tBody.querySelectorAll('tr')]
-            .find(r => r.querySelector('.tdName')?.textContent.trim() === '' && r.querySelector('.tdPrice')?.textContent.trim() === '');
+            .find(r => r.querySelector(SELECTORS.TD_NAME)?.textContent.trim() === '' && r.querySelector(SELECTORS.TD_PRICE)?.textContent.trim() === '');
     }
 
     if (!targetRow) return;
 
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'btnImport';
+    btn.classList.add(SELECTORS.BTN_IMPORT.slice(1));
     btn.textContent = 'IMPORTAR';
     btn.addEventListener('click', onImport);
 
@@ -231,9 +288,7 @@ export function renderImportButton(tBody, onImport) {
 }
 
 
-//A esto todavia le falta diseño
 export function renderTotalsPanel({ total, due, totalPaid }) {
-    //const totalText = $("total");
     const dueText = $("due");
     const paidText = $('totalPaid');
     const totalText = $('totalOrder');
@@ -249,12 +304,16 @@ export function renderTotalsPanel({ total, due, totalPaid }) {
 }
 
 export const cleanRow = (row) => {
-    const tdName = row.querySelector(".tdName");
-    const tdPrice = row.querySelector(".tdPrice");
-    tdName.textContent = "";
-    tdPrice.textContent = "";
-    tdPrice.removeAttribute("contenteditable");
-    row.querySelector(".btnTrash").remove();
+    const tdName = row.querySelector(SELECTORS.TD_NAME);
+    const tdPrice = row.querySelector(SELECTORS.TD_PRICE);
+    const btnTrash = row.querySelector(SELECTORS.BTN_TRASH);
+    
+    if (tdName) tdName.textContent = "";
+    if (tdPrice) {
+        tdPrice.textContent = "";
+        tdPrice.removeAttribute("contenteditable");
+    }
+    if (btnTrash) btnTrash.remove();
 }
 
 export const renderTotals = ({
@@ -285,19 +344,45 @@ export const renderTotalSpareParts = (sparePartsTotal) => {
 }
 
 export const renderTotalRepairCost = (total) => {
-    if ($('totalRepairCost')) $('totalRepairCost').textContent = `$${formatWithCommas(total)}`;
-    if ($('txtTotal')) $('txtTotal').value = `$${formatWithCommas(total)}`;
+    const totalRepairCost = $('totalRepairCost');
+    const txtTotal = $('txtTotal');
+    if (totalRepairCost) totalRepairCost.textContent = `$${formatWithCommas(total)}`;
+    if (txtTotal) txtTotal.value = `$${formatWithCommas(total)}`;
 }
 
 export const loadExtraInputs = (notes, date) => {
-    $("dtEstimated").value = date;
-    $("txtNotes").value = notes || '';
+    const dtEstimated = $("dtEstimated");
+    const txtNotes = $("txtNotes");
+    
+    if (dtEstimated) dtEstimated.value = date;
+    if (txtNotes) txtNotes.value = notes || '';
 }
 
 export const renderOrderTotal = (orderTotal) => {
-    $("totalCost").textContent = `$${formatWithCommas(orderTotal)}`;
+    const element = $("totalCost");
+    if (element) element.textContent = `$${formatWithCommas(orderTotal)}`;
 }
 
 export const renderVehiclePrice = (vehiclePrice) => {
-    $("vehiclePrice").textContent = `$${formatWithCommas(vehiclePrice)}`;
+    const element = $("vehiclePrice");
+    if (element) element.textContent = `$${formatWithCommas(vehiclePrice)}`;
+}
+
+function createEmptyRow() {
+    const tr = document.createElement('tr');
+    const tdName = document.createElement('td'); 
+    tdName.classList.add(SELECTORS.TD_NAME.slice(1));
+    const tdPrice = document.createElement('td'); 
+    tdPrice.classList.add(SELECTORS.TD_PRICE.slice(1));
+    const tdTrash = document.createElement("td");
+    tdTrash.classList.add(SELECTORS.TD_TRASH.slice(1));
+    tr.append(tdName, tdPrice, tdTrash);
+    return tr;
+}
+
+export function addRowToBothTables() {
+    const tBodyServices = $('tBodyServices');
+    const tBodyParts = $('tBodySpareParts');
+    if (tBodyServices) tBodyServices.appendChild(createEmptyRow());
+    if (tBodyParts) tBodyParts.appendChild(createEmptyRow());
 }

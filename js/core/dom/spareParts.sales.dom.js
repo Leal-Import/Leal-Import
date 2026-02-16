@@ -1,6 +1,22 @@
 import { $ } from "../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } from "../../utils/formatters.js";
 
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            tableBody: $('tBodyInventory'),
+            tBodySelected: $('tBodySelected'),
+            loaderSpareParts: $('loaderSpareParts'),
+            loaderAddSale: $('loaderAddSale'),
+            btnSaveSale: $('btnSaveSale')
+        };
+
+        return this.refs;
+    }
+};
+
 
 export function insertSpareParts(
     spareParts,
@@ -166,7 +182,7 @@ export let loadBtnOrder = (customerId, customerName, idSale) => {
 
 export let loadDomData = (notes) => {
     $("txtNotes").value = notes;
-    $("btnSaveSale").textContent = "Actualizar venta";
+    $("btnSaveSale").querySelector("span").textContent = "Actualizar venta";
 }
 
 export let loadNotes = (notes) => {

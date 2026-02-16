@@ -4,6 +4,12 @@
     width: 100%;
 }
 
+.containerSales{
+    position: relative;
+    flex: 1;
+    border-radius: 10px;
+}
+
 .filterType {
     position: relative;
     padding: 10px;
@@ -42,12 +48,6 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-}
-
-.filterContainer {
-    display: flex;
-    width: 100%;
-    gap: 10px;
 }
 
 .panelContainer {
@@ -358,4 +358,281 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+
+/* Tablets medianas (< 900px) - Ajustar paneles */
+@media screen and (max-width: 899px) {
+    .panel {
+        height: auto;
+        min-height: 190px;
+        flex-direction: column;
+    }
+
+    .containerImgSale {
+        width: 100%;
+        height: 200px;
+    }
+
+    .typeSale {
+        top: 10px;
+        right: 10px;
+    }
+
+    .bodyDataSale {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .rightDataSale {
+        position: relative;
+    }
+
+    .containerButtonsData {
+        position: relative;
+        padding: 15px 0 0 0;
+        justify-content: flex-start;
+    }
+}
+
+/* Móviles (< 768px) - Cards compactas */
+@media screen and (max-width: 767px) {
+    .content {
+        padding: 70px 15px 15px;
+    }
+
+    /* Tabs más compactos */
+    .containerFilterType {
+        gap: 5px;
+    }
+
+    .filterType {
+        min-width: 100px;
+        padding: 8px;
+    }
+
+    .filterType span {
+        font-size: 14px;
+    }
+
+    /* Paneles más compactos */
+    .panel {
+        gap: 0;
+        padding: 0;
+        height: auto;
+    }
+
+    .containerImgSale {
+        width: 100%;
+        height: 180px;
+        padding: 0;
+        border-radius: 15px 15px 0 0;
+        overflow: hidden;
+    }
+
+    .imgSaleItem {
+        border-radius: 0;
+    }
+
+    .dataSaleContainer {
+        padding: 15px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .leftDataSale,
+    .rightDataSale {
+        width: 100%;
+    }
+
+    .headerDataSale {
+        gap: 8px;
+    }
+
+    .productData {
+        font-size: 18px;
+        line-height: 1.3;
+        flex-wrap: wrap;
+    }
+
+    .nameVehicle {
+        display: block;
+        width: 100%;
+    }
+
+    .moreParts {
+        display: block;
+        margin-top: 4px;
+    }
+
+    .dateDataSale {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    .bodyDataSale {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .downLeft {
+        margin-bottom: 0;
+        gap: 8px;
+    }
+
+    .dataSale {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    .lbl {
+        font-size: 12px;
+        color: var(--helper-color, #CD908F);
+    }
+
+    /* Montos */
+    .amount {
+        flex-direction: row !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background-color: rgba(211, 24, 19, 0.05);
+        border-radius: 8px;
+        margin-top: 0;
+    }
+
+    .amount .lbl {
+        font-size: 14px;
+    }
+
+    .amountQuantity {
+        font-size: 20px;
+    }
+
+    .amountDue {
+        flex-direction: row !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background-color: rgba(211, 24, 19, 0.08);
+        border-radius: 8px;
+    }
+
+    .amountDue .lbl {
+        font-size: 14px;
+        color: var(--danger-color);
+    }
+
+    .amountDue span:last-child {
+        font-size: 18px;
+        font-weight: var(--font-weight-semibold);
+    }
+
+    /* Botones */
+    .containerButtonsData {
+        position: relative;
+        padding: 0;
+        margin-top: 15px;
+        width: 100%;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .containerButtonsData a {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    /* Badge de tipo */
+    .typeSale {
+        top: 8px;
+        right: 8px;
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+
+    /* Modal de opciones */
+    .modalAdd {
+        width: 95%;
+        max-width: 500px;
+        margin: 10px;
+        padding: 20px !important;
+    }
+
+    .containerOptions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .optionSale {
+        min-height: 140px;
+    }
+
+    .optionImageContainer {
+        min-height: 80px;
+    }
+
+    .optionImageContainer svg {
+        width: 50px;
+        height: 50px;
+    }
+
+    .optionContent {
+        padding: 16px;
+    }
+
+    .titleOption {
+        font-size: 18px;
+    }
+
+    .optionDescription {
+        font-size: 13px;
+    }
+}
+
+/* Móviles pequeños (< 500px) */
+@media screen and (max-width: 499px) {
+    .content {
+        padding: 70px 10px 10px;
+    }
+
+    .panel {
+        border-radius: 12px;
+    }
+
+    .containerImgSale {
+        height: 160px;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .dataSaleContainer {
+        padding: 12px;
+    }
+
+    .productData {
+        font-size: 16px;
+    }
+
+    .amountQuantity {
+        font-size: 18px;
+    }
+
+    .typeSale {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+
+    .filterType {
+        min-width: 90px;
+        padding: 6px;
+    }
+
+    .filterType span {
+        font-size: 13px;
+    }
 }

@@ -1,4 +1,5 @@
-import { $ } from "../../utils/dom.js";
+import { formatWithCommas } from "../../utils/formatters.js";
+import { $, qs } from "../../utils/dom.js";
 
 const pictureSparePart = $('pictureSparePart');
 const name = $('name');
@@ -12,7 +13,31 @@ const purchasePrice = $('purchasePrice');
 const taxes = $('taxes');
 const totalCost = $('totalCost');
 
+const btnEditSparePart = $("btnEditSparePart");
+const btnSellSparePart = $("btnSellSparePart");
+const statusPart = qs(".statusBadgeSparePart");
+
 export const loadSparePart = (sparePart) => {
+    loadSparePartInfo(sparePart);
+    loadDownButtons(sparePart);
+}
+
+const loadDownButtons = (sparePart) => {
+    btnEditSparePart.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
+    btnSellSparePart.href = `addCustomerSale.html?type=sparePart&id=${sparePart.idSparePart}&`
+    console.log(statusPart)
+    if (sparePart.status == "Disponible") {
+        statusPart.querySelector(".statusTextSparePart").textContent = "Disponible";
+        statusPart.classList.add("aviable");
+    } else if (sparePart.status == "Vendido") {
+        statusPart.querySelector(".statusTextSparePart").textContent = "Vendido";
+        statusPart.classList.add("sold");
+    } else {
+
+    }
+}
+
+const loadSparePartInfo = (sparePart) => {
     pictureSparePart.src = sparePart.photoUrl;
     name.textContent = sparePart.nameSpareParts;
     sparePart.billUrl ? name.href = sparePart.billUrl : null;

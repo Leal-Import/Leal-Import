@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <link rel="stylesheet" href="../css/modules/vehicles/vehicleDetails.css">
-    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/utils/suggestions.css">
-    <link rel="stylesheet" href="../css/utils/modal.css">
+    <link rel="stylesheet" href="../css/utils/modals/modal.css">
     <link rel="stylesheet" href="../css/globalStyles.css">
-    <link rel="stylesheet" href="../css/utils/modalLinkExtra.css">
+    <link rel="stylesheet" href="../css/utils/modals/modalLinkExtra.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Vehiculos</title>
 </head>
 
@@ -19,6 +20,7 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <form class="content" id="frmVehicles">
+            <div class="containerMobileHeader"></div>
             <!-- Header -->
             <div class="headerContent">
                 <div class="breadCrumbSection">
@@ -41,7 +43,7 @@
                     <div class="inputGroup">
                         <label for="txtLink" class="lblInputs">URL del lote</label>
                         <div class="inputWrapper">
-                            <input type="url" id="txtLink" name="txtLink" class="txtInputs txtInputWithIcon"
+                            <input type="text" id="txtLink" name="txtLink" class="txtInputs txtInputWithIcon"
                                 placeholder="https://www.ejemplo.com/lote/45" maxlength="1000">
                             <button class="btnPaste" type="button" id="btnPasteLote">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -52,7 +54,7 @@
                                 Pegar
                             </button>
                         </div>
-                        <p class="helpText">
+                        <p class="helpText" id="defaultText">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <circle cx="12" cy="12" r="10"></circle>
@@ -61,7 +63,7 @@
                             </svg>
                             Debe ser una URL válida que comience con https://
                         </p>
-                        <p class="errorMessage" id="errorLinkLote" style="display: none;">
+                        <p class="errorMessage hide" id="errorLinkLote">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <circle cx="12" cy="12" r="10"></circle>
@@ -69,6 +71,15 @@
                                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
                             </svg>
                             Por favor ingresa una URL válida
+                        </p>
+                        <p class="helpText successUrl hide" id="validateUrlMessage">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            El enlace cumple con el formato requerido
                         </p>
                     </div>
                     <button class="btnPrimary btnSubmitData btnSaveLink" id="btnSaveLinkLote" type="button">
@@ -164,6 +175,12 @@
                                 <label for="txtCustomer" class="lblInputs">Cliente</label>
                                 <input type="text" class="txtInputs" id="txtCustomer" name="txtCustomer" maxlength="50">
                                 <div class="suggestions hide" id="suggestionsCustomer"></div>
+                                <p class="hide statusSuccess" id="selectedCustomerText">
+                                    <svg viewBox="0 0 24 24">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Cliente seleccionado
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -280,8 +297,10 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <input type="submit" value="Guardar" class="btnPrimary btnSubmitData" id="btnSaveData"
-                    style="padding: 10px 40px;">
+                <button class="btnPrimary btnSubmitData" id="btnSaveData" style="padding: 10px 40px;">
+                    <span>Guardar</span>
+                    <div class="loader hide" id="loaderSaveVehicle"></div>
+                </button>
             </div>
         </form>
     </div>

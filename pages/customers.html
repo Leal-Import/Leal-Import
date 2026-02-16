@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/modules/customers/customers.css">
     <link rel="stylesheet" href="../css/utils/pagination.css">
-    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/utils/floatingMenu.css">
-    <link rel="stylesheet" href="../css/utils/modal.css">
-    <link rel="stylesheet" href="../css/utils/table.css">
+    <link rel="stylesheet" href="../css/utils/modals/modal.css">
+    <link rel="stylesheet" href="../css/utils/showData/table.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
+    <link rel="stylesheet" href="../css/modules/customers/customers.css">
     <title>Clientes</title>
 </head>
 
@@ -28,19 +29,25 @@
                 </div>
                 <div class="formGroup">
                     <label for="txtCustomerDUI" class="lblInputs">DUI</label>
-                    <input type="text" class="txtInputs" id="txtCustomerDUI" name="txtCustomerDUI" required maxlength="10">
+                    <input type="text" class="txtInputs" id="txtCustomerDUI" name="txtCustomerDUI" required
+                        maxlength="10">
                 </div>
                 <div class="formGroup">
                     <label for="txtCustomerPhone" class="lblInputs">Teléfono</label>
-                    <input type="text" class="txtInputs" id="txtCustomerPhone" name="txtCustomerPhone" required maxlength="9">
+                    <input type="text" class="txtInputs" id="txtCustomerPhone" name="txtCustomerPhone" required
+                        maxlength="9">
                 </div>
             </div>
-            <input type="submit" class="btnPrimary btnSubmitData" value="Agregar Clientes" id="btnAddNewCustomer">
+            <button class="btnPrimary btnSubmitData btnAddData" id="btnAddNewCustomer">
+                <span>Agregar</span>
+                <div class="loader hide" id="loaderAddCustomer"></div>
+            </button>
         </form>
     </div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
+            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadCrumbSection">
                     <a class="breadcrumb">Clientes</a>
@@ -52,6 +59,10 @@
                 </div>
             </div>
             <div class="containerTable">
+                <div class="containerLoader show" style="z-index: 10;" id="loaderCustomers">
+                    <div class="loader"></div>
+                    <div>Cargando lista de clientes...</div>
+                </div>
                 <table class="table">
                     <thead>
                         <tr>

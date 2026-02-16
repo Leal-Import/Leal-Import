@@ -1,3 +1,16 @@
+import { $, qs } from "../../utils/dom.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            loaderCustomers: $('loaderCustomers'),
+            cardContainer: qs('.cardContainer'),
+        };
+        return this.refs;
+    }
+};
 
 export let insertCustomers = (container, customers, type, idVehicle) => {
     container.innerHTML = "";

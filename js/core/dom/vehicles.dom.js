@@ -1,5 +1,19 @@
 
+import { $, qs } from '../../utils/dom.js';
 import { formatWithCommas } from '../../utils/formatters.js';
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            cardContainer: qs('.cardContainer'),
+            loaderVehicles: $('loaderVehicles'),
+            btnAddVehicle: $('btnAddVehicle'),
+        };
+        return this.refs;
+    }
+};
 
 export function insertVehicles(container, vehicles, hasWorkOrder) {
     if (!Array.isArray(vehicles)) return;

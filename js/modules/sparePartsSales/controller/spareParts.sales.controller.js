@@ -10,19 +10,20 @@ import { createPagination } from '../../../pagination/pagination.controller.js'
 
 import {
     showMessage,
-    $
+    $,
+    showElement,
+    hideElement,
+    disableElement,
+    removeDisable
 } from '../../../utils/dom.js';
 import { spareSaleState } from '../../../core/state/spareParts.sales.state.js';
 import { initSpareSaleEvents } from '../event/spareParts.sales.event.js';
-import { cleanPaymentCamps, createNoDataSelectedMessage, createRowTable, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
+import { cleanPaymentCamps, createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale, verifyIds } from '../../../core/logic/spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { getCurrentEmployeeId, initSession, safeParseFloat } from '../../../utils.js';
-import { addNewPayment, initPaymentsController, render } from '../../payments/payments.controller.js';
+import { addNewPayment, initPaymentsController } from '../../payments/payments.controller.js';
 import { validatePayment } from '../../../utils/validators.js';
-
-const tableBody = $("tBodyInventory");
-const tBodySelected = $("tBodySelected");
 
 const pagination = createPagination({
     initialSize: spareSaleState.pagination.size,
@@ -35,6 +36,7 @@ const pagination = createPagination({
 
 export async function loadInventory() {
     try {
+        showElement(DOMRefs.refs.loaderSpareParts);
         const { page, size } = spareSaleState.pagination;
         const { search } = spareSaleState.filters;
 
@@ -48,7 +50,7 @@ export async function loadInventory() {
         spareSaleState.pagination.total = data.page.totalElements;
         spareSaleState.pagination.totalPages = data.page.totalPages;
 
-        insertSpareParts(spareSaleState.list, tableBody, verifyIds, onAddSparePart)
+        insertSpareParts(spareSaleState.list, DOMRefs.refs.tableBody, verifyIds, onAddSparePart)
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -58,12 +60,10 @@ export async function loadInventory() {
         });
 
     } catch (error) {
-        showMessage(
-            'Error',
-            error,
-            'error'
-        );
+        showMessage('Error', 'Error al cargar la lista de repuestos', 'error');
         console.error('Error cargando repuestos:', error);
+    } finally {
+        hideElement(DOMRefs.refs.loaderSpareParts);
     }
 }
 
@@ -95,7 +95,7 @@ let onAddSparePart = (sparePart, tr) => {
     tr.remove();
     const partToAppend = pushSparePart(sparePart);
     if (partToAppend) {
-        createRowTable(tBodySelected, partToAppend, onDeleteSparePart, onWritePrice);
+        createRowTable(DOMRefs.refs.tBodySelected, partToAppend, onDeleteSparePart, onWritePrice);
         recalculateTotals();
         saveSaleState();
     }
@@ -128,7 +128,8 @@ async function onSubmitSpareSale(e) {
     } else {
         payload = buildPostSalePayload(spareSaleState);
     }
-
+    showElement(DOMRefs.refs.loaderAddSale);
+    disableElement(DOMRefs.refs.btnSaveSale);
     try {
         let response;
         if (spareSaleState.context.idSale) {
@@ -151,6 +152,9 @@ async function onSubmitSpareSale(e) {
             error,
             'error'
         );
+    } finally {
+        hideElement(DOMRefs.refs.loaderAddSale);
+        removeDisable(DOMRefs.refs.btnSaveSale);
     }
 }
 const onAddPayment = () => {
@@ -223,7 +227,7 @@ let loadOrderSparePart = () => {
     }
     const partToAppend = pushSparePart(newSparePart);
     if (partToAppend) {
-        createRowTable(tBodySelected, partToAppend, onDeleteSparePart, onWritePrice);
+        createRowTable(DOMRefs.refs.tBodySelected, partToAppend, onDeleteSparePart, onWritePrice);
         recalculateTotals();
         saveSaleState();
     }
@@ -243,7 +247,7 @@ async function loadExistingSale() {
         partsToAppend.push(pushSparePart(part));
     });
     partsToAppend.forEach(part => {
-        createRowTable(tBodySelected, part, onDeleteSparePart, onWritePrice);
+        createRowTable(DOMRefs.refs.tBodySelected, part, onDeleteSparePart, onWritePrice);
     });
     sale.payments.forEach(payment => {
         const paymentToAppend = {
@@ -254,8 +258,6 @@ async function loadExistingSale() {
         }
         addNewPayment({ state: spareSaleState.data, totals: spareSaleState.totals, payment: paymentToAppend });
     })
-
-    render(spareSaleState.data.payments, spareSaleState.totals, spareSaleState.data.paymentsToDelete)
     saveSaleState();
     recalculateTotals();
 }
@@ -267,7 +269,7 @@ let loadDraft = () => {
     spareSaleState.totals = storageItem.totals;
     loadNotes(spareSaleState.data.notes);
     spareSaleState.data.selectedItems.forEach(part => {
-        createRowTable(tBodySelected, part, onDeleteSparePart, onWritePrice);
+        createRowTable(DOMRefs.refs.tBodySelected, part, onDeleteSparePart, onWritePrice);
     });
     spareSaleState.data.payments.forEach(payment => {
         addNewPayment({ state: spareSaleState.data, totals: spareSaleState.totals, payment });
@@ -275,6 +277,7 @@ let loadDraft = () => {
     recalculateTotals();
     saveSaleState();
 }
+
 let cleanOneShotParams = () => {
     const url = new URL(window.location.href);
 
@@ -292,28 +295,50 @@ let cleanOneShotParams = () => {
 };
 
 
-document.addEventListener("DOMContentLoaded", async () => {
+const setupApplication = async () => {
+    // 1. Validar sesión
     const user = await initSession();
-    if (!user) return;
+    if (!user) return false;
+    
     spareSaleState.idEmployee = getCurrentEmployeeId();
     const hydrated = await hydrateContextFromURL(spareSaleState);
-    if (!hydrated) return;
+    if (!hydrated) return false;
+    return true;
+};
+
+const initializeUI = async () => {
     loadCustomerName(spareSaleState.context.customerName);
     initSpareSaleEvents({ onSubmitSpareSale, onAddPayment, onSearchSparePart, onOrderClick, onSaveNotes });
     await initPaymentsController({ totalCalculator: recalculateTotals, onStateChange: saveSaleState })
+};
 
-    // 1. Cargar datos base
+const loadDataFlow = async () => {
     if (spareSaleState.context.idSale) {
         await loadExistingSale();
     } else if (existSavedData()) {
         loadDraft();
     }
-
+    
     // 2. Agregar nuevo repuesto SOLO después
     if (spareSaleState.context.isNewPart) {
         loadOrderSparePart();
         cleanOneShotParams();
     }
-
     await loadInventory();
-})
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const isReady = await setupApplication();
+        if (!isReady) return;
+
+        DOMRefs.init();
+
+        await initializeUI();
+
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error inicializando la aplicación: ', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
+});

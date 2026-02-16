@@ -75,13 +75,6 @@
     color: gray;
 }
 
-.filterSection {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    margin-bottom: 1.5em;
-}
-
 .truncate {
     white-space: nowrap;
     overflow: hidden;
@@ -95,18 +88,4 @@
 
 .hide {
     display: none !important;
-}
-
-
-.filterSection {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px 24px;
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e9ecef;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    margin-top: 6px;
-    padding-right: 24px;
 }

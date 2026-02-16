@@ -16,6 +16,35 @@ export const UPLOAD_CONFIG = {
     }
 };
 
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            previewImage: qs("#mainSwiper .previewImg"),
+            txtCosts: qsa(".txtCosts"),
+            txtTotal: $("txtTotal"),
+            mainSwiperWrapper: $("mainSwiperWrapper"),
+            thumbsWrapper: $("thumbsWrapper"),
+            frmVehicles: $("frmVehicles"),
+            boxCustomer: $("suggestionsCustomer"),
+            imageInput: $("imageInput"),
+            isExternalOpt: $("isExternalOpt"),
+            modalLinkLote: $("modalLinkLote"),
+            uploadDropArea: $("uploadDropArea"),
+            loaderSaveVehicle: $("loaderSaveVehicle"),
+            btnSaveData: $("btnSaveData"),
+            txtCustomer: $("txtCustomer")
+        };
+
+        return this.refs;
+    }
+};
+
+export function loadDomData() {
+    $("typeAction").textContent = "Actualizar vehiculo";
+    $("btnSaveData").querySelector("span").textContent = "Actualizar"
+}
 
 let mainSwiperInstance = null;
 let thumbsSwiperInstance = null;
@@ -73,6 +102,35 @@ export function renderCustomersSuggestions(boxCustomer, customers, onSelect) {
     boxCustomer.classList.remove("hide");
 }
 
+const hideDefaultText = () => {
+    $("defaultText").classList.add("hide");
+}
+
+export const showDefaultText = () => {
+    $("defaultText").classList.remove("hide");
+    $("errorLinkLote").classList.add("hide");
+    $("validateUrlMessage").classList.add("hide");
+}
+
+export const hideCustomerSelected = () => {
+    $("selectedCustomerText").classList.add("hide");
+}
+
+export const showCustomerSelected = () => {
+    $("selectedCustomerText").classList.remove("hide");
+}
+
+export const showValidUrl = () => {
+    hideDefaultText();
+    $("errorLinkLote").classList.add("hide");
+    $("validateUrlMessage").classList.remove("hide");
+}
+
+export const showInvalidUrl = () => {
+    hideDefaultText();
+    $("errorLinkLote").classList.remove("hide");
+    $("validateUrlMessage").classList.add("hide");
+}
 
 export function renderImages(images, mainWrapper, thumbsWrapper, onDelete, onAddClick) {
     mainWrapper.innerHTML = '';

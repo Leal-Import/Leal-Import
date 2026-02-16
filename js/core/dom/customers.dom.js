@@ -1,5 +1,20 @@
 import { fillForm, toggleModal, $ } from "../../utils/dom.js";
 
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            CustomersTableBody: $('CustomersTableBody'),
+            modalCustomers: $('modalCustomers'),
+            frmCustomers: $('frmCustomers'),
+            loaderAddCustomer: $("loaderAddCustomer"),
+            loaderCustomers: $("loaderCustomers"),
+            btnAddNewCustomer: $("btnAddNewCustomer")
+        };
+        return this.refs;
+    }
+};
 
 export function insertCustomers(container, customers, onActions) {
     const fragment = document.createDocumentFragment();
@@ -49,12 +64,12 @@ export function fillCustomerForm(customer, text) {
         txtCustomerDUI: customer.dui,
         txtCustomerPhone: customer.personalPhone
     });
-    $('btnAddNewCustomer').value = text;
+    $('btnAddNewCustomer').querySelector("span").textContent = text;
     modalCustomers.querySelector('.titleModal').textContent = text;
     toggleModal(modalCustomers, true);
 }
 
 export function resetCustomerForm(frm, modal) {
     frm.reset();
-    modal.style.display = 'none';
+    toggleModal(modal, false);
 }

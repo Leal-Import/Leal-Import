@@ -1,7 +1,7 @@
 // modules/employees/employees.controller.js
 
 import { employeesState } from '../../core/state/employees.state.js';
-import { insertEmployees, renderRolesSelects, fillEmployeesForm } from '../../core/dom/employees.dom.js';
+import { insertEmployees, renderRolesSelects, fillEmployeesForm, DOMRefs } from '../../core/dom/employees.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import {
     validateEmployee,
@@ -15,11 +15,8 @@ import {
     patchEmployee
 } from '../../service/employees.service.js';
 import { initEmployeeEvents } from './employees.events.js';
-import { showFloatingMenu, showMessage, toggleModal, setFormReadOnly, $ } from '../../utils/dom.js';
-
-const tableBody = $('employeesTableBody');
-const modalEmployees = $('modalEmployees');
-const form = $('frmEmployees');
+import { showFloatingMenu, showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable } from '../../utils/dom.js';
+import { initSession } from '../../utils/api.utils.js';
 
 /* ===============================
    CARGA DE EMPLEADOS
@@ -51,6 +48,7 @@ export async function loadRoles() {
 
 export async function loadEmployees() {
     try {
+        showElement(DOMRefs.refs.loaderEmployees)
         const { page, size } = employeesState.pagination;
         const { search, idRole, status } = employeesState.filters;
         const data = await getActiveEmployees(
@@ -66,7 +64,7 @@ export async function loadEmployees() {
         employeesState.pagination.totalPages = data.page.totalPages;
 
         insertEmployees(
-            tableBody,
+            DOMRefs.refs.employeesTableBody,
             employeesState.list,
             handleEmployeeActions
         );
@@ -84,13 +82,15 @@ export async function loadEmployees() {
             'error'
         );
         console.error(error);
+    } finally {
+        hideElement(DOMRefs.refs.loaderEmployees);
     }
 }
 
 export async function onSubmitEmployee(e) {
     e.preventDefault();
 
-    const formData = Object.fromEntries(new FormData(form));
+    const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmEmployees));
 
     const employee = mapEmployeeForm(formData);
     const error = validateEmployee(employee);
@@ -99,7 +99,8 @@ export async function onSubmitEmployee(e) {
         showMessage('Error', error, 'warning');
         return;
     }
-
+    showElement(DOMRefs.refs.btnAddEmployeeLoader);
+    disableElement(DOMRefs.refs.btnAddEmployee);
     try {
         if (employeesState.selectedId) {
             await putEmployee(employee, employeesState.selectedId);
@@ -113,11 +114,12 @@ export async function onSubmitEmployee(e) {
         console.error(err);
         showMessage('Error', err.message || 'Error al guardar empleado', 'error');
     } finally {
-        toggleModal(modalEmployees, false);
-        form.reset();
+        toggleModal(DOMRefs.refs.modalEmployees, false);
+        DOMRefs.refs.frmEmployees.reset();
         employeesState.selectedId = null;
         pagination.update({});
-
+        hideElement(DOMRefs.refs.btnAddEmployeeLoader);
+        removeDisable(DOMRefs.refs.btnAddEmployee);
     }
 }
 
@@ -190,20 +192,48 @@ async function toggleEmployeeStatus(username, status) {
    FILTROS
 ================================ */
 
-export function onSearchEmployee(filters) {
+async function onSearchEmployee(filters) {
     employeesState.filters = {
         ...employeesState.filters,
         ...filters
     };
     employeesState.pagination.page = 1;
-    loadEmployees();
+    await loadEmployees();
 }
 
 /* ===============================
    INIT
 ================================ */
 
-document.addEventListener('DOMContentLoaded', async () => {
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
+
+    return true;
+};
+
+const initializeUI = () => {
     initEmployeeEvents({ onSubmitEmployee, onSearchEmployee, onReset: () => employeesState.selectedId = null });
+}
+
+const loadDataFlow = async () => {
     await Promise.all([loadRoles(), loadEmployees()]);
+
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const isReady = await setupApplication();
+        if (!isReady) return;
+
+        DOMRefs.init();
+
+        initializeUI();
+
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error inicializando la aplicación: ', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
 });

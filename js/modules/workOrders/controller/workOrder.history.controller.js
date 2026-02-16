@@ -1,16 +1,14 @@
 // modules/workOrderHistory/workOrderHistory.controller.js
 
-import { insertWorkOrderHistory, loadStats, loadVehicleInfo } from "../../../core/dom/workOrder.history.dom.js";
+import { DOMRefs, insertWorkOrderHistory, loadStats, loadVehicleInfo } from "../../../core/dom/workOrder.history.dom.js";
 import { workOrderHistoryState } from "../../../core/state/workOrder.history.state.js";
 import { createPagination } from "../../../pagination/pagination.controller.js";
 import { getDetailsOrders, getDashboardWorkorder } from "../../../service/workOrder.history.service.js";
 import { getWOStatus } from "../../../service/workOrders.service.js";
+import { initSession } from "../../../utils/api.utils.js";
 
-import { $, asUUID, fillSelect, showFloatingMenu, showMessage } from "../../../utils/dom.js";
+import { $, asUUID, fillSelect, hideElement, showElement, showFloatingMenu, showMessage } from "../../../utils/dom.js";
 import { initWorkOrderHistoryEvents } from "../event/workOrder.history.event.js";
-
-const containerData = $('woDetailsTBody');
-const btnAddOrder = $('openModalCustomer');
 
 /* ===============================
    CARGA DE HISTORIAL DE ÓRDENES
@@ -49,6 +47,7 @@ const loadDashboard = async () => {
 
 async function loadWorkOrderHistory() {
     try {
+        showElement(DOMRefs.refs.loaderWorkOrders);
         const { page, size } = workOrderHistoryState.pagination;
         const { search, idStatus } = workOrderHistoryState.filters;
 
@@ -58,7 +57,7 @@ async function loadWorkOrderHistory() {
         workOrderHistoryState.pagination.total = data.page.totalElements;
         workOrderHistoryState.pagination.totalPages = data.page.totalPages;
 
-        insertWorkOrderHistory(containerData, workOrderHistoryState.list, handleOrdersActions);
+        insertWorkOrderHistory(DOMRefs.refs.woDetailsTBody, workOrderHistoryState.list, handleOrdersActions);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -69,6 +68,8 @@ async function loadWorkOrderHistory() {
     } catch (error) {
         showMessage('Error', 'No se pudo cargar el historial de órdenes', 'error');
         console.error(error);
+    } finally {
+        hideElement(DOMRefs.refs.loaderWorkOrders);
     }
 }
 
@@ -124,19 +125,40 @@ const hydrateContextFromURL = () => {
 };
 
 const loadBtnAdd = () => {
-    btnAddOrder.href = `addWorkOrder.html?idVehicle=${workOrderHistoryState.context.idVehicle}&idCustomer=${workOrderHistoryState.context.idCustomer}`;
+    DOMRefs.refs.btnAddOrder.href = `addWorkOrder.html?idVehicle=${workOrderHistoryState.context.idVehicle}&idCustomer=${workOrderHistoryState.context.idCustomer}`;
+};
+
+const setupApplication = async () => {
+    // 1. Validar sesión
+    const user = await initSession();
+    if (!user) return false;
+
+    hydrateContextFromURL();
+
+    return true;
+};
+
+const initializeUI = () => {
+    loadBtnAdd();
+    initWorkOrderHistoryEvents({ onSearchWorkOrderHistory });
+};
+
+const loadDataFlow = async () => {
+    await Promise.all([loadWorkOrderHistory(), loadWorkOrderHistoryStatus(), loadDashboard()]);
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    hydrateContextFromURL();
-    loadBtnAdd();
-    initWorkOrderHistoryEvents({
-        onSearchWorkOrderHistory
-    });
+    try {
+        const isReady = await setupApplication();
+        if (!isReady) return;
 
-    await Promise.all([
-        loadWorkOrderHistory(),
-        loadWorkOrderHistoryStatus(),
-        loadDashboard()
-    ]);
+        DOMRefs.init();
+
+        initializeUI();
+
+        await loadDataFlow();
+    } catch (error) {
+        console.error('Error inicializando la aplicación:', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
 });

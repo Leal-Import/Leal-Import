@@ -1,0 +1,591 @@
+/* =======================
+   Breadcrumb
+======================= */
+.breadcrumbSection {
+    display: inline-flex;
+    width: 100%;
+    gap: 10px;
+    align-items: center;
+    background: var(--bg-color-white);
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: var(--bx-shadow-primary);
+    margin-bottom: 20px;
+}
+
+.breadcrumb {
+    font-size: var(--font-size-breadcrumb);
+    color: var(--text-color-secondary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    transition: all 0.3s ease;
+}
+
+.breadcrumb:hover {
+    color: var(--danger-color);
+}
+
+.breadcrumb:last-child {
+    color: var(--danger-color);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* =======================
+   Main Container
+======================= */
+.mainContainer {
+    display: flex;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    max-height: 100dvh;
+    border-radius: 12px;
+    background: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-primary);
+    transition: all 0.3s ease;
+}
+
+.mainContainer:hover {
+    box-shadow: 0 6px 20px rgba(205, 144, 143, 0.3);
+}
+
+/* =======================
+   Picture Section
+======================= */
+.pictureSection,
+.dataSection {
+    flex: 1;
+    height: 100%;
+}
+
+.pictureSection {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 15px;
+    padding: 30px;
+    background: var(--bg-color);
+    border-right: 2px solid rgba(129, 133, 158, 0.2);
+}
+
+.containerImgSparePart {
+    width: 100%;
+    height: 100%;
+    border: 3px dashed rgba(129, 133, 158, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.containerImgSparePart:hover {
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 3px rgba(211, 24, 19, 0.1);
+    transform: scale(1.02);
+}
+
+#pictureSparePart {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+#pictureSparePart:hover {
+    transform: scale(1.05);
+}
+
+/* Placeholder cuando no hay imagen */
+.containerImgSparePart:empty::after {
+    content: '🔧';
+    font-size: 120px;
+    opacity: 0.2;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* =======================
+   Data Section
+======================= */
+.dataSection {
+    background: var(--bg-color-white);
+}
+
+.contentDataSection {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sparePartData,
+.sparePartCost {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    padding: 30px;
+    border-bottom: 2px solid rgba(129, 133, 158, 0.1);
+    transition: all 0.3s ease;
+}
+
+.sparePartData {
+    flex: 3;
+}
+
+.sparePartCost {
+    border-bottom: none;
+}
+
+.sparePartData:hover,
+.sparePartCost:hover {
+    background: rgba(211, 24, 19, 0.02);
+}
+
+/* =======================
+   Títulos
+======================= */
+.titleData {
+    font-weight: var(--font-weight-semibold);
+    font-size: 1.6em;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid var(--danger-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sparePartData .titleData::before {
+    content: '🔩';
+    font-size: 28px;
+}
+
+.sparePartCost .titleData::before {
+    content: '💰';
+    font-size: 28px;
+}
+
+/* =======================
+   Data Info Items
+======================= */
+.sparePartCostBody,
+.sparePartDataBody {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-evenly;
+    gap: 10px;
+}
+
+.dataInfo {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--bg-color);
+    border-radius: 8px;
+    border-left: 4px solid var(--danger-color);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.dataInfo:hover {
+    background: rgba(211, 24, 19, 0.05);
+    transform: translateX(5px);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+/* =======================
+   Labels y Values
+======================= */
+.label {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 150px;
+}
+
+.value {
+    font-size: var(--font-size-base);
+    color: var(--text-color);
+    font-weight: var(--font-weight-medium);
+    flex: 1;
+}
+
+.value:empty::after {
+    content: '—';
+    opacity: 0.5;
+    color: var(--text-color-secondary);
+}
+
+/* =======================
+   Enlaces y Red Color
+======================= */
+.redColor {
+    color: var(--danger-color) !important;
+    font-weight: var(--font-weight-semibold) !important;
+}
+
+#name.redColor,
+#tracking.redColor {
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+#name.redColor:hover,
+#tracking.redColor:hover {
+    color: var(--dark-danger-color) !important;
+    text-decoration: underline;
+}
+
+/* Precio sugerido destacado */
+#suggestedPrice {
+    font-size: 1.5rem !important;
+}
+
+/* Costo total super destacado */
+.sparePartCost .dataInfo:last-child {
+    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
+    border-left-color: var(--dark-danger-color);
+    margin-top: 10px;
+}
+
+.sparePartCost .dataInfo:last-child .label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.sparePartCost .dataInfo:last-child .value {
+    color: var(--bg-color-white) !important;
+    font-size: 1.75rem !important;
+}
+
+/* =======================
+   Animaciones
+======================= */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pictureSection,
+.sparePartData,
+.sparePartCost {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.sparePartCost {
+    animation-delay: 0.1s;
+}
+
+/* =======================
+   Scrollbar personalizado
+======================= */
+.contentDataSection::-webkit-scrollbar {
+    width: 8px;
+}
+
+.contentDataSection::-webkit-scrollbar-track {
+    background: var(--bg-color);
+    border-radius: 10px;
+}
+
+.contentDataSection::-webkit-scrollbar-thumb {
+    background: var(--helper-color);
+    border-radius: 10px;
+}
+
+.contentDataSection::-webkit-scrollbar-thumb:hover {
+    background: var(--danger-color);
+}
+
+/* =======================
+   Responsive Design
+======================= */
+@media (max-width: 1024px) {
+    .mainContainer {
+        flex-direction: column;
+        max-height: none;
+    }
+
+    .pictureSection {
+        border-right: none;
+        border-bottom: 2px solid rgba(129, 133, 158, 0.2);
+        max-height: 400px;
+    }
+
+    .containerImgSparePart {
+        height: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .breadcrumbSection {
+        padding: 15px 20px;
+    }
+
+    .breadcrumb {
+        font-size: 1.5em;
+    }
+
+    .mainContainer {
+        border-radius: 8px;
+    }
+
+    .pictureSection {
+        padding: 20px;
+    }
+
+    .sparePartData,
+    .sparePartCost {
+        padding: 20px;
+    }
+
+    .titleData {
+        font-size: 1.3em;
+    }
+
+    .dataInfo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px 15px;
+    }
+
+    .label {
+        min-width: auto;
+        font-size: var(--font-size-sm);
+    }
+
+    .value {
+        font-size: var(--font-size-base);
+    }
+
+    #suggestedPrice {
+        font-size: 1.25rem !important;
+    }
+
+    .sparePartCost .dataInfo:last-child .value {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* =======================
+   Estados de carga
+======================= */
+.dataInfo.loading {
+    background: linear-gradient(
+        90deg,
+        var(--bg-color) 0%,
+        rgba(129, 133, 158, 0.1) 50%,
+        var(--bg-color) 100%
+    );
+    background-size: 200% 100%;
+    animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* =======================
+   BARRA DE ACCIONES - SPARE PART
+======================= */
+.actionsBarSparePart {
+    background: var(--bg-color-white);
+    border-radius: 12px;
+    padding: 20px 30px;
+    box-shadow: var(--bx-shadow-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    transition: all 0.3s ease;
+}
+
+.actionsBarSparePart:hover {
+    box-shadow: 0 6px 20px rgba(205, 144, 143, 0.3);
+}
+
+/* =======================
+   STATUS BADGE - SPARE PART
+======================= */
+.statusBadgeSparePart {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.statusBadgeSparePart.disponible {
+    background: rgba(109, 190, 69, 0.1);
+    color: var(--success-color);
+    border: 2px solid var(--success-color);
+}
+
+.statusBadgeSparePart.agotado {
+    background: rgba(211, 24, 19, 0.1);
+    color: var(--danger-color);
+    border: 2px solid var(--danger-color);
+}
+
+.statusBadgeSparePart.reservado {
+    background: rgba(255, 178, 53, 0.1);
+    color: var(--warning-color);
+    border: 2px solid var(--warning-color);
+}
+
+.statusDotSparePart {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulseSparePart 2s ease-in-out infinite;
+}
+
+@keyframes pulseSparePart {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+}
+
+/* =======================
+   GRUPO DE BOTONES - SPARE PART
+======================= */
+.btnGroupSparePart {
+    display: flex;
+    gap: 15px;
+}
+
+.btnActionSparePart {
+    padding: 12px 24px;
+    text-decoration: none;
+    border: none;
+    border-radius: var(--border-radius-btn);
+    font-family: var(--font-text);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.btnIconSparePart {
+    font-size: 18px;
+    display: inline-block;
+}
+
+/* Botón Secundario (Editar) */
+.btnActionSparePart.btnSecondarySparePart {
+    background: transparent;
+    color: var(--text-color);
+    border: 2px solid rgba(129, 133, 158, 0.3);
+}
+
+.btnActionSparePart.btnSecondarySparePart:hover {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    background: rgba(211, 24, 19, 0.05);
+    transform: translateY(-3px);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.btnActionSparePart.btnSecondarySparePart:active {
+    transform: translateY(-1px);
+}
+
+/* Botón Danger (Eliminar) */
+.btnActionSparePart.btnDangerSparePart {
+    background: var(--danger-color);
+    color: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+.btnActionSparePart.btnDangerSparePart:hover {
+    background: var(--dark-danger-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(211, 24, 19, 0.4);
+}
+
+.btnActionSparePart.btnDangerSparePart:active {
+    transform: translateY(-1px);
+}
+
+/* =======================
+   RESPONSIVE - BARRA DE ACCIONES
+======================= */
+@media (max-width: 768px) {
+    .actionsBarSparePart {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .statusBadgeSparePart {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btnGroupSparePart {
+        width: 100%;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btnActionSparePart {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/* =======================
+   Animación de entrada para barra de acciones
+======================= */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.actionsBarSparePart {
+    animation: slideUp 0.5s ease-out 0.2s both;
+}

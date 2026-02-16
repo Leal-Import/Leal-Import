@@ -3,7 +3,8 @@ export const vehicleSaleState = {
         idSale: null,
         idCustomer: null,
         customerName: null,
-        idVehicle: null
+        idVehicle: null,
+        isView: null
     },
     saleKey: null,
     idEmployee: null,

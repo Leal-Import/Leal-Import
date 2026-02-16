@@ -4,6 +4,10 @@ export const qs = (sel, root = document) => root.querySelector(sel);
 
 export function showElement(el) { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); }
 export function hideElement(el) { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); }
+export function disableElement(el) { if (!el) return; el.setAttribute("disabled", true) }
+export function removeDisable(el) { if (!el) return; el.removeAttribute("disabled") }
+
+
 
 export const existsById = (list, id, key) => {
     return list.some(item => String(item[key]) === String(id));
@@ -60,11 +64,11 @@ export function setFormReadOnly(formSelector, readOnly = true) {
     if (!form) return;
 
     const controls = form.querySelectorAll(
-        'input, textarea, select, button[type="submit"]'
+        'input, textarea, select, .btnAddData'
     );
 
     controls.forEach(ctrl => {
-        if (ctrl.type === 'submit') {
+        if (ctrl.classList.contains('btnAddData')) {
             ctrl.style.display = readOnly ? 'none' : '';
         } else {
             ctrl.disabled = readOnly;
@@ -216,9 +220,9 @@ export const setupModal = (
     const closeBtn = qs(closeBtnSelector);
     const modal = qs(modalSelector);
     const form = qs(formId);
-
+    
     if (!openBtn || !closeBtn || !modal) return;
-
+    
     openBtn.addEventListener("click", () => {
         if (typeof onClose === 'function') {
             onClose(); // ← limpia selectedId
@@ -226,11 +230,10 @@ export const setupModal = (
         toggleModal(modal, true);
         form?.reset();
         modal.querySelector('.titleModal').textContent = text;
-
-        modal.querySelector('input[type="submit"]').value = "Agregar";
+        modal.querySelector(".btnAddData").querySelector("span").textContent = "Agregar";
         enableFormUI(formId);
     });
-
+    
     const closeHandler = () => {
         toggleModal(modal, false);
         form?.reset();

@@ -1,13 +1,22 @@
 @import url('globalStyles.css');
 
-/* Sin animaciones al cargar (solo para el nav) */
+/* ═══════════════════════════════════════
+   ANTI-FLASH
+═══════════════════════════════════════ */
+html[data-sidebar="collapsed"] .navbarText,
+html[data-sidebar="collapsed"] .navSectionLabel,
+html[data-sidebar="collapsed"] .logoWordmark,
+html[data-sidebar="collapsed"] .userInfo {
+    opacity: 0 !important;
+    max-width: 0 !important;
+    pointer-events: none !important;
+}
+
 html:not(.ui-ready) #sidebar,
 html:not(.ui-ready) .navbarContainer,
 html:not(.ui-ready) .navbarItem,
 html:not(.ui-ready) .navbarText,
-html:not(.ui-ready) .userContainer,
-html:not(.ui-ready) .btnNavbarContainer,
-html:not(.ui-ready) #submenu {
+html:not(.ui-ready) #btnNavbar {
     transition: none !important;
     animation: none !important;
 }
@@ -16,507 +25,591 @@ body:not(.sidebar-ready) {
     visibility: hidden;
 }
 
+/* ═══════════════════════════════════════
+   VARIABLES
+═══════════════════════════════════════ */
 #sidebar {
+    --nav-bg: var(--bg-color, #FCFCFC);
+    --nav-bg2: var(--bg-color-white, #FFFFFF);
+    --nav-border: #CD908F55;
+    --nav-border-soft: #CD908F33;
+    --nav-text: var(--text-color, #0D0503);
+    --nav-text-muted: var(--text-color-secondary, #81859E);
+    --nav-accent: var(--danger-color, #D31813);
+    --nav-accent-dark: var(--dark-danger-color, #871B19);
+    --nav-accent-glow: #D3181328;
+    --nav-accent-soft: #D3181310;
+    --nav-hover-bg: #CD908F14;
+    --nav-active-bg: #D3181308;
+    --nav-section-txt: var(--helper-color, #CD908F);
+    --nav-divider: #CD908F33;
+    --nav-shadow: var(--bx-shadow-primary, 5px 2px 6px #CD908F44);
+
+    --nav-open-w: 270px;
+    --nav-close-w: 75px;
+    --nav-icon-left: 15px;
+    --nav-wrap-sz: 36px;
+    --nav-icon-sz: 20px;
+    --nav-item-h: 42px;
+    --nav-radius: 10px;
+    --nav-t: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
     position: relative;
     height: 100dvh;
-    transition: all .3s ease;
+    flex-shrink: 0;
+    width: var(--nav-open-w);
+    transition: width var(--nav-t);
+    z-index: 50;
 }
 
+/* ═══════════════════════════════════════
+   CONTENEDOR
+═══════════════════════════════════════ */
 .navbarContainer {
-    --bg-color: #f7f7f7;
-    --height-logo-container: clamp(100px, 20vh, 125px);
-    --height-user-container: clamp(60px, 15vh, 115px);
-    background-color: var(--bg-color);
-    border-top-right-radius: 12px;
-    box-shadow: var(--bx-shadow-primary);
+    background-color: var(--nav-bg);
+    border-right: 1px solid var(--nav-border-soft);
+    border-top-right-radius: var(--nav-radius);
+    box-shadow: var(--nav-shadow);
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    position: relative;
     box-sizing: border-box;
-    transition: width .3s ease;
+    overflow: hidden;
+    transition: width var(--nav-t);
 }
 
 .navbar {
-    padding: 20px 0;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    flex: 1 1 auto;
+    height: 100%;
     width: 100%;
 }
 
+/* ═══════════════════════════════════════
+   HEADER
+═══════════════════════════════════════ */
 .navHeader {
-    width: 100%;
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: var(--height-logo-container);
+    padding: 0 10px 0 var(--nav-icon-left);
+    height: 72px;
+    min-height: 72px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--nav-border-soft);
+    box-sizing: border-box;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.btnNavClose {
+    margin-right: 20px;
 }
 
 .logoContainer {
-    width: calc(100% - 100px);
-    border-bottom: solid var(--helper-color) 2px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding-bottom: 30px;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .logo {
-    width: 80%;
+    width: var(--nav-wrap-sz);
+    height: var(--nav-wrap-sz);
+    min-width: var(--nav-wrap-sz);
+    object-fit: contain;
     cursor: pointer;
+    flex-shrink: 0;
+    border-radius: 8px;
 }
 
-.btnNavbarIcon {
-    width: 100%;
+.logoWordmark {
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--nav-text);
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    max-width: 200px;
+    transition: opacity var(--nav-t), max-width var(--nav-t);
 }
 
+.logoWordmark span {
+    color: var(--nav-accent);
+}
+
+/* ═══════════════════════════════════════
+   BOTÓN TOGGLE
+═══════════════════════════════════════ */
+#btnNavbar {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 7px;
+    background-color: var(--nav-hover-bg);
+    border: 1px solid var(--nav-border);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: var(--nav-text-muted);
+    flex-shrink: 0;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+#btnNavbar:hover {
+    background-color: var(--nav-accent);
+    border-color: var(--nav-accent);
+    color: #fff;
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+#btnNavbar svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: rotate var(--nav-t);
+}
+
+#btnNavbar.rotate180 svg {
+    rotate: 180deg;
+}
+
+/* ═══════════════════════════════════════
+   NAV BODY
+═══════════════════════════════════════ */
 .navBody {
-    height: calc(90dvh - var(--height-logo-container));
-    width: 100%;
-    display: flex;
-    justify-content: center;
+    flex: 1;
     overflow-y: auto;
-    scrollbar-width: none;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 6px 8px 16px;
+    box-sizing: border-box;
 }
 
+/* ═══════════════════════════════════════
+   SECTION LABEL
+═══════════════════════════════════════ */
+.navSection {
+    padding: 14px 0 5px var(--nav-icon-left);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.navSectionLabel {
+    font-family: var(--font-text);
+    font-size: 0.62em;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--nav-section-txt);
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    max-width: 200px;
+    transition: opacity var(--nav-t), max-width var(--nav-t);
+}
+
+.navDivider {
+    height: 1px;
+    background: var(--nav-divider);
+    margin-left: 15px;
+}
+
+/* ═══════════════════════════════════════
+   CONTENEDOR DE ÍTEMS
+═══════════════════════════════════════ */
 .navbarItemsContainer {
-    width: calc(100% - 100px);
-    height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-}
-
-.groupItems {
+    gap: 2px;
     width: 100%;
-    background-color: var(--bg-color);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    z-index: 25;
-    margin-right: 13px;
 }
 
-.itemContainer {
-    width: 100%;
-    height: 35px;
-    display: flex;
-    justify-content: center;
-    align-items: end;
-    margin-right: 13px;
-}
-
+/* ═══════════════════════════════════════
+   ÍTEM DE NAVEGACIÓN
+═══════════════════════════════════════ */
 .navbarItem {
     text-decoration: none;
     position: relative;
     display: flex;
-    justify-content: start;
     align-items: center;
-    gap: 30px;
+    padding: 0 8px 0 var(--nav-icon-left);
+    height: var(--nav-item-h);
+    border-radius: var(--nav-radius);
+    color: var(--nav-text-muted);
+    font-family: var(--font-text);
+    font-size: 0.9em;
     font-weight: 500;
-    font-size: 1.5em;
-    font-family: var(--font-text);
-    width: 100%;
-    margin-top: 35px;
-    max-height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
     box-sizing: border-box;
-    margin-right: 13px;
+    transition: background-color 0.18s, color 0.18s;
 }
 
-.activeNavbarItem::before {
+.navbarItem:hover {
+    background-color: var(--nav-hover-bg);
+    color: var(--nav-text);
+}
+
+.navbarItem.activeNavbarItem {
+    background-color: var(--nav-active-bg);
+    color: var(--nav-accent);
+}
+
+.navbarItem.activeNavbarItem::before {
     content: '';
-    width: 4px;
-    height: clamp(20px, 100%, 35px);
-    left: clamp(-18px, -2vw, -30px);
-    box-shadow: 0 0 6px #647AD3;
-    display: block;
-    background-color: #94ACDA;
-    border-radius: 5px;
     position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 55%;
+    background-color: var(--nav-accent);
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 8px var(--nav-accent-glow);
+    transition: opacity var(--nav-t);
 }
 
-.navbarItemEmployeesContainer {
-    width: 100%;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    margin-top: 35px;
-    max-height: 30px;
-}
-
-.navbarIcon {
-    width: 30px;
-    height: 30px;
-}
-
-.navbarText {
-    color: var(--text-color-secondary);
-    opacity: 1;
-    transition: opacity .3s ease;
-}
-
-#btnSubmenu {
-    margin-left: 30px;
-    display: flex;
-    align-items: center;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-}
-
-#btnSubmenu img {
-    rotate: 90deg;
-}
-
-#submenu {
-    display: flex;
-    width: 100%;
-    gap: 20px;
-    align-items: end;
-    box-sizing: border-box;
-    transition: height 1s ease;
-    margin-left: 20px;
-}
-
-.submenuItemsContainer {
-    display: flex;
-    flex-direction: column;
-}
-
-.drawSubmenu {
-    width: 25px;
-    height: 30px;
-    position: relative;
-    border-left: solid #9DA3C8 2px;
-    border-bottom: solid #9DA3C8 2px;
-}
-
-.submenuItem {
-    text-decoration: none;
-    position: absolute;
-    font-family: var(--font-text);
-    font-weight: 600;
-    font-size: 1em;
-    bottom: -11px;
-    color: #9DA3C8;
-}
-
-.btnNavbarContainer {
-    transition: all .3s ease;
-    position: absolute;
-    top: 100px;
-    z-index: 30;
-    right: -20px;
-}
-
-#btnNavbar {
-    background-color: var(--danger-color);
-    box-shadow: 0 0 5px var(--dark-danger-color);
-    width: 40px;
-    height: 40px;
-    border-radius: 5px;
+/* ═══════════════════════════════════════
+   ICONO WRAP
+═══════════════════════════════════════ */
+.navIconWrap {
+    width: var(--nav-wrap-sz);
+    height: var(--nav-wrap-sz);
+    min-width: var(--nav-wrap-sz);
+    border-radius: 8px;
     display: grid;
-    place-content: center;
-    z-index: 20;
-    border: none;
-    padding: 11px;
+    place-items: center;
+    flex-shrink: 0;
+    transition: background-color 0.18s;
+}
+
+.navIconWrap svg {
+    width: var(--nav-icon-sz);
+    height: var(--nav-icon-sz);
+    transition: stroke 0.18s;
+}
+
+.navbarItem:hover .navIconWrap {
+    background-color: var(--nav-hover-bg);
+}
+
+.navbarItem.activeNavbarItem .navIconWrap {
+    background-color: var(--nav-accent-soft);
+}
+
+.navbarItem.activeNavbarItem .navIconWrap svg {
+    stroke: var(--nav-accent);
+}
+
+/* ═══════════════════════════════════════
+   TEXTO
+═══════════════════════════════════════ */
+.navbarText {
+    color: inherit;
+    margin-left: 10px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 1;
+    max-width: 180px;
+    transition: opacity var(--nav-t), max-width var(--nav-t);
+}
+
+/* ═══════════════════════════════════════
+   TOOLTIP (solo desktop colapsado)
+═══════════════════════════════════════ */
+.navTooltip {
+    position: absolute;
+    left: calc(var(--nav-close-w) + 8px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    background: var(--nav-bg2);
+    border: 1px solid var(--nav-border);
+    color: var(--nav-text);
+    font-family: var(--font-text);
+    font-size: 0.76em;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 6px;
+    box-shadow: var(--nav-shadow);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 200;
+}
+
+#sidebar.navbarCollapsed .navbarItem:hover .navTooltip {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+.navFooter {
+    padding: 8px;
+    border-top: 1px solid var(--nav-border-soft);
+    flex-shrink: 0;
+}
+
+.userCard {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px 6px var(--nav-icon-left);
+    border-radius: var(--nav-radius);
     cursor: pointer;
+    overflow: hidden;
+    gap: 0;
+    transition: background-color 0.18s;
+    box-sizing: border-box;
 }
 
-
-/*Estilos para abrir y cerrar el nav y dropdown*/
-
-
-.rotate180 {
-    rotate: 180deg;
+.userCard:hover {
+    background-color: var(--nav-hover-bg);
 }
 
-.submenuClose {
-    height: 0px;
-    translate: 0 -7px;
+.userAvatar {
+    width: var(--nav-wrap-sz);
+    height: var(--nav-wrap-sz);
+    min-width: var(--nav-wrap-sz);
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--nav-accent), var(--nav-accent-dark));
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    font-family: var(--font-text);
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 2px 8px var(--nav-accent-glow);
 }
 
-.submenuOpen {
-    height: 70px;
-    translate: 0 0;
+.userInfo {
+    overflow: hidden;
+    opacity: 1;
+    max-width: 180px;
+    margin-left: 10px;
+    transition: opacity var(--nav-t), max-width var(--nav-t);
 }
 
-.hideText {
+.userName {
+    font-family: var(--font-text);
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--nav-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userRole {
+    font-family: var(--font-text);
+    font-size: 0.7em;
+    color: var(--nav-text-muted);
+    white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════
+   ESTADO COLAPSADO — DESKTOP
+═══════════════════════════════════════ */
+#sidebar.navbarCollapsed {
+    width: var(--nav-close-w);
+}
+
+#sidebar.navbarCollapsed .navbarContainer {
+    width: var(--nav-close-w);
+}
+
+#sidebar.navbarCollapsed .navbarText,
+#sidebar.navbarCollapsed .navSectionLabel,
+#sidebar.navbarCollapsed .logoWordmark,
+#sidebar.navbarCollapsed .userInfo {
+    opacity: 0;
+    max-width: 0;
+    pointer-events: none;
+}
+
+#sidebar.navbarCollapsed .navbarItem.activeNavbarItem::before {
     opacity: 0;
 }
 
-.navbarOpen {
-    width: 300px;
+/* ═══════════════════════════════════════
+   MOBILE HEADER - Solo visible en móvil
+═══════════════════════════════════════ */
+
+.mobileHeader {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: var(--nav-bg2);
+    border-bottom: 1px solid var(--nav-border-soft);
+    position: fixed;
+    top: 0;
     left: 0;
+    right: 0;
+    z-index: 90;
+    box-shadow: 0 2px 8px #CD908F22;
+    background-color: var(--bg-color);
 }
 
-.navbarClose {
-    width: 120px;
-}
-
-
-.logoShort {
+.menuToggle {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+    color: var(--nav-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
 }
 
-/*Nav responsive*/
-
-.navCloseResponsive {
-    left: -300px !important;
+.menuToggle:hover {
+    background-color: var(--nav-hover-bg);
 }
 
-.btnNavbarContainerOpen {
-    left: 270px !important;
-    z-index: 35;
-    border: none !important;
+.mobileHeaderLogo {
+    font-family: var(--font-text);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--nav-text);
 }
 
-@media screen and (max-width: 1225px) {
+.mobileHeaderLogo span {
+    color: var(--nav-accent);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — MÓVIL < 1225px
+═══════════════════════════════════════ */
+@media screen and (max-width: 1224px) {
+    .containerMobileHeader {
+        height: 50px;
+        width: 100%;
+    }
 
     #sidebar {
-        position: absolute;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0 !important;
+        height: 100dvh;
+        z-index: 100;
+        overflow: visible;
     }
 
     .navbarContainer {
         position: absolute;
-        z-index: 30;
-        width: 300px;
+        top: 0;
         left: 0;
-        transition: left .7s ease;
+        width: var(--nav-open-w);
+        height: 100dvh;
+        transform: translateX(0);
+        transition: transform var(--nav-t), box-shadow var(--nav-t);
+        box-shadow: 6px 0 24px #CD908F44;
+        overflow: hidden;
     }
 
-    .navbar {
-        padding: 0;
+    #sidebar.navMobileHidden .navbarContainer {
+        transform: translateX(-100%);
+        box-shadow: none;
     }
 
-    .navbarItem,
-    .navbarUserItem {
-        font-size: 1.4em;
-        gap: 20px;
-    }
-
-    .logoContainer {
-        width: 250px;
-    }
-
-    .navbarItemsContainer {
-        width: 250px;
-    }
-
-    .btnNavbarContainer {
-        position: absolute;
-        width: 30px;
-        height: 80px;
-        border: solid var(--helper-color) 1px;
-        border-radius: 0 20px 20px 0;
-        right: -210px;
-        background-color: var(--bg-color);
-    }
-
+    /* OCULTAR el botón de colapso dentro del sidebar en móvil */
     #btnNavbar {
-        position: absolute;
-        top: 20px;
-        right: -20px;
+        display: none !important;
+    }
+
+    .navTooltip {
+        display: none !important;
+    }
+
+    /* MOSTRAR el mobile header con hamburguesa */
+    .mobileHeader {
+        display: flex;
+    }
+
+    /* Overlay oscuro al fondo cuando está abierto */
+    #sidebar::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        left: var(--nav-open-w);
+        background: rgba(13, 5, 3, 0.3);
+        opacity: 1;
+        transition: opacity var(--nav-t);
+        z-index: 99;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    #sidebar.navMobileHidden::before {
+        opacity: 0;
+        pointer-events: none;
     }
 }
 
 @media screen and (max-width: 500px) {
-
-    .btnNavbarContainerOpen {
-        left: 245px !important;
+    #sidebar {
+        --nav-open-w: 250px;
     }
-
-    .navbarContainer {
-        width: 275px;
-    }
-
-    .navbarItem,
-    .navbarUserItem {
-        font-size: 1.2em;
-        gap: 15px;
-    }
-
 }
 
-/* ===== Paleta del scrollbar ===== */
-:root {
-    --sb-thumb-base: var(--color-primary, #6774e660);
-    /* normal/hover */
-    --sb-thumb-hover: var(--sb-thumb-base);
-    /* hover = base */
-    --sb-thumb-pressed: var(--color-primary-strong, #6C63FF);
-    /* presionado */
-    --sb-track: transparent;
-    /* canal */
-}
-
-/* ===== Solo vertical (derecha), sin horizontal y SIN EMPUJAR ===== */
-.navBody {
-    display: flex;
-    /* asegura centrado */
-    justify-content: center !important;
-    /* nunca a la izquierda */
-    overflow-y: auto !important;
-    overflow-x: clip !important;
-    /* mata la barra de abajo */
-    scrollbar-gutter: stable !important;
-    /* reserva a la derecha sin mover layout */
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-}
-
-.btnPrimary:disabled {
-    opacity: 0.7;
-    /* Make it slightly transparent */
-    cursor: not-allowed;
-    /* Change the cursor to indicate it's blocked */
-    transform: none;
-    /* Override hover effect */
-    box-shadow: none;
-}
-
-/* Mantener el bloque de ítems centrado en cualquier ancho */
-.navbarItemsContainer {
-    margin: 0 auto;
-    box-sizing: border-box;
-}
-
-@media (max-width: 1225px) {
-    .navbarItemsContainer {
-        height: auto !important;
-    }
-
-    /* deja crecer para que haya scroll */
-}
-
-/* Firefox: color del scrollbar; oculto en reposo con .sb-idle (lo pone el JS) */
+/* ═══════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════ */
 .navBody {
     scrollbar-width: thin;
-    scrollbar-color: var(--sb-thumb-base) var(--sb-track);
+    scrollbar-color: #CD908F55 transparent;
 }
 
 .navBody.sb-idle {
     scrollbar-color: transparent transparent;
 }
 
-/* WebKit (Chrome/Edge/Safari) */
 .navBody::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
     height: 0 !important;
 }
 
-/* solo lateral */
 .navBody::-webkit-scrollbar:horizontal {
-    height: 0 !important;
     display: none !important;
 }
 
 .navBody::-webkit-scrollbar-track {
-    background: var(--sb-track) !important;
+    background: transparent !important;
 }
 
 .navBody::-webkit-scrollbar-button {
     display: none;
-    width: 0;
-    height: 0;
 }
 
 .navBody::-webkit-scrollbar-thumb {
-    background: var(--sb-thumb-base) !important;
-    border-radius: 8px;
-    background-clip: padding-box;
-    border: 2px solid transparent;
-    /* evita gris del UA */
+    background: #CD908F88 !important;
+    border-radius: 6px;
     opacity: var(--sb-op, 0);
-    /* el JS anima esta opacidad */
-    transition: opacity .28s ease, background-color .2s ease;
+    transition: opacity 0.28s ease, background-color 0.2s ease;
 }
 
 .navBody::-webkit-scrollbar-thumb:hover {
-    background: var(--sb-thumb-hover) !important;
-}
-
-.navBody::-webkit-scrollbar-thumb:active {
-    background: var(--sb-thumb-pressed) !important;
-}
-
-/* ===== Fix layout ≤ 500px: centrado real, sin empujar a la izquierda ===== */
-@media (max-width: 500px) {
-
-    /* El contenedor de ítems ocupa todo el ancho del sidebar
-     y se centra con padding simétrico */
-    .navbarItemsContainer {
-        width: 100% !important;
-        padding: 0 16px !important;
-        /* aire a ambos lados */
-        margin: 0 auto !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Quitamos empujes hacia la izquierda por márgenes a la derecha */
-    .groupItems,
-    .navbarItem,
-    .navbarUserItem,
-    .itemContainer {
-        margin-right: 0 !important;
-    }
-
-    /* El área scrollable mantiene centrado el contenido */
-    .navBody {
-        justify-content: center !important;
-    }
-}
-
-/* Por si en algún breakpoint alguien cambia el centrado,
-   lo forzamos en general sin romper el scroll */
-.navBody {
-    display: flex;
-    justify-content: center !important;
-    overflow-y: auto !important;
-    overflow-x: clip !important;
-    /* sin barra de abajo */
-    scrollbar-gutter: stable !important;
-    /* no empuja el layout */
-}
-
-/* Scrollbar (solo derecha) se queda igual con tus colores */
-.navBody::-webkit-scrollbar {
-    width: 6px;
-    height: 0 !important;
-}
-
-.navBody::-webkit-scrollbar:horizontal {
-    height: 0 !important;
-    display: none !important;
-}
-
-.navBody::-webkit-scrollbar-track {
-    background: var(--sb-track, transparent) !important;
-}
-
-.navBody::-webkit-scrollbar-thumb {
-    background: var(--sb-thumb-base, #6774e660) !important;
-    border-radius: 8px;
-    background-clip: padding-box;
-    border: 2px solid transparent;
-}
-
-.navBody::-webkit-scrollbar-thumb:hover {
-    background: var(--sb-thumb-hover, #6774e660) !important;
-}
-
-.navBody::-webkit-scrollbar-thumb:active {
-    background: var(--sb-thumb-pressed, #6C63FF) !important;
-}
-
-/* Firefox colores */
-.navBody {
-    scrollbar-width: thin;
-    scrollbar-color: var(--sb-thumb-base, #6774e660) transparent;
+    background: var(--danger-color, #D31813) !important;
 }

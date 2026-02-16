@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/modules/vehicleSale/vehicleSale.css">
     <link rel="stylesheet" href="../css/utils/salesStyles/panelSalesStyles.css">
-    <link rel="stylesheet" href="../css/utils/salesStyles/vehicleView.css">
-    <link rel="stylesheet" href="../css/utils/salesStyles/modalVoucher.css">
-    <link rel="stylesheet" href="../css/utils/salesStyles/tableSales.css">
-    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/modals/modalVoucher.css">
+    <link rel="stylesheet" href="../css/utils/showData/tableSales.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/utils/pagination.css">
-    <link rel="stylesheet" href="../css/utils/modal.css">
+    <link rel="stylesheet" href="../css/utils/modals/modal.css">
     <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Agregar venta</title>
 </head>
 
@@ -47,32 +47,6 @@
                             <p class="upload-formats">JPG, PNG o PDF • Máximo 10MB</p>
                         </div>
                     </div>
-
-                    <!-- Estado con imagen - se muestra cuando hay archivo (añadir clase 'has-file' al preview-area) -->
-                    <!-- Este contenido se añadirá dinámicamente por JS
-                <div class="preview-content">
-                    <div class="preview-image-wrapper">
-                        <button class="zoom-btn" type="button" aria-label="Ampliar imagen">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM13 10l4 4M13 6l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                        <img src="" alt="Comprobante" class="preview-image">
-                        <div class="preview-overlay">
-                            <div class="file-details">
-                                <svg class="file-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <path d="M9 1H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-6-6z" stroke="currentColor" stroke-width="1.5"/>
-                                    <path d="M9 1v6h6" stroke="currentColor" stroke-width="1.5"/>
-                                </svg>
-                                <div class="file-info">
-                                    <span class="file-name">documento.jpg</span>
-                                    <span class="file-size">2.4 MB</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                -->
                 </div>
 
                 <div class="modal-actions">
@@ -101,14 +75,19 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
+            <div class="containerMobileHeader"></div>
             <div class="leftColumn">
                 <div class="headerContent">
                     <div class="breadCrumbSection">
                         <a href="sales.html" class="breadcrumb">Ventas ></a>
-                        <a class="breadcrumb" id="customerName"></a>
+                        <a class="breadcrumb" id="customerName">Cargando...</a>
                     </div>
                 </div>
                 <div class="bodyLeftPart">
+                    <div class="containerLoader hide" style="z-index: 15;" id="loaderAddVehicle">
+                        <div class="loader"></div>
+                        <div>Cargando vehiculo...</div>
+                    </div>
                     <div class="viewVechicleContainer hide">
                         <div class="imagesSection">
                             <div class="vehicleImagesSection">
@@ -219,48 +198,54 @@
                             <button class="btnSecondary btnCancelVehicle" id="btnCancelVehicle">Cancelar</button>
                         </div>
                     </div>
-                    <div class="filterSection">
-                        <input type="text" id="txtSearchData" class="txtSearchData"
-                            placeholder="Buscar por: vin, marca o modelo">
-                        <button class="btnPrimary btnOpenModal" id="btnAddPart">Realizar encargo</button>
-                    </div>
-                    <div class="tableContainer">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Imagen</th>
-                                    <th>Vin</th>
-                                    <th>Costo</th>
-                                    <th>P. sugerido</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tBodyInventory"></tbody>
-                        </table>
-                    </div>
-                    <div class="paginationContainer">
-
-                        <!-- Info + page size -->
-                        <div class="paginationLeft">
-                            <span class="paginationInfo"></span>
-
-                            <div class="pageSize">
-                                <select class="txtInputs" id="sizeSelect">
-                                    <option value="5">5</option>
-                                    <option value="10" selected>10</option>
-                                    <option value="15">15</option>
-                                    <option value="20">20</option>
-                                    <option value="30">30</option>
-                                </select>
-                                <span>por página</span>
+                    <div class="dataLeft">
+                        <div class="filterSection">
+                            <input type="text" id="txtSearchData" class="txtSearchData"
+                                placeholder="Buscar por: vin, marca o modelo">
+                            <button class="btnPrimary btnOpenModal" id="btnAddPart">Realizar encargo</button>
+                        </div>
+                        <div class="tableContainer">
+                            <div class="containerLoader show" id="tableVehiclesLoader">
+                                <div class="loader"></div>
+                                <div>Cargando lista de vehiculos...</div>
                             </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Imagen</th>
+                                        <th>Vin</th>
+                                        <th>Costo</th>
+                                        <th>P. sugerido</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tBodyInventory"></tbody>
+                            </table>
                         </div>
+                        <div class="paginationContainer">
 
-                        <!-- Page controls -->
-                        <div class="paginationRight">
-                            <button class="pageBtn prev">‹</button>
-                            <button class="pageBtn next">›</button>
+                            <!-- Info + page size -->
+                            <div class="paginationLeft">
+                                <span class="paginationInfo"></span>
+
+                                <div class="pageSize">
+                                    <select class="txtInputs" id="sizeSelect">
+                                        <option value="5">5</option>
+                                        <option value="10" selected>10</option>
+                                        <option value="15">15</option>
+                                        <option value="20">20</option>
+                                        <option value="30">30</option>
+                                    </select>
+                                    <span>por página</span>
+                                </div>
+                            </div>
+
+                            <!-- Page controls -->
+                            <div class="paginationRight">
+                                <button class="pageBtn prev">‹</button>
+                                <button class="pageBtn next">›</button>
+                            </div>
+
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -279,7 +264,9 @@
                         </div>
                         <div class="formGroup">
                             <label class="lblInputs" for="paymentMethod">Método de pago</label>
-                            <select name="paymentMethod" class="txtInputs" id="paymentMethod"></select>
+                            <select name="paymentMethod" class="txtInputs" id="paymentMethod">
+                                <option value="">Cargando...</option>
+                            </select>
                         </div>
                         <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
                     </div>
@@ -291,15 +278,15 @@
                     <div class="summarySection">
                         <div class="summaryRow">
                             <span class="summaryLabel">Total:</span>
-                            <span class="summaryValue" id="totalVehicle"></span>
+                            <span class="summaryValue" id="totalVehicle">$0.00</span>
                         </div>
                         <div class="summaryRow">
                             <span class="summaryLabel">Total abonado:</span>
-                            <span class="summaryValue" id="totalPaid"></span>
+                            <span class="summaryValue" id="totalPaid">$0.00</span>
                         </div>
                         <div class="summaryRow">
                             <span class="summaryLabel">Deuda:</span>
-                            <span class="summaryValue summaryTotal" id="due"></span>
+                            <span class="summaryValue summaryTotal" id="due">$0.00</span>
                         </div>
                     </div>
 
@@ -325,7 +312,10 @@
                     <!-- Action Buttons -->
                     <div class="actionButtons">
                         <button class="btnSecondary" id="btnCreateOrder">Vender y crear orden</button>
-                        <button class="btnPrimary" id="btnSaveSale">Vender</button>
+                        <button class="btnPrimary" id="btnSaveSale">
+                            <span>Vender</span>
+                            <div class="loader hide" id="btnSaveSaleLoader"></div>
+                        </button>
                     </div>
                 </form>
             </div>

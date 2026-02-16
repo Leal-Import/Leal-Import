@@ -72,3 +72,17 @@
         transform: translateY(0) scale(1);
     }
 }
+
+@media screen and (max-width: 500px) {
+    .modalAdd{
+        padding: 40px 20px;
+    }
+
+    .titleModal{
+        font-size: var(--font-size-lg);
+    }
+
+    .lblInputs{
+        font-size: var(--font-size-sm);
+    }
+}

@@ -7,12 +7,13 @@
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/modules/workOrders/workOrdersDetails.css">
     <link rel="stylesheet" href="../css/modules/workOrders/workOrders.css">
-    <link rel="stylesheet" href="../css/utils/cards.css">
+    <link rel="stylesheet" href="../css/utils/showData/cards.css">
     <link rel="stylesheet" href="../css/utils/pagination.css">
-    <link rel="stylesheet" href="../css/utils/table.css">
-    <link rel="stylesheet" href="../css/utils/controls.css">
+    <link rel="stylesheet" href="../css/utils/showData/table.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/globalStyles.css">
     <link rel="stylesheet" href="../css/utils/floatingMenu.css">
+    <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Ordenes</title>
 </head>
 
@@ -20,15 +21,16 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
+            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadCrumbSection">
                     <a class="breadcrumb" href="workOrders.html">Ordenes > </a>
-                    <a class="breadcrumb" id="infoItem">Yamaha ninja</a>
+                    <a class="breadcrumb" id="infoItem">Cargando...</a>
                 </div>
                 <div class="detailsWOSection">
                     <div class="infoItem">
                         <span class="lbl">Vin:</span>
-                        <span class="valueItem" id="vin">aldcndsocew</span>
+                        <span class="valueItem" id="vin">Cargando...</span>
                     </div>
                 </div>
                 <div class="statsSection">
@@ -51,16 +53,19 @@
                 </div>
                 <div class="filterSection">
                     <div class="filtersGroup">
-                        <input type="text" id="txtSearchData" class="txtSearchData"
-                            placeholder="Buscar por Empleado">
+                        <input type="text" id="txtSearchData" class="txtSearchData" placeholder="Buscar por Empleado">
                         <select id="cmbSearchByStatus" class="cmbFilterData">
-                            <option value="">Estado</option>
+                            <option value="">Cargando...</option>
                         </select>
                     </div>
-                    <a id="openModalCustomer" class="btnPrimary btnOpenModal">Añadir</a>
+                    <a id="btnAddOrder" class="btnPrimary btnOpenModal">Añadir</a>
                 </div>
             </div>
             <div class="containerTable">
+                <div class="containerLoader show" style="z-index: 10;" id="loaderWorkOrders">
+                    <div class="loader"></div>
+                    <div>Cargando el historial del vehiculo...</div>
+                </div>
                 <table class="table">
                     <thead>
                         <tr>

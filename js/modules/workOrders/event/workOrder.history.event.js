@@ -1,4 +1,4 @@
-import { $ } from "../../../utils/dom.js"
+import { $ } from "../../../utils/dom.js";
 
 export const initWorkOrderHistoryEvents = ({ onSearchWorkOrderHistory }) => {
     const txtSearch = $("txtSearchData");
@@ -12,10 +12,15 @@ export const initWorkOrderHistoryEvents = ({ onSearchWorkOrderHistory }) => {
             onSearchWorkOrderHistory({
                 search: txtSearch?.value.trim() || '',
                 idStatus: cmbSearchByStatus?.value || ''
-            })
+            });
         }, 1000);
     };
 
-    txtSearch.addEventListener("input", emitFilters);
-    cmbSearchByStatus.addEventListener("change", emitFilters);
-}
+    if (txtSearch) {
+        txtSearch.addEventListener("input", emitFilters);
+    }
+
+    if (cmbSearchByStatus) {
+        cmbSearchByStatus.addEventListener("change", emitFilters);
+    }
+};
