@@ -3,7 +3,7 @@
    ======================================== */
 
 /* Main Grid Layout */
-.content > div + div {
+.gridContent {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: auto auto auto;
@@ -197,15 +197,10 @@ select.txtInputs {
     top: 52%;
     margin: auto;
     padding: 4px 12px;
-    border-radius: 6px;
-    font-weight: 600;
-    background: #e53e3e;
-    color: white;
-    border: none;
-    cursor: pointer;
     transition: all 0.3s ease;
     z-index: 2;
     font-size: var(--font-size-sm) !important;
+    min-width: auto !important;
 }
 
 .btnLink:hover {
@@ -283,4 +278,22 @@ fieldset,
     margin-top: 0;
     align-items: center;
     gap: 8px;
+}
+
+@container content (max-width: 1075px) {
+    .gridContent{
+        grid-template-columns: 1fr;
+    }
+
+    .imgData, .sparePartData, .costsData{
+        grid-column: 1 / 1;
+    }
+
+    .sparePartData{
+        grid-row: 5 / 7;
+    }
+
+    .costsData{
+        grid-row: 7 / 10;
+    }
 }

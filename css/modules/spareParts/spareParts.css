@@ -17,10 +17,6 @@
     font-weight: 500;
 }
 
-.filterSection .btnPrimary{
-    flex: auto !important;
-}
-
 .statValue {
     font-size: 32px;
     font-weight: 700;

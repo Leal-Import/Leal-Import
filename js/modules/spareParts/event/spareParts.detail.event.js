@@ -1,5 +1,4 @@
-import { qsa } from "../../../utils.js";
-import { $ } from "../../../utils/dom.js";
+import { $, qsa } from "../../../utils/dom.js";
 import {
     formatDecimalInput,
     formatOnBlur,

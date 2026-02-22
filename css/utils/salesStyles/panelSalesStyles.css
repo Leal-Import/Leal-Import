@@ -157,6 +157,7 @@
 .actionButtons{
     display: flex;
     gap: 12px;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     font-size: var(--font-size-lg);
@@ -244,4 +245,16 @@
 .lbl {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
+}
+
+@container content (max-width: 550px) {
+    .rightColumn{
+        min-width: 0;
+        padding: 10px;
+    }
+
+    .actionButtons button{
+        flex-grow: 1;
+        flex-basis: 180px;
+    }
 }

@@ -19,6 +19,12 @@
 ═══════════════════════════════════════ */
 
 /* Móviles (< 768px) - Transformar tabla en cards */
+
+@media screen and (max-width: 1025px) {
+    .content{
+        height: fit-content;
+    }
+}
 @container content (max-width: 950px) {
 
     /* Ocultar thead */

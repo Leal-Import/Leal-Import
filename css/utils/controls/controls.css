@@ -14,7 +14,7 @@
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    max-width: 700px;
+    max-width: 60%;
     min-width: 300px;
     flex: 10;
 }
@@ -226,9 +226,6 @@ textarea {
 }
 
 @media screen and (max-width: 600px) {
-    .content {
-        padding: 40px 10px;
-    }
 
     .txtSearchData {
         font-size: var(--font-size-sm);

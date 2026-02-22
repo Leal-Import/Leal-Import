@@ -5,6 +5,7 @@
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     border: 1px solid #F0F0F0;
+    min-height: 400px;
 }
 
 .table {

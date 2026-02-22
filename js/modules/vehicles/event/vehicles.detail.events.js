@@ -1,5 +1,4 @@
-import { qsa } from "../../../utils.js";
-import { $, qs } from "../../../utils/dom.js";
+import { $, qs, qsa } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatYearInput } from "../../../utils/formatters.js";
 
 export function initVehicleDetailEvents({ onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, closeLinkLoteModal, cleanCustomer, onValidateUrl }) {

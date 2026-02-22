@@ -4,6 +4,7 @@
 
 .content {
     flex-direction: row !important;
+    flex-wrap: wrap;
 }
 
 .leftColumn {
@@ -11,6 +12,7 @@
     flex-direction: column;
     flex: 3;
     gap: 20px;
+    flex-basis: 900px;
 }
 
 /* ============================================
@@ -42,6 +44,10 @@
 /* ============================================
    VEHICLE VIEW CONTAINER (OVERLAY)
    ============================================ */
+
+.filterSection {
+    justify-content: space-between;
+}
 
 .viewVechicleContainer {
     padding: 20px 0;
@@ -159,6 +165,7 @@
 
 .mainInfoContainer {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 }
 
@@ -173,7 +180,8 @@
 }
 
 .mainInfoContainer>div {
-    flex: 1;
+    flex-grow: 1;
+    flex-basis: 300px;
 }
 
 .columnInfo h2 {
@@ -337,5 +345,11 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@container content (max-width: 450px){
+    .imagesSection, .vehicleInfo{
+        padding: 0px;
     }
 }

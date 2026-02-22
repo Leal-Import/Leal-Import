@@ -1,4 +1,4 @@
-import { formatWithCommas } from "../../utils.js";
+import { formatWithCommas } from "../../utils/formatters.js";
 import { asUUID, fillForm } from "../../utils/dom.js"
 import { validateImageSize, validateImageType } from "../../utils/images.validators.js";
 import { safeParseFloat } from "../../utils/validators.js";

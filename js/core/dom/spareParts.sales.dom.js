@@ -84,7 +84,7 @@ export function insertSpareParts(
 
 let createBtnAdd = (sparePart, tr, onAddSparePart) => {
     const btnAddSparePart = document.createElement("button");
-    btnAddSparePart.classList.add("btnPrimary", "btnAddItem");
+    btnAddSparePart.classList.add("btnAddItem");
     btnAddSparePart.textContent = "+";
     btnAddSparePart.addEventListener("click", () => onAddSparePart(sparePart, tr));
     return btnAddSparePart;

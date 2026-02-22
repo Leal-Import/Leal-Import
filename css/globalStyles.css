@@ -80,6 +80,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 /* Utilidades */
 
 .show {
@@ -88,4 +89,14 @@
 
 .hide {
     display: none !important;
+}
+
+@media screen and (max-width: 600px) {
+    .content {
+        padding: 40px 10px;
+    }
+
+    body{
+        --font-size-breadcrumb: 1.5em;
+    }
 }

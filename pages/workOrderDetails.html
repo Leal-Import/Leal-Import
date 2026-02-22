@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="../css/utils/pagination.css">
     <link rel="stylesheet" href="../css/utils/showData/table.css">
     <link rel="stylesheet" href="../css/utils/controls/controls.css">
-    <link rel="stylesheet" href="../css/globalStyles.css">
     <link rel="stylesheet" href="../css/utils/floatingMenu.css">
     <link rel="stylesheet" href="../css/utils/loader.css">
     <title>Ordenes</title>
@@ -46,18 +45,16 @@
                         <p class="statTitle">Atrasadas</p>
                         <h2 class="statValue" id="delayed">0</h2>
                     </div>
-                    <div class="statItem totalSales" style="flex: 2;">
+                    <div class="statItem totalSales">
                         <p class="statTitle statValue">Facturado</p>
                         <h2 class="statValue" id="totalOrdersQuantity">$283,384,384.93</h2>
                     </div>
                 </div>
                 <div class="filterSection">
-                    <div class="filtersGroup">
-                        <input type="text" id="txtSearchData" class="txtSearchData" placeholder="Buscar por Empleado">
-                        <select id="cmbSearchByStatus" class="cmbFilterData">
-                            <option value="">Cargando...</option>
-                        </select>
-                    </div>
+                    <input type="text" id="txtSearchData" class="txtSearchData" placeholder="Buscar por Empleado">
+                    <select id="cmbSearchByStatus" class="cmbFilterData">
+                        <option value="">Cargando...</option>
+                    </select>
                     <a id="btnAddOrder" class="btnPrimary btnOpenModal">Añadir</a>
                 </div>
             </div>
@@ -78,8 +75,7 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="woDetailsTBody">
-                    </tbody>
+                    <tbody id="woDetailsTBody"></tbody>
                 </table>
             </div>
             <div class="paginationContainer">
