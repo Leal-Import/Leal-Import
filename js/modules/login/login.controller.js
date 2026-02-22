@@ -1,0 +1,239 @@
+'use strict'
+
+import { changePasswordType, cleanAuthCamps, clearPasswodPamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType } from "../../core/dom/login.dom.js";
+import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown, validatePassword } from "../../core/logic/login.logic.js";
+import { loginState } from "../../core/state/login.state.js";
+import { login, resetPassword, verifyEmail, verifyPIN } from "../../service/login.service.js";
+import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
+import { isValidEmail } from "../../utils/validators.js";
+import { initLoginEvents } from "./login.event.js";
+
+
+const onTogglePassword = () => {
+    const icon = DOMRefs.refs.togglePassword.querySelector("i");
+    changeStyleIconPassword(icon, loginState);
+    if (DOMRefs.refs.passwordInput.type === 'password') {
+        resetInputType(DOMRefs.refs.passwordInput, icon);
+    } else {
+        changePasswordType(DOMRefs.refs.passwordInput, icon);
+    }
+}
+
+const onBackHome = (e) => {
+    e.preventDefault();
+    hideAllModals();
+    window.location.href = '/index.html';
+}
+
+const onOpenModalRecovery = (e) => {
+    e.preventDefault();
+    toggleModal(DOMRefs.refs.modalRecovery, true);
+}
+
+const onCloseModalRecovery = () => {
+    toggleModal(DOMRefs.refs.modalRecovery, false);
+}
+
+const onOpenAuthEmail = (e) => {
+    e.preventDefault();
+    toggleModal(DOMRefs.refs.modalRecovery, false);
+    toggleModal(DOMRefs.refs.modalAuth, true);
+}
+
+const onCloseAuthEmail = () => {
+    toggleModal(DOMRefs.refs.modalAuth, false);
+    toggleModal(DOMRefs.refs.modalRecovery, true);
+    cleanAuthCamps(DOMRefs.refs.authSuccess, DOMRefs.refs.authEmail);
+}
+
+const onClosePin = () => {
+    toggleModal(DOMRefs.refs.modalCode, false);
+    toggleModal(DOMRefs.refs.modalRecovery, true);
+    clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
+    DOMRefs.refs.codeDigits.forEach(i => i.value = '');
+
+    toggleModal(DOMRefs.refs.modalCode, false);
+    toggleModal(DOMRefs.refs.modalAuth, false);
+    toggleModal(DOMRefs.refs.modalRecovery, true);
+}
+
+const onCloseNewPassword = () => {
+    toggleModal(DOMRefs.refs.modalNewPassword, false);
+}
+
+const onSubmitLogin = async (e) => {
+    e.preventDefault();
+
+    const credentials = DOMRefs.refs.txtUserOrEmail.value;
+    const password = DOMRefs.refs.txtPassword.value;
+
+    if (!credentials.trim() || !password.trim()) {
+        showMessage("Advertencia", "Campos incompletos", "warning");
+        return;
+    }
+
+    disableElement(DOMRefs.refs.btnLogin);
+    showElement(DOMRefs.refs.btnLoginLoader);
+
+    try {
+        await login(credentials, password);
+        await showMessage("Bienvenido", `Hola, ${credentials.trim()}`, "success", true);
+        localStorage.setItem("navItem", "dashItem");
+        window.location.href = 'dashboard.html';
+    } catch (error) {
+        let title = 'Error';
+        let text = error?.message || 'Ocurrió un error';
+
+        if (text.includes("401") || text.toLowerCase().includes("credenciales")) {
+            title = "Usuario no encontrado";
+            text = "Credenciales inválidas. Inténtalo de nuevo.";
+        }
+        await showMessage(title, text, "error");
+    } finally {
+        removeDisable(DOMRefs.refs.btnLogin);
+        hideElement(DOMRefs.refs.btnLoginLoader);
+    }
+}
+
+const onAuthEmail = async (e) => {
+    e.preventDefault();
+
+    if (loginState.flags.pendingSend) return;
+    const email = DOMRefs.refs.authEmail.value.trim().toLowerCase();
+    if (!isValidEmail(email)) {
+        showMessage("Advertencia", "Email invalido", "warning");
+        return;
+    }
+
+    loginState.flags.pendingSend = true;
+    disableElement(DOMRefs.refs.authPrimaryBtn);
+    showElement(DOMRefs.refs.btnAuthSendLoader);
+    try {
+        const data = await verifyEmail(email);
+        loginState.auth.resetId = data?.resetId || '';
+
+        if (!loginState.auth.resetId) showMessage("Error", "El servidor no respondio correctamente,", "error");
+        const minutes = (typeof data?.minutes === 'number') ? data.minutes : 15;
+
+        await showMessage("Enlace enviado", `Se ha enviado un mensaje al correo ${maskEmailSimple(email)}.`, true);
+
+        loginState.auth.email = email;
+
+        toggleModal(DOMRefs.refs.modalAuth, false);
+        toggleModal(DOMRefs.refs.modalCode, true);
+        renderMaskedEmail(email);
+        startCountdown(minutes, loginState, DOMRefs.refs.modalCodeBody);
+        focusFirstCodeInput(DOMRefs.refs.codeDigits);
+    } catch (error) {
+        await showMessage("Error", error?.message || 'Error al verificar el correo', "error");
+    } finally {
+        loginState.flags.pendingSend = false;
+        removeDisable(DOMRefs.refs.authPrimaryBtn);
+        hideElement(DOMRefs.refs.btnAuthSendLoader);
+    }
+}
+
+const onSendCode = async (e) => {
+    e.preventDefault();
+
+    if (loginState.flags.pendingVerify) return;
+    const code = DOMRefs.refs.codeDigits.map(i => i.value).join('');
+
+    if (code.length !== DOMRefs.refs.codeDigits.length) {
+        await showMessage("Código incompleto", "Ingresa el código completo.", "warning");
+        return;
+    }
+
+    if (!loginState.auth.email || !loginState.auth.resetId) {
+        await showMessage("Sesión inválida", "Reinicia el proceso y solicita un nuevo correo.", "error");
+        clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
+        return;
+    }
+
+    loginState.flags.pendingVerify = true;
+    disableElement(DOMRefs.refs.btnCodeContinue);
+    showElement(DOMRefs.refs.btnCodeContinueLoader);
+
+    try {
+        const data = await verifyPIN(loginState.auth.resetId, loginState.auth.email, code);
+        loginState.auth.ticket = data?.ticket || '';
+        if (!loginState.auth.ticket) {
+            throw new Error('No se recibió ticket. Revisa el endpoint /verify.');
+        }
+        toggleModal(DOMRefs.refs.modalCode, false);
+        toggleModal(DOMRefs.refs.modalNewPassword, true);
+        clearCountdown(loginState, DOMRefs.refs.modalCodeBody);
+    } catch (error) {
+        await showMessage("Codigo invalido", err?.message || 'No se pudo verificar el código.', "error");
+        focusFirstCodeInput(DOMRefs.refs.codeDigits);
+    } finally {
+        loginState.flags.pendingVerify = false;
+        removeDisable(DOMRefs.refs.btnCodeContinue);
+        hideElement(DOMRefs.refs.btnCodeContinueLoader);
+    }
+}
+
+const onUpdatePassword = async () => {
+    if (loginState.flags.pendingUpdate) return;
+
+    const newPass = DOMRefs.refs.newPassword?.value?.trim() ?? '';
+    const confirmPass = DOMRefs.refs.confirmPassword?.value?.trim() ?? '';
+
+    if (!newPass || !confirmPass) {
+        await showMessage("Campos incompletos", "Por favor, completa ambos campos.", "warning");
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        await showMessage("Contraseñas no coinciden", "Las contraseñas ingresadas no coinciden.", "warning");
+        return;
+    }
+
+    const invalidate = validatePassword(newPass);
+    if (invalidate) {
+        await showMessage("Advertencia", invalidate, "warning");
+        return;
+    }
+
+    if (!loginState.auth.ticket) {
+        await showMessage("Sesión inválida", "No hay ticket de confirmación. Verifica el código nuevamente.", "error");
+        return;
+    }
+
+    loginState.flags.pendingUpdate = true;
+    disableElement(DOMRefs.refs.btnUpdatePassword);
+    showElement(DOMRefs.refs.btnUpdatePasswordLoader);
+
+    try {
+        await resetPassword(loginState.auth.ticket, newPass);
+        await showMessage("Contraseña actualizada", "Tu contraseña ha sido actualizada correctamente. Inicia sesión con tu nueva contraseña.", "success");
+        clearPasswodPamps(DOMRefs.refs.newPassword, DOMRefs.refs.confirmPassword);
+        toggleModal(DOMRefs.refs.modalNewPassword, false);
+        clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
+
+    } catch (error) {
+
+        await showMessage("Error", error?.message || 'No se pudo actualizar la contraseña', "error");
+
+    } finally {
+        loginState.flags.pendingUpdate = true;
+        removeDisable(DOMRefs.refs.btnCodeContinue);
+        hideElement(DOMRefs.refs.btnCodeContinueLoader);
+    }
+}
+
+const initializeUI = (Refs) => {
+    initLoginEvents({ Refs, onTogglePassword, onBackHome, onOpenModalRecovery, onCloseModalRecovery, onOpenAuthEmail, onCloseAuthEmail, onClosePin, onCloseNewPassword, onSubmitLogin, onAuthEmail, onSendCode, onUpdatePassword });
+    initDigitInputs(Refs.codeDigits);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        DOMRefs.init();
+
+        initializeUI(DOMRefs.refs);
+    } catch (error) {
+        console.error('Error inicializando la aplicación: ', error);
+        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+    }
+});

@@ -5,7 +5,7 @@ import {
   verifyEmail,
   verifyPIN,
   resetPassword
-} from "../service/serviceLogin.js";
+} from "../service/login.service.js";
 
 // ---------- Background image ----------
 const lealBg = document.getElementById('RiskorBackground');
@@ -28,7 +28,7 @@ if (lealBg) {
 
 // ---------- Elements ----------
 const frmLogin = document.getElementById('formLogin');
-const loginButton = frmLogin?.querySelector('.loginButton');
+const loginButton = frmLogin?.querySelector('.formLogin');
 
 // flags
 let pendingUpdate = false;
@@ -522,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function () {
     inputs[0].focus();
   }
 
-  function maskEmailSimple(email) {
+  function          maskEmailSimple(email) {
     if (!email) return '';
     const parts = email.split('@');
     if (parts.length !== 2) return email;
