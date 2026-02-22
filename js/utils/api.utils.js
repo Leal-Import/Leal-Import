@@ -1,4 +1,4 @@
-import { getAuthMe } from '../service/serviceLogin.js';
+import { getAuthMe } from '../service/login.service.js';
 import { showMessage } from './dom.js';
 
 let currentUser = null;

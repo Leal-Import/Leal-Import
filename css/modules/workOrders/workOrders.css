@@ -1,6 +1,6 @@
 .statsSection {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -12,6 +12,8 @@
 
 .statItem {
     background: white;
+    flex: 1;
+    flex-basis: 225px;
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -65,7 +67,6 @@
 
 .totalSales {
     border-left-color: #3b82f6;
-    grid-column: span 2;
 }
 
 .totalSales::before {
@@ -89,28 +90,6 @@
     line-height: 1.2;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .statsSection {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-    }
-    
-    .statItem {
-        padding: 20px;
-    }
-    
-    .statValue {
-        font-size: 24px;
-    }
-}
-
-@media (max-width: 480px) {
-    .statsSection {
-        grid-template-columns: 1fr;
-    }
-}
-
 .statTitle {
     font-size: var(--font-size-base);
 }
@@ -120,14 +99,8 @@
     font-size: var(--font-size-title);
 }
 
-.filtersGroup {
-    display: flex;
-    gap: 10px;
-    flex: 1;
-}
-
 .totalSales {
-    flex: 2;
+    flex-grow: 2;
 }
 
 .cardContainer {

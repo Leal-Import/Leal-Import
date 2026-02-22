@@ -4,9 +4,9 @@ import { insertSales, selectLineButton, openAskModal, closeAskModal, DOMRefs } f
 import { salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
-import { fillSelect, showMessage } from "../../utils.js";
+import { fillSelect, showMessage } from "../../utils/dom.js";
 import { initSession } from "../../utils/api.utils.js";
-import { hideElement, qs, showElement } from "../../utils/dom.js";
+import { hideElement, showElement } from "../../utils/dom.js";
 import { initSalesEvents } from "./sales.event.js";
 
 /* ===============================
