@@ -219,7 +219,6 @@ const initializeUI = () => {
 
 const loadDataFlow = async () => {
     await Promise.all([loadRoles(), loadEmployees()]);
-
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

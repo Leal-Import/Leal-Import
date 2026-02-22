@@ -7,11 +7,13 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/login.css">
     <link rel="shortcut icon" href="../media/icon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../css/utils/loader.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <title>Login</title>
 </head>
 
 <body>
-    <div id="RiskorBackground"></div>
+    <div id="loginBackground"></div>
     <button type="button" id="btnBackHome" class="backHomeCorner" aria-label="Volver al inicio">
         <i class='bx bx-home'></i>
     </button>
@@ -44,7 +46,10 @@
                 <div class="authSuccess">
                 </div>
                 <div class="authBtns">
-                    <button id="btnAuthSend" class="btnPrimary">Listo</button>
+                    <button id="btnAuthSend" class="btnPrimary">
+                        <span>Listo</span>
+                        <div class="loader hide" id="btnAuthSendLoader"></div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -62,7 +67,10 @@
             <input type="password" id="confirmPassword" class="formControl" placeholder="Confirmar nueva contraseña" />
 
             <div class="modalActions">
-                <button type="button" class="btnPrimary" id="btnUpdatePassword">Listo</button>
+                <button type="button" class="btnPrimary" id="btnUpdatePassword">
+                    <span>Listo</span>
+                    <div class="loader hide" id="btnUpdatePasswordLoader"></div>
+                </button>
             </div>
         </div>
     </div>
@@ -90,8 +98,10 @@
                     <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
                     <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
                 </div>
-                <button class="btnPrimary" id="btnCodeContinue" type="button"
-                    style="background:#7884ED; color:#fff;">Listo</button>
+                <button class="btnPrimary" id="btnCodeContinue" type="button" style="background:#7884ED; color:#fff;">
+                    <span>Listo</span>
+                    <div class="loader hide" id="btnCodeContinueLoader"></div>
+                </button>
             </div>
         </div>
     </div>
@@ -102,15 +112,18 @@
                 <img src="../media/RiskorLanding.svg" alt="Leal Import icon" class="riskorIcon">
                 <div class="inputBox">
                     <span class="icon"><i class='bx bx-user'></i></span>
-                    <input type="text" id="userInput" required>
+                    <input type="text" id="txtUserOrEmail" required>
                     <label>Usuario o correo electrónico</label>
                 </div>
                 <div class="inputBox">
                     <span class="icon togglePassword"><i class='bx bx-hide'></i></span>
-                    <input type="password" id="passwordInput" required>
+                    <input type="password" id="txtPassword" required>
                     <label>Contraseña</label>
                 </div>
-                <button type="submit" class="loginButton" style="margin: 30px 0 10px 0;">Iniciar Sesión</button>
+                <button type="submit" class="loginButton btnPrimary" id="btnLogin" style="margin: 30px 0 10px 0;">
+                    <span>Iniciar Sesión</span>
+                    <div class="loader hide" id="btnLoginLoader"></div>
+                </button>
                 <div class="forgotPassword">
                     <p><a href="#" id="openModalRecovery">Olvidé mi contraseña</a></p>
                 </div>
@@ -120,7 +133,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/service/serviceLogin.js"></script>
-    <script type="module" src="../js/controller/controllerLogin.js"></script>
+    <script type="module" src="../js/modules/login/login.controller.js"></script>
 </body>
+
 </html>

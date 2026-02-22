@@ -11,9 +11,9 @@ export const DOMRefs = {
             employeesTableBody: $('employeesTableBody'),
             modalEmployees: $('modalEmployees'),
             frmEmployees: $('frmEmployees'),
-            loaderEmployees: $("loaderEmployees"),
-            btnAddEmployeeLoader: $("btnAddEmployeeLoader"),
-            btnAddEmployee: $("btnAddEmployee")
+            formLogin: qs(".formLogin"),
+            userInput: $("userInput"),
+            passwordInput: $("passwordInput")
         };
         return this.refs;
     }
