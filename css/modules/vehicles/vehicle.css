@@ -110,11 +110,11 @@
 }
 
 .totalSales .statTitle {
-    color: var(--text-color);
+    color: #FFF;
 }
 
 .totalSales .statValue {
-    color: var(--text-color);
+    color: #FFF;
     font-size: var(--font-size-title);
 }
 

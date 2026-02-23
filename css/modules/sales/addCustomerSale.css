@@ -130,6 +130,7 @@
     background-color: var(--bg-color-white);
     border-radius: 10px;
     transition: all 0.3s;
+    border: var(--border);
 }
 
 .customer:hover .customerInfoRow {
@@ -229,7 +230,7 @@
     font-size: var(--font-size-sh);
     font-weight: var(--font-weight-semibold);
     background: rgba(255, 255, 255, 0.25);
-    color: var(--text-color);
+    color: #FFF;
     backdrop-filter: blur(10px);
     text-transform: uppercase;
     letter-spacing: 0.5px;

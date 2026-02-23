@@ -91,7 +91,7 @@ fieldset:hover,
 }
 
 #placeholderMsg {
-    color: var(--text-color);
+    color: #FFF;
     font-size: var(--font-size-base);
     padding: 30px;
     text-align: center;

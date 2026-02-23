@@ -11,6 +11,7 @@
 
 .infoItem {
     font-size: var(--font-size-lg);
+    color: var(--text-color);
 }
 
 .lbl {

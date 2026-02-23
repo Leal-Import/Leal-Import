@@ -472,7 +472,7 @@ body:not(.sidebar-ready) {
     font-size: var(--font-size-title);
     cursor: pointer;
     padding: 8px;
-    color: var(--nav-text);
+    color: var(--text-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -491,7 +491,7 @@ body:not(.sidebar-ready) {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     letter-spacing: -0.02em;
-    color: var(--nav-text);
+    color: var(--text-color);
 }
 
 .mobileHeaderLogo span {

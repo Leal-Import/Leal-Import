@@ -67,7 +67,7 @@
 
 .btnPrimary {
     background-color: var(--danger-color);
-    color: var(--text-color);
+    color: #FFF;
     border: none;
     border-radius: var(--border-radius-btn);
     font-weight: var(--font-weight-medium);
@@ -118,7 +118,7 @@
     white-space: nowrap;
     position: relative;
     overflow: hidden;
-    color: var(--text-color);
+    color: #FFF;
 }
 
 .btnOpenModal::before {

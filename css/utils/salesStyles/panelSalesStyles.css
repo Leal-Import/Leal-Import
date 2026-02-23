@@ -124,7 +124,7 @@
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
     border-radius: 12px;
     margin-bottom: 20px;
-    color: var(--text-color);
+    color: #FFF;
 }
 
 .summaryRow {

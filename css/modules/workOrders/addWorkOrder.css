@@ -279,7 +279,7 @@
     border-radius: var(--border-radius-btn);
     background-color: var(--danger-color);
     border: none;
-    color: var(--bg-color-white);
+    color: var(--text-color);
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.5px;

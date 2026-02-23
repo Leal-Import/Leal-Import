@@ -7,6 +7,7 @@
     border: 1px solid #F0F0F0;
     height: fit-content;
     padding-bottom: 10px;
+    min-height: 400px;
 }
 
 .table {
