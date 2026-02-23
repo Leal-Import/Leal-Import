@@ -33,6 +33,7 @@
     font-weight: var(--font-weight-medium);
     cursor: pointer;
     color: var(--text-color-secondary);
+    background-color: var(--bg-color-white);
 }
 
 /* Lado derecho */

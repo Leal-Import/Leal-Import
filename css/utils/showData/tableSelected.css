@@ -20,7 +20,7 @@
 
 /* Header de la tabla */
 .tableSelected thead {
-    background: linear-gradient(135deg, #f8f9fa 0%, #f3f4f6 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
 }
 
 .tableSelected thead th {

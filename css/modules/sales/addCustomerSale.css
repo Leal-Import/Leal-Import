@@ -127,13 +127,17 @@
     align-items: center;
     gap: 12px;
     padding: 12px;
-    background: #f7fafc;
+    background-color: var(--bg-color-white);
     border-radius: 10px;
     transition: all 0.3s;
 }
 
 .customer:hover .customerInfoRow {
-    background: #e6f2ff;
+    background-color: var(--bg-color-white);
+}
+
+.customerBody{
+    background-color: var(--bg-color);
 }
 
 .infoIcon {
@@ -169,7 +173,7 @@
 
 .dui,
 .phone {
-    color: #1a202c;
+    color: var(--text-color);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     text-decoration: none;
@@ -225,7 +229,7 @@
     font-size: var(--font-size-sh);
     font-weight: var(--font-weight-semibold);
     background: rgba(255, 255, 255, 0.25);
-    color: var(--bg-color-white);
+    color: var(--text-color);
     backdrop-filter: blur(10px);
     text-transform: uppercase;
     letter-spacing: 0.5px;

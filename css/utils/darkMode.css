@@ -27,6 +27,10 @@
     --border: 1px solid #3a3632;
 }
 
+.dark-mode body{
+    background-color: var(--bg-color);
+}
+
 /* ═══════════════════════════════════════
    AJUSTES ESPECÍFICOS
    Solo cuando necesites override de estilos

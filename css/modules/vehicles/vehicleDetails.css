@@ -31,7 +31,7 @@
 }
 
 .cardHeader {
-    background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     padding: 20px 28px;
     width: 100%;
     border-bottom: 2px solid var(--danger-color);
@@ -54,7 +54,7 @@ fieldset.formCard {
 }
 
 fieldset legend {
-    background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     padding: 20px 28px;
     margin: 0;
     width: 100%;
@@ -142,14 +142,6 @@ fieldset .cardBody {
 
 .costsSummary .txtInputs {
     font-weight: var(--font-weight-semibold);
-    font-size: var(--font-size-base);
-}
-
-#txtTotal {
-    background: linear-gradient(135deg, #FFF5F5 0%, #FFEAEA 100%);
-    border-color: var(--danger-color);
-    color: var(--danger-color);
-    font-weight: var(--font-weight-bold);
     font-size: var(--font-size-base);
 }
 
@@ -323,7 +315,7 @@ fieldset .cardBody {
 .no-image-container {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     border: 3px dashed #CCCCCC;
     border-radius: 12px;
     display: flex;
@@ -358,14 +350,18 @@ fieldset .cardBody {
     border-radius: 16px;
     padding: 40px;
     text-align: center;
-    background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .dropArea:hover {
     border-color: var(--danger-color);
-    background: linear-gradient(135deg, #FFF5F5 0%, #FFEAEA 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
+}
+
+#uploadDropText{
+    color: var(--text-color);
 }
 
 .dropContent {

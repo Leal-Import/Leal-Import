@@ -170,7 +170,7 @@
 .rowCosts .lblInfo {
     background-color: transparent;
     border-bottom: none;
-    color: var(--bg-color-white);
+    color: var(--text-color);
     font-size: var(--font-size-sh);
     padding: 0;
     text-transform: uppercase;
@@ -179,7 +179,7 @@
 
 .rowCosts .valueInfo {
     background-color: transparent;
-    color: var(--bg-color-white);
+    color: var(--text-color);
     font-size: var(--font-size-title-lg);
     font-weight: var(--font-weight-semibold);
     padding: 0;

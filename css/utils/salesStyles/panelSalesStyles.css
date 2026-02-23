@@ -50,7 +50,7 @@
 
 .subtitlePanel {
     font-size: var(--font-size-sm);
-    color: var(--text-secondary);
+    color: var(--text-color-secondary);
 }
 
 .paymentForm {
@@ -58,7 +58,7 @@
     flex-direction: column;
     gap: 16px;
     padding: 16px;
-    background: #f7fafc;
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     border-radius: 12px;
 }
 
@@ -124,7 +124,7 @@
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
     border-radius: 12px;
     margin-bottom: 20px;
-    color: var(--bg-color-white);
+    color: var(--text-color);
 }
 
 .summaryRow {

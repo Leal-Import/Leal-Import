@@ -18,6 +18,7 @@
     max-width: 60%;
     min-width: 300px;
     flex: 10;
+    color: var(--text-color);
 }
 
 .filterSection {
@@ -192,6 +193,7 @@
     font-size: var(--font-size-sm);
     transition: all 0.3s ease;
     background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .txtInputs:focus {

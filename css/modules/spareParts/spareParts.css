@@ -138,6 +138,10 @@
     gap: 4px;
 }
 
+.statusPart{
+    color: var(--text-color);
+}
+
 .partPrice {
     font-size: var(--font-size-title);
     font-weight: var(--font-weight-bold);

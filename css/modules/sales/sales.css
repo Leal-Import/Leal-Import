@@ -64,7 +64,9 @@
     height: 190px;
     border-radius: 15px;
     position: relative;
+    color: var(--text-color);
 }
+
 
 .containerImgSale {
     height: 100%;
@@ -256,6 +258,10 @@
     color: var(--danger-color);
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-title);
+}
+
+.subtitleModal{
+    color: var(--text-color);
 }
 
 .containerOptions {

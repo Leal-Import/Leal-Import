@@ -233,7 +233,7 @@
 }
 
 .suggestedItem {
-    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     padding: 14px 16px;
     border-radius: 8px;
     border: 1px solid #ffcdd2;
