@@ -1,10 +1,10 @@
-
 /* Main Grid - 2 Column Layout */
 .wrapper {
     display: flex;
     gap: 30px;
     margin-bottom: 2em;
     max-width: 100%;
+    flex-wrap: wrap;
 }
 
 .leftColumn {
@@ -31,14 +31,14 @@
 }
 
 .cardHeader {
-    background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     padding: 20px 28px;
     width: 100%;
     border-bottom: 2px solid var(--danger-color);
 }
 
 .cardHeader h3 {
-    font-size: 1.3em;
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--text-color);
     margin: 0;
@@ -54,11 +54,11 @@ fieldset.formCard {
 }
 
 fieldset legend {
-    background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     padding: 20px 28px;
     margin: 0;
     width: 100%;
-    font-size: 1.3em;
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--text-color);
     border-bottom: 2px solid var(--danger-color);
@@ -99,7 +99,7 @@ fieldset .cardBody {
     padding: 2px 14px;
     font-size: var(--font-size-sm) !important;
     border-radius: 8px;
-    font-size: 0.85em;
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     box-shadow: 0 2px 8px rgba(211, 24, 19, 0.2);
     transition: all 0.2s ease;
@@ -142,15 +142,7 @@ fieldset .cardBody {
 
 .costsSummary .txtInputs {
     font-weight: var(--font-weight-semibold);
-    font-size: 1.1em;
-}
-
-#txtTotal {
-    background: linear-gradient(135deg, #FFF5F5 0%, #FFEAEA 100%);
-    border-color: var(--danger-color);
-    color: var(--danger-color);
-    font-weight: var(--font-weight-bold);
-    font-size: 1.2em;
+    font-size: var(--font-size-base);
 }
 
 /* Images Section */
@@ -167,13 +159,13 @@ fieldset .cardBody {
     height: 100%;
 }
 
-.vehicleImagesSection > div {
+.vehicleImagesSection>div {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.vehicleImagesSection{
+.vehicleImagesSection {
     max-width: 100%;
     height: 100%;
 }
@@ -187,12 +179,12 @@ fieldset .cardBody {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
-#mainSwiperWrapper{
+#mainSwiperWrapper {
     height: 100%;
     width: 100%;
 }
 
-#mainSwiperWrapper .swiper-slide{
+#mainSwiperWrapper .swiper-slide {
     height: 100%;
     width: 100%;
 }
@@ -220,8 +212,8 @@ fieldset .cardBody {
 
 .swiper-button-prev:after,
 .swiper-button-next:after {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
 }
 
 /* Thumbnails */
@@ -278,7 +270,7 @@ fieldset .cardBody {
     background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
     border: 2px dashed var(--helper-color);
     color: var(--danger-color);
-    font-size: 2em;
+    font-size: var(--font-size-breadcrumb);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -298,8 +290,8 @@ fieldset .cardBody {
     right: 4px;
     width: 24px;
     height: 24px;
-    background: rgba(211, 24, 19, 0.95);
-    color: white;
+    background-color: var(--danger-color);
+    color: var(--bg-color-white);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -307,8 +299,8 @@ fieldset .cardBody {
     cursor: pointer;
     opacity: 0;
     transition: all 0.3s ease;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-bold);
 }
 
 .thumb-box:hover .thumb-delete {
@@ -323,7 +315,7 @@ fieldset .cardBody {
 .no-image-container {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     border: 3px dashed #CCCCCC;
     border-radius: 12px;
     display: flex;
@@ -335,8 +327,8 @@ fieldset .cardBody {
 }
 
 .no-image-icon {
-    font-size: 3.5em;
-    color: #CCCCCC;
+    font-size: var(--font-size-breadcrumb);
+    color: var(--bg-color);
 }
 
 
@@ -346,26 +338,30 @@ fieldset .cardBody {
 }
 
 .txtInputs.error {
-    border-color: #dc2626;
+    border-color: var(--danger-color);
 }
 
 .txtInputs.success {
-    border-color: #16a34a;
+    border-color: var(--success-color);
 }
 
 .dropArea {
-    border: 3px dashed #CCCCCC;
+    border: 3px dashed var(--bg-color);
     border-radius: 16px;
     padding: 40px;
     text-align: center;
-    background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .dropArea:hover {
     border-color: var(--danger-color);
-    background: linear-gradient(135deg, #FFF5F5 0%, #FFEAEA 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
+}
+
+#uploadDropText{
+    color: var(--text-color);
 }
 
 .dropContent {
@@ -380,7 +376,7 @@ fieldset .cardBody {
 }
 
 .dropHint {
-    font-size: 0.9em;
+    font-size: var(--font-size-sm);
     color: var(--text-color-secondary);
 }
 
@@ -390,6 +386,7 @@ fieldset .cardBody {
     border-radius: 12px;
     font-weight: var(--font-weight-semibold);
 }
+
 /* Footer Options */
 .containerOptions {
     display: flex;
@@ -443,11 +440,11 @@ fieldset .cardBody {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background: var(--danger-color);
 }
 
-input:checked + .slider::before {
+input:checked+.slider::before {
     transform: translate(28px, -50%);
 }
 
@@ -458,7 +455,7 @@ input:checked + .slider::before {
     gap: 8px;
 }
 
-.bodyModal{
+.bodyModal {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -468,12 +465,42 @@ input:checked + .slider::before {
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #2e7d32;
-    font-size: 0.85rem;
+    color: var(--dark-success-color);
+    font-size: var(--font-size-sm);
     margin-top: 4px;
 }
+
 .statusSuccess svg {
     width: 14px;
     height: 14px;
     stroke-width: 3;
+}
+
+
+@container content (max-width: 1200px) {
+    .wrapper {
+        flex-direction: column-reverse;
+    }
+
+    .leftColumn {
+        width: 100%;
+    }
+
+    .imgData {
+        width: 100%;
+        position: static;
+        height: fit-content;
+    }
+}
+
+@container content (max-width: 430px) {
+    .containerOptions {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btnSubmitData {
+        align-self: auto !important;
+    }
 }

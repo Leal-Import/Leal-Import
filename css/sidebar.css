@@ -127,8 +127,8 @@ body:not(.sidebar-ready) {
 
 .logoWordmark {
     font-family: var(--font-text);
-    font-size: 15px;
-    font-weight: 700;
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-bold);
     letter-spacing: -0.02em;
     color: var(--nav-text);
     white-space: nowrap;
@@ -207,8 +207,8 @@ body:not(.sidebar-ready) {
 
 .navSectionLabel {
     font-family: var(--font-text);
-    font-size: 0.62em;
-    font-weight: 600;
+    font-size: var(--font-size-very-sh);
+    font-weight: var(--font-weight-semibold);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--nav-section-txt);
@@ -248,8 +248,8 @@ body:not(.sidebar-ready) {
     border-radius: var(--nav-radius);
     color: var(--nav-text-muted);
     font-family: var(--font-text);
-    font-size: 0.9em;
-    font-weight: 500;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     white-space: nowrap;
     overflow: hidden;
     cursor: pointer;
@@ -339,8 +339,8 @@ body:not(.sidebar-ready) {
     border: 1px solid var(--nav-border);
     color: var(--nav-text);
     font-family: var(--font-text);
-    font-size: 0.76em;
-    font-weight: 500;
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-medium);
     padding: 5px 12px;
     border-radius: 6px;
     box-shadow: var(--nav-shadow);
@@ -391,8 +391,8 @@ body:not(.sidebar-ready) {
     place-items: center;
     flex-shrink: 0;
     font-family: var(--font-text);
-    font-size: 13px;
-    font-weight: 700;
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-bold);
     color: #fff;
     box-shadow: 0 2px 8px var(--nav-accent-glow);
 }
@@ -407,8 +407,8 @@ body:not(.sidebar-ready) {
 
 .userName {
     font-family: var(--font-text);
-    font-size: 0.8em;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     color: var(--nav-text);
     white-space: nowrap;
     overflow: hidden;
@@ -417,7 +417,7 @@ body:not(.sidebar-ready) {
 
 .userRole {
     font-family: var(--font-text);
-    font-size: 0.7em;
+    font-size: var(--font-size-sh);
     color: var(--nav-text-muted);
     white-space: nowrap;
 }
@@ -469,10 +469,10 @@ body:not(.sidebar-ready) {
 .menuToggle {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: var(--font-size-title);
     cursor: pointer;
     padding: 8px;
-    color: var(--nav-text);
+    color: var(--text-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -488,10 +488,10 @@ body:not(.sidebar-ready) {
 
 .mobileHeaderLogo {
     font-family: var(--font-text);
-    font-size: 18px;
-    font-weight: 700;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
     letter-spacing: -0.02em;
-    color: var(--nav-text);
+    color: var(--text-color);
 }
 
 .mobileHeaderLogo span {

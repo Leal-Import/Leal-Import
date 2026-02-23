@@ -10,9 +10,11 @@
     <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/utils/suggestions.css">
     <link rel="stylesheet" href="../css/utils/modals/modal.css">
-    <link rel="stylesheet" href="../css/globalStyles.css">
     <link rel="stylesheet" href="../css/utils/modals/modalLinkExtra.css">
     <link rel="stylesheet" href="../css/utils/loader.css">
+    <link rel="stylesheet" href="../css/utils/darkMode.css">
+
+    <script src="../js/utils/dark.mode.init.js"></script>
     <title>Vehiculos</title>
 </head>
 
@@ -186,10 +188,11 @@
                     </div>
 
                     <!-- Costs Card -->
-                    <fieldset class="costsData formCard">
-                        <legend>Costos de importación</legend>
+                    <div class="vehicleData formCard">
+                        <div class="cardHeader">
+                            <h3>Galería de imágenes</h3>
+                        </div>
                         <div class="cardBody">
-
                             <div class="rowFields">
                                 <div class="formGroup">
                                     <label for="txtBill" class="lblInputs">Factura</label>
@@ -258,7 +261,7 @@
                                 </div>
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
                 </div>
 
                 <!-- Right Column - Images -->

@@ -3,7 +3,7 @@
    ======================================== */
 
 /* Main Grid Layout */
-.content > div + div {
+.gridContent {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: auto auto auto;
@@ -13,9 +13,9 @@
 
 /* Fieldsets & Containers */
 legend {
-    font-size: 18px;
-    color: #1a202c;
-    font-weight: 700;
+    font-size: var(--font-size-lg);
+    color: var(--text-color);
+    font-weight: var(--font-weight-bold);
     padding: 0 12px;
     margin-bottom: 4px;
 }
@@ -25,7 +25,7 @@ fieldset,
     padding: 24px;
     border: none;
     border-radius: 16px;
-    background: white;
+    background-color: var(--bg-color-white);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
@@ -83,23 +83,19 @@ fieldset:hover,
 }
 
 .containerImgPart:hover {
-    border-color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.15);
     transform: scale(1.02);
 }
 
 .containerImgPart.dragover {
-    border-color: rgba(255, 255, 255, 0.9);
-    background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
 }
 
 #placeholderMsg {
-    color: white;
-    font-size: 15px;
+    color: #FFF;
+    font-size: var(--font-size-base);
     padding: 30px;
     text-align: center;
-    font-weight: 500;
+    font-weight: var(--font-weight-regular);
     opacity: 0.9;
     line-height: 1.6;
 }
@@ -128,33 +124,33 @@ fieldset:hover,
 .containerActionsImg button {
     padding: 12px 28px;
     border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
 }
 
 .containerActionsImg .btnPrimary {
-    background: white;
-    color: #e53e3e;
+    background-color: var(--bg-color-white);
+    color: var(--danger-color);
 }
 
 .containerActionsImg .btnPrimary:hover {
-    background: #f7fafc;
+    background-color: var(--bg-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
 }
 
 .containerActionsImg .btnSecondary {
     background: rgba(255, 255, 255, 0.2);
-    color: white;
+    color: var(--bg-color-white);
     border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
 .containerActionsImg .btnSecondary:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: var(--bg-color-white);
 }
 
 #fileInput {
@@ -165,7 +161,7 @@ fieldset:hover,
 .costsData {
     grid-row: 4 / 6;
     grid-column: 1 / 6;
-    background: #f7fafc;
+    background-color: var(--bg-color-white);
     border-left: 4px solid #4299e1;
 }
 
@@ -182,7 +178,7 @@ fieldset:hover,
 .lblInputs {
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
-    color: #2d3748;
+    color: var(--text-color-dark);
     margin-bottom: 2px;
 }
 
@@ -197,15 +193,10 @@ select.txtInputs {
     top: 52%;
     margin: auto;
     padding: 4px 12px;
-    border-radius: 6px;
-    font-weight: 600;
-    background: #e53e3e;
-    color: white;
-    border: none;
-    cursor: pointer;
     transition: all 0.3s ease;
     z-index: 2;
     font-size: var(--font-size-sm) !important;
+    min-width: auto !important;
 }
 
 .btnLink:hover {
@@ -235,7 +226,7 @@ select.txtInputs {
     left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #718096;
+    color: var(--text-color-dark);
     font-weight: var(--font-weight-semibold);
 }
 
@@ -261,19 +252,19 @@ fieldset,
 }
 
 #dropZone:hover {
-    border-color: rgba(255, 255, 255, 0.8);
+    border-color: var(--bg-color-white);
     background: rgba(255, 255, 255, 0.15);
 }
 
 #dropZone.dragover {
-    border-color: rgba(255, 255, 255, 0.9);
+    border-color: var(--bg-color-white);
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.02);
 }
 
 
 .titleModal {
-    color: #1a1a1a;
+    color: var(--text-color);
     font-size: var(--font-size-lg);
     margin-bottom: 0;
 }
@@ -283,4 +274,24 @@ fieldset,
     margin-top: 0;
     align-items: center;
     gap: 8px;
+}
+
+@container content (max-width: 1075px) {
+    .gridContent {
+        grid-template-columns: 1fr;
+    }
+
+    .imgData,
+    .sparePartData,
+    .costsData {
+        grid-column: 1 / 1;
+    }
+
+    .sparePartData {
+        grid-row: 5 / 7;
+    }
+
+    .costsData {
+        grid-row: 7 / 10;
+    }
 }

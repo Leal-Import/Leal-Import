@@ -1,4 +1,4 @@
-.rightColumn{
+.rightColumn {
     display: flex;
     flex-direction: column;
 }
@@ -15,7 +15,7 @@
     flex: 1;
 }
 
-.rightColumn .formGroup{
+.rightColumn .formGroup {
     flex: 0;
 }
 
@@ -30,7 +30,7 @@
     padding: 5px 20px;
 }
 
-.formRightColumn{
+.formRightColumn {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -42,15 +42,15 @@
 }
 
 .titlePanel {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-dark);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-color);
     margin-bottom: 4px;
 }
 
 .subtitlePanel {
     font-size: var(--font-size-sm);
-    color: var(--text-secondary);
+    color: var(--text-color-secondary);
 }
 
 .paymentForm {
@@ -58,7 +58,7 @@
     flex-direction: column;
     gap: 16px;
     padding: 16px;
-    background: #f7fafc;
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     border-radius: 12px;
 }
 
@@ -75,13 +75,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 14px;
-    background: #f7fafc;
+    background-color: var(--bg-color);
     border-radius: 10px;
     transition: all 0.3s;
     border: 2px solid transparent;
 }
 
-.paymentItemActions{
+.paymentItemActions {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -91,7 +91,7 @@
 }
 
 .paymentItem:hover {
-    background: #e6f2ff;
+    background-color: var(--bg-color);
     border-color: var(--danger-color);
 }
 
@@ -101,21 +101,21 @@
 
 .paymentMethod {
     font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--text-dark);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
     margin-bottom: 4px;
 }
 
 .paymentAmount {
     font-size: var(--font-size-base);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: var(--danger-color);
 }
 
 .lblInputs {
     font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: #1a202c;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
     margin-bottom: 8px;
 }
 
@@ -124,7 +124,7 @@
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
     border-radius: 12px;
     margin-bottom: 20px;
-    color: var(--bg-color-white);
+    color: #FFF;
 }
 
 .summaryRow {
@@ -147,16 +147,17 @@
 
 .summaryValue {
     font-size: var(--font-size-base);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
 }
 
 .summaryTotal {
     font-size: var(--font-size-lg);
 }
 
-.actionButtons{
+.actionButtons {
     display: flex;
     gap: 12px;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     font-size: var(--font-size-lg);
@@ -186,17 +187,17 @@
 .rightColumn .table td {
     padding: 10px;
     text-align: left;
-    font-size: 15px;
-    border-bottom: 1px solid #eee;
+    font-size: var(--font-size-default);
+    border-bottom: 1px solid var(--bg-color);
 }
 
 .rightColumn .table tr:nth-child(2n) {
-    background-color: #eee
+    background-color: var(--bg-color)
 }
 
 .rightColumn .table th {
-    background: #eee;
-    font-weight: 600;
+    background-color: var(--bg-color);
+    font-weight: var(--font-weight-semibold);
 }
 
 .rightColumn .rowNoData td {
@@ -244,4 +245,16 @@
 .lbl {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
+}
+
+@container content (max-width: 550px) {
+    .rightColumn {
+        min-width: 0;
+        padding: 10px;
+    }
+
+    .actionButtons button {
+        flex-grow: 1;
+        flex-basis: 180px;
+    }
 }

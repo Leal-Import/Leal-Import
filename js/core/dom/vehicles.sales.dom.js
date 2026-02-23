@@ -66,7 +66,7 @@ export let insertVehicles = (container, vehicles, onAddVehicle) => {
             }
 
             tr.classList.add("tableRow");
-            btnAddVehicle.classList.add("btnPrimary", "btnAddItem");
+            btnAddVehicle.classList.add("btnAddItem");
             image.classList.add("imgTable");
 
             btnAddVehicle.textContent = "+";

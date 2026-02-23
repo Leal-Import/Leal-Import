@@ -1,13 +1,18 @@
 .content {
     flex-direction: row !important;
+    flex-wrap: wrap;
 }
 
 .leftColumn {
-    flex: 3;
+    flex-grow: 1;
     display: flex;
+    flex-basis: 950px;
     flex-direction: column;
+    min-width: 0;
     gap: 30px;
-    height: 100% !important;
+}
+.filterSection{
+    justify-content: space-between;
 }
 
 .headerRightColumn .table td,

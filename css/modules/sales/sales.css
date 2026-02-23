@@ -1,10 +1,9 @@
-
 .containerFilterType {
     display: flex;
     width: 100%;
 }
 
-.containerSales{
+.containerSales {
     position: relative;
     flex: 1;
     border-radius: 10px;
@@ -19,14 +18,14 @@
     cursor: pointer;
 }
 
-.filterType > * {
+.filterType>* {
     pointer-events: none;
 }
 
 .filterType span {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
-    color: #444;
+    color: var(--text-color-dark);
 }
 
 .filterType .lineSelected {
@@ -34,7 +33,7 @@
     bottom: 0;
     border-radius: 10px;
     height: 3px;
-    background-color: #444;
+    background-color: var(--text-color-dark);
     position: absolute;
     opacity: 0;
     transition: .5s;
@@ -65,7 +64,9 @@
     height: 190px;
     border-radius: 15px;
     position: relative;
+    color: var(--text-color);
 }
+
 
 .containerImgSale {
     height: 100%;
@@ -87,22 +88,22 @@
     flex: 1;
 }
 
-.dataSale{
+.dataSale {
     display: flex;
     align-items: center;
     gap: 5px
 }
 
-.lbl{
+.lbl {
     font-weight: var(--font-weight-medium);
 }
 
-.moreParts{
+.moreParts {
     font-size: var(--font-size-sm);
     color: var(--danger-color);
 }
 
-.typeSale{
+.typeSale {
     position: absolute;
     width: 40px;
     height: 40px;
@@ -116,65 +117,66 @@
     transition: .3s;
 }
 
-.vehicleType{
+.vehicleType {
     color: var(--bg-color);
     background-color: var(--danger-color);
 }
 
-.partType{
+.partType {
     color: var(--danger-color);
     border-color: var(--danger-color);
 }
 
-.partType:hover{
+.partType:hover {
     background-color: var(--danger-color);
     color: var(--bg-color);
     border-color: var(--danger-color);
 }
 
-.vehicleSale{
+.vehicleSale {
     background-color: var(--danger-color);
     color: var(--bg-color);
 }
 
-.vehicleType:hover{
+.vehicleType:hover {
     background-color: var(--bg-color);
     color: var(--danger-color);
     border-color: var(--danger-color);
 }
 
-.actionButton{
+.actionButton {
     position: absolute;
     top: 40%;
     right: 20px;
 }
 
-.productData{
+.productData {
     font-size: var(--font-size-lg);
 }
 
-.dateData{
+.dateData {
     font-size: var(--font-size-sm);
-    color: #555;
+    color: var(--text-color-dark);;
 }
 
-.bodyDataSale{
+.bodyDataSale {
     display: flex;
     gap: 15px;
     flex: 1;
 }
 
-.leftDataSale, .rightDataSale{
+.leftDataSale,
+.rightDataSale {
     display: flex;
     flex-direction: column;
     flex: 1;
 }
 
-.leftDataSale{
+.leftDataSale {
     gap: 10px;
 }
 
-.downLeft{
+.downLeft {
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -182,21 +184,21 @@
     margin-bottom: 20px;
 }
 
-.rightDataSale{
+.rightDataSale {
     position: relative;
 }
 
-.headerDataSale{
+.headerDataSale {
     display: flex;
     flex-direction: column;
 }
 
-.amount{
+.amount {
     align-items: center;
     margin-top: 10px;
 }
 
-.amountDue{
+.amountDue {
     color: var(--danger-color);
     font-size: var(--font-size-lg);
 }
@@ -205,11 +207,12 @@
     font-size: var(--font-size-lg);
 }
 
-.nameVehicle, .sparePartName{
+.nameVehicle,
+.sparePartName {
     font-weight: var(--font-weight-semibold);
 }
 
-.containerButtonsData{
+.containerButtonsData {
     display: flex;
     justify-content: end;
     gap: 10px;
@@ -219,14 +222,14 @@
     padding: 0 20px 15px 0;
 }
 
-.containerButtonsData a{
+.containerButtonsData a {
     border-radius: var(--border-radius-input);
     text-decoration: none;
     padding: 5px 10px;
 }
 
-.amountQuantity{
-    font-size: 1.7em;
+.amountQuantity {
+    font-size: var(--font-size-title);
     font-weight: var(--font-weight-medium);
 }
 
@@ -257,7 +260,11 @@
     font-size: var(--font-size-title);
 }
 
-.containerOptions{
+.subtitleModal{
+    color: var(--text-color);
+}
+
+.containerOptions {
     display: flex;
     width: 100%;
     height: 100%;
@@ -298,7 +305,7 @@
 .optionImageContainer svg {
     width: 70px;
     height: 70px;
-    color: white;
+    color: var(--bg-color-white);;
     z-index: 1;
     position: relative;
     transition: all 0.3s ease;
@@ -320,15 +327,15 @@
 }
 
 .titleOption {
-    font-size: 22px;
-    font-weight: 700;
-    color: #1a202c;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-color);;
     margin-bottom: 8px;
 }
 
 .optionDescription {
-    font-size: 14px;
-    color: #718096;
+    font-size: var(--font-size-very-sh);
+    color: var(--text-color-secondary);
     line-height: 1.6;
 }
 
@@ -411,10 +418,6 @@
         padding: 8px;
     }
 
-    .filterType span {
-        font-size: 14px;
-    }
-
     /* Paneles más compactos */
     .panel {
         gap: 0;
@@ -450,7 +453,7 @@
     }
 
     .productData {
-        font-size: 18px;
+        font-size: var(--font-size-lg);
         line-height: 1.3;
         flex-wrap: wrap;
     }
@@ -488,8 +491,8 @@
     }
 
     .lbl {
-        font-size: 12px;
-        color: var(--helper-color, #CD908F);
+        font-size: var(--font-size-sm);
+        color: var(--helper-color);
     }
 
     /* Montos */
@@ -498,17 +501,17 @@
         justify-content: space-between;
         align-items: center;
         padding: 12px;
-        background-color: rgba(211, 24, 19, 0.05);
+        background-color: var(--bg-color-white);
         border-radius: 8px;
         margin-top: 0;
     }
 
     .amount .lbl {
-        font-size: 14px;
+        font-size: var(--font-size-sm);
     }
 
     .amountQuantity {
-        font-size: 20px;
+        font-size: var(--font-size-title);
     }
 
     .amountDue {
@@ -516,17 +519,17 @@
         justify-content: space-between;
         align-items: center;
         padding: 12px;
-        background-color: rgba(211, 24, 19, 0.08);
+        background-color: var(--bg-color-white);
         border-radius: 8px;
     }
 
     .amountDue .lbl {
-        font-size: 14px;
+        font-size: var(--font-size-sm);
         color: var(--danger-color);
     }
 
     .amountDue span:last-child {
-        font-size: 18px;
+        font-size: var(--font-size-base);
         font-weight: var(--font-weight-semibold);
     }
 
@@ -552,7 +555,7 @@
         right: 8px;
         width: 36px;
         height: 36px;
-        font-size: 14px;
+        font-size: var(--font-size-base);
     }
 
     /* Modal de opciones */
@@ -584,14 +587,6 @@
     .optionContent {
         padding: 16px;
     }
-
-    .titleOption {
-        font-size: 18px;
-    }
-
-    .optionDescription {
-        font-size: 13px;
-    }
 }
 
 /* Móviles pequeños (< 500px) */
@@ -614,7 +609,7 @@
     }
 
     .productData {
-        font-size: 16px;
+        font-size: var(--font-size-base);
     }
 
     .amountQuantity {

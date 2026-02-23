@@ -4,6 +4,7 @@
 
 .content {
     flex-direction: row !important;
+    flex-wrap: wrap;
 }
 
 .leftColumn {
@@ -11,6 +12,7 @@
     flex-direction: column;
     flex: 3;
     gap: 20px;
+    flex-basis: 900px;
 }
 
 /* ============================================
@@ -22,8 +24,8 @@
 }
 
 #customerName {
-    color: #d32f2f;
-    font-weight: 600;
+    color: var(--danger-color);
+    font-weight: var(--font-weight-semibold);
 }
 
 /* ============================================
@@ -43,10 +45,14 @@
    VEHICLE VIEW CONTAINER (OVERLAY)
    ============================================ */
 
+.filterSection {
+    justify-content: space-between;
+}
+
 .viewVechicleContainer {
     padding: 20px 0;
     border-radius: 10px;
-    background-color: #f9f9f9;
+    background-color: var(--bg-color);
     width: 100%;
     height: fit-content;
     display: flex;
@@ -97,7 +103,7 @@
     height: 70px;
     width: 90%;
     padding: 5px;
-    background-color: #e8e8e8;
+    background-color: var(--bg-color);
     border-radius: var(--border-radius-input);
 }
 
@@ -128,7 +134,7 @@
 .vehicleImagesSection {
     border-radius: 12px;
     overflow: hidden;
-    background: #f8f9fa;
+    background-color: var(--bg-color);
 }
 
 .swiper {
@@ -159,6 +165,7 @@
 
 .mainInfoContainer {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 }
 
@@ -173,7 +180,8 @@
 }
 
 .mainInfoContainer>div {
-    flex: 1;
+    flex-grow: 1;
+    flex-basis: 300px;
 }
 
 .columnInfo h2 {
@@ -207,25 +215,25 @@
 }
 
 .infoLabel {
-    font-size: 14px;
-    color: #6c757d;
-    font-weight: 500;
+    font-size: var(--font-size-sm);
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-regular);
 }
 
 .infoValue {
-    font-size: 14px;
-    color: #212529;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+    font-weight: var(--font-weight-semibold);
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .infoValue:hover {
-    color: #d32f2f;
+    color: var(--danger-color);
 }
 
 .suggestedItem {
-    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     padding: 14px 16px;
     border-radius: 8px;
     border: 1px solid #ffcdd2;
@@ -233,14 +241,14 @@
 }
 
 .suggestedItem .infoLabel {
-    color: #c62828;
-    font-weight: 600;
+    color: var(--danger-color);
+    font-weight: var(--font-weight-semibold);
 }
 
 .values {
-    font-size: 16px;
-    color: var(--danger-color, #d32f2f);
-    font-weight: 700;
+    font-size: var(--font-size-default);
+    color: var(--danger-color);
+    font-weight: var(--font-weight-bold);
 }
 
 .columnCosts .infoValue {
@@ -266,16 +274,16 @@
 
 .btnCreateWO {
     padding: 10px 20px;
-    font-size: 15px;
+    font-size: var(--font-size-default);
     text-decoration: none;
     width: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-    color: white;
+    color: var(--bg-color-white);
     border-radius: 8px;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
 }
@@ -298,14 +306,14 @@
 
 /* Focus styles for accessibility */
 *:focus-visible {
-    outline: 2px solid #d32f2f;
+    outline: 2px solid var(--danger-color);
     outline-offset: 2px;
 }
 
 /* Selection color */
 ::selection {
-    background: #d32f2f;
-    color: white;
+    background-color: var(--danger-color);
+    color: var(--bg-color-white);
 }
 
 /* Custom scrollbar */
@@ -315,17 +323,17 @@
 }
 
 .tableContainer::-webkit-scrollbar-track {
-    background: #f1f3f5;
+    background-color: var(--bg-color);
     border-radius: 4px;
 }
 
 .tableContainer::-webkit-scrollbar-thumb {
-    background: #d32f2f;
+    background-color: var(--danger-color);
     border-radius: 4px;
 }
 
 .tableContainer::-webkit-scrollbar-thumb:hover {
-    background: #c62828;
+    background-color: var(--danger-color);
 }
 
 @keyframes slideDown {
@@ -337,5 +345,13 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@container content (max-width: 450px) {
+
+    .imagesSection,
+    .vehicleInfo {
+        padding: 0px;
     }
 }

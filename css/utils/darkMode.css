@@ -1,0 +1,80 @@
+
+.dark-mode {
+
+    --bg-color-white: #1a1816;
+    --bg-color: #0f0d0c;
+
+
+    --text-color: #f5f3f0;
+    --text-color-secondary: #a8a5a0;
+    --text-color-dark: #e0ddd8;
+
+    --danger-color: #ff4d47;
+    --dark-danger-color: #cc3d38;
+    --warning-color: #ffc043;
+    --dark-warning-color: #ffab1f;
+    --success-color: #7dd95f;
+    --dark-success-color: #5cb844;
+    --helper-color: #e8b5b3;
+    --helper-stat-color: #60a5ff;
+
+    --bg-color-modal: rgba(0, 0, 0, 0.75);
+
+    --bx-shadow-primary: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --bx-shadow-btn-primary: 0 4px 16px rgba(255, 77, 71, 0.4);
+    --bx-shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.6);
+
+    --border: 1px solid #3a3632;
+}
+
+.dark-mode body{
+    background-color: var(--bg-color);
+}
+
+/* ═══════════════════════════════════════
+   AJUSTES ESPECÍFICOS
+   Solo cuando necesites override de estilos
+═══════════════════════════════════════ */
+
+/* Scrollbar */
+.dark-mode ::-webkit-scrollbar {
+    background-color: #242220;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+    background-color: #3a3632;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--danger-color);
+}
+
+/* Imágenes - ligera reducción de brillo */
+.dark-mode img {
+    opacity: 0.95;
+}
+
+.dark-mode img:hover {
+    opacity: 1;
+}
+
+/* Inputs placeholder */
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+    color: #6f6c68;
+}
+
+/* Hover en elementos interactivos */
+.dark-mode .navbarItem:hover,
+.dark-mode .table tbody tr:hover,
+.dark-mode .btnSecondary:hover {
+    background-color: #2d2a28;
+}
+
+/* Transición suave al cambiar de tema */
+* {
+    transition: background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}

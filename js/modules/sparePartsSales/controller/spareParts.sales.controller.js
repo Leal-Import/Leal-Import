@@ -14,16 +14,16 @@ import {
     showElement,
     hideElement,
     disableElement,
-    removeDisable
+    removeDisable,
 } from '../../../utils/dom.js';
 import { spareSaleState } from '../../../core/state/spareParts.sales.state.js';
 import { initSpareSaleEvents } from '../event/spareParts.sales.event.js';
 import { cleanPaymentCamps, createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale, verifyIds } from '../../../core/logic/spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
-import { getCurrentEmployeeId, initSession, safeParseFloat } from '../../../utils.js';
+import { getCurrentEmployeeId, initSession } from '../../../utils/api.utils.js';
 import { addNewPayment, initPaymentsController } from '../../payments/payments.controller.js';
-import { validatePayment } from '../../../utils/validators.js';
+import { safeParseFloat, validatePayment } from '../../../utils/validators.js';
 
 const pagination = createPagination({
     initialSize: spareSaleState.pagination.size,

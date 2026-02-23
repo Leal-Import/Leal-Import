@@ -150,7 +150,7 @@
 ======================= */
 .titleData {
     font-weight: var(--font-weight-semibold);
-    font-size: 1.6em;
+    font-size: var(--font-size-title);
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 3px solid var(--danger-color);
@@ -162,12 +162,12 @@
 
 .sparePartData .titleData::before {
     content: '🔩';
-    font-size: 28px;
+    font-size: var(--font-size-title);
 }
 
 .sparePartCost .titleData::before {
     content: '💰';
-    font-size: 28px;
+    font-size: var(--font-size-title);
 }
 
 /* =======================
@@ -247,7 +247,7 @@
 
 /* Precio sugerido destacado */
 #suggestedPrice {
-    font-size: 1.5rem !important;
+    font-size: var(--font-size-title) !important;
 }
 
 /* Costo total super destacado */
@@ -258,12 +258,12 @@
 }
 
 .sparePartCost .dataInfo:last-child .label {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--bg-color-white);
 }
 
 .sparePartCost .dataInfo:last-child .value {
     color: var(--bg-color-white) !important;
-    font-size: 1.75rem !important;
+    font-size: var(--font-size-title-lg) !important;
 }
 
 /* =======================
@@ -441,13 +441,13 @@
 }
 
 .statusBadgeSparePart.disponible {
-    background: rgba(109, 190, 69, 0.1);
+    background-color: rgba(109, 190, 69, 0.1);
     color: var(--success-color);
     border: 2px solid var(--success-color);
 }
 
 .statusBadgeSparePart.agotado {
-    background: rgba(211, 24, 19, 0.1);
+    background-color: rgba(211, 24, 19, 0.1);
     color: var(--danger-color);
     border: 2px solid var(--danger-color);
 }
@@ -519,7 +519,7 @@
 .btnActionSparePart.btnSecondarySparePart:hover {
     border-color: var(--danger-color);
     color: var(--danger-color);
-    background: rgba(211, 24, 19, 0.05);
+    background-color: rgba(211, 24, 19, 0.05);
     transform: translateY(-3px);
     box-shadow: var(--bx-shadow-primary);
 }

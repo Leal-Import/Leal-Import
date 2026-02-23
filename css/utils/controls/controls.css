@@ -1,4 +1,4 @@
-.content{
+.content {
     container-type: inline-size;
     container-name: content;
 }
@@ -9,14 +9,16 @@
     background-repeat: no-repeat;
     background-position: 14px center;
     background-size: 20px;
+    background-color: var(--bg-color);
     font-size: var(--font-size-base);
     border: 2px solid #E5E7EB;
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    max-width: 700px;
+    max-width: 60%;
     min-width: 300px;
     flex: 10;
+    color: var(--text-color);
 }
 
 .filterSection {
@@ -24,9 +26,9 @@
     align-items: center;
     gap: 16px;
     padding: 20px 24px;
-    background: white;
+    background-color:var(--bg-color-white);
     border-radius: 12px;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--bg-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     margin-top: 6px;
     padding-right: 24px;
@@ -44,10 +46,10 @@
     border: 2px solid #e2e8f0;
     border-radius: 8px;
     font-size: var(--font-size-sm);
-    background: white;
+    background-color: var(--bg-color);
     cursor: pointer;
     transition: all 0.3s ease;
-    color: #2d3748;
+    color: var(--text-color-dark);
     min-width: 200px;
     flex: 1;
 }
@@ -65,7 +67,7 @@
 
 .btnPrimary {
     background-color: var(--danger-color);
-    color: var(--bg-color);
+    color: #FFF;
     border: none;
     border-radius: var(--border-radius-btn);
     font-weight: var(--font-weight-medium);
@@ -79,7 +81,7 @@
     min-width: 120px;
 }
 
-.btnPrimary:disabled{
+.btnPrimary:disabled {
     opacity: .5;
 }
 
@@ -93,11 +95,11 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     transition: all 0.3s ease;
-    background: var(--bg-color-white);
+    background-color: var(--bg-color-white);
 }
 
 .btnSecondary:hover {
-    background: rgba(211, 24, 19, 0.05);
+    background-color: rgba(211, 24, 19, 0.05);
     transform: translateY(-2px);
 }
 
@@ -116,6 +118,7 @@
     white-space: nowrap;
     position: relative;
     overflow: hidden;
+    color: #FFF;
 }
 
 .btnOpenModal::before {
@@ -142,8 +145,8 @@
 }
 
 .btnIcon {
-    font-size: 1.4em;
-    font-weight: bold;
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-bold);
     line-height: 1;
 }
 
@@ -189,19 +192,20 @@
     border-radius: 12px;
     font-size: var(--font-size-sm);
     transition: all 0.3s ease;
-    background: var(--bg-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .txtInputs:focus {
     outline: none;
     border-color: var(--danger-color);
-    background: var(--bg-color-white);
+    background-color: var(--bg-color-white);
     box-shadow: 0 0 0 4px rgba(211, 24, 19, 0.08);
 }
 
 .txtInputs:disabled {
-    background: #edf2f7;
-    color: #718096;
+    background-color: var(--bg-color);
+    color: var(--text-color-secondary);
     cursor: not-allowed;
 }
 
@@ -226,9 +230,6 @@ textarea {
 }
 
 @media screen and (max-width: 600px) {
-    .content {
-        padding: 40px 10px;
-    }
 
     .txtSearchData {
         font-size: var(--font-size-sm);
@@ -243,11 +244,11 @@ textarea {
         font-size: 13px;
     }
 
-    .filterSection{
+    .filterSection {
         padding: 15px 10px;
     }
 
-    .txtSearchData{
+    .txtSearchData {
         flex: 1;
     }
 }

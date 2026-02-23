@@ -64,7 +64,7 @@
 }
 
 .statTitle {
-    font-size: 0.9em;
+    font-size: var(--font-size-sm);
     color: var(--text-color-secondary);
     font-weight: var(--font-weight-medium);
     margin-bottom: 8px;
@@ -82,17 +82,17 @@
 /* Stats Grid Positioning */
 .totalVehicle {
     grid-column: 1;
-    background: linear-gradient(135deg, #FFF5F5 0%, #FFF 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
 }
 
 .stockVehicles {
     grid-column: 2;
-    background: linear-gradient(135deg, #FEF3C7 0%, #FFF 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
 }
 
 .soldVehicles {
     grid-column: 3;
-    background: linear-gradient(135deg, #D1FAE5 0%, #FFF 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
 }
 
 .totalSales {
@@ -102,19 +102,19 @@
     align-items: center;
     gap: 20px;
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
-    color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .totalSales .statIcon {
-    font-size: 3em;
+    font-size: var(--font-size-breadcrumb);
 }
 
 .totalSales .statTitle {
-    color: var(--bg-color);
+    color: #FFF;
 }
 
 .totalSales .statValue {
-    color: var(--bg-color);
+    color: #FFF;
     font-size: var(--font-size-title);
 }
 
@@ -129,7 +129,7 @@
     border-radius: 16px;
     border: 1px solid #E5E7EB;
     padding: 30px 20px;
-    background: linear-gradient(135deg, #FAFAFA 0%, var(--bg-color-white) 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
 }
 
 .graphicContainer {
@@ -239,9 +239,9 @@
 
 .vehicleStatus {
     padding: 6px 14px;
-    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     border-radius: 20px;
-    font-size: 0.85em;
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--text-color);
     text-align: center;
@@ -265,7 +265,7 @@
 .infoVehicleItem {
     display: flex;
     gap: 8px;
-    font-size: 0.95em;
+    font-size: var(--font-size-default);
     color: var(--text-color-secondary);
 }
 
