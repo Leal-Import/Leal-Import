@@ -41,7 +41,7 @@
     flex-direction: column;
     gap: 20px;
     padding: 25px;
-    background: var(--bg-color-white);
+    background-color: var(--bg-color-white);
     border: var(--border);
     border-radius: 12px;
     box-shadow: var(--bx-shadow-primary);
@@ -78,7 +78,7 @@
 .lblInfo {
     color: var(--text-color-secondary);
     font-weight: var(--font-weight-semibold);
-    font-size: 0.75rem;
+    font-size: var(--font-size-sh);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
@@ -86,7 +86,7 @@
 
 .valueInfo {
     font-weight: var(--font-weight-regular);
-    font-size: 1.125rem;
+    font-size: var(--font-size-base);
     color: var(--text-color);
 }
 
@@ -101,7 +101,7 @@
 }
 
 .rowVehicle .dataInfo {
-    background-color: rgb(243, 243, 243);
+    background-color: var(--bg-color);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -116,7 +116,7 @@
 }
 
 .rowVehicle .dataInfo:hover {
-    background: rgba(211, 24, 19, 0.02);
+    background-color: rgba(211, 24, 19, 0.02);
     border-color: var(--danger-color);
     box-shadow: 0 6px 16px rgba(211, 24, 19, 0.15);
     transform: translateY(-2px);
@@ -130,7 +130,7 @@
     bottom: 0;
     z-index: 10;
     width: 4px;
-    background: var(--danger-color);
+    background-color: var(--danger-color);
     transition: opacity 0.3s ease;
 }
 
@@ -157,7 +157,7 @@
     align-items: center;
     padding: 18px 20px;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     flex-basis: 250px;
     gap: 10px;
@@ -168,19 +168,19 @@
 }
 
 .rowCosts .lblInfo {
-    background: transparent;
+    background-color: transparent;
     border-bottom: none;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.75rem;
+    color: var(--bg-color-white);
+    font-size: var(--font-size-sh);
     padding: 0;
     text-transform: uppercase;
     letter-spacing: 0.8px;
 }
 
 .rowCosts .valueInfo {
-    background: transparent;
+    background-color: transparent;
     color: var(--bg-color-white);
-    font-size: 1.75rem;
+    font-size: var(--font-size-title-lg);
     font-weight: var(--font-weight-semibold);
     padding: 0;
 }
@@ -190,7 +190,7 @@
 }
 
 .rowCosts .valueInfo.danger {
-    font-size: 2rem;
+    font-size: var(--font-size-breadcrumb);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -247,7 +247,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    background: var(--bg-color);
+    background-color: var(--bg-color);
     border-radius: 8px;
     margin-top: 5px;
 }
@@ -273,7 +273,7 @@
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 0.7rem;
+    font-size: var(--font-size-sh);
     padding: 3px 12px;
     font-weight: var(--font-weight-semibold);
     border-radius: var(--border-radius-btn);
@@ -290,7 +290,7 @@
 .btnImport:hover {
     background-color: var(--dark-danger-color);
     transform: translateY(-50%) translateY(-2px);
-    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.4);
+    box-shadow: 0 4px 12px var(--dark-danger-color);
 }
 
 .btnImport:active {
@@ -325,7 +325,7 @@ tr {
 
 .tableContainer .dataInfo .valueInfo {
     color: var(--danger-color);
-    font-size: 1.5rem;
+    font-size: var(--font-size-title);
     font-weight: var(--font-weight-semibold);
     padding: 0;
 }

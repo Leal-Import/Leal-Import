@@ -8,7 +8,7 @@
     width: 32px;
     height: 32px;
     border: none;
-    background: transparent;
+    background-color: transparent;
     border-radius: 8px;
     cursor: pointer;
     display: inline-flex;
@@ -20,13 +20,13 @@
 }
 
 .btnTrash:hover {
-    background: #fee2e2;
+    background-color: var(--bg-color);
     transform: scale(1.15);
 }
 
 .btnTrash:active {
     transform: scale(1.05);
-    background: #fecaca;
+    background-color: var(--helper-color);
 }
 
 
@@ -57,11 +57,11 @@ td:has(.btnTrash) {
     width: 20px;
     height: 20px;
     transition: all 0.25s ease;
-    color: #6b7280;
+    color: var(--text-color-secondary);
 }
 
 .tableSelectedParts tbody .btnTrash:hover svg {
-    color: var(--danger-color, #dc3545);
+    color: var(--danger-color);
     transform: translateY(-1px);
 }
 

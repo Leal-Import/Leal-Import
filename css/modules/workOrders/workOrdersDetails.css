@@ -1,24 +1,23 @@
-
-.containerTable{
+.containerTable {
     min-height: 60dvh;
 }
 
-.detailsWOSection{
+.detailsWOSection {
     display: flex;
     flex-direction: column;
     margin-bottom: 1em;
 }
 
 
-.infoItem{
+.infoItem {
     font-size: var(--font-size-lg);
 }
 
-.lbl{
+.lbl {
     font-weight: var(--font-weight-medium);
 }
 
-.containerDtStatus{
+.containerDtStatus {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -51,6 +50,7 @@
 .colorDelay {
     background-color: var(--danger-color);
 }
+
 .delayOrder {
     color: var(--danger-color);
     font-weight: var(--font-weight-medium);
@@ -58,12 +58,13 @@
 
 /* Móviles (< 768px) - Transformar tabla en cards mejoradas */
 @media screen and (max-width: 950px) {
-    .content{
+    .content {
         height: fit-content;
     }
 }
 
 @container content (max-width: 850px) {
+
     /* Contenedor de tabla - sin overflow */
     .containerTable {
         overflow-x: visible;
@@ -80,7 +81,7 @@
         display: block;
         width: 100%;
         border: none;
-        background: transparent;
+        background-color: transparent;
     }
 
     .table tbody {
@@ -105,7 +106,7 @@
     }
 
     .table tbody tr:hover {
-        box-shadow: 
+        box-shadow:
             0 12px 24px rgba(205, 144, 143, 0.15),
             0 4px 8px rgba(0, 0, 0, 0.08);
         transform: translateY(-4px);
@@ -113,7 +114,7 @@
 
     /* Mensaje de "No hay datos" */
     .table tbody tr:has(td.no-data-message) {
-        background: white;
+        background-color: var(--bg-color-white);
         padding: 40px 20px;
     }
 
@@ -121,7 +122,7 @@
         display: block;
         text-align: center;
         padding: 0 !important;
-        color: var(--text-color-secondary, #81859E) !important;
+        color: var(--text-color-secondary) !important;
         font-size: 14px;
     }
 
@@ -139,8 +140,8 @@
         padding-top: 20px;
         padding-bottom: 4px;
         font-size: 15px;
-        font-weight: 600;
-        color: var(--text-color, #0D0503);
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-color);
     }
 
     .table tbody tr td:nth-child(1)::before {
@@ -153,15 +154,15 @@
         padding-top: 4px;
         padding-bottom: 12px;
         font-size: 14px;
-        color: var(--text-color-secondary, #81859E);
+        color: var(--text-color-secondary);
         border-bottom: 1px solid rgba(205, 144, 143, 0.1);
     }
 
     .table tbody tr td:nth-child(2)::before {
         content: "Cliente: ";
         font-size: 11px;
-        font-weight: 500;
-        color: var(--helper-color, #CD908F);
+        font-weight: var(--font-weight-semibold);
+        color: var(--helper-color);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
@@ -190,15 +191,26 @@
     }
 
     /* Labels mejorados */
-    .table tbody tr td:nth-child(3)::before { content: "📅 Fecha estimada"; }
-    .table tbody tr td:nth-child(4)::before { content: "🏷️ Estado"; }
-    .table tbody tr td:nth-child(5)::before { content: "💵 Costo total"; }
-    .table tbody tr td:nth-child(6)::before { content: "⚠️ Deuda"; }
+    .table tbody tr td:nth-child(3)::before {
+        content: "📅 Fecha estimada";
+    }
+
+    .table tbody tr td:nth-child(4)::before {
+        content: "🏷️ Estado";
+    }
+
+    .table tbody tr td:nth-child(5)::before {
+        content: "💵 Costo total";
+    }
+
+    .table tbody tr td:nth-child(6)::before {
+        content: "⚠️ Deuda";
+    }
 
     .table tbody tr td::before {
         font-size: 11px;
-        font-weight: 600;
-        color: var(--helper-color, #CD908F);
+        font-weight: var(--font-weight-semibold);
+        color: var(--helper-color);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
@@ -209,8 +221,8 @@
     .table tbody tr td:nth-child(5),
     .table tbody tr td:nth-child(6) {
         font-size: 15px;
-        font-weight: 500;
-        color: var(--text-color, #0D0503);
+        font-weight: var(--font-weight-regular);
+        color: var(--text-color);
     }
 
     /* ═══════════════════════════════════════
@@ -234,40 +246,40 @@
         padding: 6px 14px;
         border-radius: 20px;
         font-size: 13px;
-        font-weight: 600;
+        font-weight: var(--font-weight-semibold);
         transition: all 0.2s;
     }
 
     /* Estado Pendiente */
     .table tbody tr td:nth-child(4) .containerDtStatus:has(.pendingOrder) {
         background-color: rgba(245, 158, 11, 0.12);
-        color: #D97706;
+        color: var(--dark-warning-color);
     }
 
     .table tbody tr td:nth-child(4) .containerDtStatus:has(.pendingOrder) .orderColor {
-        background-color: #F59E0B;
+        background-color: var(--dark-warning-color);
         box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
     }
 
     /* Estado Completada */
     .table tbody tr td:nth-child(4) .containerDtStatus:has(.completedOrder) {
         background-color: rgba(16, 185, 129, 0.12);
-        color: #059669;
+        color: var(--success-color);
     }
 
     .table tbody tr td:nth-child(4) .containerDtStatus:has(.completedOrder) .orderColor {
-        background-color: #10B981;
-        box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        background-color: var(--success-color);
+        box-shadow: 0 0 8px var(--dark-success-color);
     }
 
     /* Estado Retrasada */
     .table tbody tr td:nth-child(4) .containerDtStatus:has(.delayOrder) {
         background-color: rgba(239, 68, 68, 0.12);
-        color: #DC2626;
+        color: var(--danger-color)
     }
 
     .table tbody tr td:nth-child(4) .containerDtStatus:has(.delayOrder) .orderColor {
-        background-color: #EF4444;
+        background-color: var(--danger-color);
         box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
     }
 
@@ -287,7 +299,7 @@
         margin: 0 12px;
         padding: 14px 16px;
         font-size: 18px;
-        font-weight: 700;
+        font-weight: var(--font-weight-bold);
     }
 
     .table tbody tr td:nth-child(6) {
@@ -296,11 +308,11 @@
         margin: 0 12px;
         padding: 14px 16px;
         font-size: 18px;
-        font-weight: 700;
+        font-weight: var(--font-weight-bold);
     }
 
     .table tbody tr td:nth-child(6).textDanger {
-        color: var(--danger-color, #D31813);
+        color: var(--danger-color);
         background-color: rgba(211, 24, 19, 0.12);
     }
 
@@ -328,9 +340,9 @@
         justify-content: center;
         background: linear-gradient(135deg, rgba(211, 24, 19, 0.08) 0%, rgba(211, 24, 19, 0.12) 100%);
         border: 1px solid rgba(211, 24, 19, 0.2);
-        color: var(--danger-color, #D31813);
+        color: var(--danger-color);
         font-size: 20px;
-        font-weight: 600;
+        font-weight: var(--font-weight-semibold);
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 2px 4px rgba(211, 24, 19, 0.1);
@@ -339,7 +351,7 @@
     .table tbody tr td:nth-child(7) .actionButton:hover {
         background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color, #871B19) 100%);
         border-color: var(--danger-color);
-        color: white;
+        color: var(--bg-color-white);
         transform: scale(1.05);
         box-shadow: 0 4px 12px rgba(211, 24, 19, 0.3);
     }

@@ -1,11 +1,12 @@
 .containerTable {
-    background: var(--bg-color-white);
+    background-color: var(--bg-color-white);
     position: relative;
     flex: 1;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     border: 1px solid #F0F0F0;
-    min-height: 400px;
+    height: fit-content;
+    padding-bottom: 10px;
 }
 
 .table {
@@ -16,14 +17,13 @@
 
 
 .table thead tr {
-    background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F5 100%);
+    background-color: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
 }
 
 .table th {
     padding: 18px 16px;
     font-weight: var(--font-weight-semibold);
-    font-size: var(--font-size-base);
-    font-size: 0.95em;
+    font-size: var(--font-size-default);
     color: var(--text-color);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -32,11 +32,11 @@
 
 .table tbody tr {
     transition: all 0.25s ease;
-    border-bottom: 1px solid #F0F0F0;
+    border-bottom: 1px solid var(--bg-color);
 }
 
 .table tbody tr:nth-child(even) {
-    background-color: #FAFBFC;
+    background-color: var(--bg-color);
 }
 
 .table tbody tr:hover {
@@ -48,6 +48,7 @@
 .table td {
     padding: 16px;
     font-size: var(--font-size-base);
+    color: var(--text-color);
 }
 
 .noDataMessage {

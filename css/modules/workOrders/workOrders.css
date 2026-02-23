@@ -11,7 +11,7 @@
 }
 
 .statItem {
-    background: white;
+    background-color: var(--bg-color-white);
     flex: 1;
     flex-basis: 225px;
     border-radius: 12px;
@@ -42,63 +42,53 @@
 
 /* Estilos específicos para cada estadística */
 .totalVehicle {
-    border-left-color: #10b981;
+    border-left-color: var(--success-color);
 }
 
 .totalVehicle::before {
-    background: #10b981;
+    background-color: var(--success-color);
 }
 
 .stockVehicles {
-    border-left-color: #f59e0b;
+    border-left-color: var(--dark-warning-color);
 }
 
 .stockVehicles::before {
-    background: #f59e0b;
+    background-color: var(--warning-color);
 }
 
 .soldVehicles {
-    border-left-color: #ef4444;
+    border-left-color: var(--danger-color);
 }
 
 .soldVehicles::before {
-    background: #ef4444;
+    background-color: var(--danger-color);
 }
 
 .totalSales {
-    border-left-color: #3b82f6;
+    border-left-color: var(--helper-stat-color);
 }
 
 .totalSales::before {
-    background: #3b82f6;
+    background-color: var(--helper-stat-color);
 }
 
 .statTitle {
-    font-size: 14px;
-    font-weight: 500;
-    color: #6b7280;
+    font-size: var(--font-size-base);
+        font-weight: var(--font-weight-regular);
+    color: var(--text-color-secondary);
     margin: 0 0 8px 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .statValue {
-    font-size: 32px;
-    font-weight: 700;
-    color: #1f2937;
+    color: var(--text-color);
     margin: 0;
     line-height: 1.2;
-}
-
-.statTitle {
-    font-size: var(--font-size-base);
-}
-
-.statValue {
     font-weight: var(--font-weight-regular);
     font-size: var(--font-size-title);
 }
-
 .totalSales {
     flex-grow: 2;
 }

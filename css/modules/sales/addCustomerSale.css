@@ -1,4 +1,4 @@
-.breadCrumbSection{
+.breadCrumbSection {
     margin-bottom: 1em !important;
 }
 
@@ -12,7 +12,7 @@
 }
 
 
-.customersContainer{
+.customersContainer {
     flex: 1;
     position: relative;
     border-radius: 10px;
@@ -35,7 +35,7 @@
     display: flex;
     flex-direction: column;
     text-decoration: none;
-    color: var(--text-color, #1a202c);
+    color: var(--text-color);
     background: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
@@ -48,7 +48,7 @@
 .customer:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(229, 62, 62, 0.15);
-    border-color: #e53e3e;
+    border-color: var(--danger-color);
 }
 
 .customer:active {
@@ -97,7 +97,7 @@
 .customerAvatar {
     width: 44px;
     height: 44px;
-    color: #e53e3e;
+    color: var(--danger-color);
 }
 
 /* Customer Body */
@@ -113,10 +113,10 @@
 
 /* Customer Name */
 .customerName {
-    font-weight: 700;
-    font-size: 20px;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
     text-decoration: none;
-    color: #1a202c;
+    color: var(--text-color);
     text-align: center;
     margin-bottom: 8px;
 }
@@ -150,7 +150,7 @@
 .infoIcon svg {
     width: 18px;
     height: 18px;
-    color: #e53e3e;
+    color: var(--danger-color);
 }
 
 .infoContent {
@@ -159,9 +159,9 @@
 }
 
 .infoLabel {
-    font-size: 11px;
-    color: #718096;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 2px;
@@ -170,8 +170,8 @@
 .dui,
 .phone {
     color: #1a202c;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     text-decoration: none;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -206,7 +206,7 @@
 .selectionIndicator svg {
     width: 16px;
     height: 16px;
-    color: white;
+    color: var(--bg-color-white);
 }
 
 /* Status Badge */
@@ -222,10 +222,10 @@
     display: inline-block;
     padding: 6px 14px;
     border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-semibold);
     background: rgba(255, 255, 255, 0.25);
-    color: white;
+    color: var(--bg-color-white);
     backdrop-filter: blur(10px);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -234,9 +234,12 @@
 
 /* Loading State */
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.5;
     }

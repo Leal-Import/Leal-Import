@@ -36,7 +36,7 @@
     display: grid;
     place-content: center;
     border: none;
-    font-size: 1.4em;
+    font-size: var(--font-size-title);
     color: var(--text-color-secondary);
     cursor: pointer;
     padding: 6px;

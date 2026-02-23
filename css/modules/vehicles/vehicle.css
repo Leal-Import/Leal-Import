@@ -64,7 +64,7 @@
 }
 
 .statTitle {
-    font-size: 0.9em;
+    font-size: var(--font-size-sm);
     color: var(--text-color-secondary);
     font-weight: var(--font-weight-medium);
     margin-bottom: 8px;
@@ -106,7 +106,7 @@
 }
 
 .totalSales .statIcon {
-    font-size: 3em;
+    font-size: var(--font-size-breadcrumb);
 }
 
 .totalSales .statTitle {
@@ -241,7 +241,7 @@
     padding: 6px 14px;
     background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
     border-radius: 20px;
-    font-size: 0.85em;
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--text-color);
     text-align: center;
@@ -265,7 +265,7 @@
 .infoVehicleItem {
     display: flex;
     gap: 8px;
-    font-size: 0.95em;
+    font-size: var(--font-size-default);
     color: var(--text-color-secondary);
 }
 

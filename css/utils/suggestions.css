@@ -24,7 +24,7 @@
 }
 
 .suggestionItem:nth-child(2n) {
-    background-color: #f3f3f3;
+    background-color: var(--bg-color);
 }
 
 .suggestionItem:hover {
@@ -34,12 +34,12 @@
 .suggestionItem .clientName {
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-lg);
-    color: #222;
+    color: var(--text-color);
 }
 
 .suggestionItem .clientDui {
     font-size: var(--font-size-sm);
-    color: #666;
+    color: var(--text-color-dark);
 }
 
 .containerSuggest {

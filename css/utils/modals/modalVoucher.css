@@ -19,7 +19,7 @@
 }
 
 .modalVoucher .btnSecondary,
-.modalVoucher .btnPrimary{
+.modalVoucher .btnPrimary {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -30,7 +30,7 @@
 }
 
 .modalVoucher .btnSecondary span,
-.modalVoucher .btnPrimary span{
+.modalVoucher .btnPrimary span {
     text-wrap: nowrap;
 }
 
@@ -77,23 +77,23 @@
 
 .headerModalVoucher h2 {
     color: #ffffff;
-    font-size: 26px;
-    font-weight: 600;
+    font-size: var(--font-size-title-lg);
+    font-weight: var(--font-weight-semibold);
     margin: 0 0 6px 0;
     letter-spacing: -0.3px;
 }
 
 .header-subtitle {
     color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    font-weight: 400;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
     margin: 0;
     letter-spacing: 0.2px;
 }
 
 #modalAbonoTitle {
-    font-weight: 600 !important;
-    font-size: 1em !important;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-default) !important;
     color: rgba(255, 255, 255, 1) !important;
 }
 
@@ -200,9 +200,9 @@
 
 .upload-icon::before {
     content: '↑';
-    font-size: 32px;
+    font-size: var(--font-size-title-lg);
     color: #ffffff;
-    font-weight: 300;
+    font-weight: var(--font-weight-light);
     display: block;
     line-height: 1;
 }
@@ -217,19 +217,25 @@
 }
 
 @keyframes floatIcon {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0px);
     }
+
     50% {
         transform: translateY(-10px);
     }
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.5;
         transform: scale(1.1);
@@ -242,24 +248,24 @@
 }
 
 .upload-title {
-    font-size: 18px;
+    font-size: var(--font-size-lg);
     color: #1f2937;
     margin: 0 0 8px 0;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     letter-spacing: -0.2px;
 }
 
 .upload-description {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     color: #6b7280;
     line-height: 1.5;
     margin: 0 0 12px 0;
 }
 
 .upload-formats {
-    font-size: 12px;
+    font-size: var(--font-size-sh);
     color: #9ca3af;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     letter-spacing: 0.3px;
     margin: 0;
 }
@@ -373,17 +379,17 @@
 }
 
 .file-name {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .file-size {
-    font-size: 12px;
+    font-size: var(--font-size-sh);
     opacity: 0.85;
-    font-weight: 400;
+    font-weight: var(--font-weight-regular);
 }
 
 /* Modal Actions */
@@ -428,8 +434,13 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .preview-area.loading .empty-state {
@@ -474,6 +485,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -491,6 +503,7 @@
         transform: scale(0.8);
         opacity: 0;
     }
+
     to {
         transform: scale(1);
         opacity: 1;
@@ -551,26 +564,27 @@
         transform: translateY(40px) scale(0.9);
         opacity: 0;
     }
+
     to {
         transform: translateY(0) scale(1);
         opacity: 1;
     }
 }
 
-@container modalVoucher (max-width: 475px){
-    .headerModalVoucher h2{
+@container modalVoucher (max-width: 475px) {
+    .headerModalVoucher h2 {
         font-size: var(--font-size-base);
     }
 
-    .bodyModalVoucher{
+    .bodyModalVoucher {
         padding: 20px 15px;
     }
 
-    .header-subtitle{
+    .header-subtitle {
         font-size: var(--font-size-sm);
     }
 
-    .modalVoucher .btnClose{
+    .modalVoucher .btnClose {
         margin: 0;
     }
 }

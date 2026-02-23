@@ -2,7 +2,7 @@
 .containerModal {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: var(--text-color);
     backdrop-filter: blur(4px);
     z-index: 999;
     display: flex;
@@ -27,7 +27,7 @@
 .titleModal {
     font-weight: var(--font-weight-medium);
     text-align: center;
-    font-size: 1.8em;
+    font-size: var(--font-size-title-lg);
     color: var(--danger-color);
     margin-bottom: 25px;
 }

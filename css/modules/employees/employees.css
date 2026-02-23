@@ -45,7 +45,7 @@
         grid-template-columns: 1fr auto;
         grid-template-rows: auto auto auto auto;
         gap: 12px;
-        background-color: var(--bg-color-white, #FFFFFF);
+        background-color: var(--bg-color-white);
         padding: 20px;
         margin-bottom: 15px;
         border-radius: 10px;
@@ -63,7 +63,7 @@
         grid-column: 1 / -1;
         text-align: center;
         padding: 40px 20px;
-        color: var(--text-color-secondary, #81859E);
+        color: var(--text-color-secondary);
     }
 
     /* Convertir cada TD en un item de la card */
@@ -72,7 +72,7 @@
         align-items: flex-start;
         padding: 0;
         border: none;
-        font-size: 14px;
+        font-size: var(--font-size-base);
         word-wrap: break-word;
     }
 
@@ -94,8 +94,8 @@
     }
 
     .table tbody tr td::before {
-        font-weight: 600;
-        color: var(--helper-color, #CD908F);
+        font-weight: var(--font-weight-semibold);
+        color: var(--helper-color);
         min-width: 80px;
         flex-shrink: 0;
     }
@@ -104,9 +104,9 @@
     /* Nombre completo - ocupa toda la primera fila */
     .table tbody tr td:nth-child(1) {
         grid-column: 1 / -1;
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--text-color, #0D0503);
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-color);
     }
 
     .table tbody tr td:nth-child(1)::before {
@@ -132,10 +132,10 @@
         align-self: center;
         padding: 4px 12px;
         background-color: rgba(211, 24, 19, 0.1);
-        color: var(--danger-color, #D31813);
+        color: var(--danger-color);
         border-radius: 12px;
-        font-size: 12px;
-        font-weight: 500;
+        font-size: var(--font-size-sh);
+        font-weight: var(--font-weight-medium);
         width: fit-content;
     }
 
@@ -170,8 +170,8 @@
     /* Ajustar valores para que no sean bold */
     .table tbody tr td:nth-child(2),
     .table tbody tr td:nth-child(3) {
-        font-weight: 400;
-        color: var(--text-color-secondary, #81859E);
+        font-weight: var(--font-weight-regular);
+        color: var(--text-color-secondary);
     }
 
     .actionButton {
@@ -190,20 +190,15 @@
     }
 
     .table tbody tr td:nth-child(1) {
-        font-size: 15px;
+        font-size: var(--font-size-sm);
     }
 
     .table tbody tr td {
-        font-size: 13px;
+        font-size: var(--font-size-sm);
     }
 
     .table tbody tr td::before {
         min-width: 65px;
-        font-size: 13px;
-    }
-
-    .btnOpenModal {
-        font-size: 14px;
-        padding: 10px 20px;
+        font-size: var(--font-size-sm);
     }
 }
