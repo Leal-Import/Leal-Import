@@ -22,8 +22,6 @@ export const DOMRefs = {
     init() {
         this.refs = {
             previewImage: qs("#mainSwiper .previewImg"),
-            txtCosts: qsa(".txtCosts"),
-            txtTotal: $("txtTotal"),
             mainSwiperWrapper: $("mainSwiperWrapper"),
             thumbsWrapper: $("thumbsWrapper"),
             frmVehicles: $("frmVehicles"),
@@ -33,34 +31,42 @@ export const DOMRefs = {
             modalLinkLote: $("modalLinkLote"),
             uploadDropArea: $("uploadDropArea"),
             loaderSaveVehicle: $("loaderSaveVehicle"),
+            txtCustomer: $("txtCustomer"),
+            txtYear: $("txtYear"),
+            btnCloseLink: qs("#modalLinkLote .btnClose"),
+            typeAction: $("typeAction"),
             btnSaveData: $("btnSaveData"),
-            txtCustomer: $("txtCustomer")
+            txtCosts: qsa('.txtCosts'),
+            btnImgs: qsa('.btnImgs'),
+            groupCustomer: qs('.groupCustomer'),
+            txtTotal: $('txtTotal'),
+            defaultText: $("defaultText"),
+            errorLinkLote: $("errorLinkLote"),
+            validateUrlMessage: $("validateUrlMessage"),
+            selectedCustomerText: $("selectedCustomerText"),
+            txtLink: $("txtLink"),
+            btnSaveLinkLote: $("btnSaveLinkLote"),
+            txtFormat: qsa(".txtFormat"),
+            btnLinkLote: qs(".btnLinkLote")
         };
 
         return this.refs;
     }
 };
 
-export function loadDomData() {
-    $("typeAction").textContent = "Actualizar vehiculo";
-    $("btnSaveData").querySelector("span").textContent = "Actualizar"
+export function loadDomData(typeAction, btnSaveData) {
+    typeAction.textContent = "Actualizar vehiculo";
+    btnSaveData.querySelector("span").textContent = "Actualizar"
 }
 
 let mainSwiperInstance = null;
 let thumbsSwiperInstance = null;
 
-export function renderExternalMode(config) {
-    const txtCosts = qsa('.costsData input');
-    const btnImgs = qsa('.btnImgs');
-    const groupCustomer = qs('.groupCustomer');
-    const txtCustomer = $('txtCustomer');
-    const txtTotal = $('txtTotal');
-
-    setFormReadOnly('.costsData', config.readOnlyCosts);
+export function renderExternalMode(config, txtCosts, btnImgs, groupCustomer, txtCustomer, txtTotal) {
 
     txtCosts.forEach(txt => {
         if (config.clearCosts) txt.value = '';
-        config.costRequired
+        config.costsRequired
             ? txt.setAttribute('required', true)
             : txt.removeAttribute('required');
     });
@@ -100,36 +106,6 @@ export function renderCustomersSuggestions(boxCustomer, customers, onSelect) {
     boxCustomer.appendChild(fragment);
     boxCustomer.classList.add("show");
     boxCustomer.classList.remove("hide");
-}
-
-const hideDefaultText = () => {
-    $("defaultText").classList.add("hide");
-}
-
-export const showDefaultText = () => {
-    $("defaultText").classList.remove("hide");
-    $("errorLinkLote").classList.add("hide");
-    $("validateUrlMessage").classList.add("hide");
-}
-
-export const hideCustomerSelected = () => {
-    $("selectedCustomerText").classList.add("hide");
-}
-
-export const showCustomerSelected = () => {
-    $("selectedCustomerText").classList.remove("hide");
-}
-
-export const showValidUrl = () => {
-    hideDefaultText();
-    $("errorLinkLote").classList.add("hide");
-    $("validateUrlMessage").classList.remove("hide");
-}
-
-export const showInvalidUrl = () => {
-    hideDefaultText();
-    $("errorLinkLote").classList.remove("hide");
-    $("validateUrlMessage").classList.add("hide");
 }
 
 export function renderImages(images, mainWrapper, thumbsWrapper, onDelete, onAddClick) {
@@ -202,7 +178,7 @@ function initSwipers() {
             prevEl: ".swiper-button-prev",
         },
         thumbs: {
-            swiper: thumbsSwiper,
+            swiper: thumbsSwiperInstance,
         },
         lazy: true,
     });
