@@ -1,6 +1,6 @@
 'use strict'
 
-import { changePasswordType, cleanAuthCamps, clearPasswodPamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType } from "../../core/dom/login.dom.js";
+import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswodPamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType } from "../../core/dom/login.dom.js";
 import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown, validatePassword } from "../../core/logic/login.logic.js";
 import { loginState } from "../../core/state/login.state.js";
 import { login, resetPassword, verifyEmail, verifyPIN } from "../../service/login.service.js";
@@ -11,11 +11,11 @@ import { initLoginEvents } from "./login.event.js";
 
 const onTogglePassword = () => {
     const icon = DOMRefs.refs.togglePassword.querySelector("i");
-    changeStyleIconPassword(icon, loginState);
-    if (DOMRefs.refs.passwordInput.type === 'password') {
-        resetInputType(DOMRefs.refs.passwordInput, icon);
+    changeStyleTogglePassword(icon, loginState)
+    if (DOMRefs.refs.txtPassword.type === 'password') {
+        resetInputType(DOMRefs.refs.txtPassword, icon);
     } else {
-        changePasswordType(DOMRefs.refs.passwordInput, icon);
+        changePasswordType(DOMRefs.refs.txtPassword, icon);
     }
 }
 
@@ -47,8 +47,6 @@ const onCloseAuthEmail = () => {
 }
 
 const onClosePin = () => {
-    toggleModal(DOMRefs.refs.modalCode, false);
-    toggleModal(DOMRefs.refs.modalRecovery, true);
     clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
     DOMRefs.refs.codeDigits.forEach(i => i.value = '');
 
@@ -121,7 +119,7 @@ const onAuthEmail = async (e) => {
 
         toggleModal(DOMRefs.refs.modalAuth, false);
         toggleModal(DOMRefs.refs.modalCode, true);
-        renderMaskedEmail(email);
+        renderMaskedEmail(DOMRefs.refs.modalCodeBody, email);
         startCountdown(minutes, loginState, DOMRefs.refs.modalCodeBody);
         focusFirstCodeInput(DOMRefs.refs.codeDigits);
     } catch (error) {
@@ -164,7 +162,7 @@ const onSendCode = async (e) => {
         toggleModal(DOMRefs.refs.modalNewPassword, true);
         clearCountdown(loginState, DOMRefs.refs.modalCodeBody);
     } catch (error) {
-        await showMessage("Codigo invalido", err?.message || 'No se pudo verificar el código.', "error");
+        await showMessage("Codigo invalido", error?.message || 'No se pudo verificar el código.', "error");
         focusFirstCodeInput(DOMRefs.refs.codeDigits);
     } finally {
         loginState.flags.pendingVerify = false;
@@ -216,9 +214,9 @@ const onUpdatePassword = async () => {
         await showMessage("Error", error?.message || 'No se pudo actualizar la contraseña', "error");
 
     } finally {
-        loginState.flags.pendingUpdate = true;
-        removeDisable(DOMRefs.refs.btnCodeContinue);
-        hideElement(DOMRefs.refs.btnCodeContinueLoader);
+        loginState.flags.pendingUpdate = false;
+        removeDisable(DOMRefs.refs.btnUpdatePassword);
+        hideElement(DOMRefs.refs.btnUpdatePasswordLoader);
     }
 }
 
@@ -229,9 +227,9 @@ const initializeUI = (Refs) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
-        initializeUI(DOMRefs.refs);
+        initializeUI(refs);
     } catch (error) {
         console.error('Error inicializando la aplicación: ', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');

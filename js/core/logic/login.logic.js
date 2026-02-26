@@ -1,7 +1,7 @@
 import { showMessage } from "../../utils/dom.js";
 import { removeCountdown, updateCountdownUI } from "../dom/login.dom.js";
 
-export function renderMaskedEmail(email) {
+export function renderMaskedEmail(modalCodeBody, email) {
     const span = modalCodeBody?.querySelector('p span b');
     if (span) span.textContent = maskEmailSimple(email);
 }
@@ -38,9 +38,9 @@ export function startCountdown(minutes, state, modalCodeBody) {
     updateCountdownUI(modalCodeBody, state);
 
     state.countdown.timer = setInterval(async () => {
-        countdownRemainingSeconds--;
-        if (countdownRemainingSeconds <= 0) {
-            clearCountdown();
+        state.countdown.remainingSeconds--;
+        if (state.countdown.remainingSeconds <= 0) {
+            clearCountdown(state, modalCodeBody);
             await showMessage("Codigo expirado", "El código ha expirado. Solicita uno nuevo.", "warning");
         } else {
             updateCountdownUI(modalCodeBody, state);

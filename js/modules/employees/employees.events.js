@@ -1,18 +1,13 @@
-import { $, setupModal } from '../../utils/dom.js';
+import { setupModal } from '../../utils/dom.js';
 import { formatPhoneNumber } from '../../utils/formatters.js';
 
-let searchTimeout = null;
 
-export function initEmployeeEvents({ onSubmitEmployee, onSearchEmployee, onReset }) {
+export function initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onReset }) {
 
-    const form = $('frmEmployees');
-    const txtSearchData = $('txtSearchData');
-    const cmbSearchByRole = $('cmbSearchByRole');
-    const cmbSearchByStatus = $('cmbSearchByStatus');
-    const txtEmployeePhone = $('txtEmployeePhone');
+    let searchTimeout = null;
 
-    if (txtEmployeePhone) {
-        txtEmployeePhone.addEventListener('input', (e) => {
+    if (Refs.txtEmployeePhone) {
+        Refs.txtEmployeePhone.addEventListener('input', (e) => {
             formatPhoneNumber(e.target);
         });
     }
@@ -23,26 +18,26 @@ export function initEmployeeEvents({ onSubmitEmployee, onSearchEmployee, onReset
         clearTimeout(searchTimeout)
         searchTimeout = setTimeout(() => {
             onSearchEmployee({
-                search: txtSearchData?.value.trim() || '',
-                idRole: cmbSearchByRole?.value || '',
-                status: cmbSearchByStatus?.value || ''
+                search: Refs.txtSearchData?.value.trim() || '',
+                idRole: Refs.cmbSearchByRole?.value || '',
+                status: Refs.cmbSearchByStatus?.value || ''
             });
         }, 1000)
     };
 
-    if (cmbSearchByStatus) {
-        cmbSearchByStatus.addEventListener('change', emitFilters);
+    if (Refs.cmbSearchByStatus) {
+        Refs.cmbSearchByStatus.addEventListener('change', emitFilters);
     }
 
-    if (cmbSearchByRole) {
-        cmbSearchByRole.addEventListener('change', emitFilters);
+    if (Refs.cmbSearchByRole) {
+        Refs.cmbSearchByRole.addEventListener('change', emitFilters);
     }
 
-    if (txtSearchData) {
-        txtSearchData.addEventListener('input', emitFilters);
+    if (Refs.txtSearchData) {
+        Refs.txtSearchData.addEventListener('input', emitFilters);
     }
 
-    if (form) {
-        form.addEventListener('submit', onSubmitEmployee);
+    if (Refs.frmEmployees) {
+        Refs.frmEmployees.addEventListener('submit', onSubmitEmployee);
     }
 }

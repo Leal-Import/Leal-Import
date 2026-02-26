@@ -34,12 +34,12 @@ export async function loadVehicles() {
     try {
         showElement(DOMRefs.refs.loaderVehicles);
         const { page, size } = vehiclesState.pagination;
-        const { search, year, stateId } = vehiclesState.filters;
+        const { search, year, statusId } = vehiclesState.filters;
         const data = await getVehicles(
             page - 1,
             size,
             search || '',
-            stateId || '',
+            statusId || '',
             year || ''
         );
 
@@ -72,7 +72,7 @@ export function onSearchVehicles(filters) {
     loadVehicles();
 }
 
-let workOrderBtn = () => {
+const workOrderBtn = () => {
     if (!DOMRefs.refs.btnAddVehicle) return;
     DOMRefs.refs.btnAddVehicle.href = `vehicleDetails.html?workOrder=${vehiclesState.context.hasWorkOrder}`;
 }
@@ -92,8 +92,8 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initVehicleEvents({ onSearchVehicles });
+const initializeUI = (Refs) => {
+    initVehicleEvents({ Refs, onSearchVehicles });
     if (vehiclesState.context.hasWorkOrder) {
         workOrderBtn();
     }
@@ -110,10 +110,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!isReady) return;
 
         // 2. Inicializar referencias del DOMRefs
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
         // 3. Inicializar componentes UI
-        initializeUI();
+        initializeUI(refs);
 
         // 4. Cargar datos según el flujo
         await loadDataFlow();

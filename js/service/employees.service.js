@@ -69,10 +69,10 @@ export let postEmployee = async (employeeData) => {
     }
 };
 
-export const patchEmployee = async (obj, value) => {
+export const patchEmployee = async (username, value) => {
     try {
         const response = await fetch(
-            `${API_URLUS}/${obj.username}/status?value=${value}`,
+            `${API_URLUS}/${username}/status?value=${value}`,
             {
                 method: 'PATCH',
                 credentials: 'include',

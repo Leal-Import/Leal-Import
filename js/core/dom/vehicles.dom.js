@@ -10,6 +10,9 @@ export const DOMRefs = {
             cardContainer: qs('.cardContainer'),
             loaderVehicles: $('loaderVehicles'),
             btnAddVehicle: $('btnAddVehicle'),
+            txtSearchData:  $('txtSearchData'),
+            txtSearchYear:  $('txtSearchYear'),
+            cmbSearchByStatus:  $('cmbSearchByStatus')
         };
         return this.refs;
     }

@@ -360,7 +360,7 @@ fieldset .cardBody {
     background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
 }
 
-#uploadDropText{
+#uploadDropText {
     color: var(--text-color);
 }
 
@@ -404,6 +404,10 @@ fieldset .cardBody {
     font-size: var(--font-size-lg);
 }
 
+.isExternalContainer {
+    color: var(--text-color);
+}
+
 /* Toggle Switch */
 .switch {
     position: relative;
@@ -420,7 +424,7 @@ fieldset .cardBody {
 .slider {
     position: absolute;
     inset: 0;
-    background: #E8E8E8;
+    background-color: var(--bg-color);
     border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -434,10 +438,18 @@ fieldset .cardBody {
     left: 4px;
     top: 50%;
     transform: translateY(-50%);
-    background: white;
+    background-color: var(--bg-color-white);
     border-radius: 50%;
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .slider {
+    background-color: #4A4A4A;
+}
+
+.dark-mode .slider::before {
+    background-color: #FFFFFF;
 }
 
 input:checked+.slider {

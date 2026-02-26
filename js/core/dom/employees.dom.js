@@ -1,8 +1,6 @@
 // modules/employees/employees.view.js
 import { fillForm, toggleModal, $, fillSelect } from '../../utils/dom.js';
 
-const modalEmployees = $('modalEmployees');
-
 export const DOMRefs = {
     refs: {},
 
@@ -11,15 +9,19 @@ export const DOMRefs = {
             employeesTableBody: $('employeesTableBody'),
             modalEmployees: $('modalEmployees'),
             frmEmployees: $('frmEmployees'),
-            userInput: $("userInput"),
-            passwordInput: $("passwordInput"),
-            loaderEmployees: $("loaderEmployees")
+            loaderEmployees: $("loaderEmployees"),
+            txtEmployeePhone: $('txtEmployeePhone'),
+            txtSearchData: $('txtSearchData'),
+            cmbSearchByRole: $("cmbSearchByRole"),
+            cmbSearchByStatus: $("cmbSearchByStatus"),
+            btnAddEmployee: $("btnAddEmployee"),
+            btnAddEmployeeLoader: $("btnAddEmployeeLoader")
         };
         return this.refs;
     }
 };
 
-export function fillEmployeesForm(employee, text) {
+export function fillEmployeesForm(employee, text, btnAddEmployee, modalEmployees) {
     fillForm('#frmEmployees', {
         txtFullName: employee.fullName,
         txtEmployeeEmail: employee.email,
@@ -27,9 +29,8 @@ export function fillEmployeesForm(employee, text) {
         txtUsername: employee.username.username,
         cmbUserRole: employee.idRole
     });
-    $('btnAddEmployee').querySelector("span").textContent = text;
+    btnAddEmployee.querySelector("span").textContent = text;
     modalEmployees.querySelector('.titleModal').textContent = text;
-    toggleModal(modalEmployees, true);
 }
 
 export function renderRolesSelects(roles) {

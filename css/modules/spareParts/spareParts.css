@@ -66,15 +66,15 @@
 }
 
 #Stock {
-    border-left: 4px solid #e53e3e;
+    border-left: 4px solid var(--danger-color);
 }
 
 #Requested {
-    border-left: 4px solid #48bb78;
+    border-left: 4px solid var(--success-color);
 }
 
 #TotalCost {
-    border-left: 4px solid #4299e1;
+    border-left: 4px solid var(--helper-stat-color);
 }
 
 .card {
@@ -178,7 +178,7 @@
 
 .footerCard .btnPrimary {
     background-color: var(--danger-color);
-    color: var(--bg-color-white);;
+    color: #FFFFFF;
     border: none;
 }
 

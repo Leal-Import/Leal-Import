@@ -27,6 +27,10 @@
 }
 @container content (max-width: 950px) {
 
+    .containerTable{
+        min-height: 400px;
+    }
+
     /* Ocultar thead */
     .table thead {
         display: none;

@@ -22,6 +22,8 @@ import { initSession } from '../../utils/api.utils.js';
    CARGA DE EMPLEADOS
 ================================ */
 
+const STATUS = { ACTIVE: 'T', INACTIVE: 'F' };
+
 const pagination = createPagination({
     initialSize: employeesState.pagination.size,
     onChange: ({ page, size }) => {
@@ -117,9 +119,9 @@ export async function onSubmitEmployee(e) {
         toggleModal(DOMRefs.refs.modalEmployees, false);
         DOMRefs.refs.frmEmployees.reset();
         employeesState.selectedId = null;
-        pagination.update({});
         hideElement(DOMRefs.refs.btnAddEmployeeLoader);
         removeDisable(DOMRefs.refs.btnAddEmployee);
+        pagination.update({});
     }
 }
 
@@ -136,13 +138,13 @@ function handleEmployeeActions(event, employee) {
             onClick: () => editEmployee(employee)
         },
         {
-            label: employee.status === 'T'
+            label: employee.status === STATUS.ACTIVE
                 ? 'Desactivar empleado'
                 : 'Activar empleado',
             onClick: () =>
                 toggleEmployeeStatus(
-                    employee.username,
-                    employee.status === 'T' ? 'F' : 'T'
+                    employee.username.username,
+                    employee.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
                 )
         },
         {
@@ -158,13 +160,15 @@ function handleEmployeeActions(event, employee) {
 
 function editEmployee(employee) {
     employeesState.selectedId = employee.idEmployee;
-    fillEmployeesForm(employee, "Actualizar empleado");
+    fillEmployeesForm(employee, "Actualizar empleado", DOMRefs.refs.btnAddEmployee, DOMRefs.refs.modalEmployees);
+    toggleModal(DOMRefs.refs.modalEmployees, true)
     setFormReadOnly('#frmEmployees', false);
 }
 
 function viewEmployee(employee) {
     employeesState.selectedId = null;
-    fillEmployeesForm(employee, "Ver empleado");
+    fillEmployeesForm(employee, "Ver empleado", DOMRefs.refs.btnAddEmployee, DOMRefs.refs.modalEmployees);
+    toggleModal(DOMRefs.refs.modalEmployees, true)
     setFormReadOnly('#frmEmployees', true);
 }
 
@@ -175,7 +179,7 @@ function viewEmployee(employee) {
 async function toggleEmployeeStatus(username, status) {
     try {
         await patchEmployee(username, status);
-        showMessage('Empleado', status === 'T' ? 'Empleado activado' : 'Empleado desactivado', 'success');
+        showMessage('Empleado', status === STATUS.ACTIVE ? 'Empleado activado' : 'Empleado desactivado', 'success');
 
         loadEmployees();
     } catch (error) {
@@ -213,8 +217,8 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initEmployeeEvents({ onSubmitEmployee, onSearchEmployee, onReset: () => employeesState.selectedId = null });
+const initializeUI = (Refs) => {
+    initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onReset: () => employeesState.selectedId = null });
 }
 
 const loadDataFlow = async () => {
@@ -226,9 +230,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
-        initializeUI();
+        initializeUI(refs);
 
         await loadDataFlow();
     } catch (error) {

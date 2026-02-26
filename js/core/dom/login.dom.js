@@ -1,6 +1,6 @@
 'use strict'
 
-import { $, hideElement, qs, qsa, showElement, toggleModal } from "../../utils/dom.js";
+import { $, qs, qsa, toggleModal } from "../../utils/dom.js";
 
 export const DOMRefs = {
     refs: {},
@@ -12,9 +12,6 @@ export const DOMRefs = {
             btnLogin: $('btnLogin'),
             btnLoginLoader: $('btnLoginLoader'),
             formLogin: $('formLogin'),
-            loaderEmployees: $("loaderEmployees"),
-            btnAddEmployeeLoader: $("btnAddEmployeeLoader"),
-            btnAddEmployee: $("btnAddEmployee"),
             modals: qsa(".modal"),
             modalRecovery: $("modalRecovery"),
             modalAuth: $("modalAuth"),
@@ -47,7 +44,7 @@ export const DOMRefs = {
 
 export const resetInputType = (input, icon) => {
     input.type = "text";
-    showElement(icon);
+    icon.classList.replace('bx-hide', 'bx-show');
 }
 
 export const clearPasswodPamps = (txtNewPassword, txtConfirmPassword) => {
@@ -57,7 +54,7 @@ export const clearPasswodPamps = (txtNewPassword, txtConfirmPassword) => {
 
 export const changePasswordType = (input, icon) => {
     input.type = "password";
-    hideElement(icon);
+    icon.classList.replace('bx-show', 'bx-hide');
 }
 
 export const hideAllModals = () => {
@@ -127,4 +124,10 @@ export function updateCountdownUI(modalCodeBody, state) {
 export const removeCountdown = (modalCodeBody) => {
     const el = modalCodeBody?.querySelector('#__pin_countdown');
     if (el) el.remove();
+}
+
+export function changeStyleTogglePassword(icon, state) {
+    state.rotate += 180;
+    icon.style.transition = 'transform 0.5s';
+    icon.style.transform = `rotate(${state.rotate}deg)`;
 }

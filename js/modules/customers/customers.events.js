@@ -1,15 +1,10 @@
-import { setupModal, $ } from '../../utils/dom.js';
+import { setupModal } from '../../utils/dom.js';
 import { formatDUIInput, formatPhoneNumber } from '../../utils/formatters.js';
 
-let searchTimeout = null;
 
-export function initCustomerEvents({ onSubmitCustomer, onSearchCustomer, onCleanState }) {
-
-    const frmCustomers = $("frmCustomers");
-    const txtSearchCustomer = $("txtSearchData");
-    const txtCustomerPhone = $("txtCustomerPhone");
-    const txtCustomerDUI = $("txtCustomerDUI");
-
+export function initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onCleanState }) {
+    
+    let searchTimeout = null;
     setupModal(
         '#openModalCustomer',
         '#modalCustomers',
@@ -19,21 +14,21 @@ export function initCustomerEvents({ onSubmitCustomer, onSearchCustomer, onClean
         onCleanState
     );
 
-    frmCustomers.addEventListener("submit", onSubmitCustomer);
+    Refs.frmCustomers.addEventListener("submit", onSubmitCustomer);
 
-    txtCustomerPhone.addEventListener('input', (e) => {
+    Refs.txtCustomerPhone.addEventListener('input', (e) => {
         formatPhoneNumber(e.target);
     });
 
-    txtCustomerDUI.addEventListener('input', (e) => {
+    Refs.txtCustomerDUI.addEventListener('input', (e) => {
         formatDUIInput(e.target);
     });
 
-    txtSearchCustomer.addEventListener('input', () => {
+    Refs.txtSearchData.addEventListener('input', () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             onSearchCustomer({
-                search: txtSearchCustomer.value.trim()
+                search: Refs.txtSearchData.value.trim()
             });
         }, 1000);
     });

@@ -16,7 +16,7 @@ const pagination = createPagination({
 });
 
 
-let loadCustomers = async () => {
+const loadCustomers = async () => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customerSaleState.pagination;
@@ -74,9 +74,8 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initCustomerSaleEvents({ onSearchCustomer });
-
+const initializeUI = (Refs) => {
+    initCustomerSaleEvents({ Refs, onSearchCustomer });
 }
 
 const loadDataFlow = async () => {
@@ -90,10 +89,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!isReady) return;
 
         // 2. Inicializar referencias del DOMRefs
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
         // 3. Inicializar componentes UI
-        initializeUI();
+        initializeUI(refs);
 
         // 4. Cargar datos según el flujo
         await loadDataFlow();

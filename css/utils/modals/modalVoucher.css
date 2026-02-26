@@ -5,7 +5,7 @@
 
 /* Modal Container */
 .modalVoucher {
-    background: #ffffff;
+    background-color: var(--bg-color-white);
     border-radius: 20px;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
     position: relative;
@@ -145,7 +145,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: linear-gradient(135deg, #fafbfc 0%, #f9fafb 100%);
+    background: linear-gradient(135deg, var(--bg-color-white) 0%, var(--bg-color) 100%);
     position: relative;
     transition: all 0.3s ease;
     margin-bottom: 24px;
@@ -154,7 +154,6 @@
 
 .preview-area:hover {
     border-color: var(--danger-color);
-    background: linear-gradient(135deg, #fff8f8 0%, #fff5f5 100%);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(220, 53, 69, 0.1);
 }
@@ -162,7 +161,6 @@
 .preview-area.dragover {
     border-color: var(--danger-color);
     border-style: solid;
-    background: linear-gradient(135deg, #fff5f5 0%, #ffe5e8 100%);
     box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1);
 }
 
@@ -249,7 +247,7 @@
 
 .upload-title {
     font-size: var(--font-size-lg);
-    color: #1f2937;
+    color: var(--text-color);
     margin: 0 0 8px 0;
     font-weight: var(--font-weight-semibold);
     letter-spacing: -0.2px;
@@ -257,7 +255,7 @@
 
 .upload-description {
     font-size: var(--font-size-sm);
-    color: #6b7280;
+    color: var(--text-color-secondary);
     line-height: 1.5;
     margin: 0 0 12px 0;
 }
@@ -297,7 +295,7 @@
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
 }
 
 .preview-image {
@@ -331,7 +329,6 @@
 }
 
 .zoom-btn:hover {
-    background: #ffffff;
     transform: scale(1.1);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     color: var(--dark-danger-color);
@@ -341,17 +338,7 @@
     transform: scale(1.05);
 }
 
-/* Preview Overlay */
-.preview-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
-    padding: 20px 24px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
+
 
 .preview-image-wrapper:hover .preview-overlay {
     opacity: 1;

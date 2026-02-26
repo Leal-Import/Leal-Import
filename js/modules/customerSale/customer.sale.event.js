@@ -1,16 +1,13 @@
-import { $ } from '../../utils/dom.js';
 
-
-export function initCustomerSaleEvents({ onSearchCustomer }) {
+export function initCustomerSaleEvents({ Refs,  onSearchCustomer }) {
     
-    const txtSearchCustomer = $("txtSearchData");
     let searchTimeout = null;
 
-    txtSearchCustomer.addEventListener('input', () => {
+    Refs.txtSearchData.addEventListener('input', () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             onSearchCustomer({
-                search: txtSearchCustomer.value.trim()
+                search: Refs.txtSearchData.value.trim()
             });
         }, 1000);
     });

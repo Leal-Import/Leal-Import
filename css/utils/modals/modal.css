@@ -2,7 +2,7 @@
 .containerModal {
     position: fixed;
     inset: 0;
-    background-color: var(--text-color);
+    background-color: var(--bg-color-modal);
     backdrop-filter: blur(4px);
     z-index: 999;
     display: flex;

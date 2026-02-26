@@ -118,7 +118,7 @@
 }
 
 .vehicleType {
-    color: var(--bg-color);
+    color: #FFFFFF;
     background-color: var(--danger-color);
 }
 

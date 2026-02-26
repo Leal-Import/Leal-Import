@@ -1,11 +1,13 @@
 import { postCustomer, putCustomer, getCustomers, patchCustomer } from '../../service/customers.service.js';
 import { customersState } from '../../core/state/customers.state.js';
-import { $, toggleModal, showMessage, showFloatingMenu, setFormReadOnly, showElement, hideElement, disableElement, removeDisable } from '../../utils/dom.js';
+import { toggleModal, showMessage, showFloatingMenu, setFormReadOnly, showElement, hideElement, disableElement, removeDisable } from '../../utils/dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateCustomer, mapCustomerForm } from '../../core/logic/customers.logic.js';
 import { initCustomerEvents } from './customers.events.js';
 import { DOMRefs, fillCustomerForm, insertCustomers } from '../../core/dom/customers.dom.js';
 import { initSession } from '../../utils/api.utils.js';
+
+const STATUS = { ACTIVE: 'T', INACTIVE: 'F' };
 
 const pagination = createPagination({
     initialSize: customersState.pagination.size,
@@ -34,7 +36,8 @@ export async function loadCustomers() {
         insertCustomers(
             DOMRefs.refs.CustomersTableBody,
             customersState.list,
-            handleCustomerActions
+            handleCustomerActions,
+            DOMRefs.refs.tableCustomers
         );
 
         pagination.setTotal({
@@ -55,6 +58,7 @@ export async function loadCustomers() {
     }
 }
 
+
 function handleCustomerActions(event, customer) {
     event.stopPropagation();
 
@@ -64,13 +68,13 @@ function handleCustomerActions(event, customer) {
             onClick: () => editCustomer(customer)
         },
         {
-            label: customer.status === 'T'
+            label: customer.status === STATUS.ACTIVE
                 ? 'Desactivar cliente'
                 : 'Activar cliente',
             onClick: () =>
                 toggleCustomerStatus(
                     customer.idCustomer,
-                    customer.status === 'T' ? 'F' : 'T'
+                    customer.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
                 )
         },
         {
@@ -84,9 +88,9 @@ function handleCustomerActions(event, customer) {
 async function toggleCustomerStatus(id, status) {
     try {
         await patchCustomer(id, status);
-        showMessage('Cliente', status === 'T' ? 'Cliente activado' : 'Cliente desactivado', 'success');
+        showMessage('Cliente', status === STATUS.ACTIVE ? 'Cliente activado' : 'Cliente desactivado', 'success');
 
-        loadCustomers();
+        await loadCustomers();
     } catch (error) {
         showMessage(
             'Error',
@@ -99,13 +103,15 @@ async function toggleCustomerStatus(id, status) {
 
 function editCustomer(customer) {
     customersState.selectedId = customer.idCustomer;
-    fillCustomerForm(customer, "Actualizar cliente");
+    fillCustomerForm(customer, "Actualizar cliente", DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.modalCustomers);
+    toggleModal(DOMRefs.refs.modalCustomers, true);
     setFormReadOnly('#frmCustomers', false);
 }
 
 function viewCustomer(customer) {
     customersState.selectedId = null;
-    fillCustomerForm(customer, "Ver cliente");
+    fillCustomerForm(customer, "Ver cliente", DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.modalCustomers);
+    toggleModal(DOMRefs.refs.modalCustomers, true);
     setFormReadOnly('#frmCustomers', true);
 }
 
@@ -131,7 +137,7 @@ export async function onSubmitCustomer(e) {
             showMessage('Exito', 'Cliente agregado exitosamente', 'success');
         }
 
-        
+
     } catch (err) {
         console.error(err);
         showMessage('Error', err.message || 'Error al guardar cliente', 'error');
@@ -164,8 +170,8 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initCustomerEvents({ onSubmitCustomer, onSearchCustomer, onCleanState });
+const initializeUI = (Refs) => {
+    initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onCleanState });
 }
 
 const loadDataFlow = async () => {
@@ -179,10 +185,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!isReady) return;
 
         // 2. Inicializar referencias del DOMRefs
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
         // 3. Inicializar componentes UI
-        initializeUI();
+        initializeUI(refs);
 
         // 4. Cargar datos según el flujo
         await loadDataFlow();
