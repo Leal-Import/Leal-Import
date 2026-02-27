@@ -292,7 +292,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!isReady) return;
 
         const refs = DOMRefs.init();
-
+        console.log("DOM Refs: ", refs);
         initializeUI(refs);
 
         await loadDataFlow();

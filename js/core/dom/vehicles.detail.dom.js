@@ -1,4 +1,4 @@
-import { $, qs, qsa, setFormReadOnly, toggleModal } from "../../utils/dom.js";
+import { $, disableElement, qs, qsa, removeDisable, setFormReadOnly, toggleModal } from "../../utils/dom.js";
 
 // core/logic/vehicles.upload.config.js
 export const UPLOAD_CONFIG = {
@@ -36,7 +36,7 @@ export const DOMRefs = {
             btnCloseLink: qs("#modalLinkLote .btnClose"),
             typeAction: $("typeAction"),
             btnSaveData: $("btnSaveData"),
-            txtCosts: qsa('.txtCosts'),
+            txtCosts: qsa('.txtCosts, #txtSuggestedPrice'),
             btnImgs: qsa('.btnImgs'),
             groupCustomer: qs('.groupCustomer'),
             txtTotal: $('txtTotal'),
@@ -47,7 +47,8 @@ export const DOMRefs = {
             txtLink: $("txtLink"),
             btnSaveLinkLote: $("btnSaveLinkLote"),
             txtFormat: qsa(".txtFormat"),
-            btnLinkLote: qs(".btnLinkLote")
+            btnLinkLote: qs(".btnLinkLote"),
+            txtMileage: $("txtMileage")
         };
 
         return this.refs;
@@ -66,9 +67,13 @@ export function renderExternalMode(config, txtCosts, btnImgs, groupCustomer, txt
 
     txtCosts.forEach(txt => {
         if (config.clearCosts) txt.value = '';
-        config.costsRequired
-            ? txt.setAttribute('required', true)
-            : txt.removeAttribute('required');
+        if(config.costsRequired){
+            txt.setAttribute('required', true);
+            removeDisable(txt);
+        } else {
+            txt.removeAttribute('required');
+            disableElement(txt);
+        }
     });
 
     if (config.readOnlyCosts) txtTotal.value = '';

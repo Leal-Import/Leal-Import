@@ -6,7 +6,7 @@ export function initVehicleDetailEvents({ Refs, onSubmit, onSearchCustomer, onAd
 
     Refs.frmVehicles.addEventListener("submit", onSubmit);
 
-    Refs.txtCustomer.addEventListener("input", (e) => {
+    Refs.txtCustomer.addEventListener("input", () => {
         clearTimeout(searchTimeout);
         cleanCustomer();
         searchTimeout = setTimeout(() => onSearchCustomer(Refs.txtCustomer.value), 1500);

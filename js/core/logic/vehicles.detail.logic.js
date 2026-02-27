@@ -81,7 +81,6 @@ export function validateBaseVehicle({
     txtLote,
     txtLink
 }) {
-
     if (!txtVin) {
         highlightAndFocus('txtVin');
         return 'El VIN es obligatorio.';
@@ -122,7 +121,7 @@ export function validateBaseVehicle({
         return 'El lote es obligatorio.';
     }
 
-    if(txtLink.trim() != ""){
+    if(txtLink != ""){
         if(!isValidURL(txtLink)) return "Link del lote no valido";
     }
 
