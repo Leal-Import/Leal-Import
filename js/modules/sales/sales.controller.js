@@ -1,10 +1,10 @@
 // modules/sales/sales.controller.js
 
-import { insertSales, selectLineButton, openAskModal, closeAskModal, DOMRefs } from "../../core/dom/sales.dom.js";
+import { insertSales, selectLineButton, DOMRefs } from "../../core/dom/sales.dom.js";
 import { salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
-import { fillSelect, showMessage } from "../../utils/dom.js";
+import { fillSelect, showMessage, toggleModal } from "../../utils/dom.js";
 import { initSession } from "../../utils/api.utils.js";
 import { hideElement, showElement } from "../../utils/dom.js";
 import { initSalesEvents } from "./sales.event.js";
@@ -86,7 +86,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = () => {
-    initSalesEvents({ onSearchSale, onClickBtnFilter: selectLineButton, onOpenModal: openAskModal, onCloseModal: closeAskModal });
+    initSalesEvents({ onSearchSale, onClickBtnFilter: selectLineButton, onOpenModal: toggleModal(DOMRefs.refs.modalAskSale, true), onCloseModal: toggleModal(DOMRefs.refs.modalAskSale, false) });
 }
 
 const loadDataFlow = async () => {

@@ -1,4 +1,4 @@
-import { $, hideElement, qs, showElement } from "../../utils/dom.js";
+import { $, hideElement, qs } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
 import { vehicleSaleState } from "../state/vehicles.sales.state.js";
 
@@ -14,7 +14,8 @@ export const DOMRefs = {
             addVehicleLoader: $("loaderAddVehicle"),
             tableVehiclesLoader: $("tableVehiclesLoader"),
             btnSaveSaleLoader: $("btnSaveSaleLoader"),
-            btnSaveSale: $("btnSaveSale")
+            btnSaveSale: $("btnSaveSale"),
+            btnCancelVehicle: $("btnCancelVehicle")
         };
         return this.refs;
     }

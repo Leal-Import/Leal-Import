@@ -120,8 +120,7 @@ export function validateBaseVehicle({
         highlightAndFocus('txtLote');
         return 'El lote es obligatorio.';
     }
-
-    if(txtLink != ""){
+    if(txtLink.trim() != ""){
         if(!isValidURL(txtLink)) return "Link del lote no valido";
     }
 
@@ -151,7 +150,8 @@ export function validateVehicle({
     txtTaxes,
     txtIva,
     txtPa,
-    txtSuggestedPrice
+    txtSuggestedPrice,
+    txtLink
 }) {
     // Validación base
     const baseError = validateBaseVehicle({
@@ -160,7 +160,8 @@ export function validateVehicle({
         txtModel,
         txtYear,
         txtMileage,
-        txtLote
+        txtLote,
+        txtLink
     });
 
     if (baseError) return baseError;

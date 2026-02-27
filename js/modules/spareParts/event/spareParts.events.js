@@ -3,7 +3,7 @@ import { $ } from '../../../utils/dom.js';
 
 let searchTimeout = null;
 
-export function initSparePartsEvents({ onSearchSpareParts }) {
+export function initSparePartsEvents({ Refs,  onSearchSpareParts }) {
     const txtSearch = $('txtSearchData');
     const cmbStatus = $('cmbSearchByStatus');
 

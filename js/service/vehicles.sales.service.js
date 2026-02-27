@@ -1,7 +1,7 @@
 import { getCookie } from "../utils/api.utils.js";
 
-const API_URL = "http://127.0.0.1:8080/api/VehicleSale";
-const API_URLVeh = "http://127.0.0.1:8080/api/Vehicle";
+const API_URL = "https://leal-import-api.onrender.com/api/VehicleSale";
+const API_URLVeh = "https://leal-import-api.onrender.com/api/Vehicle";
 
 export let postVehicle = async (sale, id) => {
     try {

@@ -1,4 +1,4 @@
-import { $, qsa, qs, toggleModal } from "../../utils/dom.js";
+import { $, qsa, qs } from "../../utils/dom.js";
 
 export const DOMRefs = {
     refs: {},
@@ -6,13 +6,14 @@ export const DOMRefs = {
     init() {
         this.refs = {
             panelContainer: qs('.panelContainer'),
-            loaderSales: $('loaderSales')
+            loaderSales: $('loaderSales'),
+            modalAskSale: ("modalAskSale")
         };
         return this.refs;
     }
 };
 
-export let insertSales = (container, sales) => {
+export const insertSales = (container, sales) => {
     if (!container) return;
     container.innerHTML = "";
 
@@ -191,15 +192,7 @@ export let insertSales = (container, sales) => {
     container.appendChild(fragment);
 }
 
-export let selectLineButton = (filterBtn) => {
+export const selectLineButton = (filterBtn) => {
     qsa(".filterType .lineSelected").forEach(l => l.classList.remove("selected"));
     filterBtn.querySelector(".lineSelected")?.classList.add("selected");
-}
-
-export let openAskModal = () => {
-    toggleModal($("modalAskSale"), true);
-}
-
-export let closeAskModal = () => {
-    toggleModal($("modalAskSale"), false);
 }

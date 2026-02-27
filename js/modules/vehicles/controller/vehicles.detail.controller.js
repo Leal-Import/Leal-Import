@@ -12,6 +12,9 @@ import { getVehicles, postVehicle, putVehicle } from "../../../service/vehicles.
 async function loadVehicle() {
     const vehicle = await getVehicles(vehicleDetailState.context.currentId);
     loadDomData(DOMRefs.refs.typeAction, DOMRefs.refs.btnSaveData);
+    DOMRefs.refs.externalElements.forEach(el => {
+        hideElement(el);
+    })
     fillVehiclesBaseForm(vehicle);
     onValidateUrl(vehicle.lote.linkLote);
     if (vehicle.costs) {
@@ -43,7 +46,6 @@ async function onSubmitVehicle(e) {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmVehicles));
     const fd = new FormData();
-
     let payloadVehicle;
     let vehiclesImagesValid;
     if (vehicleDetailState.context.currentId) {
@@ -292,7 +294,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!isReady) return;
 
         const refs = DOMRefs.init();
-        console.log("DOM Refs: ", refs);
         initializeUI(refs);
 
         await loadDataFlow();

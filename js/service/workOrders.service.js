@@ -1,5 +1,5 @@
-const API_URL = "http://127.0.0.1:8080/api/ViewWorkOrder";
-const API_URLSTAT = "http://127.0.0.1:8080/api/OrdersStatus";
+const API_URL = "https://leal-import-api.onrender.com/api/ViewWorkOrder";
+const API_URLSTAT = "https://leal-import-api.onrender.com/api/OrdersStatus";
 
 export let getVehiclesWOrders = async (page = 0, size = 15, search = "", idStatus = "") => {
     try {

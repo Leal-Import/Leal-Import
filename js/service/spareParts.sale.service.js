@@ -1,7 +1,7 @@
 import { getCookie } from "../utils/api.utils.js";
 
-const API_URL = "http://127.0.0.1:8080/api/spareParts";
-const API_URLSALE = "http://127.0.0.1:8080/api/sparePartsSale";
+const API_URL = "https://leal-import-api.onrender.com/api/spareParts";
+const API_URLSALE = "https://leal-import-api.onrender.com/api/sparePartsSale";
 
 export let getSpareParts = async (page = 0, size = 15, search = "") => {
     try {

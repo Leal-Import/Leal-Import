@@ -1,8 +1,8 @@
 import { getCookie } from "../utils/api.utils.js";
 
-const API_URL = "http://127.0.0.1:8080/api/employees";
-const API_URLR = "http://127.0.0.1:8080/api/roles";
-const API_URLUS = "http://127.0.0.1:8080/api/users";
+const API_URL = "https://leal-import-api.onrender.com/api/employees";
+const API_URLR = "https://leal-import-api.onrender.com/api/roles";
+const API_URLUS = "https://leal-import-api.onrender.com/api/users";
 
 export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "", status = "") => {
 

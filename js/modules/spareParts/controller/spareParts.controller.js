@@ -80,8 +80,8 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initSparePartsEvents({ onSearchSpareParts });
+const initializeUI = (Refs) => {
+    initSparePartsEvents({ Refs, onSearchSpareParts });
 }
 
 const loadDataFlow = async () => {
@@ -94,9 +94,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
-        initializeUI();
+        initializeUI(refs);
 
         await loadDataFlow();
     } catch (error) {

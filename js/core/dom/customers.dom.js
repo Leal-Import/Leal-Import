@@ -1,4 +1,4 @@
-import { fillForm, toggleModal, $, qs } from "../../utils/dom.js";
+import { fillForm, $, qs } from "../../utils/dom.js";
 
 export const DOMRefs = {
     refs: {},

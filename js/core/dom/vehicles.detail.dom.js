@@ -1,4 +1,4 @@
-import { $, disableElement, qs, qsa, removeDisable, setFormReadOnly, toggleModal } from "../../utils/dom.js";
+import { $, disableElement, qs, qsa, removeDisable, toggleModal } from "../../utils/dom.js";
 
 // core/logic/vehicles.upload.config.js
 export const UPLOAD_CONFIG = {
@@ -48,7 +48,8 @@ export const DOMRefs = {
             btnSaveLinkLote: $("btnSaveLinkLote"),
             txtFormat: qsa(".txtFormat"),
             btnLinkLote: qs(".btnLinkLote"),
-            txtMileage: $("txtMileage")
+            txtMileage: $("txtMileage"),
+            externalElements: qsa(".isExternalContainer > *")
         };
 
         return this.refs;

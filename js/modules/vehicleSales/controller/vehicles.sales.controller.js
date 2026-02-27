@@ -214,6 +214,7 @@ async function loadExistingSale() {
     showElement(DOMRefs.refs.addVehicleLoader);
     const sale = await getSaleById(vehicleSaleState.context.idSale);
     const vehicle = await getVehicleById(sale.idVehicle);
+    hideElement(DOMRefs.refs.btnCancelVehicle);
     loadVehicle(vehicle);
     hideElement(DOMRefs.refs.addVehicleLoader);
     vehicleSaleState.data.notes = sale.notes || '';

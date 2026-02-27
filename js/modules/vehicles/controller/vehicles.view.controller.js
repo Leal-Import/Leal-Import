@@ -1,4 +1,4 @@
-import { loadVehicleData } from "../../../core/dom/vehicles.view.dom.js";
+import { DOMRefs, loadVehicleData } from "../../../core/dom/vehicles.view.dom.js";
 import { getVehicles } from "../../../service/vehicles.detail.service.js";
 import { asUUID, showMessage } from "../../../utils/dom.js";
 import { vehicleViewState } from "../../../core/state/vehicles.view.state.js";
@@ -14,13 +14,14 @@ const loadData = async () => {
     }
 }
 
-export const hydrateContextFromURL = async () => {
+export const hydrateContextFromURL = () => {
     const params = new URLSearchParams(window.location.search);
     vehicleViewState.context.idVehicle = asUUID(params.get('id'));
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
+        DOMRefs.init();
         hydrateContextFromURL();
         await loadData();
     } catch (error) {
