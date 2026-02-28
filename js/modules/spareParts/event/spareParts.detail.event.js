@@ -1,4 +1,3 @@
-import { $, qsa } from "../../../utils/dom.js";
 import {
     formatDecimalInput,
     formatOnBlur,
@@ -6,43 +5,40 @@ import {
 } from "../../../utils/formatters.js";
 
 export function initSparePartDetailEvents({
+    Refs,
     onSubmit,
     onCalculateTotal,
     onOpenModal,
     onSaveDataModal,
+    onValidateUrl
 }) {
-    const btnCloseLink = $('btnCloseLink');
+    Refs.frmSpareParts.addEventListener("submit", onSubmit);
+    Refs.btnOpenLinkBill.addEventListener("click", () => onOpenModal("bill"));
+    Refs.btnOpenLinkTracking.addEventListener("click", () => onOpenModal("tracking"));
 
-    const txtFormat = qsa('.txtFormat');
-    const txtCosts = qsa('.txtCosts');
-    const modal = $('modalLink');
-    const btnSaveLink = $('btnSaveLink');
-
-
-    const frmSpareParts = $('frmSpareParts');
-
-    frmSpareParts.addEventListener("submit", onSubmit);
-    $('btnOpenLinkBill').addEventListener("click", () => onOpenModal("bill"));
-    $("btnOpenLinkTracking").addEventListener("click", () => onOpenModal("tracking"))
-
-    btnCloseLink.addEventListener("click", () => {
-        onSaveDataModal()
-    });
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) onSaveDataModal();
-    });
-
-    btnSaveLink .addEventListener("click", () => {
+    Refs.btnCloseLink.addEventListener("click", () => {
         onSaveDataModal()
     });
 
-    txtFormat.forEach(txt => {
+    Refs.txtLink.addEventListener("input", () => {
+        onValidateUrl(Refs.txtLink.value.trim());
+    });
+
+    Refs.modalLink.addEventListener("click", (e) => {
+        if (e.target === Refs.modalLink) onSaveDataModal();
+    });
+
+    Refs.btnSaveLink.addEventListener("click", () => {
+        onSaveDataModal()
+    });
+
+    Refs.txtFormat.forEach(txt => {
         txt.addEventListener("focus", e => formatOnFocus(e, true));
         txt.addEventListener("blur", e => formatOnBlur(e, true));
         formatDecimalInput(txt);
     });
 
-    txtCosts.forEach(txt => {
+    Refs.txtCosts.forEach(txt => {
         txt.addEventListener("input", onCalculateTotal);
     });
 }

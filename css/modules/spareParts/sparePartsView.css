@@ -258,11 +258,11 @@
 }
 
 .sparePartCost .dataInfo:last-child .label {
-    color: var(--bg-color-white);
+    color: var(--text-color-light);
 }
 
 .sparePartCost .dataInfo:last-child .value {
-    color: var(--bg-color-white) !important;
+    color: var(--text-color-light) !important;
     font-size: var(--font-size-title-lg) !important;
 }
 
@@ -531,7 +531,7 @@
 /* Botón Danger (Eliminar) */
 .btnActionSparePart.btnDangerSparePart {
     background: var(--danger-color);
-    color: var(--bg-color-white);
+    color: var(--text-color-light) !important;
     box-shadow: var(--bx-shadow-btn-primary);
 }
 

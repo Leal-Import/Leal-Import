@@ -68,7 +68,10 @@ const loadVehicleInfo = (vehicle) => {
     DOMRefs.refs.lote.textContent = vehicle.lote.numLote;
     DOMRefs.refs.purchaseDate.textContent = vehicle.purchaseDate;
     DOMRefs.refs.status.textContent = vehicle.status;
-    vehicle.lote.linkLote != null ? DOMRefs.refs.lote.href = vehicle.lote.linkLote : null;
+    if(vehicle.lote.linkLote){
+        DOMRefs.refs.lote.href = vehicle.lote.linkLote;
+        DOMRefs.refs.lote.target = "_blank";
+    }
     DOMRefs.refs.description.textContent = vehicle.description;
 
     DOMRefs.refs.description.style.height = "auto";         // resetear para recalcular

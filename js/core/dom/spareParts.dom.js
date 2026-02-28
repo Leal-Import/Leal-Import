@@ -8,77 +8,109 @@ export const DOMRefs = {
         this.refs = {
             cardContainer: qs('.cardContainer'),
             loaderSpareParts: $('loaderSpareParts'),
+            txtSearchData: $('txtSearchData'),
+            cmbSearchByStatus: $('cmbSearchByStatus')
         };
         return this.refs;
     }
 };
 
-export let insertSpareParts = (container, spareParts) => {
+export const insertSpareParts = (container, spareParts) => {
     if (!container) return;
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
-    if (spareParts.length == 0) {
-        const noDataDiv = document.createElement("div");
-        noDataDiv.textContent = "No hay repuestos disponibles.";
-        noDataDiv.style.gridColumn = "1 / -1";
-        noDataDiv.classList.add("noDataMessage");
-        fragment.appendChild(noDataDiv);
+
+    if (spareParts.length === 0) {
+        fragment.appendChild(createNoDataMessage());
     } else {
         spareParts.forEach(sparePart => {
-            const card = document.createElement("div");
-            const bodyCard = document.createElement("div");
-            const containerImgSpare = document.createElement("div");
-            const picturePart = document.createElement("img");
-            const infoPartContainer = document.createElement("div");
-            const partName = document.createElement("span");
-            const brandModel = document.createElement("span");
-            const moreInfoContainer = document.createElement("div");
-            const leftInfo = document.createElement("div");
-            const statusPart = document.createElement("span");
-            const yearPart = document.createElement("span");
-            const partPrice = document.createElement("span");
-            const footerCard = document.createElement("div");
-            const btnView = document.createElement("a")
-            const btnEdit = document.createElement("a");
-
-            picturePart.setAttribute("src", sparePart.photoUrl)
-            partName.textContent = sparePart.nameSpareParts;
-            brandModel.textContent = `${sparePart.brand} ${sparePart.model}`;
-            statusPart.textContent = sparePart.state;
-            yearPart.textContent = sparePart.yearPart;
-            partPrice.textContent = `$${formatWithCommas(sparePart.totalCost)}`;
-            btnEdit.textContent = "Editar";
-            btnView.textContent = "Ver mas";
-
-            card.classList.add("card");
-            bodyCard.classList.add("bodyCard");
-            containerImgSpare.classList.add("containerImgSpare")
-            picturePart.classList.add("picturePart");
-            infoPartContainer.classList.add("infoPartContainer");
-            partName.classList.add("partName");
-            brandModel.classList.add("brandModel");
-            moreInfoContainer.classList.add("moreInfoContainer");
-            leftInfo.classList.add("leftInfo");
-            statusPart.classList.add("statusPart");
-            yearPart.classList.add("yearPart")
-            partPrice.classList.add("partPrice");
-            footerCard.classList.add("footerCard");
-            btnView.classList.add("btnPrimary");
-            btnEdit.classList.add("btnSecondary");
-            btnEdit.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
-            btnView.href = `sparePartsView.html?id=${sparePart.idSparePart}`;
-
-            containerImgSpare.appendChild(picturePart);
-            infoPartContainer.append(partName, brandModel);
-            leftInfo.append(statusPart, yearPart);
-            moreInfoContainer.append(leftInfo, partPrice);
-            footerCard.append(btnView, btnEdit);
-            bodyCard.append(containerImgSpare, infoPartContainer, moreInfoContainer);
-            card.append(bodyCard, footerCard);
-
-            fragment.appendChild(card);
+            fragment.appendChild(createSparePartCard(sparePart));
         });
     }
 
     container.appendChild(fragment);
+};
+
+function createNoDataMessage() {
+    const div = document.createElement("div");
+    div.textContent = "No hay repuestos disponibles.";
+    div.classList.add("noDataMessage");
+    return div;
+}
+
+function createSparePartCard(sparePart) {
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.append(createCardBody(sparePart), createCardFooter(sparePart));
+    return card;
+}
+
+function createCardBody(sparePart) {
+    const body = document.createElement("div");
+    body.classList.add("bodyCard");
+
+    const img = document.createElement("img");
+    img.src = sparePart.photoUrl || '';
+    img.classList.add("picturePart");
+
+    const imgContainer = document.createElement("div");
+    imgContainer.classList.add("containerImgSpare");
+    imgContainer.appendChild(img);
+
+    const info = document.createElement("div");
+    info.classList.add("infoPartContainer");
+
+    const name = document.createElement("span");
+    name.classList.add("partName");
+    name.textContent = sparePart.nameSpareParts;
+
+    const brandModel = document.createElement("span");
+    brandModel.classList.add("brandModel");
+    brandModel.textContent = `${sparePart.brand} ${sparePart.model}`;
+
+    info.append(name, brandModel);
+    body.append(imgContainer, info, createMoreInfo(sparePart));
+    return body;
+}
+
+function createMoreInfo(sparePart) {
+    const container = document.createElement("div");
+    container.classList.add("moreInfoContainer");
+
+    const left = document.createElement("div");
+    left.classList.add("leftInfo");
+
+    const status = document.createElement("span");
+    status.classList.add("statusPart");
+    status.textContent = sparePart.state;
+
+    const year = document.createElement("span");
+    year.classList.add("yearPart");
+    year.textContent = sparePart.yearPart;
+
+    const price = document.createElement("span");
+    price.classList.add("partPrice");
+    price.textContent = `$${formatWithCommas(sparePart.totalCost)}`;
+
+    left.append(status, year);
+    container.append(left, price);
+    return container;
+}
+
+function createCardFooter(sparePart) {
+    const footer = document.createElement("div");
+    footer.classList.add("footerCard");
+
+    const btnView = document.createElement("a");
+    btnView.classList.add("btnPrimary");
+    btnView.textContent = "Ver más";
+    btnView.href = `sparePartsView.html?id=${sparePart.idSparePart}`;
+
+    const btnEdit = document.createElement("a");
+    btnEdit.classList.add("btnSecondary");
+    btnEdit.textContent = "Editar";
+    btnEdit.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
+
+    footer.append(btnView, btnEdit);
+    return footer;
 }

@@ -12,13 +12,13 @@ export function initVehicleDetailEvents({ Refs, onSubmit, onSearchCustomer, onAd
         searchTimeout = setTimeout(() => onSearchCustomer(Refs.txtCustomer.value), 1500);
     });
 
-    Refs.txtLink.addEventListener("input", (e) => {
-        onValidateUrl(e.target.value.trim());
+    Refs.txtLink.addEventListener("input", () => {
+        onValidateUrl(Refs.txtLink.value.trim());
     })
 
     if (Refs.isExternalOpt) {
-        Refs.isExternalOpt.addEventListener('change', e => {
-            onExternalChange(e.target.checked);
+        Refs.isExternalOpt.addEventListener('change', () => {
+            onExternalChange(Refs.isExternalOpt.checked);
             cleanCustomer();
         });
     }

@@ -13,18 +13,32 @@ export const DOMRefs = {
             dropArea: $('dropZone'),
             fileInput: $('fileInput'),
             loaderAddSparePart: $('loaderAddSparePart'),
-            btnSaveSparePart: $('btnSaveSparePart')
+            btnSaveSparePart: $('btnSaveSparePart'),
+            txtFormat: qsa('.txtFormat'),
+            modalLink: $('modalLink'),
+            btnSaveLink: $('btnSaveLink'),
+            btnCloseLink: $('btnCloseLink'),
+            btnOpenLinkBill: $('btnOpenLinkBill'),
+            btnOpenLinkTracking: $('btnOpenLinkTracking'),
+            typeAction: $('typeAction'),
+            btnDeleteImg: $('btnDeleteImg'),
+            btnAddImg: $('btnAddImg'),
+            modalLinkTitle: $('modalLinkTitle'),
+            txtLink: $('txtLink'),
+            defaultText: $('defaultText'),
+            errorLinkLote: $('errorLinkLote'),
+            validateUrlMessage: $('validateUrlMessage')
         };
 
         return this.refs;
     }
 };
 
-export function loadUpdateInfo() {
-    $("typeAction").textContent = "Actualizar repuesto";
-    $("btnSaveSparePart").querySelector("span").textContent = "Actualizar";
-    $("btnDeleteImg").classList.add("hide");
-    $("btnAddImg").textContent = "Actualizar foto";
+export function loadUpdateInfo(Refs) {
+    Refs.typeAction.textContent = "Actualizar repuesto";
+    Refs.btnSaveSparePart.querySelector("span").textContent = "Actualizar";
+    Refs.btnDeleteImg.classList.add("hide");
+    Refs.btnAddImg.textContent = "Actualizar foto";
 }
 
 const LINK_CONFIG = {
@@ -38,44 +52,44 @@ const LINK_CONFIG = {
     }
 };
 
-export function openLinkModal(type, state) {
+export function openLinkModal(type, state, Refs, onValidateUrl) {
     const config = LINK_CONFIG[type];
     if (!config) return;
 
     state.currentLinkType = type;
 
-    $('modalLinkTitle').textContent = config.title;
-    $('txtLink').value = state.links?.[config.stateKey] || '';
+    onValidateUrl?.(state.links?.[config.stateKey] || '');
+    Refs.modalLinkTitle.textContent = config.title;
+    Refs.txtLink.value = state.links?.[config.stateKey] || '';
 
-    toggleModal($('modalLink'), true);
+    toggleModal(Refs.modalLink, true);
 }
 
-export function closeLinkModal(state) {
-    toggleModal($('modalLink'), false);
-    $('txtLink').value = '';
-    console.log(state)
+export function closeLinkModal(state, Refs) {
+    toggleModal(Refs.modalLink, false);
+    Refs.txtLink.value = '';
     state.currentLinkType = null;
 }
 
-export function saveLinkModal(state) {
+export function saveLinkModal(state, Refs) {
     if (!state.currentLinkType) return;
 
-    const value = $('txtLink').value.trim();
+    const value = Refs.txtLink.value.trim();
     const { stateKey } = LINK_CONFIG[state.currentLinkType];
 
     state.links[stateKey] = value;
 
-    closeLinkModal(state);
+    closeLinkModal(state, Refs);
 }
 
-export function loadImage(source) {
+export function loadImage(source, Refs) {
     if (!source) return;
 
     // 🔹 Caso 1: viene una URL (string)
     if (typeof source === "string") {
-        imgPart.src = source;
-        imgPart.style.display = "block";
-        placeholderMsg.style.display = "none";
+        Refs.imgPart.src = source;
+        Refs.imgPart.style.display = "block";
+        Refs.placeholderMsg.style.display = "none";
         return;
     }
 
@@ -83,9 +97,9 @@ export function loadImage(source) {
     if (source instanceof File) {
         const reader = new FileReader();
         reader.onload = () => {
-            imgPart.src = reader.result;
-            imgPart.style.display = "block";
-            placeholderMsg.style.display = "none";
+            Refs.imgPart.src = reader.result;
+            Refs.imgPart.style.display = "block";
+            Refs.placeholderMsg.style.display = "none";
         };
         reader.readAsDataURL(source);
         return;
@@ -93,12 +107,12 @@ export function loadImage(source) {
 
     // 🔹 Caso 3: objeto con { file, url } (opcional / futuro)
     if (source?.file instanceof File) {
-        loadImage(source.file);
+        loadImage(source.file, Refs);
         return;
     }
 
     if (source?.url) {
-        loadImage(source.url);
+        loadImage(source.url, Refs);
         return;
     }
 

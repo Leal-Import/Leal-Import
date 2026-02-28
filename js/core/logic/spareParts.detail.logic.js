@@ -1,7 +1,7 @@
 import { formatWithCommas } from "../../utils/formatters.js";
 import { asUUID, fillForm } from "../../utils/dom.js"
 import { validateImageSize, validateImageType } from "../../utils/images.validators.js";
-import { safeParseFloat } from "../../utils/validators.js";
+import { isValidURL, safeParseFloat } from "../../utils/validators.js";
 import { sparePartDetailState } from "../state/spareParts.detail.state.js";
 
 export function validateImage(file) {
@@ -49,7 +49,7 @@ export let validateBaseSparePart = ({
     txtPurchasePrice,
     txtTaxes,
     txtSuggestedPrice
-}) => {
+}, billLink, trackingLink) => {
 
     if (!txtPartName) {
         highlightAndFocus('txtPartName');
@@ -74,6 +74,20 @@ export let validateBaseSparePart = ({
     if (!cmbPartStatus) {
         highlightAndFocus('cmbPartStatus');
         return 'Debe seleccionar el estado del repuesto.';
+    }
+
+    if (billLink !== '') {
+        const isValid = isValidURL(billLink);
+        if (!isValid) {
+            return 'El enlace de la factura no es válido.';
+        }
+    }
+
+    if (trackingLink !== '') {
+        const isValid = isValidURL(trackingLink);
+        if (!isValid) {
+            return 'El enlace del tracking no es válido.';
+        }
     }
 
     // 🔢 Validación de costos
