@@ -15,6 +15,12 @@
     flex-basis: 900px;
 }
 
+.btnSecondary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 /* ============================================
    BREADCRUMB SECTION
    ============================================ */

@@ -86,9 +86,6 @@
 }
 
 .btnSecondary {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     border: 1px solid var(--danger-color);
     cursor: pointer;
     color: var(--danger-color);
