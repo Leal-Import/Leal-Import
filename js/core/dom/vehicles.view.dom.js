@@ -1,5 +1,6 @@
 import { $ } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
+import { renderAndInitViewCarousel } from "./carousel.dom.js";
 
 export const DOMRefs = {
     refs: {},
@@ -30,18 +31,21 @@ export const DOMRefs = {
             btnSell: $("btnSell"),
             btnHistorial: $("btnHistorial"),
             mainSwiperWrapper: $("mainSwiperWrapper"),
-            imageGrid: $("imageGrid")
+            thumbsWrapper: $("thumbsWrapper")
         };
         return this.refs;
     }
 };
 
-let mainSwiper;
-
 export const loadVehicleData = (vehicle) => {
     loadVehicleInfo(vehicle);
     loadDownButtons(vehicle);
-    loadImages(vehicle.photos);
+    renderAndInitViewCarousel({
+        photos: vehicle.photos,
+        mainWrapper: DOMRefs.refs.mainSwiperWrapper,
+        thumbsWrapper: null,
+        thumbsWrapper: DOMRefs.refs.thumbsWrapper
+    });
 }
 
 const loadDownButtons = (vehicle) => {
@@ -68,7 +72,7 @@ const loadVehicleInfo = (vehicle) => {
     DOMRefs.refs.lote.textContent = vehicle.lote.numLote;
     DOMRefs.refs.purchaseDate.textContent = vehicle.purchaseDate;
     DOMRefs.refs.status.textContent = vehicle.status;
-    if(vehicle.lote.linkLote){
+    if (vehicle.lote.linkLote) {
         DOMRefs.refs.lote.href = vehicle.lote.linkLote;
         DOMRefs.refs.lote.target = "_blank";
     }
@@ -94,68 +98,4 @@ const loadVehicleInfo = (vehicle) => {
         vehicle.costs.suggestedPrice != null ? DOMRefs.refs.suggestedPrice.textContent = `$${vehicle.costs.suggestedPrice}` : DOMRefs.refs.suggestedPrice.style.display = "none";
         DOMRefs.refs.total.textContent = `$${formatWithCommas(vehicle.costs.total)}`;
     }
-}
-
-const loadImages = (photos) => {
-    // -------------------------
-    // Llenar imágenes
-    // -------------------------
-    photos.forEach(img => {
-        DOMRefs.refs.mainSwiperWrapper.innerHTML += `
-            <div class="swiper-slide">
-                <img src="${img.photoUrl}" />
-            </div>
-        `;
-
-        DOMRefs.refs.imageGrid.innerHTML += `
-            <img src="${img.photoUrl}" />
-        `;
-    });
-
-    // -------------------------
-    // Inicializar Swiper
-    // -------------------------
-    mainSwiper = new Swiper("#mainSwiper", {
-        spaceBetween: 10,
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        }
-    });
-
-    // -------------------------
-    // Sincronizar grid con el swiper
-    // -------------------------
-
-    const gridImages = document.querySelectorAll(".imageGrid img");
-
-    // Seleccionar primera imagen por defecto
-    if (gridImages.length > 0) {
-        gridImages[0].classList.add("selected");
-    }
-
-    // Click en miniatura → cambiar slide + focus
-    gridImages.forEach((imgElement, index) => {
-        imgElement.addEventListener("click", () => {
-
-            mainSwiper.slideTo(index);
-
-            gridImages.forEach(img => img.classList.remove("selected"));
-            imgElement.classList.add("selected");
-        });
-    });
-
-    // Flechas → actualizar el focus automáticamente
-    mainSwiper.on("slideChange", () => {
-        const currentIndex = mainSwiper.activeIndex;
-
-        // Limpiar anteriores
-        gridImages.forEach(img => img.classList.remove("selected"));
-
-        // Aplicar foco al que corresponde
-        if (gridImages[currentIndex]) {
-            gridImages[currentIndex].classList.add("selected");
-        }
-    });
-
 }

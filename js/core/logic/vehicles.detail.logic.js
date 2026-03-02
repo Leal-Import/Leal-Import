@@ -54,9 +54,10 @@ export function resetState() {
 export function calculateTotal(txtCosts, txtTotal) {
     let total = 0;
     txtCosts.forEach(input => {
-        const cleanValue = input.value.replace(/,/g, "");
+        const cleanValue = safeParseFloat(input.value) || 0;
         total += parseFloat(cleanValue) || 0;
     });
+
     txtTotal.value = formatWithCommas(total.toFixed(2));
 }
 

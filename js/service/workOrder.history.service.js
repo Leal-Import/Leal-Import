@@ -1,7 +1,9 @@
-const API_URL = "https://leal-import-api.onrender.com/api/ViewWorkOrderHistory";
+import { API_BASE_URL } from "../utils/api.utils.js";
+
+const API_URL = `${API_BASE_URL}/ViewWorkOrderHistory`;
 
 
-export let getDetailsOrders = async (idVehicle, page = 0, size = 15, search = "", idStatus = "") => {
+export const getDetailsOrders = async (idVehicle, page = 0, size = 15, search = "", idStatus = "") => {
     try {
         const params = new URLSearchParams({ page, size, search, idStatus });
         const request = await fetch(`${API_URL}/getHistoryOrder/${idVehicle}?${params.toString()}`, {
@@ -25,7 +27,7 @@ export let getDetailsOrders = async (idVehicle, page = 0, size = 15, search = ""
 };
 
 
-export let getDashboardWorkorder = async (id) => {
+export const getDashboardWorkorder = async (id) => {
     try {
         const request = await fetch(`${API_URL}/${id}/dashboard`, {
             credentials: 'include'

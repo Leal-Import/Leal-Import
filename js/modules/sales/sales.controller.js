@@ -22,7 +22,7 @@ const pagination = createPagination({
     }
 });
 
-let loadStateSales = async () => {
+const loadStateSales = async () => {
     try {
         const status = await getStateSales();
         salesState.stateList = status;
@@ -60,11 +60,15 @@ async function loadSales() {
     }
 }
 
+const onClickBtnFilter = (btn) => {
+    selectLineButton(btn, DOMRefs.refs.selectedLines);
+}
+
 /* ===============================
    FILTROS
 ================================ */
 
-export function onSearchSale(filters) {
+function onSearchSale(filters) {
     salesState.filters = {
         ...salesState.filters,
         ...filters
@@ -85,8 +89,8 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initSalesEvents({ onSearchSale, onClickBtnFilter: selectLineButton, onOpenModal: toggleModal(DOMRefs.refs.modalAskSale, true), onCloseModal: toggleModal(DOMRefs.refs.modalAskSale, false) });
+const initializeUI = (Refs) => {
+    initSalesEvents({ Refs, onSearchSale, onClickBtnFilter, onOpenModal: () => toggleModal(Refs.modalAskSale, true), onCloseModal: () => toggleModal(Refs.modalAskSale, false) });
 }
 
 const loadDataFlow = async () => {
@@ -98,9 +102,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        initializeUI();
+        const refs = DOMRefs.init();
 
-        DOMRefs.init();
+        initializeUI(refs);
 
         await loadDataFlow();
     } catch (error) {

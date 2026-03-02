@@ -1,6 +1,8 @@
-import { $, disableElement, qs, qsa, removeDisable, toggleModal } from "../../utils/dom.js";
+// vehicles.detail.dom.js
 
-// core/logic/vehicles.upload.config.js
+import { $, disableElement, qs, qsa, removeDisable, toggleModal } from "../../utils/dom.js";
+import { initThumbsCarousel, verifyCarouselBtns } from "../dom/carousel.dom.js";
+
 export const UPLOAD_CONFIG = {
     bill: {
         title: 'Añadir comprobante de la factura',
@@ -36,7 +38,7 @@ export const DOMRefs = {
             btnCloseLink: qs("#modalLinkLote .btnClose"),
             typeAction: $("typeAction"),
             btnSaveData: $("btnSaveData"),
-            txtCosts: qsa('.txtCosts, #txtSuggestedPrice'),
+            txtCosts: qsa('.txtCosts'),
             btnImgs: qsa('.btnImgs'),
             groupCustomer: qs('.groupCustomer'),
             txtTotal: $('txtTotal'),
@@ -49,7 +51,12 @@ export const DOMRefs = {
             txtFormat: qsa(".txtFormat"),
             btnLinkLote: qs(".btnLinkLote"),
             txtMileage: $("txtMileage"),
-            externalElements: qsa(".isExternalContainer > *")
+            externalElements: qsa(".isExternalContainer > *"),
+            txtSuggestedPrice: $("txtSuggestedPrice"),
+            costsSection: $("costsSection"),
+            btnsCarousel: qsa(".btnsCarousel"),
+            modalUpload: $("modalUpload"),
+            uploadTitle: $("uploadTitle")
         };
 
         return this.refs;
@@ -61,14 +68,15 @@ export function loadDomData(typeAction, btnSaveData) {
     btnSaveData.querySelector("span").textContent = "Actualizar"
 }
 
-let mainSwiperInstance = null;
-let thumbsSwiperInstance = null;
+export const verifyBtnsCarousel = (btnsCarousel, mainSwiperWrapper) => {
+    verifyCarouselBtns(btnsCarousel, mainSwiperWrapper);
+}
 
 export function renderExternalMode(config, txtCosts, btnImgs, groupCustomer, txtCustomer, txtTotal) {
-
+    txtCosts.push(DOMRefs.refs.txtSuggestedPrice);
     txtCosts.forEach(txt => {
         if (config.clearCosts) txt.value = '';
-        if(config.costsRequired){
+        if (config.costsRequired) {
             txt.setAttribute('required', true);
             removeDisable(txt);
         } else {
@@ -117,17 +125,17 @@ export function renderCustomersSuggestions(boxCustomer, customers, onSelect) {
 export function renderImages(images, mainWrapper, thumbsWrapper, onDelete, onAddClick) {
     mainWrapper.innerHTML = '';
     thumbsWrapper.innerHTML = '';
+
     if (!images.length) {
         mainWrapper.innerHTML = `
             <div class="swiper-slide">
-                <div class="no-image-container">
-                    <div class="no-image-icon">📷</div>
+                <div class="noImageContainer">
+                    <div class="noImageIcon">📷</div>
                     <p>No hay imágenes disponibles</p>
                 </div>
             </div>
         `;
-        createPlusButton(thumbsWrapper, onAddClick);
-
+        _createPlusButton(thumbsWrapper, onAddClick);
         return;
     }
 
@@ -143,85 +151,49 @@ export function renderImages(images, mainWrapper, thumbsWrapper, onDelete, onAdd
             <img src="${img.url}">
             <div class="thumb-delete">×</div>
         `;
-
-        thumb.querySelector('.thumb-delete')
-            .addEventListener('click', e => {
-                e.stopPropagation();
-                onDelete(index);
-            });
-
+        thumb.querySelector('.thumb-delete').addEventListener('click', e => {
+            e.stopPropagation();
+            onDelete(index);
+        });
         thumbsWrapper.appendChild(thumb);
     });
 
-    createPlusButton(thumbsWrapper, onAddClick);
-    initSwipers();
+    _createPlusButton(thumbsWrapper, onAddClick);
+    initThumbsCarousel("#mainSwiper", "#thumbsSwiper", { lazy: true }, { slidesPerView: 4 });
 }
 
-
-function createPlusButton(wrapper, onAddClick) {
+function _createPlusButton(wrapper, onAddClick) {
     const addThumb = document.createElement("div");
     addThumb.classList.add("swiper-slide", "thumb-add");
     addThumb.textContent = "+";
     addThumb.addEventListener("click", onAddClick);
-
     wrapper.appendChild(addThumb);
 }
 
-function initSwipers() {
-    if (mainSwiperInstance) mainSwiperInstance.destroy(true, true);
-    if (thumbsSwiperInstance) thumbsSwiperInstance.destroy(true, true);
-
-    thumbsSwiperInstance = new Swiper("#thumbsSwiper", {
-        slidesPerView: 4,
-        spaceBetween: 10,
-        watchSlidesProgress: true,
-    });
-
-    mainSwiperInstance = new Swiper("#mainSwiper", {
-        spaceBetween: 10,
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        },
-        thumbs: {
-            swiper: thumbsSwiperInstance,
-        },
-        lazy: true,
-    });
-}
-
-export function openUploadModal(type, state) {
-    const modal = $('modalUpload');
-    const title = $('uploadTitle');
+export function openUploadModal(type, state, modalUpload, uploadTitle, dropArea) {
     const config = UPLOAD_CONFIG[type];
     if (!config) return;
 
     state.currentUploadType = type;
-    if (state.urls[type]) renderUploadPreview(state.urls[type]);
-    title.textContent = config.title;
+    if (state.urls[type]) renderUploadPreview(state.urls[type], dropArea);
+    uploadTitle.textContent = config.title;
 
-    toggleModal(modal, true);
+    toggleModal(modalUpload, true);
 }
 
-export function renderUploadPreview(source) {
-    if (!source) return null;
-
-    const dropArea = $("uploadDropArea");
-    if (!dropArea) return null;
+export function renderUploadPreview(source, dropArea) {
+    if (!source || !dropArea) return null;
 
     dropArea.innerHTML = '';
 
     let src = null;
 
-    // 🟢 Caso 1: File
     if (source instanceof File) {
         src = URL.createObjectURL(source);
-    }
-
-    // 🟢 Caso 2: URL
-    else if (typeof source === 'string') {
+    } else if (typeof source === 'string') {
         src = source;
     }
+
     if (!src) return null;
 
     const preview = document.createElement('div');
@@ -232,24 +204,18 @@ export function renderUploadPreview(source) {
     img.classList.add('previewImg');
     img.alt = 'Imagen seleccionada';
 
-
     preview.appendChild(img);
     dropArea.appendChild(preview);
     return src;
 }
 
+export function closeAndCleanUpdateModal(Refs) {
+    const dropArea = Refs.uploadDropArea;
+    const inputFile = Refs.uploadFileInput;
 
-export function closeAndCleanUpdateModal(state) {
-    const modal = $('modalUpload');
-    const dropArea = $('uploadDropArea');
-    const inputFile = $('uploadFileInput');
 
-    toggleModal(modal, false);
-
-    // Limpiar input file
     if (inputFile) inputFile.value = '';
 
-    // Reset visual del drop area
     if (dropArea) {
         dropArea.classList.remove('dragover');
         dropArea.innerHTML = `
@@ -259,7 +225,4 @@ export function closeAndCleanUpdateModal(state) {
             </div>
         `;
     }
-
-    // Importante: limpiar tipo actual
-    state.currentUploadType = null;
 }

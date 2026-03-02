@@ -1,0 +1,134 @@
+/* =======================
+   CONTENEDOR PRINCIPAL
+======================= */
+.containerCarousel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+}
+
+/* =======================
+   SWIPER PRINCIPAL
+======================= */
+.swiper{
+    overflow: visible;
+}
+
+#mainSwiper {
+    width: 100%;
+    border: 2px solid rgba(129, 133, 158, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--bx-shadow-primary);
+    transition: all 0.3s ease;
+}
+
+#mainSwiper:hover {
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 3px rgba(211, 24, 19, 0.1);
+}
+
+#mainSwiper .swiper-wrapper {
+    height: 450px;
+}
+
+#mainSwiper .swiper-slide {
+    height: 100% !important;
+    width: 100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-color);
+}
+
+#mainSwiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+#mainSwiper .swiper-slide:empty::after {
+    content: '🚗';
+    font-size: 80px;
+    opacity: 0.3;
+}
+
+/* =======================
+   FLECHAS DE NAVEGACIÓN
+======================= */
+.swiper-button-prev,
+.swiper-button-next {
+    color: var(--danger-color) !important;
+    background-color: var(--bg-color-white);
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    box-shadow: var(--bx-shadow-primary);
+    transition: all 0.3s ease;
+    padding: 10px;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+    font-size: var(--font-size-lg) !important;
+    font-weight: var(--font-weight-bold);
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    background-color: var(--danger-color);
+    color: var(--text-color-light) !important;
+    transform: scale(1.1);
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+/* =======================
+   CONTENEDOR MINIATURAS
+======================= */
+#thumbnailImagesContainer {
+    border: var(--border);
+    flex: 1;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: var(--bg-color);
+}
+
+#thumbsWrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    width: 100% !important;
+    transform: none !important;
+}
+
+#thumbsSwiper .swiper-slide {
+    width: 100px !important;
+    height: 100px;
+    opacity: 0.5;
+    border: 2px solid transparent;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+#thumbsSwiper .swiper-slide:hover {
+    opacity: 0.8;
+    transform: translateY(-3px);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+#thumbsSwiper .swiper-slide-thumb-active {
+    opacity: 1;
+    border-color: var(--danger-color);
+    border-width: 3px;
+    transform: scale(1.05);
+}
+
+#thumbsSwiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

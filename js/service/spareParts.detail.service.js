@@ -1,14 +1,11 @@
-import { getCookie } from "../utils/api.utils.js";
+import { API_BASE_URL } from "../utils/api.utils.js";
 
-const API_URL = "https://leal-import-api.onrender.com/api/spareParts";
+const API_URL = `${API_BASE_URL}/spareParts`;
 
 export let postSparePart = async (sparePart) => {
     try {
         const request = await fetch(`${API_URL}/postSparepart`, {
             method: 'POST',
-            headers: {
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
-            },
             credentials: 'include',
             body: sparePart
         });
@@ -51,9 +48,6 @@ export let putSparePart = async (sparePart, id) => {
     try {
         const request = await fetch(`${API_URL}/putSparepart/${id}`, {
             method: 'PUT',
-            headers: {
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
-            },
             credentials: 'include',
             body: sparePart
         });

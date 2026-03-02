@@ -1,7 +1,7 @@
 import { vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
 import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage } from "../../../utils/dom.js";
-import { closeAndCleanUpdateModal, DOMRefs, loadDomData, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview } from "../../../core/dom/vehicles.detail.dom.js";
+import { closeAndCleanUpdateModal, DOMRefs, loadDomData, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, verifyBtnsCarousel } from "../../../core/dom/vehicles.detail.dom.js";
 import { applyExternalMode, calculateTotal, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, resetState, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js"
 import { initSession } from "../../../utils/api.utils.js";
@@ -37,9 +37,24 @@ async function loadVehicle() {
 
 function onExternalChange(isExternal) {
     vehicleDetailState.isExternal = isExternal;
-
-    const uiState = applyExternalMode(isExternal);
+    const uiState = applyExternalMode(vehicleDetailState.isExternal);
     renderExternalMode(uiState, DOMRefs.refs.txtCosts, DOMRefs.refs.btnImgs, DOMRefs.refs.groupCustomer, DOMRefs.refs.txtCustomer, DOMRefs.refs.txtTotal);
+    if (vehicleDetailState.isExternal) {
+        vehicleDetailState.urls = {
+            bill: null,
+            taxes: null,
+            ship: null
+        };
+        vehicleDetailState.uploads = {
+            bill: null,
+            taxes: null,
+            ship: null
+        };
+        hideElement(DOMRefs.refs.costsSection);
+    } else {
+        showElement(DOMRefs.refs.costsSection);
+    }
+
 }
 
 async function onSubmitVehicle(e) {
@@ -165,6 +180,7 @@ const onAddImage = (e) => {
     renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click());
     DOMRefs.refs.previewImage ? DOMRefs.refs.mainSwiperWrapper.classList.add("mainSwiperUsed") : DOMRefs.refs.mainSwiperWrapper.classList.remove("mainSwiperUsed")
     DOMRefs.refs.imageInput.value = "";
+    verifyBtnsCarousel(DOMRefs.refs.btnsCarousel, DOMRefs.refs.mainSwiperWrapper);
 }
 
 const cleanCustomer = () => {
@@ -186,12 +202,10 @@ const closeLinkLoteModal = () => {
     toggleModal(DOMRefs.refs.modalLinkLote, false);
 }
 
-const initCloseModalUpload = () => {
-    closeAndCleanUpdateModal(vehicleDetailState);
-}
-
-const initOpenModalUpload = (type) => {
-    openUploadModal(type, vehicleDetailState)
+const initCloseModalUpload = (Refs) => {
+    vehicleDetailState.currentUploadType = null;
+    closeAndCleanUpdateModal(vehicleDetailState, Refs);
+    toggleModal(Refs.modalUpload, false);
 }
 
 const onValidateUrl = (url) => {
@@ -222,7 +236,7 @@ const onChangeUpload = (e) => {
         return;
     }
     handleUploadFile(file);
-    const urlImage = renderUploadPreview(file);
+    const urlImage = renderUploadPreview(file, DOMRefs.refs.uploadDropArea);
     vehicleDetailState.urls[vehicleDetailState.currentUploadType] = urlImage
 
     e.target.value = "";
@@ -236,7 +250,7 @@ const onDropModal = (e) => {
     if (!file) return;
 
     handleUploadFile(file);
-    renderUploadPreview(file);
+    renderUploadPreview(file, DOMRefs.refs.uploadDropArea);
 }
 
 
@@ -248,6 +262,7 @@ const deleteImage = (index) => {
 
     vehicleDetailState.images.splice(index, 1);
     renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click());
+    verifyBtnsCarousel(DOMRefs.refs.btnsCarousel, DOMRefs.refs.mainSwiperWrapper);
 };
 
 const setupApplication = async () => {
@@ -261,7 +276,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
-    initUploadModalEvents({ onChangeUpload, onDropModal, closeModalUpload: initCloseModalUpload, openUploadModal: initOpenModalUpload });
+    initUploadModalEvents({ onChangeUpload, onDropModal, closeModalUpload: () => initCloseModalUpload(Refs), openUploadModal: () => openUploadModal(vehicleDetailState.currentUploadType, vehicleDetailState, Refs.modalUpload, Refs.uploadTitle, Refs.uploadDropArea) });
 
     initVehicleDetailEvents({
         Refs,

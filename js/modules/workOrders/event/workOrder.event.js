@@ -1,25 +1,21 @@
-import { $ } from "../../../utils/dom.js";
-
-export const initWorkOrdersEvents = ({ onSearchWorkOrder }) => {
-    const txtSearch = $("txtSearchData");
-    const cmbSearchByStatus = $("cmbSearchByStatus");
+export const initWorkOrdersEvents = ({ Refs, onSearchWorkOrder }) => {
     let searchTimeout = null;
 
     const emitFilters = () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             onSearchWorkOrder({
-                search: txtSearch?.value.trim() || '',
-                idStatus: cmbSearchByStatus?.value || ''
+                search: Refs.txtSearchData?.value.trim() || '',
+                idStatus: Refs.cmbSearchByStatus?.value || ''
             });
         }, 1000);
     };
 
-    if (txtSearch) {
-        txtSearch.addEventListener("input", emitFilters);
+    if (Refs.txtSearchData) {
+        Refs.txtSearchData.addEventListener("input", emitFilters);
     }
 
-    if (cmbSearchByStatus) {
-        cmbSearchByStatus.addEventListener("change", emitFilters);
+    if (Refs.cmbSearchByStatus) {
+        Refs.cmbSearchByStatus.addEventListener("change", emitFilters);
     }
 };

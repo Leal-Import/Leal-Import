@@ -1,20 +1,9 @@
 import { getAuthMe } from '../service/login.service.js';
 import { showMessage } from './dom.js';
 
-let currentUser = null;
+export const API_BASE_URL = 'https://leal-import-api-jsol.onrender.com/api';
 
-export function getCookie(name) {
-    let cookieValue = null; if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1)); break;
-            }
-        }
-    }
-    return cookieValue;
-}
+let currentUser = null;
 
 export const initSession = async () => {
     try {

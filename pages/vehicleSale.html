@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="../css/utils/modals/modal.css">
     <link rel="stylesheet" href="../css/utils/loader.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/utils/carousel.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Agregar venta</title>
@@ -24,7 +25,10 @@
     <div class="containerModal hide">
         <div class="modalVoucher modalAdd">
             <button id="closeVoucherModal" class="btnClose" type="button">
-                <img src="../media/appMedia/closeIcon.svg" alt="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
             </button>
 
             <div class="headerModalVoucher">
@@ -92,22 +96,20 @@
                     </div>
                     <div class="viewVechicleContainer hide">
                         <div class="imagesSection">
-                            <div class="vehicleImagesSection">
-                                <div>
-                                    <div class="swiper" id="mainSwiper">
-                                        <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
-                                        <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
-                                        <div class="swiper-button-next" style="color: var(--danger-color);"></div>
-                                    </div>
-
-                                    <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
-                                        <div class="swiper thumbs-swiper" id="thumbsSwiper">
-                                            <div class="swiper-wrapper" id="thumbsWrapper"></div>
-                                        </div>
-                                    </div>
-
-                                    <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                            <div class="containerCarousel">
+                                <div class="swiper" id="mainSwiper">
+                                    <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                                    <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
+                                    <div class="swiper-button-next" style="color: var(--danger-color);"></div>
                                 </div>
+
+                                <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                                    <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                        <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                                    </div>
+                                </div>
+
+                                <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
                             </div>
                         </div>
                         <div class="vehicleInfo">
@@ -175,7 +177,7 @@
                                         </div>
                                         <div class="infoItem">
                                             <span class="infoLabel">Almacen:</span>
-                                            <span id="stotage" class="infoValue"></span>
+                                            <span id="storage" class="infoValue"></span>
                                         </div>
                                         <div class="infoItem">
                                             <span class="infoLabel">Transfer:</span>
@@ -211,7 +213,7 @@
                                 <div class="loader"></div>
                                 <div>Cargando lista de vehiculos...</div>
                             </div>
-                            <table class="table">
+                            <table class="table" id="tableVehicles">
                                 <thead>
                                     <tr>
                                         <th>Imagen</th>
@@ -313,7 +315,10 @@
 
                     <!-- Action Buttons -->
                     <div class="actionButtons">
-                        <button class="btnSecondary truncate" id="btnCreateOrder">Vender y crear orden</button>
+                        <button class="btnSecondary truncate" id="btnCreateOrder" data-action="true">
+                            <span>Vender y crear orden</span>
+                            <div class="loader hide" id="btnCreateOrderLoader"></div>
+                        </button>
                         <button class="btnPrimary" id="btnSaveSale">
                             <span>Vender</span>
                             <div class="loader hide" id="btnSaveSaleLoader"></div>

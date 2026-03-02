@@ -2,63 +2,63 @@ import { $ } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
 export const initWorkOrdersEvents = ({
+    Refs,
     onSearchSpareParts,
     onSearchService,
     onAddPayment,
     onSubmitOrder,
     onSaveNotes,
     onSaveDate,
-    onAddNewService
+    onAddNewService,
+    onCompleteOrder
 }) => {
-    const txtSearchSparePart = $("txtSearchSparePart");
-    const txtAddService = $("txtAddService");
-    const btnAddPayment = $("btnAddPayment");
-    const frmWorkOrder = $("frmWorkOrder");
-    const txtNotes = $("txtNotes");
-    const dtEstimated = $("dtEstimated");
-    const txtAmount = $("txtAmount");
 
     let searchTimeOut = null;
 
     const search = (e, onSearch) => {
+        const value = e.target.value;
         clearTimeout(searchTimeOut);
         searchTimeOut = setTimeout(() => {
-            onSearch(e);
+            onSearch({ target: { value } });
         }, 1000);
     };
 
-    if (txtAmount) {
-        txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
-        txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
-        formatDecimalInput(txtAmount);
+    if (Refs.txtAmount) {
+        Refs.txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
+        Refs.txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
+        formatDecimalInput(Refs.txtAmount);
     }
 
-    if (txtSearchSparePart) {
-        txtSearchSparePart.addEventListener("input", (e) =>
+    if (Refs.txtSearchSparePart) {
+        Refs.txtSearchSparePart.addEventListener("input", (e) =>
             search(e, onSearchSpareParts)
         );
     }
 
-    if (txtAddService) {
-        txtAddService.addEventListener("input", (e) =>
+    if (Refs.txtAddService) {
+        Refs.txtAddService.addEventListener("input", (e) =>
             search(e, onSearchService)
         );
-        txtAddService.addEventListener("keydown", onAddNewService);
+        Refs.txtAddService.addEventListener("keydown", onAddNewService);
     }
 
-    if (btnAddPayment) {
-        btnAddPayment.addEventListener("click", onAddPayment);
+    if (Refs.btnAddPayment) {
+        Refs.btnAddPayment.addEventListener("click", onAddPayment);
     }
 
-    if (txtNotes) {
-        txtNotes.addEventListener("input", onSaveNotes);
+    if (Refs.txtNotes) {
+        Refs.txtNotes.addEventListener("input", onSaveNotes);
     }
 
-    if (frmWorkOrder) {
-        frmWorkOrder.addEventListener("submit", onSubmitOrder);
+    if (Refs.frmWorkOrder) {
+        Refs.frmWorkOrder.addEventListener("submit", onSubmitOrder);
     }
 
-    if (dtEstimated) {
-        dtEstimated.addEventListener("change", onSaveDate);
+    if (Refs.dtEstimated) {
+        Refs.dtEstimated.addEventListener("change", onSaveDate);
+    }
+
+    if(Refs.btnCompleteOrder) {
+        Refs.btnCompleteOrder.addEventListener("click", onCompleteOrder);
     }
 };

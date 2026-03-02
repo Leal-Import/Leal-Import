@@ -1,8 +1,8 @@
-import { getCookie } from "../utils/api.utils.js";
+import { API_BASE_URL } from "../utils/api.utils.js";
 
-const API_URL = "https://leal-import-api.onrender.com/api/employees";
-const API_URLR = "https://leal-import-api.onrender.com/api/roles";
-const API_URLUS = "https://leal-import-api.onrender.com/api/users";
+const API_URL = `${API_BASE_URL}/employees`;
+const API_URLR = `${API_BASE_URL}/roles`;
+const API_URLUS = `${API_BASE_URL}/users`;
 
 export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "", status = "") => {
 
@@ -29,8 +29,7 @@ export let postEmployee = async (employeeData) => {
             method: 'POST',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json',
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(employeeData),
         });
@@ -77,8 +76,7 @@ export const patchEmployee = async (username, value) => {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                    'Content-Type': 'application/json'
                 }
             }
         );
@@ -118,8 +116,7 @@ export let putEmployee = async (employeeData, id) => {
             method: 'PUT',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json',
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(employeeData),
         });

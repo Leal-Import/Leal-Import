@@ -1,8 +1,8 @@
-import { getCookie } from "../utils/api.utils.js";
+import { API_BASE_URL } from "../utils/api.utils.js";
 
-const API_URL = "https://leal-import-api.onrender.com/api/WorkOrder";
-const API_URLVE = "https://leal-import-api.onrender.com/api/Vehicle";
-const API_URLSPA = "https://leal-import-api.onrender.com/api/spareParts";
+const API_URL = `${API_BASE_URL}/WorkOrder`;
+const API_URLVE = `${API_BASE_URL}/Vehicle`;
+const API_URLSPA = `${API_BASE_URL}/spareParts`;
 
 
 export let getServices = async (search) => {
@@ -30,8 +30,7 @@ export const patchWorkOrder = async (idWorkOrder) => {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                    'Content-Type': 'application/json'
                 }
             }
         );
@@ -123,9 +122,6 @@ export let postWorkOrder = async (workOrderData, idVehicle, idSale) => {
 
         const request = await fetch(`${API_URL}/postWorkOrder/${idVehicle}?idSale=${idSale}`, {
             method: 'POST',
-            headers: {
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
-            },
             body: workOrderData,
             credentials: 'include'
         });
@@ -168,14 +164,11 @@ export let putWorkOrder = async (workOrderData, idWorkOrder) => {
 
         const request = await fetch(`${API_URL}/putWorkOrder/${idWorkOrder}`, {
             method: 'PUT',
-            headers: {
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
-            },
             body: workOrderData,
             credentials: 'include'
         });
         if (!request.ok) {
-            let errorMessage = `Error al crear la orden. Código: ${request.status}.`;
+            let errorMessage = `Error al actualizar la orden. Código: ${request.status}.`;
 
             try {
                 const errorData = await request.json();

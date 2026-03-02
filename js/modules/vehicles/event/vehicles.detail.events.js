@@ -24,6 +24,9 @@ export function initVehicleDetailEvents({ Refs, onSubmit, onSearchCustomer, onAd
     }
     Refs.imageInput.addEventListener("change", onAddImage);
     Refs.btnLinkLote.addEventListener("click", openLinkLoteModal);
+    Refs.modalLinkLote.addEventListener("click", (e) => {
+        if (e.target === Refs.modalLinkLote) closeLinkLoteModal();
+    });
     Refs.btnCloseLink.addEventListener("click", closeLinkLoteModal);
     Refs.btnSaveLinkLote.addEventListener("click", closeLinkLoteModal);
 

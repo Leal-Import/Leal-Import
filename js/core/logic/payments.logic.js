@@ -13,10 +13,11 @@ export function addPayment(
     }
 ) {
     if (!state?.payments) return null;
-    if (existsById(state.payments, id, 'id')) return null;
+    const resolvedId = id ?? idPayment ?? crypto.randomUUID();
+    if (existsById(state.payments, resolvedId, 'id')) return null;
 
     const payment = {
-        id: idPayment ?? crypto.randomUUID(),
+        id: resolvedId,
         idPayment,
         amount: safeParseFloat(amount),
         idPaymentMethod,

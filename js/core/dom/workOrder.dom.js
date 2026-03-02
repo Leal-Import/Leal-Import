@@ -7,13 +7,15 @@ export const DOMRefs = {
         this.refs = {
             cardContainer: qs('.cardContainer'),
             loaderWorkOrders: $('loaderWorkOrders'),
+            txtSearchData: $('txtSearchData'),
+            cmbSearchByStatus: $('cmbSearchByStatus')
         };
 
         return this.refs;
     }
 };
 
-export let insertWorkOrders = (container, workOrders) => {
+export const insertWorkOrders = (container, workOrders) => {
     container.innerHTML = "";
 
     const fragment = document.createDocumentFragment();
@@ -100,7 +102,7 @@ export let insertWorkOrders = (container, workOrders) => {
             const btnView = document.createElement("a");
             btnView.classList.add("btnPrimary");
             btnView.textContent = "Ver más";
-            btnView.href = `workOrderDetails.html?idVehicle=${workOrder.idVehicle}&idCustomer=${workOrder.idCustomer}&customerName=${workOrder.customerName}`;
+            btnView.href = `workOrderDetails.html?idVehicle=${workOrder.idVehicle}&idCustomer=${workOrder.idCustomer}&customerName=${encodeURIComponent(workOrder.customerName)}`;
 
             moreInfoContainer.append(moreInfoText, btnView);
 

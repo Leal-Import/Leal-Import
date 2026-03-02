@@ -1,64 +1,66 @@
-import { $ } from "../../../utils/dom.js"
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
-export let initVehicleSaleEvents = ({ onSubmitVehicleSale, onSearchVehicle, onAddPayment, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle }) => {
-    const txtSearchData = $("txtSearchData");
-    const txtNotes = $("txtNotes");
-    const txtCommission = $("txtCommission");
-    const txtTotal = $("txtTotal");
-    const frmVehicleSale = $("frmVehicleSale");
-    const btnAddPayment = $("btnAddPayment");
-    const txtAmount = $("txtAmount");
-    const btnCancelVehicle = $("btnCancelVehicle");
-    const btnAddPart = $("btnAddPart");
+export const initVehicleSaleEvents = ({ Refs, onSubmitVehicleSale, onSearchVehicle, onAddPayment, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle }) => {
     let searchTimeout = null;
 
-    if (frmVehicleSale) {
-        frmVehicleSale.addEventListener("submit", onSubmitVehicleSale);
+    let pendingWorkOrder = false;
+
+    Refs.btnCreateOrder.addEventListener("click", () => {
+        pendingWorkOrder = true;
+    });
+
+    Refs.btnSaveSale.addEventListener("click", () => {
+        pendingWorkOrder = false;
+    });
+
+    if (Refs.frmVehicleSale) {
+        Refs.frmVehicleSale.addEventListener("submit", (e) => {
+            onSubmitVehicleSale(e, pendingWorkOrder);
+        });
     }
 
-    if (btnAddPart) {
-        btnAddPart.addEventListener("click", onImportVehicle);
+    if (Refs.btnAddPart) {
+        Refs.btnAddPart.addEventListener("click", onImportVehicle);
     }
 
-    if (btnAddPayment) {
-        btnAddPayment.addEventListener("click", onAddPayment);
+    if (Refs.btnAddPayment) {
+        Refs.btnAddPayment.addEventListener("click", onAddPayment);
     }
 
-    if (txtAmount) {
-        txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
-        txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
-        formatDecimalInput(txtAmount);
+    if (Refs.txtAmount) {
+        Refs.txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
+        Refs.txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
+        formatDecimalInput(Refs.txtAmount);
     }
 
-    if (btnCancelVehicle) {
-        btnCancelVehicle.addEventListener("click", onCancelVehicle);
+    if (Refs.btnCancelVehicle) {
+        Refs.btnCancelVehicle.addEventListener("click", onCancelVehicle);
     }
 
-    if (txtNotes) {
-        txtNotes.addEventListener("input", onSaveNotes);
+    if (Refs.txtNotes) {
+        Refs.txtNotes.addEventListener("input", onSaveNotes);
     }
 
-    if (txtCommission) {
-        txtCommission.addEventListener("input", onSaveComission);
-        txtCommission.addEventListener("blur", (e) => formatOnBlur(e, true));
-        txtCommission.addEventListener("focus", (e) => formatOnFocus(e, true));
-        formatDecimalInput(txtCommission);
+    if (Refs.txtCommission) {
+        Refs.txtCommission.addEventListener("input", onSaveComission);
+        Refs.txtCommission.addEventListener("blur", (e) => formatOnBlur(e, true));
+        Refs.txtCommission.addEventListener("focus", (e) => formatOnFocus(e, true));
+        formatDecimalInput(Refs.txtCommission);
     }
 
-    if (txtTotal) {
-        txtTotal.addEventListener("input", onSaveFinalPrice);
-        txtTotal.addEventListener("blur", (e) => formatOnBlur(e, true));
-        txtTotal.addEventListener("focus", (e) => formatOnFocus(e, true));
-        formatDecimalInput(txtTotal);
+    if (Refs.txtTotal) {
+        Refs.txtTotal.addEventListener("input", onSaveFinalPrice);
+        Refs.txtTotal.addEventListener("blur", (e) => formatOnBlur(e, true));
+        Refs.txtTotal.addEventListener("focus", (e) => formatOnFocus(e, true));
+        formatDecimalInput(Refs.txtTotal);
     }
 
-    if (txtSearchData) {
-        txtSearchData.addEventListener("input", () => {
+    if (Refs.txtSearchData) {
+        Refs.txtSearchData.addEventListener("input", () => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 onSearchVehicle({
-                    search: txtSearchData?.value.trim() || '',
+                    search: Refs.txtSearchData?.value.trim() || '',
                 });
             }, 1000);
         });

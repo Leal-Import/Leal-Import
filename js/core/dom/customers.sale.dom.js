@@ -12,6 +12,8 @@ export const DOMRefs = {
         return this.refs;
     }
 };
+
+
 export const insertCustomers = (container, customers, type, idVehicle) => {
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();

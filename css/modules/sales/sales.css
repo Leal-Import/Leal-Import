@@ -305,7 +305,7 @@
 .optionImageContainer svg {
     width: 70px;
     height: 70px;
-    color: var(--bg-color-white);;
+    color: var(--text-color-light);
     z-index: 1;
     position: relative;
     transition: all 0.3s ease;

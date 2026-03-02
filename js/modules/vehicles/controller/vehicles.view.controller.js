@@ -14,8 +14,13 @@ const loadData = async () => {
     }
 }
 
-export const hydrateContextFromURL = () => {
+export const hydrateContextFromURL = async () => {
     const params = new URLSearchParams(window.location.search);
+    const idVehicle = params.get('id');
+    if (!idVehicle) {
+        await showMessage('Error', 'ID de vehículo no proporcionado en la URL', 'error');
+        window.location.href = 'vehicles.html';
+    }
     vehicleViewState.context.idVehicle = asUUID(params.get('id'));
 };
 

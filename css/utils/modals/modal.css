@@ -48,17 +48,16 @@
     display: grid;
     place-content: center;
     color: var(--text-color);
+    border: var(--border);
+}
+
+.btnClose svg line {
+    stroke: var(--text-color);
 }
 
 .btnClose:hover {
     background: rgba(211, 24, 19, 0.1);
     transform: rotate(90deg);
-}
-
-.btnClose img {
-    width: 16px;
-    height: 16px;
-    pointer-events: none;
 }
 
 @keyframes modalSlideIn {

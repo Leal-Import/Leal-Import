@@ -1,38 +1,35 @@
-import { $, qs } from "../../utils/dom.js"
+import { qs } from "../../utils/dom.js"
 
-let searchTimeout = null;
 
-export let initSalesEvents = ({ onSearchSale, onClickBtnFilter, onOpenModal, onCloseModal }) => {
-    const txtSearchData = $("txtSearchData");
-    const cmbSearchByStatus = $("cmbSearchByStatus");
-    const filterContainer = qs('.containerFilterType');
-    const btnAskSale = $("btnAskSale");
-    const modal = $("modalAskSale");
-    const btnCloseModal = $("btnCloseModalAsk");
-
+export let initSalesEvents = ({ Refs, onSearchSale, onClickBtnFilter, onOpenModal, onCloseModal }) => {
+    let searchTimeout = null;
     const emitFilters = () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             const selected = qs('.lineSelected.selected')?.closest('.filterType');
             onSearchSale({
-                search: txtSearchData?.value.trim() || '',
-                idState: cmbSearchByStatus?.value || '',
-                productType: selected?.dataset.value ?? null
+                search: Refs.txtSearchData?.value.trim() || '',
+                idState: Refs.cmbSearchByStatus?.value || '',
+                productType: selected?.dataset.value ?? ''
             })
         }, 1000);
     };
-    filterContainer.addEventListener('click', (e) => {
+    Refs.containerFilterType.addEventListener('click', (e) => {
         const btn = e.target.closest('.filterType');
         if (!btn) return;
         onClickBtnFilter(btn);
         emitFilters();
     });
 
-    txtSearchData.addEventListener('input', emitFilters);
-    cmbSearchByStatus.addEventListener('change', emitFilters);
-    btnAskSale.addEventListener("click", onOpenModal);
-    btnCloseModal.addEventListener("click", onCloseModal);
-    modal.addEventListener("click", (e) => {
-        if (e.target == modal) onCloseModal();
+    Refs.txtSearchData.addEventListener('input', emitFilters);
+    Refs.cmbSearchByStatus.addEventListener('change', emitFilters);
+    Refs.btnAskSale.addEventListener("click", () => {
+        onOpenModal()
+    });
+    Refs.btnCloseModalAsk.addEventListener("click", () => {
+        onCloseModal();
+    });
+    Refs.modalAskSale.addEventListener("click", (e) => {
+        if (e.target == Refs.modalAskSale) onCloseModal();
     })
 }

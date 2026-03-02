@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <link rel="stylesheet" href="../css/modules/vehicles/vehicleView.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/utils/carousel.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Vehiculos</title>
@@ -25,15 +26,6 @@
                 </div>
             </div>
             <div class="mainContent">
-                <div class="modalAdd hide" id="modalLink">
-                    <button class="btnClose" type="button">
-                        <img src="../media/appMedia/closeIcon.svg" alt="">
-                    </button>
-                    <h2 class="titleModal">Agregar enlace del lote</h2>
-                    <input type="text" id="txtLink" class="txtInputs"
-                        placeholder="Pega tu url aqui ej: https://www.ejemplo.com/lote/45">
-                    <button class="btnPrimary btnSubmitData" id="btnSaveLink" type="button">Guardar enlace</button>
-                </div>
                 <div class="vehicleData">
                     <div class="headerData">
                         <h2 class="titleData">Datos del vehiculo</h2>
@@ -86,7 +78,7 @@
                     </div>
                 </div>
                 <div class="imgData">
-                    <div class="vehicleImagesSection">
+                    <div class="containerCarousel">
                         <!-- CARRUSEL -->
                         <div class="swiper" id="mainSwiper">
                             <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
@@ -94,8 +86,11 @@
                             <div class="swiper-button-next"></div>
                         </div>
 
-                        <!-- GRID DE IMÁGENES -->
-                        <div class="imageGrid" id="imageGrid"></div>
+                        <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                            <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="costsData">

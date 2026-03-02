@@ -1,5 +1,5 @@
-const API_URL = "https://leal-import-api.onrender.com/api/auth"
-const API_URLS = "https://leal-import-api.onrender.com/api/passwordReset";
+const API_URL = `https://leal-import-api-jsol.onrender.com/api/auth`
+const API_URLS = `https://leal-import-api-jsol.onrender.com/api/passwordReset`;
 
 
 export let login = async (credentials, password) => {

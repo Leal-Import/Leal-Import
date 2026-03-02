@@ -25,6 +25,10 @@
     transition: all 0.3s ease;
 }
 
+#costsSection{
+    flex-direction: column;
+}
+
 .formCard:hover {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
@@ -145,130 +149,27 @@ fieldset .cardBody {
     font-size: var(--font-size-base);
 }
 
-/* Images Section */
+/*Estilos adicionales del carrucel*/
 .imgData {
     width: 40%;
     position: sticky;
     top: 0;
-    height: 80dvh;
+    height: fit-content;
+}
+
+#mainSwiper .swiper-wrapper {
+    height: 400px !important;
 }
 
 .imgData .cardBody {
     padding: 20px;
-    width: 100%;
-    height: 100%;
-}
-
-.vehicleImagesSection>div {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.vehicleImagesSection {
-    max-width: 100%;
-    height: 100%;
-}
-
-#mainSwiper {
-    width: 100%;
-    height: 350px;
-    border-radius: 16px;
-    overflow: hidden;
-    background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-#mainSwiperWrapper {
-    height: 100%;
-    width: 100%;
-}
-
-#mainSwiperWrapper .swiper-slide {
-    height: 100%;
-    width: 100%;
-}
-
-
-.mainSwiperUsed {
-    border: 3px solid var(--danger-color);
-}
-
-.previewImg {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.swiper-button-prev,
-.swiper-button-next {
-    background: var(--bg-color);
-    padding: 10px;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.swiper-button-prev:after,
-.swiper-button-next:after {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
-}
-
-/* Thumbnails */
-.thumbnailImagesContainer {
-    width: 100%;
-}
-
-.thumbs-swiper .swiper-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 10px;
-}
-
-.thumbs-swiper .swiper-slide {
-    width: 100% !important;
-    height: 70px !important;
-    border: 2px solid #E8E8E8;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    opacity: 0.5;
-    transition: all 0.3s ease;
-}
-
-.thumbs-swiper .swiper-slide:hover {
-    opacity: 0.8;
-    transform: translateY(-2px);
-}
-
-.thumbs-swiper .swiper-slide-thumb-active {
-    opacity: 1;
-    border-color: var(--danger-color);
-    border-width: 1px;
-    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.25);
-}
-
-.thumbs-swiper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.thumb-box {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    overflow: hidden;
 }
 
 .thumb-add {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
-    border: 2px dashed var(--helper-color);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
+    border: var(--border) !important;
     color: var(--danger-color);
     font-size: var(--font-size-breadcrumb);
     display: flex;
@@ -276,12 +177,6 @@ fieldset .cardBody {
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.thumb-add:hover {
-    background: linear-gradient(135deg, #FFF5F5 0%, #FFEAEA 100%);
-    border-color: var(--danger-color);
-    transform: scale(1.05);
 }
 
 .thumb-delete {
@@ -307,17 +202,10 @@ fieldset .cardBody {
     opacity: 1;
 }
 
-.thumb-delete:hover {
-    background: var(--dark-danger-color);
-    transform: scale(1.15);
-}
-
-.no-image-container {
+.noImageContainer {
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
-    border: 3px dashed #CCCCCC;
-    border-radius: 12px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -326,11 +214,10 @@ fieldset .cardBody {
     gap: 10px;
 }
 
-.no-image-icon {
+.noImageIcon {
     font-size: var(--font-size-breadcrumb);
     color: var(--bg-color);
 }
-
 
 
 .txtInputs {
@@ -346,7 +233,7 @@ fieldset .cardBody {
 }
 
 .dropArea {
-    border: 3px dashed var(--bg-color);
+    border: 3px dashed var(--bg-color-modal);
     border-radius: 16px;
     padding: 40px;
     text-align: center;

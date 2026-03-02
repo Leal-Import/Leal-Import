@@ -1,15 +1,12 @@
-import { getCookie } from "../utils/api.utils.js";
+import { API_BASE_URL } from "../utils/api.utils.js";
 
-const API_URL = "https://leal-import-api.onrender.com/api/VehicleSale";
-const API_URLVeh = "https://leal-import-api.onrender.com/api/Vehicle";
+const API_URL = `${API_BASE_URL}/VehicleSale`;
+const API_URLVeh = `${API_BASE_URL}/Vehicle`;
 
-export let postVehicle = async (sale, id) => {
+export const postVehicle = async (sale, id) => {
     try {
         const request = await fetch(`${API_URL}/postVehicleSale/${id}`, {
             method: 'POST',
-            headers: {
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
-            },
             body: sale,
             credentials: 'include'
         });
@@ -47,13 +44,10 @@ export let postVehicle = async (sale, id) => {
     }
 };
 
-export let putVehicle = async (vehicleData, id) => {
+export const putVehicle = async (vehicleData, id) => {
     try {
         const request = await fetch(`${API_URL}/putVehicleSale/${id}`, {
             method: 'PUT',
-            headers: {
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
-            },
             body: vehicleData,
             credentials: 'include'
         });
@@ -91,7 +85,7 @@ export let putVehicle = async (vehicleData, id) => {
     }
 };
 
-export let getSaleById = async (id) => {
+export const getSaleById = async (id) => {
     try {
         const request = await fetch(`${API_URL}/getVehicleSaleById/${id}`, {
             credentials: 'include'
@@ -113,7 +107,7 @@ export let getSaleById = async (id) => {
     }
 };
 
-export let getVehiclesAviable = async (page = 0, size = 15, search = '') => {
+export const getVehiclesAviable = async (page = 0, size = 15, search = '') => {
     try {
         const request = await fetch(`${API_URLVeh}/getSaleSummary?page=${page}&size=${size}&search=${search}`, {
             credentials: 'include'

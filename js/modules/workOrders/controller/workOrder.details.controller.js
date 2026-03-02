@@ -1,4 +1,4 @@
-import { appendToDom, cleanPaymentCamps, cleanRow, DOMRefs, initStaticRows, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderOrderTotal, renderServiceSuggestions, renderSparePartSuggestions, renderTotalRepairCost, renderTotals, renderTotalServices, renderTotalsPanel, renderTotalSpareParts, renderVehicleData } from "../../../core/dom/workOrder.details.dom.js";
+import { appendToDom, cleanPaymentCamps, cleanRow, DOMRefs, initStaticRows, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "../../../core/dom/workOrder.details.dom.js";
 import { workOrderDetailsState } from "../../../core/state/workOrder.details.state.js";
 import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "../../../service/workOrder.detail.service.js";
 import { safeParseFloat, validateDate, validatePayment } from "../../../utils/validators.js";
@@ -18,6 +18,7 @@ const addNewPartToTable = () => {
         sparePartName: workOrderDetailsState.context.newPartName,
         priceApplied: workOrderDetailsState.context.newPartSuggestedPrice
     });
+    if (normalizedPart == null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodySpareParts,
         data: normalizedPart,
@@ -25,7 +26,7 @@ const addNewPartToTable = () => {
         arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
         onWritePrice,
         onDelete,
-        renderButton: renderImportButton
+        renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
     });
 }
 
@@ -35,22 +36,9 @@ const onWritePrice = (e, data) => {
     calculateAllTotals();
 };
 
-const updateTotalsAfterAdd = () => {
-    const totals = calculateWorkOrderTotals({
-        services: workOrderDetailsState.data.selectedServices,
-        spareParts: workOrderDetailsState.data.selectedSpareParts,
-        payments: workOrderDetailsState.data.payments
-    });
-
-    renderTotalServices(totals.servicesTotal);
-    renderTotalSpareParts(totals.sparePartsTotal);
-    renderTotalRepairCost(totals.total);
-    renderTotalsPanel({ due: totals.due, totalPaid: totals.totalPaid, total: totals.total });
-    renderOrderTotal(totals.orderTotal);
-};
-
 const onAddService = (service) => {
     const normalizedService = pushService(workOrderDetailsState.data.selectedServices, service);
+    if (normalizedService == null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodyServices,
         data: normalizedService,
@@ -63,11 +51,12 @@ const onAddService = (service) => {
     DOMRefs.refs.txtAddService.value = '';
     reindexTable(DOMRefs.refs.tBodyServices);
     hideElement(DOMRefs.refs.boxServ);
-    updateTotalsAfterAdd();
+    calculateAllTotals();
 }
 
 const onAddSparePart = (sparePart) => {
     const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, sparePart);
+    if (normalizedPart == null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodySpareParts,
         data: normalizedPart,
@@ -75,14 +64,14 @@ const onAddSparePart = (sparePart) => {
         arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
         onWritePrice,
         onDelete,
-        renderButton: renderImportButton
+        renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
     });
 
-    DOMRefs.refs.txtAddSparePart.value = '';
+    DOMRefs.refs.txtSearchSparePart.value = '';
     reindexTable(DOMRefs.refs.tBodySpareParts);
     hideElement(DOMRefs.refs.boxSparePart);
-    renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart);
-    updateTotalsAfterAdd();
+    renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts);
+    calculateAllTotals();
 }
 
 const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) => {
@@ -111,23 +100,23 @@ const onSearchSpareParts = (e) => {
 }
 
 const onAddPayment = () => {
-    const amount = DOMRefs.refs.txtAmount.value.trim();
-    const method = DOMRefs.refs.cmbPaymentMethod.value;
-    const errorMsg = validatePayment(safeParseFloat(amount), method);
+    const amount = DOMRefs.refs.txtAmount;
+    const method = DOMRefs.refs.cmbPaymentMethod;
+    const errorMsg = validatePayment(safeParseFloat(amount.value.trim()), method.value);
     if (errorMsg) {
         showMessage('Error de validación', errorMsg, 'warning');
         return;
     }
     const payment = {
-        amount: safeParseFloat(amount) || 0,
-        idPaymentMethod: method || null
+        amount: safeParseFloat(amount.value.trim()) || 0,
+        idPaymentMethod: method.value || null
     }
     addNewPayment({
         state: workOrderDetailsState.data,
         totals: workOrderDetailsState.totals,
         payment
     });
-    cleanPaymentCamps();
+    cleanPaymentCamps(amount, method);
 };
 
 const onSubmitOrder = async (e) => {
@@ -190,15 +179,16 @@ const onSaveDate = (e) => {
     workOrderDetailsState.data.estimatedDate = value;
 };
 
-const loadDataVehicle = async () => {
+const loadDataVehicle = async (Refs) => {
     try {
         const vehicle = await getDataVehicleById(workOrderDetailsState.context.idVehicle);
         if (workOrderDetailsState.context.idSale) {
-            loadViewSaleInfo(vehicle.vin);
+            loadViewSaleInfo(vehicle.vin, Refs);
         } else if (workOrderDetailsState.context.idWorkOrder) {
-            loadViewUpdateOrder(vehicle.vin);
+            loadViewUpdateOrder(vehicle.vin, Refs);
         }
-        renderVehicleData(vehicle);
+        renderVehicleData(vehicle, Refs);
+        renderVehiclePrice(workOrderDetailsState.context.vehiclePrice, Refs.vehiclePrice);
     } catch (error) {
         showMessage("Error", "No se pudieron cargar los datos del vehiculo", "error");
         console.log(error)
@@ -237,19 +227,20 @@ const recalculateTotalsPanel = () => {
     });
     workOrderDetailsState.totals.total = total;
     workOrderDetailsState.totals.due = due;
-    renderTotalsPanel({ total, due, totalPaid: workOrderDetailsState.totals.totalPaid });
+    renderTotalsPanel({ total, due, totalPaid: workOrderDetailsState.totals.totalPaid }, DOMRefs.refs);
 };
 
 const calculateAllTotals = () => {
     const totals = calculateWorkOrderTotals({
         services: workOrderDetailsState.data.selectedServices,
         spareParts: workOrderDetailsState.data.selectedSpareParts,
-        payments: workOrderDetailsState.data.payments
+        payments: workOrderDetailsState.data.payments,
+        vehiclePrice: workOrderDetailsState.context.vehiclePrice
     });
-    renderTotals(totals);
+    renderTotals(totals, DOMRefs.refs);
 };
 
-const loadDraft = () => {
+const loadDraft = (Refs) => {
     const item = localStorage.getItem(workOrderDetailsState.saleKey);
     if (!item) {
         console.warn('No draft found in localStorage');
@@ -264,7 +255,7 @@ const loadDraft = () => {
         workOrderDetailsState.data.servicesToDelete = storageItem.data?.servicesToDelete || [];
         workOrderDetailsState.totals = storageItem.totals || {};
 
-        loadExtraInputs(workOrderDetailsState.data.notes, workOrderDetailsState.data.estimatedDate);
+        loadExtraInputs(workOrderDetailsState.data.notes, workOrderDetailsState.data.estimatedDate, Refs);
 
         // Cargar spare parts
         storageItem.data?.selectedSpareParts?.forEach(part => {
@@ -277,7 +268,7 @@ const loadDraft = () => {
                 arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
                 onWritePrice,
                 onDelete,
-                renderButton: renderImportButton
+                renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
             });
         });
         // Cargar servicios
@@ -307,14 +298,14 @@ const loadDraft = () => {
     }
 }
 
-const loadWorkOrder = async () => {
+const loadWorkOrder = async (Refs) => {
     const workOrder = await getWorkOrderById(workOrderDetailsState.context.idWorkOrder);
     workOrderDetailsState.context.idVehicle = workOrder.idVehicle
     workOrderDetailsState.data.estimatedDate = workOrder.estimatedDate || "";
     workOrderDetailsState.data.notes = workOrder.notes || "";
-    loadViewUpdateOrder(workOrder.vehicleInfo.vin);
-    renderVehicleData(workOrder.vehicleInfo);
-    loadExtraInputs(workOrderDetailsState.data.notes, workOrderDetailsState.data.estimatedDate);
+    loadViewUpdateOrder(workOrder.vehicleInfo.vin, Refs);
+    renderVehicleData(workOrder.vehicleInfo, Refs);
+    loadExtraInputs(workOrderDetailsState.data.notes, workOrderDetailsState.data.estimatedDate, Refs);
     workOrder.spareParts.forEach(part => {
         const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, part);
         appendToDom({
@@ -324,7 +315,7 @@ const loadWorkOrder = async () => {
             arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
             onWritePrice,
             onDelete,
-            renderButton: renderImportButton,
+            renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts),
             isView: workOrderDetailsState.context.isView
         });
     });
@@ -389,26 +380,31 @@ const onAddNewService = (e) => {
 }
 
 // Funciones auxiliares para cada flujo
-const initNewPartFlow = async () => {
+const initNewPartFlow = async (Refs) => {
     addNewPartToTable();
-    loadDraft();
-    validateDate(DOMRefs.refs.dtEstimated, DOMRefs.dtEstimated.value || new Date());
-    await loadDataVehicle();
+    loadDraft(Refs);
+    validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
+    await loadDataVehicle(Refs);
 };
 
-const initEditOrderFlow = async () => {
-    await loadWorkOrder();
+const initEditOrderFlow = async (Refs) => {
+    await loadWorkOrder(Refs);
 
     if (workOrderDetailsState.context.isView) {
-        loadViewDom(onCompleteOrder);
+        loadViewDom(Refs);
+        showElement(Refs.btnCompleteOrder);
+        hideElement(Refs.btnSaveOrder);
+        hideElement(Refs.paymentForm);
+        hideElement(Refs.txtSearchSparePart);
+        hideElement(Refs.txtAddService);
     } else {
-        validateDate(DOMRefs.refs.dtEstimated, DOMRefs.refs.dtEstimated.value || new Date());
+        validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
     }
 };
 
-const initNewOrderFlow = async () => {
-    await loadDataVehicle();
-    validateDate(DOMRefs.refs.dtEstimated, new Date());
+const initNewOrderFlow = async (Refs) => {
+    await loadDataVehicle(Refs);
+    validateDate(Refs.dtEstimated, new Date());
 };
 
 const setupApplication = async () => {
@@ -426,7 +422,7 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = async () => {
+const initializeUI = async (Refs) => {
     // Inicialización de componentes UI
     initStaticRows();
 
@@ -438,33 +434,35 @@ const initializeUI = async () => {
     });
 
     initWorkOrdersEvents({
+        Refs,
         onSearchSpareParts,
         onSearchService,
         onAddPayment,
         onSubmitOrder,
         onSaveNotes,
         onAddNewService,
-        onSaveDate
+        onSaveDate,
+        onCompleteOrder
     });
 
     initializeModalListeners(workOrderDetailsState.data);
 };
 
-const loadDataFlow = async () => {
+const loadDataFlow = async (Refs) => {
     const { context } = workOrderDetailsState;
 
     // Determinar qué flujo ejecutar
     if (context.isNewPart) {
-        await initNewPartFlow();
+        await initNewPartFlow(Refs);
     } else if (context.idWorkOrder != null) {
-        await initEditOrderFlow();
+        await initEditOrderFlow(Refs);
     } else {
-        await initNewOrderFlow();
+        await initNewOrderFlow(Refs);
     }
 
     // Renderizado condicional
     if (!context.isView) {
-        renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart);
+        renderImportButton(Refs.tBodySpareParts, onImportSparePart, Refs.tBodyServices, Refs.tBodySpareParts);
     }
 };
 
@@ -483,18 +481,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!isReady) return;
 
         // 2. Inicializar referencias del DOMRefs
-        DOMRefs.init();
-        
+        const refs = DOMRefs.init();
+
         // 3. Inicializar componentes UI
-        await initializeUI();
-        
+        await initializeUI(refs);
+
         // 4. Cargar datos según el flujo
-        await loadDataFlow();
-        
+        await loadDataFlow(refs);
+
         // 5. Calcular totales finales
         finalizeTotals();
-
-        DOMRefs.init();
     } catch (error) {
         console.error('Error inicializando la aplicación:', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');

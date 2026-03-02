@@ -1,6 +1,8 @@
-const APIPAY_URL = 'https://leal-import-api.onrender.com/api/Sales';
+import { API_BASE_URL } from "../utils/api.utils.js";
 
-export let getPaymentMethods = async () => {
+const APIPAY_URL = `${API_BASE_URL}/Sales`;
+
+export const getPaymentMethods = async () => {
     try {
         const request = await fetch(`${APIPAY_URL}/getPaymentMethod`, {
             credentials: 'include'

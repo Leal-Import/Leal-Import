@@ -47,11 +47,20 @@ const loadCustomers = async () => {
 }
 
 
-const hydrateContextFromURL = () => {
+const hydrateContextFromURL = async () => {
     const params = new URLSearchParams(window.location.search);
     const type = params.get("type");
+
+    if (!type) {
+        await showMessage('Error', 'Tipo de venta no especificado', 'error');
+        // opcional: redirigir
+        window.location.href = 'sales.html';
+        return false;
+    }
+
     customerSaleState.type = type;
     customerSaleState.context.id = params.get("id");
+    return true;
 }
 
 export function onSearchCustomer(filters) {
@@ -64,12 +73,13 @@ export function onSearchCustomer(filters) {
 }
 
 const setupApplication = async () => {
-    // 1. Validar sesión
+    // Validar sesión
     const user = await initSession();
     if (!user) return false;
 
-    // 3. Hidratar contexto desde URL
-    hydrateContextFromURL();
+    // Hidratar contexto desde URL
+    const contextReady = await hydrateContextFromURL();
+    if (!contextReady) return false;
 
     return true;
 };
@@ -84,17 +94,17 @@ const loadDataFlow = async () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // 1. Configurar aplicación
+        // Validar sesión y preparar contexto
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        // 2. Inicializar referencias del DOMRefs
+        // Inicializar referencias del DOMRefs
         const refs = DOMRefs.init();
 
-        // 3. Inicializar componentes UI
+        // Inicializar componentes UI
         initializeUI(refs);
 
-        // 4. Cargar datos según el flujo
+        // Cargar datos según el flujo
         await loadDataFlow();
     } catch (error) {
         console.error('Error initializing application:', error);

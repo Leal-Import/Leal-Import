@@ -1,4 +1,6 @@
-const API_URL = "https://leal-import-api.onrender.com/api/Sales";
+import { API_BASE_URL } from "../utils/api.utils.js";
+
+const API_URL = `${API_BASE_URL}/Sales`;
 
 export let getSales = async (page = 0, size = 15, search = "", idState = "", productType = "") => {
     try {

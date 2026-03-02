@@ -7,7 +7,13 @@ export const DOMRefs = {
         this.refs = {
             panelContainer: qs('.panelContainer'),
             loaderSales: $('loaderSales'),
-            modalAskSale: ("modalAskSale")
+            modalAskSale: $("modalAskSale"),
+            txtSearchData: $("txtSearchData"),
+            cmbSearchByStatus: $("cmbSearchByStatus"),
+            containerFilterType: qs('.containerFilterType'),
+            btnAskSale: $("btnAskSale"),
+            btnCloseModalAsk: $("btnCloseModalAsk"),
+            selectedLines: qsa(".filterType .lineSelected")
         };
         return this.refs;
     }
@@ -15,8 +21,6 @@ export const DOMRefs = {
 
 export const insertSales = (container, sales) => {
     if (!container) return;
-    container.innerHTML = "";
-
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
     if (sales.length === 0) {
@@ -151,7 +155,7 @@ export const insertSales = (container, sales) => {
             lblDue.classList.add("lbl");
             lblDue.textContent = "Deuda:";
             const dueSpan = document.createElement("span");
-            dueSpan.textContent = `$${sale.amountDue.toLocaleString('es-SV')}` || "$N/A"; // Deuda
+            dueSpan.textContent = sale.amountDue != null ? `$${sale.amountDue.toLocaleString('es-SV')}` : "$N/A";
             amountDueData.append(lblDue, dueSpan);
 
             // Contenedor de Botones
@@ -170,11 +174,11 @@ export const insertSales = (container, sales) => {
             btnEdit.textContent = "Editar";
 
             if (sale.productType == "Vehicle") {
-                btnEdit.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
-                btnView.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}&isView=true`;
+                btnEdit.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}`;
+                btnView.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}&isView=true`;
             } else {
-                btnEdit.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}`;
-                btnView.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${sale.customerName}&idCustomer=${sale.idCustomer}&isView=true`;
+                btnEdit.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}`;
+                btnView.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}&isView=true`;
             }
 
             containerButtonsData.append(btnView, btnEdit);
@@ -192,7 +196,7 @@ export const insertSales = (container, sales) => {
     container.appendChild(fragment);
 }
 
-export const selectLineButton = (filterBtn) => {
-    qsa(".filterType .lineSelected").forEach(l => l.classList.remove("selected"));
+export const selectLineButton = (filterBtn, selectedLines) => {
+    selectedLines.forEach(l => l.classList.remove("selected"));
     filterBtn.querySelector(".lineSelected")?.classList.add("selected");
 }

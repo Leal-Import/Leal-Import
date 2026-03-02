@@ -1,8 +1,9 @@
-.modalAdd{
+.modalAdd {
     padding: 40px !important;
     --width-modal: clamp(250px, 90%, 550px);
 }
-.modalCustomerBody{
+
+.modalCustomerBody {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -12,7 +13,7 @@
     flex-basis: 0;
 }
 
-.filterSection{
+.filterSection {
     justify-content: space-between;
 }
 
@@ -29,13 +30,18 @@
 /* Móviles (< 768px) - Transformar tabla en cards */
 
 @media screen and (max-width: 850px) {
-    .content{
+    .content {
         height: fit-content;
     }
 }
 
 
-@media screen and (max-width: 767px) {
+@container content (max-width: 800px) {
+
+    .containerTable {
+        min-height: 400px;
+    }
+
     /* Ocultar thead */
     .table thead {
         display: none;
@@ -89,9 +95,17 @@
     }
 
     /* Añadir labels antes de cada TD usando ::before */
-    .table tbody tr td:nth-child(1)::before { content: "Nombre: "; }
-    .table tbody tr td:nth-child(2)::before { content: "DUI: "; }
-    .table tbody tr td:nth-child(3)::before { content: "Teléfono: "; }
+    .table tbody tr td:nth-child(1)::before {
+        content: "Nombre: ";
+    }
+
+    .table tbody tr td:nth-child(2)::before {
+        content: "DUI: ";
+    }
+
+    .table tbody tr td:nth-child(3)::before {
+        content: "Teléfono: ";
+    }
 
     .table tbody tr td::before {
         font-weight: var(--font-weight-semibold);
@@ -101,7 +115,7 @@
     }
 
     /* Layout de la grid - 3 columnas (nombre, dui, teléfono, acciones) */
-    
+
     /* Nombre completo - primera fila, columna completa */
     .table tbody tr td:nth-child(1) {
         grid-column: 1 / -1;
@@ -112,7 +126,8 @@
     }
 
     .table tbody tr td:nth-child(1)::before {
-        display: none; /* No mostrar label para nombre */
+        display: none;
+        /* No mostrar label para nombre */
     }
 
     /* DUI - segunda fila */
@@ -145,6 +160,7 @@
     .table tbody tr td:nth-child(4) .actionButton {
         padding: 8px 12px;
     }
+
     /* Ajustar modal en móvil */
     .modalAdd {
         width: 95% !important;

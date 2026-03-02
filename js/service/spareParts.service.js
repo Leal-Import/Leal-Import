@@ -1,5 +1,7 @@
-const API_URL = "https://leal-import-api.onrender.com/api/spareParts";
-const API_URLSTAT = "https://leal-import-api.onrender.com/api/PartsState";
+import { API_BASE_URL } from "../utils/api.utils.js";
+
+const API_URL = `${API_BASE_URL}/spareParts`;
+const API_URLSTAT = `${API_BASE_URL}/PartsState`;
 
 export let getSpareParts = async (page = 0, size = 15, search = "", idState = "") => {
     try {

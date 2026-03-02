@@ -10,6 +10,6 @@ export const salesState = {
     filters: {
         search: '',
         idState: '',
-        productType: null
+        productType: ''
     }
 };
