@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/modules/configuration/configuration.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Configuración</title>
@@ -16,6 +17,29 @@
         <div id="sidebar"></div>
         <div class="content">
             <div class="containerMobileHeader"></div>
+            <div class="headerContent">
+                <div class="breadCrumbSection">
+                    <a class="breadcrumb">Configuración</a>
+                </div>
+            </div>
+            <div class="bodySection">
+                <div class="darkModeContainer">
+                    <div class="infoDarkContainer">
+                        <svg width="35" height="35" viewBox="0 0 24 24" fill="#fff" stroke="#fff"
+                            stroke-width="2" stroke-linecap="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 07 0 0 0 21 12.70z" />
+                        </svg>
+                        <span>Modo Oscuro</span>
+                    </div>
+
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script src="../js/sidebar.js"></script>

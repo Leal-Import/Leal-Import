@@ -176,7 +176,7 @@ section {
   top: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(31, 38, 135, 0.315);
+  background: rgba(51, 32, 32, 0.315);
   justify-content: center;
   align-items: center;
   -webkit-animation-name: slideIn;
