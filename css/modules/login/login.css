@@ -1,4 +1,4 @@
-@import url('globalStyles.css');
+@import url('../../globalStyles.css');
 
 * {
   margin: 0;
@@ -12,15 +12,11 @@
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background: url("../media/appMedia/bgLogin.png");
+  background: url("../../../media/appMedia/bgLogin.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed
-}
-
-body {
-  background-color: #616FEF;
 }
 
 section {
@@ -166,25 +162,6 @@ section {
 
 /* PROPIEDAD DE MODAL GENERAL */
 
-.modal {
-  margin: 0;
-  padding: 0;
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(51, 32, 32, 0.315);
-  justify-content: center;
-  align-items: center;
-  -webkit-animation-name: slideIn;
-  -webkit-animation-duration: 0.4s;
-  animation-name: slideIn;
-  animation-duration: 0.4s;
-}
-
 .modalBtn {
   width: 100%;
   background: #fff;
@@ -313,7 +290,7 @@ section {
   margin-right: auto;
   margin-bottom: 20px;
   background-color: #7a87ff;
-  color: #fff;
+  color: var(--bg-color-white);
   font-weight: 500;
   font-size: 18px;
   padding: 14px 0;
@@ -342,7 +319,7 @@ section {
 
 .swal2TitleCustom {
   font-size: 1.3rem !important;
-  color: #616FEF !important;
+  color: var(--danger-color) !important;
   font-weight: 700;
 }
 
@@ -350,7 +327,7 @@ section {
   font-size: 1.2rem !important;
   border-radius: 8px !important;
   padding: 10px 12px !important;
-  background: #616FEF !important;
+  background: var(--danger-color) !important;
   color: #fff !important;
   font-weight: 600;
 }
@@ -369,7 +346,7 @@ section {
   box-shadow: 0 8px 24px rgba(31, 38, 135, 0.15);
   display: flex;
   flex-direction: column;
-  color: #5a5a89;
+  color: var(--text-color-secondary);
   font-size: 1rem;
   box-sizing: border-box;
 }
@@ -378,7 +355,7 @@ section {
   font-weight: 700;
   font-size: 1.3rem;
   margin-bottom: 16px;
-  color: #5a5a89;
+  color: var(--text-color-secondary);
 }
 
 #modalAuth .modalAuthBody {
@@ -395,7 +372,7 @@ section {
 #modalAuth input.formControl {
   padding: 12px 16px;
   border-radius: 10px;
-  border: 1px solid #bfc6f7;
+  border: 1px solid var(--bg-color);
   font-size: 1rem;
   outline: none;
   box-sizing: border-box;
@@ -404,11 +381,11 @@ section {
 
 #modalAuth input.formControl:focus {
   border-color: var(--dark-danger-color);
-  box-shadow: 0 0 8px #616FEF50;
+  box-shadow: 0 0 8px var(--bg-color-modal);
 }
 
 #modalAuth .authSuccess {
-  color: #43d354;
+  color: var(--success-color);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -425,7 +402,7 @@ section {
 #modalAuth .btnPrimary {
   padding: 14px 30px;
   border-radius: 12px;
-  background-color: #7884ED;
+  background-color: var(--danger-color);
   color: #fff;
   font-weight: 500;
   border: none;
@@ -434,7 +411,7 @@ section {
 }
 
 #modalAuth .btnPrimary:hover {
-  background-color: #616FEF;
+  background-color: var(--danger-color);
 }
 
 .closeBtn {
@@ -449,7 +426,7 @@ section {
   background: none;
   border: none;
   cursor: pointer;
-  color: #8b8b8b;
+  color: var(--text-color-dark);
   z-index: 1001;
   transition: color .2s ease-in-out;
 }
@@ -467,7 +444,7 @@ section {
 #modalCode .modalContent {
   width: 370px;
   min-width: 0;
-  background: #f8fbff;
+  background: var(--bg-color);
   border-radius: 20px;
   position: relative;
   padding: 0;
@@ -514,11 +491,11 @@ section {
   padding: 0;
   text-align: center;
   font-size: 20px;
-  border: 1.5px solid #bfc6f7;
+  border: 1.5px solid var(--bg-color);
   border-radius: 10px;
   outline: none;
   transition: border-color 0.2s;
-  background: #fff;
+  background-color: var(--bg-color-white);
 }
 
 .codeInputs .codeDigit:focus {
@@ -574,7 +551,7 @@ section {
 
 #modalNewPassword .modalContent input[type="password"]:focus {
   border-color: var(--dark-danger-color);
-  box-shadow: 0 0 8px #616FEF50;
+  box-shadow: 0 0 8px var(--bg-color-modal);
 }
 
 #modalNewPassword .modalActions {
@@ -596,22 +573,22 @@ section {
 }
 
 #modalNewPassword .modalActions .outline {
-  background: transparent;
-  border: 2px solid #616FEF;
-  color: #616FEF;
+  background-color: transparent;
+  border: 2px solid var(--danger-color);
+  color: var(--danger-color);
 }
 
 #modalNewPassword .modalActions .outline:hover {
-  background: #e6eaff;
+  background-color: #e6eaff;
 }
 
 #modalNewPassword .modalActions button:not(.outline) {
-  background: #616FEF;
+  background-color: var(--danger-color);
   color: #fff;
 }
 
 #modalNewPassword .modalActions button:not(.outline):hover {
-  background: #4c59d8;
+  background-color: var(--danger-color);
 }
 
 /* === Neutralizar color oscuro del autofill (Chrome/Edge/Safari) === */

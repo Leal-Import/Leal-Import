@@ -8,6 +8,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-animation-name: slideIn;
+    animation-name: slideIn;
+    animation-duration: 0.4s;
 }
 
 .modalAdd {
@@ -73,15 +76,39 @@
 }
 
 @media screen and (max-width: 500px) {
-    .modalAdd{
+    .modalAdd {
         padding: 40px 20px;
     }
 
-    .titleModal{
+    .titleModal {
         font-size: var(--font-size-lg);
     }
 
-    .lblInputs{
+    .lblInputs {
         font-size: var(--font-size-sm);
+    }
+}
+
+@-webkit-keyframes slideIn {
+    from {
+        bottom: -300px;
+        opacity: 0
+    }
+
+    to {
+        bottom: 0;
+        opacity: 1
+    }
+}
+
+@keyframes slideIn {
+    from {
+        bottom: -300px;
+        opacity: 0
+    }
+
+    to {
+        bottom: 0;
+        opacity: 1
     }
 }

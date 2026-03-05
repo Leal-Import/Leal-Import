@@ -185,9 +185,6 @@
 
 /* Móviles pequeños (< 500px) */
 @media screen and (max-width: 499px) {
-    .content {
-        padding: 70px 15px 15px;
-    }
 
     .table tbody tr {
         padding: 15px;

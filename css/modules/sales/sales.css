@@ -404,9 +404,6 @@
 
 /* Móviles (< 768px) - Cards compactas */
 @media screen and (max-width: 767px) {
-    .content {
-        padding: 70px 15px 15px;
-    }
 
     /* Tabs más compactos */
     .containerFilterType {
@@ -591,9 +588,6 @@
 
 /* Móviles pequeños (< 500px) */
 @media screen and (max-width: 499px) {
-    .content {
-        padding: 70px 10px 10px;
-    }
 
     .panel {
         border-radius: 12px;

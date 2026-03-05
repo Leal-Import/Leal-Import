@@ -455,13 +455,7 @@ body:not(.sidebar-ready) {
     align-items: center;
     justify-content: space-between;
     padding: 15px 20px;
-    background-color: var(--nav-bg2);
     border-bottom: 1px solid var(--nav-border-soft);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 90;
     box-shadow: 0 2px 8px #CD908F22;
     background-color: var(--bg-color);
 }
@@ -505,6 +499,9 @@ body:not(.sidebar-ready) {
     .containerMobileHeader {
         height: 50px;
         width: 100%;
+        position: sticky;
+        top: 0;
+        z-index: 90;
     }
 
     #sidebar {
