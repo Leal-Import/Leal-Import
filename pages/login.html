@@ -20,10 +20,13 @@
     </button>
 
     <!-- Modal Recovery Method -->
-    <div id="modalRecovery" class="containerModal">
-        <div class="modalContent">
-            <button class="closeBtn" title="Cerrar">
-                <i class='bx bx-x'></i>
+    <div id="modalRecovery" class="containerModal hide">
+        <div class="modalAdd">
+            <button class="closeBtn btnClose" title="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
             </button>
             <h2>Método de Recuperación</h2>
             <button class="modalBtn" id="openAuth">Verificación por correo</button>
@@ -32,9 +35,12 @@
 
     <!-- Modal Authentication -->
     <div id="modalAuth" class="containerModal hide">
-        <div class="modalContent">
-            <button class="closeBtn" id="closeAuth" title="Cerrar">
-                <i class='bx bx-x'></i>
+        <div class="modalAdd">
+            <button class="closeBtn btnClose" id="closeAuth" title="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
             </button>
             <div class="modalAuthBody">
                 <h2>Autenticación</h2>
@@ -43,7 +49,7 @@
                     propietario
                     de una cuenta.
                 </p>
-                <input type="email" class="formControl" placeholder="...@ejemplo.com" id="authEmail" required />
+                <input type="email" class="txtSearch" placeholder="...@ejemplo.com" id="authEmail" required />
                 <div class="authSuccess">
                 </div>
                 <div class="authBtns">
@@ -58,10 +64,13 @@
 
     <!-- Modal Nueva Contraseña -->
     <div id="modalNewPassword" class="containerModal hide">
-        <div class="modalContent">
+        <div class="modalAdd">
             <h2>Reestablecer contraseña</h2>
-            <button class="closeBtn" id="closeNewPassword" title="Cerrar">
-                <i class='bx bx-x'></i>
+            <button class="closeBtn btnClose" id="closeNewPassword" title="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
             </button>
             <input type="password" id="newPassword" class="formControl" placeholder="Nueva contraseña" />
 
@@ -78,9 +87,12 @@
 
     <!-- Modal Código de Seguridad -->
     <div id="modalCode" class="containerModal hide">
-        <div class="modalContent">
-            <button class="closeBtn" id="closeCode" title="Cerrar">
-                <i class='bx bx-x'></i>
+        <div class="modalAdd">
+            <button class="closeBtn btnClose" id="closeCode" title="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
             </button>
             <div class="modalCodeBody">
                 <img src="../media/logoRiskor.png" alt="Logo Riskor" />
