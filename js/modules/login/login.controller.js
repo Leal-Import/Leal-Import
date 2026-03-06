@@ -30,10 +30,6 @@ const onOpenModalRecovery = (e) => {
     toggleModal(DOMRefs.refs.modalRecovery, true);
 }
 
-const onCloseModalRecovery = () => {
-    toggleModal(DOMRefs.refs.modalRecovery, false);
-}
-
 const onOpenAuthEmail = (e) => {
     e.preventDefault();
     toggleModal(DOMRefs.refs.modalRecovery, false);
@@ -43,7 +39,7 @@ const onOpenAuthEmail = (e) => {
 const onCloseAuthEmail = () => {
     toggleModal(DOMRefs.refs.modalAuth, false);
     toggleModal(DOMRefs.refs.modalRecovery, true);
-    cleanAuthCamps(DOMRefs.refs.authSuccess, DOMRefs.refs.authEmail);
+    cleanAuthCamps(DOMRefs.refs.authSuccess, DOMRefs.refs.txtAuthEmail);
 }
 
 const onClosePin = () => {
@@ -53,10 +49,6 @@ const onClosePin = () => {
     toggleModal(DOMRefs.refs.modalCode, false);
     toggleModal(DOMRefs.refs.modalAuth, false);
     toggleModal(DOMRefs.refs.modalRecovery, true);
-}
-
-const onCloseNewPassword = () => {
-    toggleModal(DOMRefs.refs.modalNewPassword, false);
 }
 
 const onSubmitLogin = async (e) => {
@@ -97,7 +89,7 @@ const onAuthEmail = async (e) => {
     e.preventDefault();
 
     if (loginState.flags.pendingSend) return;
-    const email = DOMRefs.refs.authEmail.value.trim().toLowerCase();
+    const email = DOMRefs.refs.txtAuthEmail.value.trim().toLowerCase();
     if (!isValidEmail(email)) {
         showMessage("Advertencia", "Email invalido", "warning");
         return;
@@ -113,7 +105,7 @@ const onAuthEmail = async (e) => {
         if (!loginState.auth.resetId) showMessage("Error", "El servidor no respondio correctamente,", "error");
         const minutes = (typeof data?.minutes === 'number') ? data.minutes : 15;
 
-        await showMessage("Enlace enviado", `Se ha enviado un mensaje al correo ${maskEmailSimple(email)}.`, true);
+        await showMessage("Enlace enviado", `Se ha enviado un mensaje al correo ${maskEmailSimple(email)}.`, 'info', true);
 
         loginState.auth.email = email;
 
@@ -221,7 +213,7 @@ const onUpdatePassword = async () => {
 }
 
 const initializeUI = (Refs) => {
-    initLoginEvents({ Refs, onTogglePassword, onBackHome, onOpenModalRecovery, onCloseModalRecovery, onOpenAuthEmail, onCloseAuthEmail, onClosePin, onCloseNewPassword, onSubmitLogin, onAuthEmail, onSendCode, onUpdatePassword });
+    initLoginEvents({ Refs, onTogglePassword, onBackHome, onOpenModalRecovery, onCloseModalRecovery: () => toggleModal(Refs.modalRecovery, false), onOpenAuthEmail, onCloseAuthEmail, onClosePin, onCloseNewPassword: () => toggleModal(Refs.modalNewPassword, false), onSubmitLogin, onAuthEmail, onSendCode, onUpdatePassword });
     initDigitInputs(Refs.codeDigits);
 }
 

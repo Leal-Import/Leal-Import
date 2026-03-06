@@ -30,22 +30,18 @@ section {
   align-items: center;
   width: 100%;
   height: 100vh;
-  background-size: cover;
-  background-position: center;
 }
 
 .loginContainer {
   position: relative;
-  width: 520px;
+  width: clamp(250px, 95%, 520px);
   height: 630px;
-  border: 2px solid #fff;
-  background: var(--bg-color);
+  background-color: var(--bg-color);
   border-radius: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(15px);
-  box-shadow: 1px 5px 25px 0px rgba(94, 105, 202, 0.50);
+  box-shadow: 1px 5px 25px 0px rgba(202, 94, 94, 0.5);
 }
 
 .loginContainer form {
@@ -57,15 +53,8 @@ section {
 
 .loginContainer h2 {
   font-size: 2em;
-  color: #474A53;
+  color: var(--text-color-dark);
   text-align: center;
-
-}
-
-.riskorIcon {
-  margin: 20px 0 0 0;
-  width: 285px;
-  padding-bottom: 60px;
 }
 
 .inputBox {
@@ -73,7 +62,7 @@ section {
   width: 90%;
   max-width: 400px;
   margin: 25px 0;
-  background-color: #F2F9FE;
+  background-color: var(--bg-color);
   border-radius: 5px;
   box-shadow: 1px 1px 4px 0px rgba(40, 58, 141, 0.15);
   backdrop-filter: blur(5px);
@@ -85,7 +74,7 @@ section {
   left: 5px;
   transform: translateY(-50%);
   font-size: var(--font-size-base);
-  color: #474A53;
+  color: var(--text-color-dark);
   pointer-events: none;
   transition: .5s;
 }
@@ -102,7 +91,7 @@ section {
   border: none;
   outline: none;
   font-size: 1em;
-  color: #474A53;
+  color: var(--text-color-dark);
   padding: 0 45px 0 15px;
   border-radius: 5px;
 }
@@ -110,7 +99,7 @@ section {
 .inputBox .icon {
   position: absolute;
   right: 8px;
-  color: #474A53;
+  color: var(--text-color-dark);
   font-size: 1.2em;
   line-height: 57px;
   margin-right: 10px;
@@ -135,28 +124,29 @@ section {
 .loginButton {
   width: 91%;
   height: 55px;
+  transition: .3s;
 }
 
 .loginButton:hover {
   transform: translateY(-2px);
-  box-shadow: 2px 2px 5px 0 rgba(131, 149, 223, 0.5);
+  transition: .3s;
+  box-shadow: var(--bx-shadow-btn-primary);
 }
 
 .forgotPassword {
-  font-size: 1em;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  font-size: var(--font-size-default);
 }
 
 .forgotPassword p a {
-  color: #5E6489;
+  color: var(--text-color-dark);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   transition: color 0.2s;
 }
 
 .forgotPassword p a:hover {
-  color: #3b4375;
+  transition: .2s;
+  opacity: .7;
 }
 
 @media (max-width: 360px) {
@@ -167,15 +157,15 @@ section {
 
 /* PROPIEDAD DE MODAL GENERAL */
 
-.modalBtn {
+.btnAuthModal {
   width: 100%;
-  background: #fff;
-  color: #5a5a89;
-  border: solid 1px #dcdcdc;
+  background: var(--bg-color-white);
+  color: var(--text-color-dark);
+  border: var(--border);
   border-radius: 12px;
   padding: 14px 0;
   margin-bottom: 18px;
-  font-size: 1em;
+  font-size: var(--font-size-default);
   font-weight: 500;
   box-shadow: 0 2px 8px rgba(31, 38, 135, 0.07);
   cursor: pointer;
@@ -183,91 +173,21 @@ section {
   box-sizing: border-box;
 }
 
-.modalBtn:hover {
-  background: #e6eaff;
-  color: #3d3d6b;
+.btnAuthModal:hover {
+  background: var(--bg-color);
+  color: var(--helper-color);
 }
 
-.modalBtn {
-  font-size: 1rem;
-  padding: 14px 0;
+
+.btnAuthModal.outline:hover {
+  background: var(--bg-color);
 }
 
-.modalBtn.outline:hover {
-  background: #e6eaff;
-}
-
-/* Modal recuperación */
-
-#modalRecovery .modal {
-  border-radius: 20px;
-  background: #f8fbff;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-  padding: 24px 12px 18px 12px;
-  width: 100%;
-  height: auto;
-  max-width: 340px;
-  min-width: 0;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  border: 2px solid #e6eaff;
-  -webkit-animation-name: slideIn;
-  -webkit-animation-duration: 0.4s;
-  animation-name: slideIn;
-  animation-duration: 0.4s;
-}
-
-@-webkit-keyframes slideIn {
-  from {
-    bottom: -300px;
-    opacity: 0
-  }
-
-  to {
-    bottom: 0;
-    opacity: 1
-  }
-}
-
-@keyframes slideIn {
-  from {
-    bottom: -300px;
-    opacity: 0
-  }
-
-  to {
-    bottom: 0;
-    opacity: 1
-  }
-}
-
-@-webkit-keyframes fadeIn {
-  from {
-    opacity: 0
-  }
-
-  to {
-    opacity: 1
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0
-  }
-
-  to {
-    opacity: 1
-  }
-}
 
 #modalRecovery h2 {
   font-size: var(--font-size-base);
   font-weight:  var(--font-weight-semibold);
-  color: #5a5a89;
+  color: var(--dark-danger-color);
   margin-bottom: 5px;
 }
 
@@ -282,38 +202,8 @@ section {
   height: 25px;
 }
 
-/* Modal security questions */
-#modalSecurity form .formGroup {
-  padding: 15px;
-  box-sizing: border-box;
-}
-
-#modalSecurity form .btnPrimary {
-  margin-top: 25px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 20px;
-  background-color: var(--danger-color);
-  color: var(--bg-color-white);
-  font-weight: 500;
-  font-size: 18px;
-  padding: 14px 0;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  width: clamp(230px, 95%, 435px);
-  text-align: center;
-  box-sizing: border-box;
-}
-
-.questionsRow .formGroup {
-  flex: 1;
-  width: 100%;
-  box-sizing: border-box;
-}
 
 /* SweetAlert2 personalización */
-
 .swal2PopupCustom {
   border-radius: 20px !important;
   text-align: justify !important;
@@ -332,32 +222,15 @@ section {
   border-radius: 8px !important;
   padding: 10px 12px !important;
   background: var(--danger-color) !important;
-  color: #fff !important;
+  color: var(--text-color-light) !important;
   font-weight: 600;
 }
 
 /* Modal de autenticación */
 
-#modalAuth .modalContent {
-  position: relative;
-  /* para que el botón close esté bien */
-  margin: auto;
-  padding: 24px 30px;
-  max-width: 400px;
-  width: 90vw;
-  background: #f8fbff;
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(31, 38, 135, 0.15);
-  display: flex;
-  flex-direction: column;
-  color: var(--text-color-secondary);
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
 #modalAuth h2 {
-  font-weight: 700;
-  font-size: 1.3rem;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
   margin-bottom: 16px;
   color: var(--text-color-secondary);
 }
@@ -373,21 +246,6 @@ section {
   margin: 0;
 }
 
-#modalAuth input.formControl {
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid var(--bg-color);
-  font-size: 1rem;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
-}
-
-#modalAuth input.formControl:focus {
-  border-color: var(--dark-danger-color);
-  box-shadow: 0 0 8px var(--bg-color-modal);
-}
-
 #modalAuth .authSuccess {
   color: var(--success-color);
   font-weight: var(--font-weight-medium);
@@ -397,39 +255,28 @@ section {
   margin-top: 8px;
 }
 
-#modalAuth .authBtns {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
 #modalAuth .btnPrimary {
   padding: 14px 30px;
-  border-radius: 12px;
-  background-color: var(--danger-color);
-  color: #fff;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-#modalAuth .btnPrimary:hover {
-  background-color: var(--danger-color);
 }
 
 /* Modal de código de seguridad */
 #modalCode img {
   width: 120px;
   min-width: 70px;
-  margin-bottom: 18px;
+}
+
+.modalCodeBody{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #modalCode p {
-  color: #5a5a89;
+  color: var(--text-color-dark);
   text-align: center;
   margin-bottom: 10px;
   font-size: 16px;
+  width: clamp(200px, 75%, 325px);
 }
 
 .codeInputs {
@@ -447,7 +294,7 @@ section {
   padding: 0;
   text-align: center;
   font-size: 20px;
-  border: 1.5px solid var(--bg-color);
+  border: 1.5px solid var(--text-color-dark);
   border-radius: 10px;
   outline: none;
   transition: border-color 0.2s;
@@ -469,7 +316,7 @@ section {
 
 /* Contenedor del modal de nueva contraseña */
 #modalNewPassword .modalContent {
-  background: #ffffff;
+  background: var(--bg-color-white);
   padding: 25px 24px;
   border-radius: 20px;
   max-width: 360px;
@@ -485,7 +332,7 @@ section {
 #modalNewPassword .modalContent h2 {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #5a5a89;
+  color: var(--dark-danger-color);
   margin-bottom: 20px;
   text-align: left;
 }
@@ -495,14 +342,14 @@ section {
   width: 100%;
   padding: 12px 16px;
   border-radius: 10px;
-  border: 1.5px solid #bfc6f7;
-  background-color: white;
+  border: 1.5px solid var(--bg-color);
+  background-color: var(--bg-color-white);
   font-size: 1rem;
   margin-bottom: 14px;
   outline: none;
   box-sizing: border-box;
   transition: border-color 0.3s ease;
-
+  
 }
 
 #modalNewPassword .modalContent input[type="password"]:focus {
@@ -535,12 +382,12 @@ section {
 }
 
 #modalNewPassword .modalActions .outline:hover {
-  background-color: #e6eaff;
+  background-color: var(--bg-color);
 }
 
 #modalNewPassword .modalActions button:not(.outline) {
   background-color: var(--danger-color);
-  color: #fff;
+  color: var(--bg-color-white);
 }
 
 #modalNewPassword .modalActions button:not(.outline):hover {
@@ -555,7 +402,7 @@ section {
 .inputBox input:-webkit-autofill-and-obscured
 
 /* Safari con password oculto */
-  {
+{
   -webkit-text-fill-color: #474A53;
   /* color de texto */
   caret-color: #474A53;
@@ -575,7 +422,7 @@ section {
 .divider {
   width: 80%;
   border: none;
-  border-top: 1px solid #bbbbbb;
+  border-top: 1px solid var(--bg-color);
   margin: 15px 0 10px 0;
   opacity: 0.6;
 }
@@ -598,7 +445,7 @@ section {
   height: 55px;
   border-radius: 10px;
   border: none;
-  background: #f2f7ff;
+  background: var(--bg-color);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -624,5 +471,50 @@ section {
     right: 12px;
     width: 40px;
     height: 40px;
+  }
+
+
+  @-webkit-keyframes slideIn {
+    from {
+      bottom: -300px;
+      opacity: 0
+    }
+  
+    to {
+      bottom: 0;
+      opacity: 1
+    }
+  }
+  
+  @keyframes slideIn {
+    from {
+      bottom: -300px;
+      opacity: 0
+    }
+  
+    to {
+      bottom: 0;
+      opacity: 1
+    }
+  }
+  
+  @-webkit-keyframes fadeIn {
+    from {
+      opacity: 0
+    }
+  
+    to {
+      opacity: 1
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0
+    }
+  
+    to {
+      opacity: 1
+    }
   }
 }

@@ -6,8 +6,8 @@ export const initLoginEvents = ({ Refs, onTogglePassword, onSubmitLogin, onBackH
     Refs.formLogin.addEventListener("submit", onSubmitLogin);
     Refs.btnBackHome.addEventListener("click", onBackHome);
     Refs.openModalRecovery.addEventListener("click", onOpenModalRecovery);
-    Refs.closeBtn.addEventListener("click", onCloseModalRecovery);
-    Refs.openAuth.addEventListener("click", onOpenAuthEmail);
+    Refs.btnClose.addEventListener("click", onCloseModalRecovery);
+    Refs.btnOpenAuth.addEventListener("click", onOpenAuthEmail);
     Refs.closeAuth.addEventListener("click", onCloseAuthEmail);
     Refs.closeCode.addEventListener("click", onClosePin);
     Refs.closeNewPassword.addEventListener("click", onCloseNewPassword);

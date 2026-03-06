@@ -10,33 +10,35 @@
     <link rel="stylesheet" href="../css/utils/loader.css">
     <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/utils/modals/modal.css">
-    <title>Login</title>
+    <title>Iniciar Sesión</title>
 </head>
 
 <body>
     <div id="loginBackground"></div>
     <button type="button" id="btnBackHome" class="backHomeCorner" aria-label="Volver al inicio">
-        <i class='bx bx-home'></i>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#E8453C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 10.5L12 3l9 7.5V21H15v-6h-6v6H3V10.5z"/>
+          </svg>
     </button>
 
     <!-- Modal Recovery Method -->
     <div id="modalRecovery" class="containerModal hide">
         <div class="modalAdd">
-            <button class="closeBtn btnClose" title="Cerrar">
+            <button class="btnClose" title="Cerrar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                     <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
                     <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
                 </svg>
             </button>
             <h2>Método de Recuperación</h2>
-            <button class="modalBtn" id="openAuth">Verificación por correo</button>
+            <button class="btnAuthModal" id="btnOpenAuth">Verificación por correo</button>
         </div>
     </div>
 
     <!-- Modal Authentication -->
     <div id="modalAuth" class="containerModal hide">
         <div class="modalAdd">
-            <button class="closeBtn btnClose" id="closeAuth" title="Cerrar">
+            <button class="btnClose" id="closeAuth" title="Cerrar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                     <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
                     <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
@@ -49,15 +51,12 @@
                     propietario
                     de una cuenta.
                 </p>
-                <input type="email" class="txtSearch" placeholder="...@ejemplo.com" id="authEmail" required />
-                <div class="authSuccess">
-                </div>
-                <div class="authBtns">
-                    <button id="btnAuthSend" class="btnPrimary">
-                        <span>Listo</span>
-                        <div class="loader hide" id="btnAuthSendLoader"></div>
-                    </button>
-                </div>
+                <input type="email" class="txtSearch" placeholder="...@ejemplo.com" id="txtAuthEmail" required />
+                <div class="authSuccess"></div>
+                <button id="btnAuthSend" class="btnPrimary">
+                    <span>Listo</span>
+                    <div class="loader hide" id="btnAuthSendLoader"></div>
+                </button>
             </div>
         </div>
     </div>
@@ -66,15 +65,15 @@
     <div id="modalNewPassword" class="containerModal hide">
         <div class="modalAdd">
             <h2>Reestablecer contraseña</h2>
-            <button class="closeBtn btnClose" id="closeNewPassword" title="Cerrar">
+            <button class="btnClose" id="closeNewPassword" title="Cerrar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                     <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
                     <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
                 </svg>
             </button>
-            <input type="password" id="newPassword" class="formControl" placeholder="Nueva contraseña" />
+            <input type="password" id="newPassword" class="txtInputs" placeholder="Nueva contraseña" />
 
-            <input type="password" id="confirmPassword" class="formControl" placeholder="Confirmar nueva contraseña" />
+            <input type="password" id="confirmPassword" class="txtInputs" placeholder="Confirmar nueva contraseña" />
 
             <div class="modalActions">
                 <button type="button" class="btnPrimary" id="btnUpdatePassword">
@@ -86,16 +85,15 @@
     </div>
 
     <!-- Modal Código de Seguridad -->
-    <div id="modalCode" class="containerModal hide">
+    <div id="modalCode" class="containerModal hides">
         <div class="modalAdd">
-            <button class="closeBtn btnClose" id="closeCode" title="Cerrar">
+            <button class="btnClose" id="closeCode" title="Cerrar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                     <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
                     <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
                 </svg>
             </button>
             <div class="modalCodeBody">
-                <img src="../media/logoRiskor.png" alt="Logo Riskor" />
                 <p>
                     Código de seguridad enviado a la dirección<br />
                     <span style="font-weight:400;"><b></b></span>
@@ -111,7 +109,7 @@
                     <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
                     <input type="text" maxlength="1" class="codeDigit" autocomplete="one-time-code" />
                 </div>
-                <button class="btnPrimary" id="btnCodeContinue" type="button" style="background:#7884ED; color:#fff;">
+                <button class="btnPrimary" id="btnCodeContinue" type="button">
                     <span>Listo</span>
                     <div class="loader hide" id="btnCodeContinueLoader"></div>
                 </button>
@@ -122,7 +120,7 @@
     <section>
         <div class="loginContainer">
             <form id="formLogin" action="">
-                <img src="../media/RiskorLanding.svg" alt="Leal Import icon" class="riskorIcon">
+                <img src="" alt="Leal Import icon" class="icon">
                 <div class="inputBox">
                     <span class="icon"><i class='bx bx-user'></i></span>
                     <input type="text" id="txtUserOrEmail" required>
