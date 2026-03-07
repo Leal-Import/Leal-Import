@@ -1,7 +1,7 @@
 'use strict'
 
-import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswodPamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType } from "../../core/dom/login.dom.js";
-import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown, validatePassword } from "../../core/logic/login.logic.js";
+import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswordCamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType, setReq, updateLabel } from "../../core/dom/login.dom.js";
+import { clearCountdown, clearCurrentFlow, getPasswordStrengthOptions, getScore, maskEmailSimple, renderMaskedEmail, startCountdown, validateMatch, validatePassword } from "../../core/logic/login.logic.js";
 import { loginState } from "../../core/state/login.state.js";
 import { login, resetPassword, verifyEmail, verifyPIN } from "../../service/login.service.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
@@ -9,13 +9,14 @@ import { isValidEmail } from "../../utils/validators.js";
 import { initLoginEvents } from "./login.event.js";
 
 
-const onTogglePassword = () => {
-    const icon = DOMRefs.refs.togglePassword.querySelector("i");
-    changeStyleTogglePassword(icon, loginState)
-    if (DOMRefs.refs.txtPassword.type === 'password') {
-        resetInputType(DOMRefs.refs.txtPassword, icon);
+const onTogglePassword = (e, txtPassword) => {
+    const btn = e.currentTarget;
+    const icon = btn.querySelector('svg');
+    changeStyleTogglePassword(icon, loginState);
+    if (txtPassword.type === 'password') {
+        resetInputType(txtPassword, icon);
     } else {
-        changePasswordType(DOMRefs.refs.txtPassword, icon);
+        changePasswordType(txtPassword, icon);
     }
 }
 
@@ -166,8 +167,8 @@ const onSendCode = async (e) => {
 const onUpdatePassword = async () => {
     if (loginState.flags.pendingUpdate) return;
 
-    const newPass = DOMRefs.refs.newPassword?.value?.trim() ?? '';
-    const confirmPass = DOMRefs.refs.confirmPassword?.value?.trim() ?? '';
+    const newPass = DOMRefs.refs.txtNewPassword?.value?.trim() ?? '';
+    const confirmPass = DOMRefs.refs.txtConfirmPassword?.value?.trim() ?? '';
 
     if (!newPass || !confirmPass) {
         await showMessage("Campos incompletos", "Por favor, completa ambos campos.", "warning");
@@ -197,7 +198,7 @@ const onUpdatePassword = async () => {
     try {
         await resetPassword(loginState.auth.ticket, newPass);
         await showMessage("Contraseña actualizada", "Tu contraseña ha sido actualizada correctamente. Inicia sesión con tu nueva contraseña.", "success");
-        clearPasswodPamps(DOMRefs.refs.newPassword, DOMRefs.refs.confirmPassword);
+        clearPasswordCamps(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
         toggleModal(DOMRefs.refs.modalNewPassword, false);
         clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
 
@@ -212,8 +213,68 @@ const onUpdatePassword = async () => {
     }
 }
 
+const onVerifyNewPassword = () => {
+    const pw1 = DOMRefs.refs.txtNewPassword;
+    const pw2 = DOMRefs.refs.txtConfirmPassword;
+    const score = getScore(pw1.value);
+    const options = getPasswordStrengthOptions(score);
+
+    if (pw1.value.length > 0) {
+        DOMRefs.refs.strengthWrap.classList.add('visible');
+        DOMRefs.refs.passwordRequirements.classList.add('visible');
+    } else {
+        DOMRefs.refs.strengthWrap.classList.remove('visible');
+        DOMRefs.refs.passwordRequirements.classList.remove('visible');
+    }
+
+    DOMRefs.refs.segs.forEach((seg, i) => {
+        seg.style.background = i < score ? options.color : '';
+    });
+
+    updateLabel(DOMRefs.refs.strengthLabel, options);
+
+    setReq('reqLength', pw1.value.length >= 8);
+    setReq('reqUppercase', /[A-Z]/.test(pw1.value));
+    setReq('reqLowercase', /[a-z]/.test(pw1.value));
+    setReq('reqNumber', /[0-9]/.test(pw1.value));
+    setReq('reqSpecial', /[^A-Za-z0-9]/.test(pw1.value));
+
+    pw1.classList.toggle('inputValid', score === 5);
+    pw1.classList.toggle('inputInvalid', pw1.value.length > 0 && score < 5);
+
+    if (pw2.value) validateMatch(pw1, pw2, DOMRefs.refs.passwordMatchHint);
+    checkBtn(score, pw1, pw2);
+}
+
+const checkBtn = (score, pw1, pw2) => {
+    if ((score === 5) && pw1.value === pw2.value && pw1.value.length > 0) {
+        removeDisable(DOMRefs.refs.btnUpdatePassword);
+    } else {
+        disableElement(DOMRefs.refs.btnUpdatePassword);
+    }
+}
+
 const initializeUI = (Refs) => {
-    initLoginEvents({ Refs, onTogglePassword, onBackHome, onOpenModalRecovery, onCloseModalRecovery: () => toggleModal(Refs.modalRecovery, false), onOpenAuthEmail, onCloseAuthEmail, onClosePin, onCloseNewPassword: () => toggleModal(Refs.modalNewPassword, false), onSubmitLogin, onAuthEmail, onSendCode, onUpdatePassword });
+    initLoginEvents({
+        Refs,
+        onTogglePassword: (e, txtPassword) => onTogglePassword(e, txtPassword),
+        onBackHome,
+        onOpenModalRecovery,
+        onCloseModalRecovery: () => toggleModal(Refs.modalRecovery, false),
+        onOpenAuthEmail,
+        onCloseAuthEmail,
+        onClosePin,
+        onCloseNewPassword: () => toggleModal(Refs.modalNewPassword, false),
+        onSubmitLogin,
+        onAuthEmail,
+        onSendCode,
+        onUpdatePassword,
+        onVerifyNewPassword,
+        onVerifyConfirmPassword: () => {   // 👈 usa DOMRefs.refs, no Refs
+            validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
+            checkBtn(getScore(DOMRefs.refs.txtNewPassword.value), DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
+        }
+    });
     initDigitInputs(Refs.codeDigits);
 }
 

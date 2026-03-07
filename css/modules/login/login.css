@@ -19,7 +19,7 @@
   background-attachment: fixed
 }
 
-.txtSearchData{
+.txtSearchData {
   background-image: none !important;
   padding-left: 7px !important;
   max-width: 100% !important;
@@ -155,12 +155,6 @@ section {
   opacity: .7;
 }
 
-@media (max-width: 360px) {
-  .loginContainer {
-    width: 100%;
-  }
-}
-
 /* PROPIEDAD DE MODAL GENERAL */
 
 .btnAuthModal {
@@ -192,18 +186,18 @@ section {
 
 #modalRecovery h2 {
   font-size: var(--font-size-base);
-  font-weight:  var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
   color: var(--dark-danger-color);
   margin-bottom: 5px;
 }
 
-#modalRecovery .btnClose{
+#modalRecovery .btnClose {
   margin: 10px;
   width: 25px;
   height: 25px;
 }
 
-#modalRecovery .btnClose svg{
+#modalRecovery .btnClose svg {
   width: 25px;
   height: 25px;
 }
@@ -271,7 +265,7 @@ section {
   min-width: 70px;
 }
 
-.modalCodeBody{
+.modalCodeBody {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -355,7 +349,7 @@ section {
   outline: none;
   box-sizing: border-box;
   transition: border-color 0.3s ease;
-  
+
 }
 
 #modalNewPassword .modalContent input[type="password"]:focus {
@@ -408,7 +402,7 @@ section {
 .inputBox input:-webkit-autofill-and-obscured
 
 /* Safari con password oculto */
-{
+  {
   -webkit-text-fill-color: #474A53;
   /* color de texto */
   caret-color: #474A53;
@@ -485,42 +479,289 @@ section {
       bottom: -300px;
       opacity: 0
     }
-  
+
     to {
       bottom: 0;
       opacity: 1
     }
   }
-  
+
   @keyframes slideIn {
     from {
       bottom: -300px;
       opacity: 0
     }
-  
+
     to {
       bottom: 0;
       opacity: 1
     }
   }
-  
+
   @-webkit-keyframes fadeIn {
     from {
       opacity: 0
     }
-  
+
     to {
       opacity: 1
     }
   }
-  
+
   @keyframes fadeIn {
     from {
       opacity: 0
     }
-  
+
     to {
       opacity: 1
     }
   }
+}
+
+.togglePassword * {
+  pointer-events: none;
+}
+
+/* ===== MODAL NUEVA CONTRASEÑA - REDESIGN ===== */
+
+#modalNewPassword .modalAdd.modalNewPasswordCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+/* Línea de acento superior */
+#modalNewPassword .modalAdd.modalNewPasswordCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--danger-color), transparent);
+  border-radius: 0 0 4px 4px;
+}
+
+/* Header */
+.modalNewPasswordHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.modalNewPasswordHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modalNewPasswordIconWrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background-color: var(--bg-color);
+  border: 1px solid rgba(224, 32, 32, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modalNewPasswordIconWrap svg {
+  width: 20px;
+  height: 20px;
+  color: var(--danger-color);
+  stroke: var(--danger-color);
+}
+
+.modalNewPasswordTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark-danger-color);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.modalNewPasswordSubtitle {
+  font-size: 0.72rem;
+  color: var(--text-color-secondary, #8a8a8a);
+  margin: 2px 0 0 0;
+  font-weight: 400;
+}
+
+/* Field wrap */
+.modalNewPasswordFieldWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.modalNewPasswordLabel {
+  font-size: var(--font-size-sh);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-color-secondary, #8a8a8a);
+}
+
+/* Input row con toggle */
+.modalNewPasswordInputRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.modalNewPasswordInputRow .txtInputs.modalNewPasswordInput {
+  width: 100%;
+  padding-right: 44px !important;
+  margin-bottom: 0 !important;
+}
+
+.modalNewPasswordToggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--text-color-secondary, #8a8a8a);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.modalNewPasswordToggle:hover {
+  color: var(--text-color-dark);
+}
+
+.modalNewPasswordToggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Barra de fortaleza */
+.modalNewPasswordStrengthWrap {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s ease;
+}
+
+.modalNewPasswordStrengthWrap.visible {
+  max-height: 40px;
+  opacity: 1;
+}
+
+.modalNewPasswordStrengthBar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.modalNewPasswordStrengthSeg {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--bg-color);
+  transition: background 0.3s ease;
+}
+
+.modalNewPasswordStrengthLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+/* Checklist de requisitos */
+.modalNewPasswordRequirements {
+  background: var(--bg-color, #fafafa);
+  border: var(--border);
+  border-radius: 10px;
+  padding: 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.3s;
+}
+
+.modalNewPasswordRequirements.visible {
+  max-height: 140px;
+  opacity: 1;
+  padding: 12px 14px;
+}
+
+.modalNewPasswordReqItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--font-size-sh);
+  color: var(--text-color-secondary, #8a8a8a);
+  transition: color 0.25s;
+}
+
+.modalNewPasswordReqItem.met {
+  color: var(--success-color);
+}
+
+.modalNewPasswordReqDot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid #ccc;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+}
+
+.modalNewPasswordReqItem.met .modalNewPasswordReqDot {
+  background: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.modalNewPasswordReqDot svg {
+  width: 8px;
+  height: 8px;
+  color: var(--text-color-light);
+  stroke: var(--text-color-light);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.modalNewPasswordReqItem.met .modalNewPasswordReqDot svg {
+  opacity: 1;
+}
+
+/* Hint de coincidencia */
+.modalNewPasswordMatchHint {
+  font-size: var(--font-size-sh);
+  font-weight: var(--font-weight-medium);
+  min-height: 14px;
+  transition: color 0.2s;
+}
+
+.modalNewPasswordMatchHint.ok {
+  color: var(--success-color);
+}
+
+.modalNewPasswordMatchHint.err {
+  color: var(--danger-color);
+}
+
+/* Input estados válido/inválido */
+.modalNewPasswordInput.inputValid {
+  border-color: var(--success-color) !important;
+}
+
+.modalNewPasswordInput.inputInvalid {
+  border-color: var(--danger-color) !important;
 }

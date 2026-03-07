@@ -7,7 +7,7 @@ export const DOMRefs = {
 
     init() {
         this.refs = {
-            togglePassword: qs('.togglePassword'),
+            togglePassword: $('togglePassword'),
             txtPassword: $('txtPassword'),
             btnLogin: $('btnLogin'),
             btnLoginLoader: $('btnLoginLoader'),
@@ -30,13 +30,20 @@ export const DOMRefs = {
             btnCodeContinueLoader: $("btnCodeContinueLoader"),
             modalCodeBody: qs(".modalCodeBody"),
             btnUpdatePassword: $("btnUpdatePassword"),
-            newPassword: $("newPassword"),
-            confirmPassword: $("confirmPassword"),
+            txtNewPassword: $("txtNewPassword"),
+            txtConfirmPassword: $("txtConfirmPassword"),
             btnUpdatePasswordLoader: $("btnUpdatePasswordLoader"),
             btnBackHome: $("btnBackHome"),
             codeDigits: Array.from(qsa('#modalCode .codeDigit')),
             txtUserOrEmail: $("txtUserOrEmail"),
-            btnAuthSendLoader: $('btnAuthSendLoader')
+            btnAuthSendLoader: $('btnAuthSendLoader'),
+            strengthWrap: $("strengthWrap"),
+            passwordRequirements: $("passwordRequirements"),
+            strengthLabel: $("strengthLabel"),
+            passwordMatchHint: $("passwordMatchHint"),
+            toggleNewPassword: $("toggleNewPassword"),
+            toggleConfirmPassword: $("toggleConfirmPassword"),
+            segs: [1, 2, 3, 4, 5].map(i => document.getElementById('strengthSeg' + i))
         };
         return this.refs;
     }
@@ -44,17 +51,17 @@ export const DOMRefs = {
 
 export const resetInputType = (input, icon) => {
     input.type = "text";
-    icon.classList.replace('bx-hide', 'bx-show');
+    icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/>`;
 }
 
-export const clearPasswodPamps = (txtNewPassword, txtConfirmPassword) => {
+export const clearPasswordCamps = (txtNewPassword, txtConfirmPassword) => {
     txtNewPassword.value = "";
     txtConfirmPassword.value = "";
 }
 
 export const changePasswordType = (input, icon) => {
     input.type = "password";
-    icon.classList.replace('bx-show', 'bx-hide');
+    icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
 }
 
 export const hideAllModals = () => {
@@ -130,4 +137,13 @@ export function changeStyleTogglePassword(icon, state) {
     state.rotate += 180;
     icon.style.transition = 'transform 0.5s';
     icon.style.transform = `rotate(${state.rotate}deg)`;
+}
+
+export function setReq(id, met) {
+    $(id).classList.toggle('met', met);
+}
+
+export function updateLabel(label, data) {
+    label.textContent = data.type;
+    label.style.color = data.color;
 }
