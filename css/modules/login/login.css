@@ -19,6 +19,12 @@
   background-attachment: fixed
 }
 
+.txtSearchData{
+  background-image: none !important;
+  padding-left: 7px !important;
+  max-width: 100% !important;
+}
+
 .modalAdd {
   --width-modal: clamp(200px, 90%, 420px);
   padding: 20px !important;
