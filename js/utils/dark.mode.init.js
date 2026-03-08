@@ -9,7 +9,7 @@
     
     const STORAGE_KEY = 'app.theme.dark';
     
-    /**
+    /*
      * Aplica el modo oscuro inmediatamente
      * Se ejecuta ANTES de que se renderice la página
      */
