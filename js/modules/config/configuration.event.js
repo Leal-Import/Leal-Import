@@ -1,4 +1,4 @@
-export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditProfile, onOpenEditProfile, onOpenVerifyPassword, onCloseVerifyPassword, onOpenToggleUsername, onCloseToggleUsername, onTogglePassword }) {
+export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditProfile, onOpenEditProfile, onOpenVerifyPassword, onCloseVerifyPassword, onOpenToggleUsername, onCloseToggleUsername, onTogglePassword, onVerifyPassword, onCloseNewPassword, onVerifyNewPassword, onVerifyConfirmPassword, onChangePassword, onVerifyButtonUsername, onChangeUsername }) {
 
     Refs.darkModeToggle.addEventListener("change", onChangeDarkMode);
     Refs.btnEditProfile.addEventListener("click", onOpenEditProfile);
@@ -24,4 +24,21 @@ export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditPro
     Refs.btnOpenToggleUsername.addEventListener("click", onOpenToggleUsername);
     Refs.toggleVerifyPassword.addEventListener("click", (e) => onTogglePassword(e, Refs.txtVerifyPassword));
     Refs.togglePasswordForUsername.addEventListener("click", (e) => onTogglePassword(e, Refs.txtPasswordForUsername));
+    Refs.frmVerifyPassword.addEventListener("submit", onVerifyPassword);
+    Refs.btnCloseNewPassword.addEventListener("click", onCloseNewPassword);
+    Refs.modalNewPassword.addEventListener("click", (e) => {
+        if (e.target === Refs.modalNewPassword) {
+            onCloseNewPassword();
+        }
+    });
+    Refs.txtNewPassword.addEventListener("input", onVerifyNewPassword);
+    Refs.txtConfirmPassword.addEventListener("input", onVerifyConfirmPassword);
+    Refs.toggleNewPassword.addEventListener("click", (e) => onTogglePassword(e, Refs.txtNewPassword));
+    Refs.toggleConfirmPassword.addEventListener("click", (e) => onTogglePassword(e, Refs.txtConfirmPassword));
+    Refs.frmNewPassword.addEventListener("submit", onChangePassword);
+    Refs.txtCurrentUsername.addEventListener("input", onVerifyButtonUsername);
+    Refs.txtNewUsername.addEventListener("input", onVerifyButtonUsername);
+    Refs.txtPasswordForUsername.addEventListener("input", onVerifyButtonUsername);
+    Refs.frmToggleUsername.addEventListener("submit", onChangeUsername);
+
 }

@@ -1,7 +1,8 @@
-import { changePasswordType, changeStyleTogglePassword, DOMRefs, fillProfileForm, filltxtUsername, resetInputType, toggleDarkMode, toggleSwitch } from "../../core/dom/configuraton.dom.js";
+import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, resetInputType, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "../../core/dom/configuration.dom.js";
+import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword, validateUsernameChange } from "../../core/logic/configuration.logic.js";
 import { configurationState } from "../../core/state/configuration.state.js";
 import { getCurrentEmployee, initSession } from "../../utils/api.utils.js";
-import { showMessage, toggleModal } from "../../utils/dom.js";
+import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { initConfigurationEvents } from "./configuration.event.js";
 
 const onChangeDarkMode = () => {
@@ -21,6 +22,114 @@ const onTogglePassword = (e, txtPassword) => {
     }
 }
 
+const onVerifyPassword = async (e) => {
+    e.preventDefault();
+
+    const password = DOMRefs.refs.txtVerifyPassword.value.trim();
+
+    if (!password) {
+        showMessage('Advertencia', 'Por favor ingresa tu contraseña actual.', 'warning');
+        return;
+    }
+    showElement(DOMRefs.refs.btnVerifyCurrentPasswordLoader);
+    disableElement(DOMRefs.refs.btnVerifyCurrentPassword);
+    try {
+        // ACA FALTA CODIGO PARA VERIFICAR CONTRASEÑA CON EL BACKEND, POR AHORA SIMULO QUE SI ES CORRECTA CON UN TIMEOUT
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        showMessage('Éxito', 'Contraseña verificada correctamente. Ahora puedes ingresar tu nueva contraseña.', 'success', true);
+        toggleModal(DOMRefs.refs.modalNewPassword, true);
+    } catch (error) {
+        console.error('Error verifying password:', error);
+        showMessage('Error', 'Ocurrió un error al verificar la contraseña. Inténtalo de nuevo.', 'error');
+    } finally {
+        const btn = DOMRefs.refs.toggleVerifyPassword;
+        const icon = btn.querySelector('svg');
+        hideElement(DOMRefs.refs.btnVerifyCurrentPasswordLoader);
+        removeDisable(DOMRefs.refs.btnVerifyCurrentPassword);
+        toggleModal(DOMRefs.refs.modalVerifyPassword, false);
+        cleanTxtVerifyPassword(DOMRefs.refs.txtVerifyPassword, icon);
+    }
+}
+
+const onVerifyNewPassword = () => {
+    const pw1 = DOMRefs.refs.txtNewPassword;
+    const pw2 = DOMRefs.refs.txtConfirmPassword;
+    const score = getScore(pw1.value);
+    const options = getPasswordStrengthOptions(score);
+
+    if (pw1.value.length > 0) {
+        DOMRefs.refs.strengthWrap.classList.add('visible');
+        DOMRefs.refs.passwordRequirements.classList.add('visible');
+    } else {
+        DOMRefs.refs.strengthWrap.classList.remove('visible');
+        DOMRefs.refs.passwordRequirements.classList.remove('visible');
+    }
+
+    DOMRefs.refs.segs.forEach((seg, i) => {
+        seg.style.background = i < score ? options.color : '';
+    });
+
+    updateLabel(DOMRefs.refs.strengthLabel, options);
+
+    setReq('reqLength', pw1.value.length >= 8);
+    setReq('reqUppercase', /[A-Z]/.test(pw1.value));
+    setReq('reqLowercase', /[a-z]/.test(pw1.value));
+    setReq('reqNumber', /[0-9]/.test(pw1.value));
+    setReq('reqSpecial', /[^A-Za-z0-9]/.test(pw1.value));
+
+    pw1.classList.toggle('inputValid', score === 5);
+    pw1.classList.toggle('inputInvalid', pw1.value.length > 0 && score < 5);
+    if (pw2.value) validateMatch(pw1, pw2, DOMRefs.refs.passwordMatchHint);
+    checkBtn(score, pw1, pw2);
+}
+
+const onChangePassword = async (e) => {
+    e.preventDefault();
+    const pw1 = DOMRefs.refs.txtNewPassword;
+    const pw2 = DOMRefs.refs.txtConfirmPassword;
+
+    const invalidate = validatePassword(pw1.value.trim(), pw2.value.trim());
+    if (invalidate) {
+        showMessage('Contraseña no válida', invalidate, 'warning');
+        return;
+    }
+
+    showElement(DOMRefs.refs.btnUpdatePasswordLoader);
+    disableElement(DOMRefs.refs.btnUpdatePassword);
+    try {
+        // ACA FALTA CODIGO PARA VERIFICAR CONTRASEÑA CON EL BACKEND, POR AHORA SIMULO QUE SI ES CORRECTA CON UN TIMEOUT
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        showMessage('Éxito', 'Contraseña cambiada correctamente', 'success', true);
+    } catch (error) {
+        console.error('Error updating password:', error);
+        showMessage('Error', 'Ocurrió un error al actualizar la contraseña. Inténtalo de nuevo.', 'error');
+    } finally {
+        hideElement(DOMRefs.refs.btnUpdatePasswordLoader);
+        removeDisable(DOMRefs.refs.btnUpdatePassword);
+        toggleModal(DOMRefs.refs.modalNewPassword, false);
+        cleanNewPasswordForm();
+    }
+}
+
+const cleanNewPasswordForm = () => {
+    const toggle1 = DOMRefs.refs.toggleNewPassword;
+    const toggle2 = DOMRefs.refs.toggleConfirmPassword;
+    const icon1 = toggle1.querySelector('svg');
+    const icon2 = toggle2.querySelector('svg');
+    cleanCampsNewPassword(DOMRefs.refs, icon1, icon2);
+    onVerifyNewPassword(); // Para resetear el estado del botón y validaciones
+    checkBtn(0, DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
+    validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
+}
+
+const checkBtn = (score, pw1, pw2) => {
+    if ((score === 5) && pw1.value === pw2.value && pw1.value.length > 0) {
+        removeDisable(DOMRefs.refs.btnUpdatePassword);
+    } else {
+        disableElement(DOMRefs.refs.btnUpdatePassword);
+    }
+}
+
 const onOpenEditProfile = () => {
     toggleModal(DOMRefs.refs.modalProflile, true);
     fillProfileForm(configurationState.profile, DOMRefs.refs);
@@ -31,8 +140,91 @@ const onOpenToggleUsername = () => {
     filltxtUsername(configurationState.profile.username, DOMRefs.refs.txtCurrentUsername);
 }
 
+const onCloseNewPassword = () => {
+    toggleModal(DOMRefs.refs.modalNewPassword, false);
+    toggleModal(DOMRefs.refs.modalVerifyPassword, true);
+    cleanNewPasswordForm();
+}
+
+const onCloseVerifyPassword = () => {
+    const btn = DOMRefs.refs.toggleVerifyPassword;
+    const icon = btn.querySelector('svg');
+    toggleModal(DOMRefs.refs.modalVerifyPassword, false);
+    cleanTxtVerifyPassword(DOMRefs.refs.txtVerifyPassword, icon);
+}
+
+const onCloseToggleUsername = () => {
+    const btn = DOMRefs.refs.togglePasswordForUsername;
+    const icon = btn.querySelector('svg');
+    toggleModal(DOMRefs.refs.modalChangeUsername, false);
+    cleanCampsToggleUsername(DOMRefs.refs, icon);
+}
+
+const onVerifyButtonUsername = () => {
+    const btn = DOMRefs.refs.btnSaveUsername;
+    const currentUsername = DOMRefs.refs.txtCurrentUsername.value.trim();
+    const newUsername = DOMRefs.refs.txtNewUsername.value.trim();
+    const password = DOMRefs.refs.txtPasswordForUsername.value.trim();
+
+    if (currentUsername && newUsername && password) {
+        removeDisable(btn);
+    } else {
+        disableElement(btn);
+    }
+}
+
+const onChangeUsername = async (e) => {
+    e.preventDefault();
+    const txtCurrentUsername = DOMRefs.refs.txtCurrentUsername;
+    const txtNewUsername = DOMRefs.refs.txtNewUsername;
+    const txtPassword = DOMRefs.refs.txtPasswordForUsername;
+
+    const invalidate = validateUsernameChange(txtCurrentUsername.value.trim(), txtNewUsername.value.trim(), txtPassword.value.trim());
+    if (invalidate) {
+        showMessage('Advertencia', invalidate, 'warning');
+        return;
+    }
+
+    showElement(DOMRefs.refs.btnSaveUsernameLoader);
+    disableElement(DOMRefs.refs.btnSaveUsername);
+
+    try {
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        showMessage('Éxito', 'Nombre de usuario actualizado correctamente', 'success', true);
+        configurationState.profile.username = txtNewUsername.value.trim();
+    } catch (error) {
+        console.error('Error updating username:', error);
+        showMessage('Error', 'No se pudo actualizar el nombre de usuario', 'error');
+    } finally {
+        hideElement(DOMRefs.refs.btnSaveUsernameLoader);
+        removeDisable(DOMRefs.refs.btnSaveUsername);
+        toggleModal(DOMRefs.refs.modalChangeUsername, false);
+        cleanCampsToggleUsername(DOMRefs.refs, DOMRefs.refs.togglePasswordForUsername.querySelector('svg'));
+    }
+}
+
 const initializeUi = (Refs) => {
-    initConfigurationEvents({ Refs, onChangeDarkMode, onOpenEditProfile, onCloseEditProfile: () => toggleModal(Refs.modalProflile, false), onOpenVerifyPassword: () => toggleModal(Refs.modalVerifyPassword, true), onCloseVerifyPassword: () => toggleModal(Refs.modalVerifyPassword, false), onOpenToggleUsername, onCloseToggleUsername: () => toggleModal(Refs.modalChangeUsername, false), onTogglePassword: (e, txtPassword) => onTogglePassword(e, txtPassword) });
+    initConfigurationEvents({
+        Refs,
+        onChangeDarkMode,
+        onOpenEditProfile,
+        onCloseEditProfile: () => toggleModal(Refs.modalProflile, false),
+        onOpenVerifyPassword: () => toggleModal(Refs.modalVerifyPassword, true),
+        onCloseVerifyPassword,
+        onOpenToggleUsername,
+        onCloseToggleUsername,
+        onTogglePassword: (e, txtPassword) => onTogglePassword(e, txtPassword),
+        onVerifyPassword,
+        onCloseNewPassword,
+        onVerifyNewPassword,
+        onChangePassword,
+        onVerifyButtonUsername,
+        onChangeUsername,
+        onVerifyConfirmPassword: () => {
+            validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
+            checkBtn(getScore(DOMRefs.refs.txtNewPassword.value), DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
+        }
+    });
 }
 
 const loadDataFlow = (Refs) => {

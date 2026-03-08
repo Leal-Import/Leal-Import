@@ -10,6 +10,7 @@ export const DOMRefs = {
             btnOpenVerifyPassword: $('btnOpenVerifyPassword'),
             btnEditProfile: $('btnEditProfile'),
             btnCloseEditProfile: $('btnCloseEditProfile'),
+            btnCloseNewPassword: $('btnCloseNewPassword'),
             modalProflile: $('modalProflile'),
             frmEditProfile: $('frmEditProfile'),
             modalVerifyPassword: $('modalVerifyPassword'),
@@ -25,14 +26,28 @@ export const DOMRefs = {
             txtEmployeeEmail: $('txtEmployeeEmail'),
             txtEmployeePhone: $('txtEmployeePhone'),
             btnOpenToggleUsername: $('btnOpenToggleUsername'),
+            modalNewPassword: $('modalNewPassword'),
             modalChangeUsername: $('modalChangeUsername'),
             btnCloseChangeUsername: $('btnCloseChangeUsername'),
-            modalChangeUsername: $('modalChangeUsername'),
             txtCurrentUsername: $('txtCurrentUsername'),
+            btnUpdatePasswordLoader: $('btnUpdatePasswordLoader'),
             txtNewUsername: $('txtNewUsername'),
             btnSaveUsername: $('btnSaveUsername'),
+            toggleNewPassword: $('toggleNewPassword'),
+            toggleConfirmPassword: $('toggleConfirmPassword'),
+            btnUpdatePassword: $('btnUpdatePassword'),
             btnSaveUsernameLoader: $('btnSaveUsernameLoader'),
-            usernameHint: $('usernameHint')
+            usernameHint: $('usernameHint'),
+            frmVerifyPassword: $('frmVerifyPassword'),
+            txtNewPassword: $('txtNewPassword'),
+            txtConfirmPassword: $('txtConfirmPassword'),
+            strengthWrap: $('strengthWrap'),
+            passwordRequirements: $('passwordRequirements'),
+            strengthLabel: $('strengthLabel'),
+            passwordMatchHint: $('passwordMatchHint'),
+            frmNewPassword: $('frmNewPassword'),
+            frmToggleUsername: $('frmToggleUsername'),
+            segs: [1, 2, 3, 4, 5].map(i => document.getElementById('strengthSeg' + i))
         };
         return this.refs;
     }
@@ -81,4 +96,31 @@ export const resetInputType = (input, icon) => {
 export const changePasswordType = (input, icon) => {
     input.type = "password";
     icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+}
+
+export const cleanTxtVerifyPassword = (input, toggle) => {
+    input.value = '';
+    changePasswordType(input, toggle);
+}
+
+export const cleanCampsToggleUsername = (refs, toggle) => {
+    refs.txtPasswordForUsername.value = '';
+    refs.txtNewUsername.value = '';
+    changePasswordType(refs.txtPasswordForUsername, toggle);
+}
+
+export const cleanCampsNewPassword = (refs, toggle1, toggle2) => {
+    refs.txtNewPassword.value = '';
+    refs.txtConfirmPassword.value = '';
+    changePasswordType(refs.txtNewPassword, toggle1);
+    changePasswordType(refs.txtConfirmPassword, toggle2);
+}
+
+export function updateLabel(label, data) {
+    label.textContent = data.type;
+    label.style.color = data.color;
+}
+
+export function setReq(id, met) {
+    $(id).classList.toggle('met', met);
 }

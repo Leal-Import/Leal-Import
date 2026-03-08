@@ -270,7 +270,7 @@ const initializeUI = (Refs) => {
         onSendCode,
         onUpdatePassword,
         onVerifyNewPassword,
-        onVerifyConfirmPassword: () => {   // 👈 usa DOMRefs.refs, no Refs
+        onVerifyConfirmPassword: () => {
             validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
             checkBtn(getScore(DOMRefs.refs.txtNewPassword.value), DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
         }
