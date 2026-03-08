@@ -1,9 +1,3 @@
-/* ═══════════════════════════════════════════════════════════════
-   DARK MODE INIT - CARGA ANTES DE TODO
-   Este script DEBE ir en el <head> de TODAS las páginas
-   para evitar el "flash" de modo claro
-═══════════════════════════════════════════════════════════════ */
-
 (function() {
     'use strict';
     

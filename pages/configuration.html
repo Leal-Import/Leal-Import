@@ -8,12 +8,301 @@
     <link rel="stylesheet" href="../css/utils/darkMode.css">
     <link rel="stylesheet" href="../css/modules/configuration/configuration.css">
     <link rel="stylesheet" href="../css/utils/controls/toggleSwitch.css">
+    <link rel="stylesheet" href="../css/utils/modals/modal.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
+    <link rel="stylesheet" href="../css/utils/modals/modalTogglePassword.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Configuración</title>
 </head>
 
 <body>
+    <!-- Modal Cambiar Usuario -->
+    <div id="modalChangeUsername" class="containerModal hide">
+        <div class="modalAdd modalNewPasswordCard">
+
+            <!-- Header -->
+            <div class="modalNewPasswordHeader">
+                <div class="modalNewPasswordHeaderLeft">
+                    <div class="modalNewPasswordIconWrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9" />
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="modalNewPasswordTitle">Cambiar usuario</h2>
+                        <p class="modalNewPasswordSubtitle">Modifica tu nombre de usuario</p>
+                    </div>
+                </div>
+                <button class="btnClose" id="btnCloseChangeUsername" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Usuario actual (solo lectura) -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtCurrentUsername">Usuario actual</label>
+                <div class="modalNewPasswordInputRow">
+                    <input type="text" id="txtCurrentUsername" class="txtInputs modalNewPasswordInput" placeholder="—"
+                        disabled />
+                </div>
+            </div>
+
+            <!-- Nuevo usuario -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtNewUsername">Nuevo usuario</label>
+                <div class="modalNewPasswordInputRow">
+                    <input type="text" id="txtNewUsername" class="txtInputs modalNewPasswordInput"
+                        placeholder="Ingresa el nuevo nombre de usuario" />
+                </div>
+                <span class="modalNewPasswordMatchHint" id="usernameHint"></span>
+            </div>
+
+            <!-- Confirmar con contraseña -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtPasswordForUsername">Contraseña actual</label>
+                <div class="modalNewPasswordInputRow">
+                    <input type="password" id="txtPasswordForUsername" class="txtInputs modalNewPasswordInput"
+                        placeholder="Confirma tu identidad" />
+                    <button type="button" class="modalNewPasswordToggle" id="togglePasswordForUsername"
+                        aria-label="Mostrar/ocultar">
+                        <svg id="eyeIconPasswordUsername" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" class="btnPrimary" id="btnSaveUsername" disabled>
+                <span>Guardar usuario</span>
+                <div class="loader hide" id="btnSaveUsernameLoader"></div>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Modal Verificar Contraseña Actual -->
+    <div id="modalVerifyPassword" class="containerModal hide">
+        <div class="modalAdd modalNewPasswordCard">
+
+            <!-- Header -->
+            <div class="modalNewPasswordHeader">
+                <div class="modalNewPasswordHeaderLeft">
+                    <div class="modalNewPasswordIconWrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="modalNewPasswordTitle">Verificar identidad</h2>
+                        <p class="modalNewPasswordSubtitle">Confirma tu contraseña actual para continuar</p>
+                    </div>
+                </div>
+                <button class="btnClose" id="btnCloseVerifyPassword" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Campo -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtVerifyPassword">Contraseña actual</label>
+                <div class="modalNewPasswordInputRow">
+                    <input type="password" id="txtVerifyPassword" class="txtInputs modalNewPasswordInput"
+                        placeholder="Ingresa tu contraseña actual" />
+                    <button type="button" class="modalNewPasswordToggle" id="toggleVerifyPassword"
+                        aria-label="Mostrar/ocultar">
+                        <svg id="eyeIconCurrent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+                <span class="modalNewPasswordMatchHint" id="currentPasswordHint"></span>
+            </div>
+
+            <button type="button" class="btnPrimary" id="btnVerifyCurrentPassword">
+                <span>Continuar</span>
+                <div class="loader hide" id="btnVerifyCurrentPasswordLoader"></div>
+            </button>
+
+        </div>
+    </div>
+    <!-- Modal Nueva Contraseña -->
+    <div id="modalNewPassword" class="containerModal hide">
+        <div class="modalAdd modalNewPasswordCard">
+            <!-- Header -->
+            <div class="modalNewPasswordHeader">
+                <div class="modalNewPasswordHeaderLeft">
+                    <div class="modalNewPasswordIconWrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="modalNewPasswordTitle">Nueva contraseña</h2>
+                        <p class="modalNewPasswordSubtitle">Elige una contraseña segura</p>
+                    </div>
+                </div>
+                <button class="btnClose" id="closeNewPassword" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Campo 1 -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtNewPassword">Nueva contraseña</label>
+                <div class="modalNewPasswordInputRow">
+                    <input type="password" id="txtNewPassword" class="txtInputs modalNewPasswordInput"
+                        placeholder="Mínimo 8 caracteres" />
+                    <button type="button" class="modalNewPasswordToggle togglePassword" id="toggleNewPassword"
+                        aria-label="Mostrar/ocultar contraseña">
+                        <svg id="eyeIconNew" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Barra de fortaleza -->
+                <div class="modalNewPasswordStrengthWrap" id="strengthWrap">
+                    <div class="modalNewPasswordStrengthBar">
+                        <div class="modalNewPasswordStrengthSeg" id="strengthSeg1"></div>
+                        <div class="modalNewPasswordStrengthSeg" id="strengthSeg2"></div>
+                        <div class="modalNewPasswordStrengthSeg" id="strengthSeg3"></div>
+                        <div class="modalNewPasswordStrengthSeg" id="strengthSeg4"></div>
+                        <div class="modalNewPasswordStrengthSeg" id="strengthSeg5"></div>
+
+                    </div>
+                    <span class="modalNewPasswordStrengthLabel" id="strengthLabel"></span>
+                </div>
+            </div>
+
+            <!-- Checklist de requisitos -->
+            <div class="modalNewPasswordRequirements" id="passwordRequirements">
+                <div class="modalNewPasswordReqItem" id="reqLength">
+                    <div class="modalNewPasswordReqDot">
+                        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <polyline points="1.5,5 4,7.5 8.5,2.5" />
+                        </svg>
+                    </div>
+                    <span>Mínimo 8 caracteres</span>
+                </div>
+                <div class="modalNewPasswordReqItem" id="reqUppercase">
+                    <div class="modalNewPasswordReqDot">
+                        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <polyline points="1.5,5 4,7.5 8.5,2.5" />
+                        </svg>
+                    </div>
+                    <span>Una letra mayúscula</span>
+                </div>
+                <div class="modalNewPasswordReqItem" id="reqLowercase">
+                    <div class="modalNewPasswordReqDot">
+                        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <polyline points="1.5,5 4,7.5 8.5,2.5" />
+                        </svg>
+                    </div>
+                    <span>Una letra minuscula</span>
+                </div>
+                <div class="modalNewPasswordReqItem" id="reqNumber">
+                    <div class="modalNewPasswordReqDot">
+                        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <polyline points="1.5,5 4,7.5 8.5,2.5" />
+                        </svg>
+                    </div>
+                    <span>Un número</span>
+                </div>
+                <div class="modalNewPasswordReqItem" id="reqSpecial">
+                    <div class="modalNewPasswordReqDot">
+                        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <polyline points="1.5,5 4,7.5 8.5,2.5" />
+                        </svg>
+                    </div>
+                    <span>Un carácter especial (!@#$...)</span>
+                </div>
+            </div>
+
+            <!-- Campo 2 -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtConfirmPassword">Confirmar contraseña</label>
+                <div class="modalNewPasswordInputRow">
+                    <input type="password" id="txtConfirmPassword" class="txtInputs modalNewPasswordInput"
+                        placeholder="Repite tu contraseña" />
+                    <button type="button" class="modalNewPasswordToggle togglePassword" id="toggleConfirmPassword"
+                        aria-label="Mostrar/ocultar contraseña">
+                        <svg id="eyeIconConfirm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+                <span class="modalNewPasswordMatchHint" id="passwordMatchHint"></span>
+            </div>
+
+            <!-- Acciones -->
+            <div class="modalActions">
+                <button type="button" class="btnPrimary" id="btnUpdatePassword" disabled>
+                    <span>Guardar contraseña</span>
+                    <div class="loader hide" id="btnUpdatePasswordLoader"></div>
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <div class="containerModal hide" id="modalProflile">
+        <form class="modalAdd" id="frmEditProfile">
+            <button id="btnCloseEditProfile" class="btnClose" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
+            </button>
+            <h2 class="titleModal">Editar perfil</h2>
+            <div class="modalEmployeeBody">
+                <div class="formGroup">
+                    <label for="txtFullName" class="lblInputs">Nombre completo</label>
+                    <input type="text" class="txtInputs" name="txtFullName" id="txtFullName" required maxlength="256">
+                </div>
+                <div class="formGroup">
+                    <label for="txtEmployeeEmail" class="lblInputs">Correo electronico</label>
+                    <input type="text" class="txtInputs" name="txtEmployeeEmail" id="txtEmployeeEmail" required
+                        maxlength="100">
+                </div>
+                <div class="formGroup">
+                    <label for="txtEmployeePhone" class="lblInputs">Teléfono</label>
+                    <input type="text" class="txtInputs" name="txtEmployeePhone" id="txtEmployeePhone" required
+                        maxlength="9">
+                </div>
+            </div>
+            <button class="btnPrimary btnSubmitData btnAddData" id="btnAddEmployee">
+                <span>Actualizar</span>
+                <div class="loader hide" id="btnAddEmployeeLoader"></div>
+            </button>
+        </form>
+    </div>
     <div class="containerMobileHeader"></div>
     <div class="bodyContent">
         <div id="sidebar"></div>
@@ -53,7 +342,7 @@
                     <div class="configDivider"></div>
 
                     <!-- Cambiar contraseña -->
-                    <div class="configRow" id="btnChangePassword">
+                    <div class="configRow" id="btnOpenVerifyPassword">
                         <div class="containerIconDarkMode">
                             <div class="configItemIcon">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -72,6 +361,29 @@
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
                     </div>
+
+                    <div class="configDivider"></div>
+
+                    <!-- Cambiar usuario -->
+                    <div class="configRow" id="btnOpenToggleUsername">
+                        <div class="containerIconDarkMode">
+                            <div class="configItemIcon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                </svg>
+                            </div>
+                            <div class="configItemText">
+                                <span class="configItemLabel">Cambiar usuario</span>
+                                <span class="configItemSub">Modifica tu nombre de usuario</span>
+                            </div>
+                        </div>
+                        <svg class="configChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    </div>
                 </div>
                 <!-- Modo Oscuro -->
                 <div class="configSectionTitle">Apariencia</div>
@@ -79,8 +391,8 @@
                     <div class="infoDarkContainer">
                         <div class="containerIconDarkMode">
                             <div class="configItemIcon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round">
                                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 07 0 0 0 21 12.70z" />
                                 </svg>
                             </div>
@@ -122,7 +434,8 @@
             </div>
         </div>
     </div>
-    <script src="../js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/components/sidebar.js"></script>
     <script type="module" src="../js/modules/config/configuration.controller.js"></script>
 </body>
 

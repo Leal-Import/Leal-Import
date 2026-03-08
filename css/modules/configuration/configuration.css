@@ -32,6 +32,30 @@
     font-weight: var(--font-weight-medium);
 }
 
+.modalAdd {
+    --width-modal: clamp(250px, 90%, 550px);
+}
+
+.modalEmployeeBody {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modalAdd .formGroup {
+    flex-basis: 0;
+}
+
+.modalNewPasswordCard {
+    --width-modal: clamp(200px, 90%, 450px);
+    padding: 20px !important;
+}
+
+#btnVerifyCurrentPassword, #btnSaveUsername{
+    align-self: end;
+    padding: 5px 40px;
+}
+
 /* ===== CONFIGURATION PAGE ===== */
 
 .configSectionTitle {

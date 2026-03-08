@@ -13,6 +13,5 @@ export const loginState = {
     countdown: {
         timer: null,
         remainingSeconds: 0
-    },
-    rotate: 0
+    }
 };

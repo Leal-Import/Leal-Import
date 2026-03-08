@@ -12,7 +12,7 @@ import { initLoginEvents } from "./login.event.js";
 const onTogglePassword = (e, txtPassword) => {
     const btn = e.currentTarget;
     const icon = btn.querySelector('svg');
-    changeStyleTogglePassword(icon, loginState);
+    changeStyleTogglePassword(icon);
     if (txtPassword.type === 'password') {
         resetInputType(txtPassword, icon);
     } else {

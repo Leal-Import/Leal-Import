@@ -133,10 +133,12 @@ export const removeCountdown = (modalCodeBody) => {
     if (el) el.remove();
 }
 
-export function changeStyleTogglePassword(icon, state) {
-    state.rotate += 180;
+export function changeStyleTogglePassword(icon) {
+    const current = parseFloat(icon.dataset.rotate || '0');
+    const next = current + 180;
+    icon.dataset.rotate = next;
     icon.style.transition = 'transform 0.5s';
-    icon.style.transform = `rotate(${state.rotate}deg)`;
+    icon.style.transform = `rotate(${next}deg)`;
 }
 
 export function setReq(id, met) {

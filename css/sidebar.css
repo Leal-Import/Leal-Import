@@ -381,20 +381,21 @@ body:not(.sidebar-ready) {
     background-color: var(--nav-hover-bg);
 }
 
-.userAvatar {
-    width: var(--nav-wrap-sz);
-    height: var(--nav-wrap-sz);
-    min-width: var(--nav-wrap-sz);
+.sidebarUserAvatar {
+    width: 36px;
+    height: 36px;
     border-radius: 8px;
-    background: linear-gradient(135deg, var(--nav-accent), var(--nav-accent-dark));
-    display: grid;
-    place-items: center;
+    background-color: var(--danger-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    font-family: var(--font-text);
-    font-size: var(--font-size-sh);
-    font-weight: var(--font-weight-bold);
-    color: #fff;
-    box-shadow: 0 2px 8px var(--nav-accent-glow);
+}
+
+.sidebarUserAvatar svg {
+    width: 18px;
+    height: 18px;
+    stroke: #ffffff;
 }
 
 .userInfo {

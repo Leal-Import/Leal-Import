@@ -47,3 +47,11 @@ export const getCurrentEmployeeId = () => {
     }
     return currentUser.idEmployee;
 };
+
+export const getCurrentEmployee = () => {
+    if (!currentUser) {
+        console.warn("Se intentó obtener el empleado actual sin sesión iniciada.");
+        return null;
+    }
+    return currentUser;
+};
