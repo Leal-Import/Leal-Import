@@ -1,5 +1,5 @@
 import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, resetInputType, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "../../core/dom/configuration.dom.js";
-import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword, validateUsernameChange } from "../../core/logic/configuration.logic.js";
+import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword, validateProfile, validateUsernameChange } from "../../core/logic/configuration.logic.js";
 import { configurationState } from "../../core/state/configuration.state.js";
 import { getCurrentEmployee, initSession } from "../../utils/api.utils.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
@@ -187,6 +187,37 @@ const onLogout = async () => {
     }
 }
 
+const onEditProfile = async (e) => {
+    e.preventDefault();
+    const txtFullName = DOMRefs.refs.txtFullName;
+    const txtEmail = DOMRefs.refs.txtEmployeeEmail;
+    const txtPhone = DOMRefs.refs.txtEmployeePhone;
+
+    const invalidate = validateProfile(txtFullName.value.trim(), txtEmail.value.trim(), txtPhone.value.trim());
+    if (invalidate) {
+        await showMessage('Advertencia', invalidate, 'warning');
+        return;
+    }
+
+    showElement(DOMRefs.refs.btnEditProfileLoader);
+    disableElement(DOMRefs.refs.btnEditProfile);
+    try {
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        configurationState.profile.fullName = txtFullName.value.trim();
+        configurationState.profile.email = txtEmail.value.trim();
+        configurationState.profile.phone = txtPhone.value.trim();
+        await showMessage('Éxito', 'Perfil actualizado correctamente', 'success', true);
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        await showMessage('Error', 'Ocurrió un error al actualizar el perfil. Inténtalo de nuevo.', 'error');
+    } finally {
+        hideElement(DOMRefs.refs.btnEditProfileLoader);
+        removeDisable(DOMRefs.refs.btnEditProfile);
+        toggleModal(DOMRefs.refs.modalProflile, false);
+    }
+}
+
+
 const onChangeUsername = async (e) => {
     e.preventDefault();
     const txtCurrentUsername = DOMRefs.refs.txtCurrentUsername;
@@ -235,6 +266,7 @@ const initializeUi = (Refs) => {
         onVerifyButtonUsername,
         onChangeUsername,
         onLogout,
+        onEditProfile,
         onVerifyConfirmPassword: () => {
             validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
             checkBtn(getScore(DOMRefs.refs.txtNewPassword.value), DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);

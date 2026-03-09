@@ -21,6 +21,8 @@ export const DOMRefs = {
             btnVerifyCurrentPassword: $('btnVerifyCurrentPassword'),
             btnVerifyCurrentPasswordLoader: $('btnVerifyCurrentPasswordLoader'),
             txtPasswordForUsername: $('txtPasswordForUsername'),
+            btnOpenEditProfile: $('btnOpenEditProfile'),
+            btnEditProfileLoader: $('btnEditProfileLoader'),
             currentPasswordHint: $('currentPasswordHint'),
             txtFullName: $('txtFullName'),
             txtEmployeeEmail: $('txtEmployeeEmail'),

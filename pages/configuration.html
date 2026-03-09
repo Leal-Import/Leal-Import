@@ -57,7 +57,7 @@
                 <label class="modalNewPasswordLabel" for="txtNewUsername">Nuevo usuario</label>
                 <div class="modalNewPasswordInputRow">
                     <input type="text" id="txtNewUsername" class="txtInputs modalNewPasswordInput"
-                        placeholder="Ingresa el nuevo nombre de usuario" />
+                        placeholder="Ingresa el nuevo nombre de usuario" required />
                 </div>
                 <span class="modalNewPasswordMatchHint" id="usernameHint"></span>
             </div>
@@ -67,7 +67,7 @@
                 <label class="modalNewPasswordLabel" for="txtPasswordForUsername">Contraseña actual</label>
                 <div class="modalNewPasswordInputRow">
                     <input type="password" id="txtPasswordForUsername" class="txtInputs modalNewPasswordInput"
-                        placeholder="Confirma tu identidad" />
+                        placeholder="Confirma tu identidad" required />
                     <button type="button" class="modalNewPasswordToggle" id="togglePasswordForUsername"
                         aria-label="Mostrar/ocultar">
                         <svg id="eyeIconPasswordUsername" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -117,7 +117,7 @@
                 <label class="modalNewPasswordLabel" for="txtVerifyPassword">Contraseña actual</label>
                 <div class="modalNewPasswordInputRow">
                     <input type="password" id="txtVerifyPassword" class="txtInputs modalNewPasswordInput"
-                        placeholder="Ingresa tu contraseña actual" />
+                        placeholder="Ingresa tu contraseña actual" required />
                     <button type="button" class="modalNewPasswordToggle" id="toggleVerifyPassword"
                         aria-label="Mostrar/ocultar">
                         <svg id="eyeIconCurrent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -168,7 +168,7 @@
                 <label class="modalNewPasswordLabel" for="txtNewPassword">Nueva contraseña</label>
                 <div class="modalNewPasswordInputRow">
                     <input type="password" id="txtNewPassword" class="txtInputs modalNewPasswordInput"
-                        placeholder="Mínimo 8 caracteres" />
+                        placeholder="Mínimo 8 caracteres" required />
                     <button type="button" class="modalNewPasswordToggle togglePassword" id="toggleNewPassword"
                         aria-label="Mostrar/ocultar contraseña">
                         <svg id="eyeIconNew" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -247,7 +247,7 @@
                 <label class="modalNewPasswordLabel" for="txtConfirmPassword">Confirmar contraseña</label>
                 <div class="modalNewPasswordInputRow">
                     <input type="password" id="txtConfirmPassword" class="txtInputs modalNewPasswordInput"
-                        placeholder="Repite tu contraseña" />
+                        placeholder="Repite tu contraseña" required />
                     <button type="button" class="modalNewPasswordToggle togglePassword" id="toggleConfirmPassword"
                         aria-label="Mostrar/ocultar contraseña">
                         <svg id="eyeIconConfirm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -295,9 +295,9 @@
                         maxlength="9">
                 </div>
             </div>
-            <button class="btnPrimary btnSubmitData btnAddData" id="btnAddEmployee">
+            <button class="btnPrimary btnSubmitData btnAddData" id="btnEditProfile">
                 <span>Actualizar</span>
-                <div class="loader hide" id="btnAddEmployeeLoader"></div>
+                <div class="loader hide" id="btnEditProfileLoader"></div>
             </button>
         </form>
     </div>
@@ -317,7 +317,7 @@
 
                 <div class="configCard">
                     <!-- Editar perfil -->
-                    <div class="configRow" id="btnEditProfile">
+                    <div class="configRow" id="btnOpenEditProfile">
                         <div class="containerIconDarkMode">
                             <div class="configItemIcon">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"

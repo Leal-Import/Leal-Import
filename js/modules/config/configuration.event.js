@@ -1,9 +1,10 @@
 import { formatPhoneNumber } from "../../utils/formatters.js";
 
-export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditProfile, onOpenEditProfile, onOpenVerifyPassword, onCloseVerifyPassword, onOpenToggleUsername, onCloseToggleUsername, onTogglePassword, onVerifyPassword, onCloseNewPassword, onVerifyNewPassword, onVerifyConfirmPassword, onChangePassword, onVerifyButtonUsername, onChangeUsername, onLogout }) {
+export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditProfile, onOpenEditProfile, onOpenVerifyPassword, onCloseVerifyPassword, onOpenToggleUsername, onCloseToggleUsername, onTogglePassword, onVerifyPassword, onCloseNewPassword, onVerifyNewPassword, onVerifyConfirmPassword, onChangePassword, onVerifyButtonUsername, onChangeUsername, onLogout, onEditProfile }) {
 
+    Refs.frmEditProfile.addEventListener("submit", onEditProfile);
     Refs.darkModeToggle.addEventListener("change", onChangeDarkMode);
-    Refs.btnEditProfile.addEventListener("click", onOpenEditProfile);
+    Refs.btnOpenEditProfile.addEventListener("click", onOpenEditProfile);
     Refs.btnCloseEditProfile.addEventListener("click", onCloseEditProfile);
     Refs.modalProflile.addEventListener("click", (e) => {
         if (e.target === Refs.modalProflile) {
