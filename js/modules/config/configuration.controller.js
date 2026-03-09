@@ -4,6 +4,7 @@ import { configurationState } from "../../core/state/configuration.state.js";
 import { getCurrentEmployee, initSession } from "../../utils/api.utils.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { initConfigurationEvents } from "./configuration.event.js";
+import { logout } from "../../service/configuration.service.js";
 
 const onChangeDarkMode = () => {
     const isDarkMode = localStorage.getItem('app.theme.dark') === 'true' ? false : true;
@@ -28,7 +29,7 @@ const onVerifyPassword = async (e) => {
     const password = DOMRefs.refs.txtVerifyPassword.value.trim();
 
     if (!password) {
-        showMessage('Advertencia', 'Por favor ingresa tu contraseña actual.', 'warning');
+        await showMessage('Advertencia', 'Por favor ingresa tu contraseña actual.', 'warning');
         return;
     }
     showElement(DOMRefs.refs.btnVerifyCurrentPasswordLoader);
@@ -36,11 +37,11 @@ const onVerifyPassword = async (e) => {
     try {
         // ACA FALTA CODIGO PARA VERIFICAR CONTRASEÑA CON EL BACKEND, POR AHORA SIMULO QUE SI ES CORRECTA CON UN TIMEOUT
         await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
-        showMessage('Éxito', 'Contraseña verificada correctamente. Ahora puedes ingresar tu nueva contraseña.', 'success', true);
+        await showMessage('Éxito', 'Contraseña verificada correctamente. Ahora puedes ingresar tu nueva contraseña.', 'success', true);
         toggleModal(DOMRefs.refs.modalNewPassword, true);
     } catch (error) {
         console.error('Error verifying password:', error);
-        showMessage('Error', 'Ocurrió un error al verificar la contraseña. Inténtalo de nuevo.', 'error');
+        await showMessage('Error', 'Ocurrió un error al verificar la contraseña. Inténtalo de nuevo.', 'error');
     } finally {
         const btn = DOMRefs.refs.toggleVerifyPassword;
         const icon = btn.querySelector('svg');
@@ -90,7 +91,7 @@ const onChangePassword = async (e) => {
 
     const invalidate = validatePassword(pw1.value.trim(), pw2.value.trim());
     if (invalidate) {
-        showMessage('Contraseña no válida', invalidate, 'warning');
+        await showMessage('Contraseña no válida', invalidate, 'warning');
         return;
     }
 
@@ -99,10 +100,10 @@ const onChangePassword = async (e) => {
     try {
         // ACA FALTA CODIGO PARA VERIFICAR CONTRASEÑA CON EL BACKEND, POR AHORA SIMULO QUE SI ES CORRECTA CON UN TIMEOUT
         await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
-        showMessage('Éxito', 'Contraseña cambiada correctamente', 'success', true);
+        await showMessage('Éxito', 'Contraseña cambiada correctamente', 'success', true);
     } catch (error) {
         console.error('Error updating password:', error);
-        showMessage('Error', 'Ocurrió un error al actualizar la contraseña. Inténtalo de nuevo.', 'error');
+        await showMessage('Error', 'Ocurrió un error al actualizar la contraseña. Inténtalo de nuevo.', 'error');
     } finally {
         hideElement(DOMRefs.refs.btnUpdatePasswordLoader);
         removeDisable(DOMRefs.refs.btnUpdatePassword);
@@ -142,7 +143,6 @@ const onOpenToggleUsername = () => {
 
 const onCloseNewPassword = () => {
     toggleModal(DOMRefs.refs.modalNewPassword, false);
-    toggleModal(DOMRefs.refs.modalVerifyPassword, true);
     cleanNewPasswordForm();
 }
 
@@ -166,10 +166,24 @@ const onVerifyButtonUsername = () => {
     const newUsername = DOMRefs.refs.txtNewUsername.value.trim();
     const password = DOMRefs.refs.txtPasswordForUsername.value.trim();
 
-    if (currentUsername && newUsername && password) {
+    if (currentUsername && newUsername && password && newUsername !== currentUsername) {
         removeDisable(btn);
     } else {
         disableElement(btn);
+    }
+}
+
+const onLogout = async () => {
+    const response = await showMessage('Confirmar', '¿Estás seguro que deseas cerrar sesión?', 'question', false, true);
+    if (response.isConfirmed) {
+        try {
+            await logout();
+        } catch (error) {
+            console.error('Error during logout:', error);
+            await showMessage('Error', 'Ocurrió un error al cerrar sesión. Inténtalo de nuevo.', 'error');
+        } finally {
+            window.location.href = 'login.html';
+        }
     }
 }
 
@@ -181,7 +195,7 @@ const onChangeUsername = async (e) => {
 
     const invalidate = validateUsernameChange(txtCurrentUsername.value.trim(), txtNewUsername.value.trim(), txtPassword.value.trim());
     if (invalidate) {
-        showMessage('Advertencia', invalidate, 'warning');
+        await showMessage('Advertencia', invalidate, 'warning');
         return;
     }
 
@@ -190,11 +204,11 @@ const onChangeUsername = async (e) => {
 
     try {
         await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
-        showMessage('Éxito', 'Nombre de usuario actualizado correctamente', 'success', true);
+        await showMessage('Éxito', 'Nombre de usuario actualizado correctamente', 'success', true);
         configurationState.profile.username = txtNewUsername.value.trim();
     } catch (error) {
         console.error('Error updating username:', error);
-        showMessage('Error', 'No se pudo actualizar el nombre de usuario', 'error');
+        await showMessage('Error', 'No se pudo actualizar el nombre de usuario', 'error');
     } finally {
         hideElement(DOMRefs.refs.btnSaveUsernameLoader);
         removeDisable(DOMRefs.refs.btnSaveUsername);
@@ -220,6 +234,7 @@ const initializeUi = (Refs) => {
         onChangePassword,
         onVerifyButtonUsername,
         onChangeUsername,
+        onLogout,
         onVerifyConfirmPassword: () => {
             validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
             checkBtn(getScore(DOMRefs.refs.txtNewPassword.value), DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
@@ -259,8 +274,6 @@ const loadState = async () => {
     }
 }
 
-
-
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const isReady = await setupApplication();
@@ -273,6 +286,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadDataFlow(refs);
     } catch (error) {
         console.error('Error initializing application:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
+        await showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
     }
 });

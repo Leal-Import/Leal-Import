@@ -1,4 +1,6 @@
-export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditProfile, onOpenEditProfile, onOpenVerifyPassword, onCloseVerifyPassword, onOpenToggleUsername, onCloseToggleUsername, onTogglePassword, onVerifyPassword, onCloseNewPassword, onVerifyNewPassword, onVerifyConfirmPassword, onChangePassword, onVerifyButtonUsername, onChangeUsername }) {
+import { formatPhoneNumber } from "../../utils/formatters.js";
+
+export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditProfile, onOpenEditProfile, onOpenVerifyPassword, onCloseVerifyPassword, onOpenToggleUsername, onCloseToggleUsername, onTogglePassword, onVerifyPassword, onCloseNewPassword, onVerifyNewPassword, onVerifyConfirmPassword, onChangePassword, onVerifyButtonUsername, onChangeUsername, onLogout }) {
 
     Refs.darkModeToggle.addEventListener("change", onChangeDarkMode);
     Refs.btnEditProfile.addEventListener("click", onOpenEditProfile);
@@ -36,9 +38,11 @@ export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditPro
     Refs.toggleNewPassword.addEventListener("click", (e) => onTogglePassword(e, Refs.txtNewPassword));
     Refs.toggleConfirmPassword.addEventListener("click", (e) => onTogglePassword(e, Refs.txtConfirmPassword));
     Refs.frmNewPassword.addEventListener("submit", onChangePassword);
-    Refs.txtCurrentUsername.addEventListener("input", onVerifyButtonUsername);
     Refs.txtNewUsername.addEventListener("input", onVerifyButtonUsername);
     Refs.txtPasswordForUsername.addEventListener("input", onVerifyButtonUsername);
     Refs.frmToggleUsername.addEventListener("submit", onChangeUsername);
-
+    Refs.btnLogout.addEventListener("click", onLogout);
+    Refs.txtEmployeePhone.addEventListener("input", () => {
+        formatPhoneNumber(Refs.txtEmployeePhone);
+    });
 }

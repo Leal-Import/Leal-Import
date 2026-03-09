@@ -47,6 +47,7 @@ export const DOMRefs = {
             passwordMatchHint: $('passwordMatchHint'),
             frmNewPassword: $('frmNewPassword'),
             frmToggleUsername: $('frmToggleUsername'),
+            btnLogout: $('btnLogout'),
             segs: [1, 2, 3, 4, 5].map(i => document.getElementById('strengthSeg' + i))
         };
         return this.refs;
@@ -77,7 +78,6 @@ export const fillProfileForm = (profile, Refs) => {
 export const filltxtUsername = (username, txtUsername) => {
     if (!username) return;
     txtUsername.value = username || '';
-    txtUsername.removeAttribute('disabled');
 }
 
 export function changeStyleTogglePassword(icon) {
@@ -104,6 +104,7 @@ export const cleanTxtVerifyPassword = (input, toggle) => {
 }
 
 export const cleanCampsToggleUsername = (refs, toggle) => {
+    refs.txtCurrentUsername.value = '';
     refs.txtPasswordForUsername.value = '';
     refs.txtNewUsername.value = '';
     changePasswordType(refs.txtPasswordForUsername, toggle);
