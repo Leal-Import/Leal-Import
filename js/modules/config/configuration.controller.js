@@ -4,7 +4,7 @@ import { configurationState } from "../../core/state/configuration.state.js";
 import { getCurrentEmployee, initSession } from "../../utils/api.utils.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { initConfigurationEvents } from "./configuration.event.js";
-import { changePassword, logout, verifyCurrentPassword } from "../../service/configuration.service.js";
+import { changePassword, editProfile, logout, verifyCurrentPassword } from "../../service/configuration.service.js";
 
 const onChangeDarkMode = () => {
     const isDarkMode = localStorage.getItem('app.theme.dark') === 'true' ? false : true;
@@ -41,7 +41,7 @@ const onVerifyPassword = async (e) => {
         toggleModal(DOMRefs.refs.modalNewPassword, true);
         toggleModal(DOMRefs.refs.modalVerifyPassword, false);
     } catch (error) {
-        console.error('Error verifying password:', error);
+        console.log(error.message)
         await showMessage('Error', error.message || 'Ocurrió un error al verificar la contraseña. Inténtalo de nuevo.', 'error');
     } finally {
         const btn = DOMRefs.refs.toggleVerifyPassword;
@@ -197,22 +197,27 @@ const onEditProfile = async (e) => {
         await showMessage('Advertencia', invalidate, 'warning');
         return;
     }
+    const payload = {
+        fullName: txtFullName.value.trim(),
+        email: txtEmail.value.trim(),
+        phone: txtPhone.value.trim()
+    };
 
     showElement(DOMRefs.refs.btnEditProfileLoader);
     disableElement(DOMRefs.refs.btnEditProfile);
     try {
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        await editProfile(payload)
+        await showMessage('Éxito', 'Perfil actualizado correctamente', 'success', true);
         configurationState.profile.fullName = txtFullName.value.trim();
         configurationState.profile.email = txtEmail.value.trim();
         configurationState.profile.phone = txtPhone.value.trim();
-        await showMessage('Éxito', 'Perfil actualizado correctamente', 'success', true);
+        toggleModal(DOMRefs.refs.modalProflile, false);
     } catch (error) {
         console.error('Error updating profile:', error);
         await showMessage('Error', 'Ocurrió un error al actualizar el perfil. Inténtalo de nuevo.', 'error');
     } finally {
         hideElement(DOMRefs.refs.btnEditProfileLoader);
         removeDisable(DOMRefs.refs.btnEditProfile);
-        toggleModal(DOMRefs.refs.modalProflile, false);
     }
 }
 

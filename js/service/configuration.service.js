@@ -3,6 +3,7 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 const APIPAY_URL = `${API_BASE_URL}/Sales`;
 const API_URL = `${API_BASE_URL}/auth`;
 const APIPW_URL = `${API_BASE_URL}/passwordReset`;
+const APIME_URL = `${API_BASE_URL}/me`;
 
 
 export const getPaymentMethods = async () => {
@@ -29,8 +30,8 @@ export const logout = async () => {
             method: 'POST'
         });
         if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo cerrar la sesion. Detalle: ${errorBody.substring(0, 100)}`);
+            const errorBody = await request.json();
+            throw new Error(`Error ${request.status}: No se pudo cerrar la sesion. Detalle: ${errorBody.message || errorBody.substring(0, 100)}`);
         }
         return await request.json();
 
@@ -45,20 +46,38 @@ export const verifyCurrentPassword = async (currentPassword) => {
         const request = await fetch(`${APIPW_URL}/verifyPassword`, {
             credentials: 'include',
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ currentPassword })
         });
         if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo verificar la contraseña actual. Detalle: ${errorBody.substring(0, 100)}`);
+            const errorBody = await request.json(); // 👈 json en vez de text
+            throw new Error(errorBody.message || `Error ${request.status}`);
         }
         return await request.json();
 
     } catch (error) {
         console.error("Error en verificacion de contraseña:", error);
-        throw new Error("Fallo al conectar con el servicio de verificacion de contraseña");
+        throw error; // 👈 re-lanzás el mismo error, no uno nuevo
+    }
+};
+
+export const editProfile = async (profile) => {
+    try {
+        const request = await fetch(`${APIME_URL}/profile`, {
+            credentials: 'include',
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profile)
+        });
+        if (!request.ok) {
+            const errorBody = await request.json(); // 👈 json en vez de text
+            throw new Error(errorBody.message || `Error ${request.status}`);
+        }
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en edición de perfil:", error);
+        throw error; // 👈 re-lanzás el mismo error, no uno nuevo
     }
 };
 
@@ -83,3 +102,4 @@ export const changePassword = async (newPassword, ticket) => {
         throw new Error("Fallo al conectar con el servicio de cambio de contraseña");
     }
 };
+
