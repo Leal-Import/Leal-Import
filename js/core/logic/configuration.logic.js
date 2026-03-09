@@ -39,6 +39,9 @@ export function validatePassword(pw1, pw2) {
     if (!pw1 || pw1.length < 8) {
         return 'La contraseña debe tener al menos 8 caracteres.';
     }
+    if (!pw1 || pw1.length > 20) {
+        return 'La contraseña debe tener hasta 20 caracteres.';
+    }
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
     if (!re.test(pw1)) {
         return 'La contraseña debe incluir 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.';
@@ -64,11 +67,11 @@ export const validateProfile = (fullName, email, phone) => {
         return 'Todos los campos son obligatorios.';
     }
 
-    if(!isValidEmail(email)) {
+    if (!isValidEmail(email)) {
         return 'El correo electrónico no es válido.';
     }
 
-    if(!isValidPhone(phone)) {
+    if (!isValidPhone(phone)) {
         return 'El número de teléfono no es válido. Debe contener 8 dígitos.';
     }
     return null;

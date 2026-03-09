@@ -4,7 +4,7 @@ import { configurationState } from "../../core/state/configuration.state.js";
 import { getCurrentEmployee, initSession } from "../../utils/api.utils.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { initConfigurationEvents } from "./configuration.event.js";
-import { logout } from "../../service/configuration.service.js";
+import { changePassword, logout, verifyCurrentPassword } from "../../service/configuration.service.js";
 
 const onChangeDarkMode = () => {
     const isDarkMode = localStorage.getItem('app.theme.dark') === 'true' ? false : true;
@@ -35,19 +35,19 @@ const onVerifyPassword = async (e) => {
     showElement(DOMRefs.refs.btnVerifyCurrentPasswordLoader);
     disableElement(DOMRefs.refs.btnVerifyCurrentPassword);
     try {
-        // ACA FALTA CODIGO PARA VERIFICAR CONTRASEÑA CON EL BACKEND, POR AHORA SIMULO QUE SI ES CORRECTA CON UN TIMEOUT
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        const response = await verifyCurrentPassword(password);
+        configurationState.ticket = response.ticket;
         await showMessage('Éxito', 'Contraseña verificada correctamente. Ahora puedes ingresar tu nueva contraseña.', 'success', true);
         toggleModal(DOMRefs.refs.modalNewPassword, true);
+        toggleModal(DOMRefs.refs.modalVerifyPassword, false);
     } catch (error) {
         console.error('Error verifying password:', error);
-        await showMessage('Error', 'Ocurrió un error al verificar la contraseña. Inténtalo de nuevo.', 'error');
+        await showMessage('Error', error.message || 'Ocurrió un error al verificar la contraseña. Inténtalo de nuevo.', 'error');
     } finally {
         const btn = DOMRefs.refs.toggleVerifyPassword;
         const icon = btn.querySelector('svg');
         hideElement(DOMRefs.refs.btnVerifyCurrentPasswordLoader);
         removeDisable(DOMRefs.refs.btnVerifyCurrentPassword);
-        toggleModal(DOMRefs.refs.modalVerifyPassword, false);
         cleanTxtVerifyPassword(DOMRefs.refs.txtVerifyPassword, icon);
     }
 }
@@ -98,16 +98,15 @@ const onChangePassword = async (e) => {
     showElement(DOMRefs.refs.btnUpdatePasswordLoader);
     disableElement(DOMRefs.refs.btnUpdatePassword);
     try {
-        // ACA FALTA CODIGO PARA VERIFICAR CONTRASEÑA CON EL BACKEND, POR AHORA SIMULO QUE SI ES CORRECTA CON UN TIMEOUT
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        await changePassword(pw1.value.trim(), configurationState.ticket);
         await showMessage('Éxito', 'Contraseña cambiada correctamente', 'success', true);
+        toggleModal(DOMRefs.refs.modalNewPassword, false);
     } catch (error) {
         console.error('Error updating password:', error);
         await showMessage('Error', 'Ocurrió un error al actualizar la contraseña. Inténtalo de nuevo.', 'error');
     } finally {
         hideElement(DOMRefs.refs.btnUpdatePasswordLoader);
         removeDisable(DOMRefs.refs.btnUpdatePassword);
-        toggleModal(DOMRefs.refs.modalNewPassword, false);
         cleanNewPasswordForm();
     }
 }
