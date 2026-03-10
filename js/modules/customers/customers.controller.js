@@ -22,11 +22,13 @@ export async function loadCustomers() {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customersState.pagination;
-        const { search } = customersState.filters;
+        const { search, status } = customersState.filters;
         const data = await getCustomers(
             page - 1,
             size,
-            search || ''
+            search || '',
+            status || ''
+            
         );
 
         customersState.list = data.content;

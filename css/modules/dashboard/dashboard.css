@@ -1,0 +1,815 @@
+/* ── ALERTAS ── */
+.dashAlerts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.dashAlertItem {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    flex-basis: 350px;
+    gap: 12px;
+    padding: 14px 18px;
+    background-color: var(--bg-color-white);
+    border: var(--border);
+    border-radius: var(--border-radius-table);
+    border-left: 3px solid transparent;
+    transition: box-shadow 0.2s ease, transform 0.18s ease;
+}
+
+.dashAlertItem:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.dashAlertDanger {
+    border-left-color: var(--danger-color);
+}
+
+.dashAlertWarning {
+    border-left-color: var(--warning-color);
+}
+
+.dashAlertSuccess {
+    border-left-color: var(--success-color);
+}
+
+.dashAlertIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--border-radius-btn);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.dashAlertIcon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.dashAlertIconDanger {
+    background-color: rgba(211, 24, 19, 0.08);
+    color: var(--danger-color);
+}
+
+.dashAlertIconWarning {
+    background-color: rgba(255, 178, 53, 0.12);
+    color: var(--warning-color);
+}
+
+.dashAlertIconSuccess {
+    background-color: rgba(109, 190, 69, 0.1);
+    color: var(--dark-success-color);
+}
+
+.dashAlertBody {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashAlertTitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+}
+
+.dashAlertSub {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+    margin-top: 2px;
+}
+
+.dashAlertVal {
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-bold);
+    flex-shrink: 0;
+}
+
+.dashAlertValDanger {
+    color: var(--danger-color);
+}
+
+.dashAlertValWarning {
+    color: var(--warning-color);
+}
+
+.dashAlertValSuccess {
+    color: var(--dark-success-color);
+}
+
+/* ── PERÍODO ── */
+.dashPeriodBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.dashPeriodBtns {
+    display: flex;
+    gap: 4px;
+    background-color: var(--bg-color-white);
+    border: var(--border);
+    border-radius: var(--border-radius-btn);
+    padding: 4px;
+}
+
+.dashPeriodBtn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: var(--font-text);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.dashPeriodBtn:hover {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.dashPeriodBtnActive {
+    background-color: var(--danger-color) !important;
+    color: #fff !important;
+    font-weight: var(--font-weight-semibold);
+    box-shadow: var(--bx-shadow-btn-primary);
+}
+
+.dashPeriodLabel {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+}
+
+/* ── KPIS ── */
+.dashKpis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.dashKpiItem {
+    background-color: var(--bg-color-white);
+    flex-grow: 1;
+    flex-basis: 225px;
+    border: var(--border);
+    border-radius: var(--border-radius-table);
+    padding: 18px 20px;
+    border-top: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dashKpiItem:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.dashKpiDanger {
+    border-top-color: var(--danger-color);
+}
+
+.dashKpiSuccess {
+    border-top-color: var(--success-color);
+}
+
+.dashKpiWarning {
+    border-top-color: var(--warning-color);
+}
+
+.dashKpiBlue {
+    border-top-color: var(--helper-stat-color);
+}
+
+.dashKpiLabel {
+    font-size: var(--font-size-sh);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-color-secondary);
+    margin-bottom: 8px;
+}
+
+.dashKpiValue {
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    line-height: 1.1;
+}
+
+.dashKpiValueSuccess {
+    color: var(--dark-success-color);
+}
+
+.dashKpiValueWarning {
+    color: var(--dark-warning-color);
+}
+
+.dashKpiValueBlue {
+    color: var(--helper-stat-color);
+}
+
+.dashKpiFoot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.dashKpiSub {
+    font-size: var(--font-size-very-sh);
+    color: var(--text-color-secondary);
+}
+
+.dashChip {
+    font-size: var(--font-size-very-sh);
+    font-weight: var(--font-weight-semibold);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.dashChipUp {
+    background-color: rgba(109, 190, 69, 0.12);
+    color: var(--dark-success-color);
+}
+
+.dashChipDown {
+    background-color: rgba(211, 24, 19, 0.1);
+    color: var(--danger-color);
+}
+
+.dashChipFlat {
+    background-color: rgba(129, 133, 158, 0.12);
+    color: var(--text-color-secondary);
+}
+
+/* ── CARD BASE ── */
+.dashCard {
+    background-color: var(--bg-color-white);
+    border: var(--border);
+    border-radius: var(--border-radius-table);
+    padding: 18px 20px;
+    display: flex;
+    flex: 1;
+    flex-basis: 260px !important;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.recentlyOrdersCard{
+    flex-grow: 2 !important;
+}
+
+.dashCardChart {
+    flex-basis: 500px !important;
+}
+
+.dashCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.dashCardTitle {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+}
+
+.dashCardSub {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+    margin-top: 2px;
+}
+
+/* Tags */
+.dashTag {
+    font-size: var(--font-size-very-sh);
+    font-weight: var(--font-weight-semibold);
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dashTagDanger {
+    background-color: rgba(211, 24, 19, 0.08);
+    color: var(--danger-color);
+    border: 1px solid rgba(211, 24, 19, 0.2);
+}
+
+.dashTagWarning {
+    background-color: rgba(255, 178, 53, 0.1);
+    color: var(--dark-warning-color);
+    border: 1px solid rgba(255, 178, 53, 0.25);
+}
+
+.dashTagSuccess {
+    background-color: rgba(109, 190, 69, 0.1);
+    color: var(--dark-success-color);
+    border: 1px solid rgba(109, 190, 69, 0.2);
+}
+
+.dashTagBlue {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--helper-stat-color);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* ── FILAS ── */
+.dashMidRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.dashBotRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+/* ── GRÁFICO ── */
+.dashCanvasWrap {
+    width: 100%;
+}
+
+.dashCanvasWrap canvas {
+    width: 100% !important;
+}
+
+/* ── TOP VENDEDORES ── */
+.dashSellerHero {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background-color: var(--bg-color);
+    border: var(--border);
+    border-radius: var(--border-radius-table);
+}
+
+.dashSellerAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--border-radius-btn);
+    background-color: rgba(211, 24, 19, 0.08);
+    border: 1px solid rgba(211, 24, 19, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+    color: var(--danger-color);
+    flex-shrink: 0;
+}
+
+.dashSellerInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashSellerName {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+}
+
+.dashSellerRole {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+    margin-top: 1px;
+}
+
+.dashSellerAmount {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--dark-success-color);
+    margin-top: 4px;
+    line-height: 1.1;
+}
+
+.dashSellerAmtLabel {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+}
+
+/* Ranking 2-5 */
+.dashRankList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dashRankRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(129, 133, 158, 0.1);
+}
+
+.dashRankRow:last-child {
+    border-bottom: none;
+}
+
+.dashRankNum {
+    font-size: var(--font-size-very-sm);
+    font-weight: var(--font-weight-bold);
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.dashRankGold {
+    color: var(--warning-color);
+}
+
+.dashRankSilver {
+    color: #9ca3af;
+}
+
+.dashRankBronze {
+    color: #b45412;
+}
+
+.dashRankNormal {
+    color: var(--text-color-secondary);
+}
+
+.dashRankAvatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-very-sh);
+}
+
+.dashRankAvatarTop {
+    background-color: rgba(211, 24, 19, 0.08);
+    border: 1px solid rgba(211, 24, 19, 0.2);
+    color: var(--danger-color);
+}
+
+.dashRankAvatarDim {
+    background-color: var(--bg-color);
+    border: var(--border);
+    color: var(--text-color-secondary);
+}
+
+.dashRankInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashRankName {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+}
+
+.dashRankBar {
+    height: 3px;
+    background-color: var(--bg-color);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.dashRankFill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+}
+
+.dashRankFillTop {
+    background-color: var(--danger-color);
+}
+
+.dashRankFillDim {
+    background-color: rgba(129, 133, 158, 0.3);
+}
+
+.dashRankAmt {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--dark-success-color);
+    flex-shrink: 0;
+}
+
+.dashRankAmtDim {
+    color: var(--text-color-secondary);
+}
+
+/* ── MEJORES VENTAS ── */
+.dashSaleList {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashSaleItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(129, 133, 158, 0.1);
+}
+
+.dashSaleItem:last-child {
+    border-bottom: none;
+}
+
+.dashSaleNum {
+    font-size: var(--font-size-very-sh);
+    font-weight: var(--font-weight-bold);
+    color: rgba(129, 133, 158, 0.5);
+    width: 18px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.dashSaleIcon {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background-color: var(--bg-color);
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.dashSaleIcon svg {
+    width: 13px;
+    height: 13px;
+    stroke: var(--text-color-secondary);
+}
+
+.dashSaleInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashSaleName {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dashSaleClient {
+    font-size: var(--font-size-very-sh);
+    color: var(--text-color-secondary);
+}
+
+.dashSaleRight {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.dashSaleAmt {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--dark-success-color);
+}
+
+.dashSaleDebt {
+    font-size: var(--font-size-very-sh);
+    margin-top: 1px;
+}
+
+.dashSaleDebtPending {
+    color: var(--danger-color);
+}
+
+.dashSaleDebtPaid {
+    color: var(--dark-success-color);
+}
+
+/* ── TABLA ÓRDENES ── */
+.dashTableWrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.dashTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.dashTable th {
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+    padding: 0 0 10px;
+    border-bottom: var(--border);
+}
+
+.dashTable td {
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(129, 133, 158, 0.08);
+    color: var(--text-color-secondary);
+    vertical-align: middle;
+}
+
+.dashTable tr:last-child td {
+    border-bottom: none;
+}
+
+.dashTable td:first-child {
+    color: var(--text-color);
+    font-weight: var(--font-weight-medium);
+}
+
+.dashTdMuted {
+    color: var(--text-color-secondary) !important;
+}
+
+.dashTdDanger {
+    color: var(--danger-color) !important;
+    font-weight: var(--font-weight-semibold);
+}
+
+.dashTdSuccess {
+    color: var(--dark-success-color) !important;
+}
+
+.dashBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.dashBadge::before {
+    content: '●';
+    font-size: 0.5em;
+}
+
+.dashBadgeSuccess {
+    background-color: rgba(109, 190, 69, 0.1);
+    color: var(--dark-success-color);
+}
+
+.dashBadgeWarning {
+    background-color: rgba(255, 178, 53, 0.1);
+    color: var(--dark-warning-color);
+}
+
+.dashBadgeDanger {
+    background-color: rgba(211, 24, 19, 0.08);
+    color: var(--danger-color);
+}
+
+/* ── COBROS URGENTES ── */
+.dashCobroList {
+    display: flex;
+    flex-direction: column;
+}
+
+.dashCobroItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(129, 133, 158, 0.08);
+}
+
+.dashCobroItem:last-child {
+    border-bottom: none;
+}
+
+.dashCobroAvatar {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--border-radius-btn);
+    background-color: var(--bg-color);
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-very-sh);
+    color: var(--text-color-secondary);
+    flex-shrink: 0;
+}
+
+.dashCobroInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashCobroName {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+}
+
+.dashCobroSub {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+    margin-top: 1px;
+}
+
+.dashCobroRight {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.dashCobroAmt {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--danger-color);
+}
+
+.dashCobroDays {
+    font-size: var(--font-size-very-sh);
+    color: var(--text-color-secondary);
+    margin-top: 1px;
+}
+
+.dashCobroDaysCritical {
+    color: var(--danger-color);
+}
+
+.dashCobroDaysWarning {
+    color: var(--dark-warning-color);
+}
+
+/* ── RESPONSIVE ── */
+@container content (max-width: 1100px) {
+    .dashMidRow {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .dashMidRow .dashCard:first-child {
+        grid-column: span 2;
+    }
+
+    .dashKpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashAlerts {
+        grid-template-columns: 1fr;
+    }
+}
+
+@container content (max-width: 700px) {
+    .dashMidRow {
+        grid-template-columns: 1fr;
+    }
+
+    .dashMidRow .dashCard:first-child {
+        grid-column: span 1;
+    }
+
+    .dashBotRow {
+        grid-template-columns: 1fr;
+    }
+
+    .dashKpis {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .dashPeriodBtns {
+        flex-wrap: wrap;
+    }
+
+    .dashPeriodBar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .dashKpis {
+        grid-template-columns: 1fr;
+    }
+
+    .dashAlerts {
+        grid-template-columns: 1fr;
+    }
+}

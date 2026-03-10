@@ -2,7 +2,8 @@ export const customersState = {
     list: [],
     selectedId: null,
     filters: {
-        search: ''
+        search: '',
+        status: 'T' // T: Activo, F: Inactivo, '' para todos
     },
     pagination: {
         page: 1,

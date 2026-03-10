@@ -14,6 +14,7 @@ export const DOMRefs = {
             txtCustomerPhone: $("txtCustomerPhone"),
             txtCustomerDUI: $("txtCustomerDUI"),
             txtSearchData: $("txtSearchData"),
+            cmbSearchByStatus: $("cmbSearchByStatus"),
             tableCustomers: qs(".table")
         };
         return this.refs;

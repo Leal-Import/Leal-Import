@@ -3,7 +3,7 @@ import { formatDUIInput, formatPhoneNumber } from '../../utils/formatters.js';
 
 
 export function initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onCleanState }) {
-    
+
     let searchTimeout = null;
     setupModal(
         '#openModalCustomer',
@@ -13,6 +13,16 @@ export function initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, o
         'Agregar cliente',
         onCleanState
     );
+
+    const emiFilters = () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            onSearchCustomer({
+                search: Refs.txtSearchData.value.trim(),
+                status: Refs.cmbSearchByStatus.value
+            });
+        }, 1000);
+    }
 
     Refs.frmCustomers.addEventListener("submit", onSubmitCustomer);
 
@@ -24,12 +34,6 @@ export function initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, o
         formatDUIInput(e.target);
     });
 
-    Refs.txtSearchData.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            onSearchCustomer({
-                search: Refs.txtSearchData.value.trim()
-            });
-        }, 1000);
-    });
+    Refs.txtSearchData.addEventListener('input', emiFilters);
+    Refs.cmbSearchByStatus.addEventListener('change', emiFilters);
 }
