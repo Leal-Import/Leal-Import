@@ -53,7 +53,9 @@ export const DOMRefs = {
             tableVehicles: $("tableVehicles"),
             btnCreateOrder: $("btnCreateOrder"),
             totalVehicle: $("totalVehicle"),
-            btnCreateOrderLoader: $("btnCreateOrderLoader")
+            btnCreateOrderLoader: $("btnCreateOrderLoader"),
+            paymentForm: qs(".paymentForm"),
+            btnGeneratePdf: $("btnGeneratePdf")
         };
         return this.refs;
     }

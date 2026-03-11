@@ -19,6 +19,7 @@ import { addNewPayment, initPaymentsController, onResetDomPayments, onResetPayme
 import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
 import { safeParseFloat, validatePayment } from '../../../utils/validators.js';
 import { workOrderDetailsState } from '../../../core/state/workOrder.details.state.js';
+import { generateVehicleSaleReport } from '../../../core/reports/workorders/vehicles.sales.report.js';
 
 
 /* ================= PAGINATION ================= */
@@ -229,10 +230,8 @@ const cleanWindow = () => {
 };
 
 /* ================= LOAD EXISTING ================= */
-async function loadExistingSale() {
+function loadExistingSale(sale, vehicle) {
     showElement(DOMRefs.refs.addVehicleLoader);
-    const sale = await getSaleById(vehicleSaleState.context.idSale);
-    const vehicle = await getVehicleById(sale.idVehicle);
     hideElement(DOMRefs.refs.btnCancelVehicle);
     loadVehicle(vehicle, vehicleSaleState.context.idSale, DOMRefs.refs);
     hideElement(DOMRefs.refs.addVehicleLoader);
@@ -300,7 +299,8 @@ const initializeUI = async (Refs) => {
     await initPaymentsController({
         totalCalculator: recalculateTotals,
         onStateChange: saveSaleState,
-        createReceiptBtn: createBtnUrl
+        createReceiptBtn: createBtnUrl,
+        isView: vehicleSaleState.context.isView
     });
     loadCustomerName(DOMRefs.refs.customerName, vehicleSaleState.context.customerName);
     initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
@@ -324,7 +324,19 @@ const setupApplication = async () => {
 
 const loadDataFlow = async () => {
     if (vehicleSaleState.context.idSale) {
-        await loadExistingSale();
+        const sale = await getSaleById(vehicleSaleState.context.idSale);
+        const vehicle = await getVehicleById(sale.idVehicle);
+        loadExistingSale(sale, vehicle);
+        if (vehicleSaleState.context.isView) {
+            hideElement(DOMRefs.refs.btnSaveSale);
+            disableElement(DOMRefs.refs.btnImportVehicle);
+            disableElement(DOMRefs.refs.txtNotes);
+            disableElement(DOMRefs.refs.txtTotal);
+            disableElement(DOMRefs.refs.txtCommission);
+            hideElement(DOMRefs.refs.paymentForm);
+            showElement(DOMRefs.refs.btnGeneratePdf);
+            DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => generateVehicleSaleReport(sale, vehicle, vehicleSaleState.context.customerName));
+        }
     } else if (vehicleSaleState.context.idVehicle) {
         showElement(DOMRefs.refs.addVehicleLoader);
         const vehicle = await getVehicleById(vehicleSaleState.context.idVehicle);

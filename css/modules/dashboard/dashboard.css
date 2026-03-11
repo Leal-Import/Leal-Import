@@ -313,12 +313,6 @@
     border: 1px solid rgba(255, 178, 53, 0.25);
 }
 
-.dashTagSuccess {
-    background-color: rgba(109, 190, 69, 0.1);
-    color: var(--dark-success-color);
-    border: 1px solid rgba(109, 190, 69, 0.2);
-}
-
 .dashTagBlue {
     background-color: rgba(59, 130, 246, 0.1);
     color: var(--helper-stat-color);
@@ -812,4 +806,70 @@
     .dashAlerts {
         grid-template-columns: 1fr;
     }
+}
+
+/* ── DATE RANGE CHART FILTER ── */
+.dateRangeChartContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 4px;
+}
+
+.dateRangeBtn {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--border-radius-btn);
+    border: var(--border);
+    background-color: var(--bg-color);
+    color: var(--text-color-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.dateRangeBtn:hover {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    background-color: rgba(211, 24, 19, 0.05);
+}
+
+.dateRangeBtn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.dateRangeSelects {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dateRangeSelect {
+    padding: 5px 10px;
+    border: var(--border);
+    border-radius: var(--border-radius-btn);
+    background-color: var(--bg-color);
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+    font-family: var(--font-text);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.dateRangeSelect:hover,
+.dateRangeSelect:focus {
+    border-color: var(--danger-color);
+    color: var(--text-color);
+}
+
+.dateRangeSeparator {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+    user-select: none;
 }
