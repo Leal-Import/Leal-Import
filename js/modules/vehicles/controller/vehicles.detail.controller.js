@@ -1,7 +1,7 @@
 import { vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
 import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage } from "../../../utils/dom.js";
-import { closeAndCleanUpdateModal, DOMRefs, loadDomData, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, verifyBtnsCarousel } from "../../../core/dom/vehicles.detail.dom.js";
+import { closeAndCleanUpdateModal, DOMRefs, loadDomData, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, UPLOAD_CONFIG, verifyBtnsCarousel } from "../../../core/dom/vehicles.detail.dom.js";
 import { applyExternalMode, calculateTotal, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, resetState, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js"
 import { initSession } from "../../../utils/api.utils.js";
@@ -190,22 +190,19 @@ const cleanCustomer = () => {
     }
 }
 
-function onCalculateTotal() {
-    calculateTotal(DOMRefs.refs.txtCosts, DOMRefs.refs.txtTotal)
-}
-
-const openLinkLoteModal = () => {
-    toggleModal(DOMRefs.refs.modalLinkLote, true);
-}
-
-const closeLinkLoteModal = () => {
-    toggleModal(DOMRefs.refs.modalLinkLote, false);
-}
-
-const initCloseModalUpload = (Refs) => {
+const onCloseModalUpload = (Refs) => {
     vehicleDetailState.currentUploadType = null;
-    closeAndCleanUpdateModal(vehicleDetailState, Refs);
+    closeAndCleanUpdateModal(Refs);
     toggleModal(Refs.modalUpload, false);
+}
+
+const onOpenUploadModal = (type) => {
+    const config = UPLOAD_CONFIG[type];
+    if (!config) return;
+    vehicleDetailState.currentUploadType = type;
+    if (vehicleDetailState.urls[type]) renderUploadPreview(vehicleDetailState.urls[type], DOMRefs.refs.uploadDropArea);
+    DOMRefs.refs.uploadTitle.textContent = config.title;
+    toggleModal(DOMRefs.refs.modalUpload, true);
 }
 
 const onValidateUrl = (url) => {
@@ -276,7 +273,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
-    initUploadModalEvents({ onChangeUpload, onDropModal, closeModalUpload: () => initCloseModalUpload(Refs), openUploadModal: () => openUploadModal(vehicleDetailState.currentUploadType, vehicleDetailState, Refs.modalUpload, Refs.uploadTitle, Refs.uploadDropArea) });
+    initUploadModalEvents({ Refs, onChangeUpload, onDropModal, onCloseModalUpload: () => onCloseModalUpload(Refs), onOpenUploadModal: (type) => onOpenUploadModal(type) });
 
     initVehicleDetailEvents({
         Refs,
@@ -284,9 +281,9 @@ const initializeUI = (Refs) => {
         onSearchCustomer: onSearchCustomer,
         onAddImage: onAddImage,
         onExternalChange: onExternalChange,
-        onCalculateTotal,
-        openLinkLoteModal,
-        closeLinkLoteModal,
+        onCalculateTotal: () => calculateTotal(DOMRefs.refs.txtCosts, DOMRefs.refs.txtTotal),
+        openLinkLoteModal: () => toggleModal(DOMRefs.refs.modalLinkLote, true),
+        onCloseLinkLoteModal: () => toggleModal(DOMRefs.refs.modalLinkLote, false),
         cleanCustomer,
         onValidateUrl
     });

@@ -56,7 +56,13 @@ export const DOMRefs = {
             costsSection: $("costsSection"),
             btnsCarousel: qsa(".btnsCarousel"),
             modalUpload: $("modalUpload"),
-            uploadTitle: $("uploadTitle")
+            uploadTitle: $("uploadTitle"),
+            btnBill: $("btnBill"),
+            btnTaxes: $("btnTaxes"),
+            btnsTransport: qsa(".btnsTransport"),
+            uploadFileInput: $("uploadFileInput"),
+            btnSelectFile: $("btnSelectFile"),
+            btnCloseUpload: $("btnCloseUpload")
         };
 
         return this.refs;
@@ -170,20 +176,8 @@ function _createPlusButton(wrapper, onAddClick) {
     wrapper.appendChild(addThumb);
 }
 
-export function openUploadModal(type, state, modalUpload, uploadTitle, dropArea) {
-    const config = UPLOAD_CONFIG[type];
-    if (!config) return;
-
-    state.currentUploadType = type;
-    if (state.urls[type]) renderUploadPreview(state.urls[type], dropArea);
-    uploadTitle.textContent = config.title;
-
-    toggleModal(modalUpload, true);
-}
-
 export function renderUploadPreview(source, dropArea) {
     if (!source || !dropArea) return null;
-
     dropArea.innerHTML = '';
 
     let src = null;

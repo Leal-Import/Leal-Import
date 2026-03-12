@@ -24,7 +24,7 @@ const loadCustomers = async () => {
         const data = await getCustomers(
             page - 1,
             size,
-            search || ''
+            search || '',
         );
 
         customerSaleState.list = data.content;

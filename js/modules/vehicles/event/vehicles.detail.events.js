@@ -1,6 +1,6 @@
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatYearInput } from "../../../utils/formatters.js";
 
-export function initVehicleDetailEvents({ Refs, onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, closeLinkLoteModal, cleanCustomer, onValidateUrl }) {
+export function initVehicleDetailEvents({ Refs, onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, onCloseLinkLoteModal, cleanCustomer, onValidateUrl }) {
 
     let searchTimeout = null;
 
@@ -25,10 +25,10 @@ export function initVehicleDetailEvents({ Refs, onSubmit, onSearchCustomer, onAd
     Refs.imageInput.addEventListener("change", onAddImage);
     Refs.btnLinkLote.addEventListener("click", openLinkLoteModal);
     Refs.modalLinkLote.addEventListener("click", (e) => {
-        if (e.target === Refs.modalLinkLote) closeLinkLoteModal();
+        if (e.target === Refs.modalLinkLote) onCloseLinkLoteModal();
     });
-    Refs.btnCloseLink.addEventListener("click", closeLinkLoteModal);
-    Refs.btnSaveLinkLote.addEventListener("click", closeLinkLoteModal);
+    Refs.btnCloseLink.addEventListener("click", onCloseLinkLoteModal);
+    Refs.btnSaveLinkLote.addEventListener("click", onCloseLinkLoteModal);
 
     Refs.txtFormat.forEach(txt => {
         txt.addEventListener("focus", (e) => { formatOnFocus(e, true); });

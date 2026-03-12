@@ -224,7 +224,7 @@ export const generateVehicleSaleReport = async (sale, vehicle, customerName) => 
     const body = sale.payments?.length
         ? sale.payments.map((p, i) => [
             `#${String(i + 1).padStart(2, '0')}`,
-            p.paymentMethodName || '—',
+            p.paymentMethod || '—',
             `$${Number(p.amount).toFixed(2)}`
         ])
         : [['—', 'Sin abonos registrados', '$0.00']];

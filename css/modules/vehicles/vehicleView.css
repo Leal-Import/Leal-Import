@@ -329,7 +329,7 @@
 }
 
 .costsData .infoRow:last-child .data::before {
-    background-color: var(--bg-color-white);
+    background-color: var(--text-color-light);
 }
 
 /* =======================

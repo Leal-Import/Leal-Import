@@ -31,7 +31,8 @@ export const DOMRefs = {
             btnSell: $("btnSell"),
             btnHistorial: $("btnHistorial"),
             mainSwiperWrapper: $("mainSwiperWrapper"),
-            thumbsWrapper: $("thumbsWrapper")
+            thumbsWrapper: $("thumbsWrapper"),
+            btnGeneratePdf: $("btnGeneratePdf")
         };
         return this.refs;
     }

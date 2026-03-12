@@ -19,7 +19,8 @@ export const DOMRefs = {
             totalCost: $('totalCost'),
             btnEditSparePart: $('btnEditSparePart'),
             btnSellSparePart: $('btnSellSparePart'),
-            statusPart: qs('.statusBadgeSparePart')
+            statusPart: qs('.statusBadgeSparePart'),
+            btnGeneratePdf: $("btnGeneratePdf")
         };
 
         return this.refs;

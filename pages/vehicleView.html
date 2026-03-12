@@ -159,6 +159,10 @@
                     <span class="statusText">Disponible</span>
                 </div>
                 <div class="btnGroup">
+                    <button type="button" class="btnPrimary btnAction" id="btnGeneratePdf">
+                        <span class="btnIcon">📄</span>
+                        <span>Reporte del vehiculo</span>
+                    </button>
                     <a type="button" class="btnAction btnSecondary" id="btnEdit">
                         <span class="btnIcon">✏️</span>
                         <span>Editar</span>
@@ -176,6 +180,8 @@
 
         </form>
         <script src="../js/components/sidebar.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script type="module" src="../js/modules/vehicles/controller/vehicles.view.controller.js"></script>
