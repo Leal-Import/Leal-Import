@@ -259,10 +259,13 @@
 
                         <!-- Action Buttons -->
                         <div class="actionButtons">
-                            <div></div>
+                            <div id="separator"></div>
                             <button class="btnPrimary" id="btnSaveOrder">
                                 <span>Crear orden</span>
                                 <div class="loader hide" id="loaderAddOrder"></div>
+                            </button>
+                            <button class="btnPrimary hide" id="btnGeneratePdf">
+                                <span>Generar PDF</span>
                             </button>
                             <button class="btnPrimary hide" id="btnCompleteOrder">
                                 <span>Completar orden</span>
@@ -275,6 +278,8 @@
         </div>
     </div>
     <script src="../js/components/sidebar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/workOrders/controller/workOrder.details.controller.js"></script>
 </body>

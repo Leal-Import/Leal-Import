@@ -10,7 +10,8 @@ export const initWorkOrdersEvents = ({
     onSaveNotes,
     onSaveDate,
     onAddNewService,
-    onCompleteOrder
+    onCompleteOrder,
+    onGeneratePdf
 }) => {
 
     let searchTimeOut = null;
@@ -61,4 +62,6 @@ export const initWorkOrdersEvents = ({
     if(Refs.btnCompleteOrder) {
         Refs.btnCompleteOrder.addEventListener("click", onCompleteOrder);
     }
+
+    Refs.btnGeneratePdf?.addEventListener("click", onGeneratePdf);
 };

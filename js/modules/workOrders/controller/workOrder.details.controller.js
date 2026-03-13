@@ -10,6 +10,7 @@ import { addNewPayment, initPaymentsController } from "../../payments/payments.c
 import { createBtnUrl } from "../../../core/dom/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
 import { getCurrentEmployeeId, initSession } from "../../../utils/api.utils.js";
+import { generateWorkOrderReport } from "../../../core/reports/workorders/workorders.report.js";
 
 const addNewPartToTable = () => {
     if (!workOrderDetailsState.context.idNewPart || !workOrderDetailsState.context.newPartName) return;
@@ -300,6 +301,7 @@ const loadDraft = (Refs) => {
 
 const loadWorkOrder = async (Refs) => {
     const workOrder = await getWorkOrderById(workOrderDetailsState.context.idWorkOrder);
+    workOrderDetailsState.workOrder = workOrder;
     workOrderDetailsState.context.idVehicle = workOrder.idVehicle
     workOrderDetailsState.data.estimatedDate = workOrder.estimatedDate || "";
     workOrderDetailsState.data.notes = workOrder.notes || "";
@@ -393,10 +395,12 @@ const initEditOrderFlow = async (Refs) => {
     if (workOrderDetailsState.context.isView) {
         loadViewDom(Refs);
         showElement(Refs.btnCompleteOrder);
+        showElement(Refs.btnGeneratePdf);
         hideElement(Refs.btnSaveOrder);
         hideElement(Refs.paymentForm);
         hideElement(Refs.txtSearchSparePart);
         hideElement(Refs.txtAddService);
+        hideElement(Refs.separator);
     } else {
         validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
     }
@@ -442,10 +446,11 @@ const initializeUI = async (Refs) => {
         onSaveNotes,
         onAddNewService,
         onSaveDate,
-        onCompleteOrder
+        onCompleteOrder,
+        onGeneratePdf: () => generateWorkOrderReport(workOrderDetailsState.workOrder)
     });
 
-    initializeModalListeners(workOrderDetailsState.data);
+    initializeModalListeners(workOrderDetailsState.data, workOrderDetailsState.context.isView);
 };
 
 const loadDataFlow = async (Refs) => {

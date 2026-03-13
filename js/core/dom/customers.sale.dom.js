@@ -14,7 +14,7 @@ export const DOMRefs = {
 };
 
 
-export const insertCustomers = (container, customers, type, idVehicle) => {
+export const insertCustomers = (container, customers, type, idVehicle, newSparePart) => {
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
     if (customers.length === 0) {
@@ -29,7 +29,15 @@ export const insertCustomers = (container, customers, type, idVehicle) => {
             customerLink.dataset.customerId = customer.idCustomer;
 
             if (type === "sparePart") {
-                customerLink.href = `sparePartSale.html?idCustomer=${customer.idCustomer}&customerName=${encodeURIComponent(customer.fullName)}`;
+                const queryParams = new URLSearchParams({
+                    idCustomer: customer.idCustomer,
+                    customerName: customer.fullName,
+                    sparePartId: newSparePart?.id,
+                    sparePartName: newSparePart?.name,
+                    suggestedPrice: newSparePart?.suggestedPrice,
+                    isNewPart: newSparePart?.isNewPart
+                });
+                customerLink.href = `sparePartSale.html?${queryParams.toString()}`;
             } else if (type === "vehicle") {
                 customerLink.href = `vehicleSale.html?idCustomer=${customer.idCustomer}&customerName=${encodeURIComponent(customer.fullName)}&idVehicle=${idVehicle}`;
             }

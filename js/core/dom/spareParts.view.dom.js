@@ -34,7 +34,7 @@ export const loadSparePart = (sparePart, Refs) => {
 
 const loadDownButtons = (sparePart, Refs) => {
     Refs.btnEditSparePart.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
-    Refs.btnSellSparePart.href = `addCustomerSale.html?type=sparePart&id=${sparePart.idSparePart}&`
+    Refs.btnSellSparePart.href = `addCustomerSale.html?type=sparePart&newSparePartId=${sparePart.idSparePart}&newSparePartName=${encodeURIComponent(sparePart.nameSpareParts)}&newSuggestedPrice=${sparePart.sparePartsCosts.suggestedPrice}`;
     if (sparePart.status === "Disponible") {
         Refs.statusPart.querySelector(".statusTextSparePart").textContent = "Disponible";
         Refs.statusPart.classList.add("aviable");

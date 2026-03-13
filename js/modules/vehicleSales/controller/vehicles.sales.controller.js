@@ -304,7 +304,7 @@ const initializeUI = async (Refs) => {
     });
     loadCustomerName(DOMRefs.refs.customerName, vehicleSaleState.context.customerName);
     initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
-    initializeModalListeners(vehicleSaleState.data);
+    initializeModalListeners(vehicleSaleState.data, vehicleSaleState.context.isView);
 }
 
 const setupApplication = async () => {

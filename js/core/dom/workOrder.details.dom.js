@@ -13,10 +13,9 @@ export const DOMRefs = {
             boxSparePart: $("suggestionsSpareParts"),
             txtSearchSparePart: $("txtSearchSparePart"),
             txtAddService: $("txtAddService"),
+            separator: $("separator"),
             loaderAddOrder: $("loaderAddOrder"),
             btnSaveOrder: $("btnSaveOrder"),
-            btnCompleteOrder: $("btnCompleteOrder"),
-            loaderCompleteOrder: $("loaderCompleteOrder"),
             btnAddPayment: $("btnAddPayment"),
             frmWorkOrder: $("frmWorkOrder"),
             txtNotes: $("txtNotes"),
@@ -40,7 +39,8 @@ export const DOMRefs = {
             txts: qsa(".rightColumn .txtInputs"),
             txtTotal: $("txtTotal"),
             btnCompleteOrder: $("btnCompleteOrder"),
-            loaderCompleteOrder: $("loaderCompleteOrder")
+            loaderCompleteOrder: $("loaderCompleteOrder"),
+            btnGeneratePdf: $("btnGeneratePdf")
         };
         return this.refs;
     }
@@ -76,7 +76,7 @@ export const renderVehicleData = (data, Refs) => {
     if (Refs.year) Refs.year.textContent = data.year || '-';
 }
 
-export const loadViewDom = ( Refs) => {
+export const loadViewDom = (Refs) => {
     Refs.txts.forEach(txt => {
         txt.disabled = true;
     })
@@ -145,19 +145,19 @@ export function renderServiceSuggestions(selectedServices, boxServ, list, onAddS
 const findOrCreateEmptyRow = (tBody) => {
     let emptyRow = [...tBody.querySelectorAll('tr')]
         .find(r => r.querySelector(SELECTORS.TD_NAME)?.textContent.trim() === '');
-    
+
     if (!emptyRow) {
         emptyRow = createEmptyRow();
         tBody.appendChild(emptyRow);
     }
-    
+
     return emptyRow;
 };
 
 const setupPriceCell = (priceCell, data, onWritePrice, isView) => {
     priceCell.textContent = `$${formatWithCommas(data.priceApplied)}`;
     priceCell.classList.add('finalPrice');
-    
+
     if (!isView) {
         priceCell.setAttribute('contenteditable', 'true');
         formatDecimalInput(priceCell);
@@ -302,7 +302,7 @@ export const cleanRow = (row) => {
     const tdName = row.querySelector(SELECTORS.TD_NAME);
     const tdPrice = row.querySelector(SELECTORS.TD_PRICE);
     const btnTrash = row.querySelector(SELECTORS.BTN_TRASH);
-    
+
     if (tdName) tdName.textContent = "";
     if (tdPrice) {
         tdPrice.textContent = "";
@@ -355,9 +355,9 @@ export const renderVehiclePrice = (vehiclePrice, spanVehiclePrice) => {
 
 function createEmptyRow() {
     const tr = document.createElement('tr');
-    const tdName = document.createElement('td'); 
+    const tdName = document.createElement('td');
     tdName.classList.add(SELECTORS.TD_NAME.slice(1));
-    const tdPrice = document.createElement('td'); 
+    const tdPrice = document.createElement('td');
     tdPrice.classList.add(SELECTORS.TD_PRICE.slice(1));
     const tdTrash = document.createElement("td");
     tdTrash.classList.add(SELECTORS.TD_TRASH.slice(1));

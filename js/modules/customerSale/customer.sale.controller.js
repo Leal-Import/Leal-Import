@@ -30,7 +30,7 @@ const loadCustomers = async () => {
         customerSaleState.list = data.content;
         customerSaleState.pagination.total = data.page.totalElements;
         customerSaleState.pagination.totalPages = data.page.totalPages;
-        insertCustomers(DOMRefs.refs.cardContainer, customerSaleState.list, customerSaleState.type, customerSaleState.context.id);
+        insertCustomers(DOMRefs.refs.cardContainer, customerSaleState.list, customerSaleState.type, customerSaleState.context.id, customerSaleState.sparePart);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -50,12 +50,24 @@ const loadCustomers = async () => {
 const hydrateContextFromURL = async () => {
     const params = new URLSearchParams(window.location.search);
     const type = params.get("type");
-
+    const newSparePartId = params.get("newSparePartId");
+    const newSparePartName = params.get("newSparePartName");
+    const newSuggestedPrice = params.get("newSuggestedPrice");
+    const isNewPart = newSparePartId && newSparePartName && newSuggestedPrice ? true : false;
     if (!type) {
         await showMessage('Error', 'Tipo de venta no especificado', 'error');
         // opcional: redirigir
         window.location.href = 'sales.html';
         return false;
+    }
+
+    if (newSparePartId && newSparePartName && newSuggestedPrice) {
+        customerSaleState.sparePart = {
+            id: newSparePartId,
+            name: newSparePartName,
+            suggestedPrice: parseFloat(newSuggestedPrice),
+            isNewPart
+        };
     }
 
     customerSaleState.type = type;

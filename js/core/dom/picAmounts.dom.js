@@ -1,4 +1,19 @@
 import { selectFile } from "../../modules/picsAmounts/controller/picsAmount.controller.js";
+import { $, qs } from "../../utils/dom.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            currentReceiptInputId: $('currentReceiptInputId'),
+            modalContainer: qs('.containerModal'),
+            btnSelectFile: $('btnSelectFile'),
+            btnClearFile: $('btnClearFile')
+        };
+        return this.refs;
+    }
+};
 
 /* Esta funcion crea el boton para abrir el modal del comprobante de pago */
 export let createBtnUrl = (index, receiptUrl, payment) => {

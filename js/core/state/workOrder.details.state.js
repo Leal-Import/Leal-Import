@@ -24,6 +24,7 @@ export const workOrderDetailsState = {
         notes: '',
         estimatedDate: null
     },
+    workOrder: null,
     totals: {
         total: 0,
         due: 0,
