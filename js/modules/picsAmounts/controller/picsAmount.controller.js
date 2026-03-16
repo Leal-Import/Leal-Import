@@ -1,6 +1,6 @@
-import { updateModalContent, DOMRefs } from "../../../core/dom/picAmounts.dom.js";
+import { updateModalContent, DOMRefs, closeLightbox } from "../../../core/dom/picAmounts.dom.js";
 import { picsAmountState } from "../../../core/state/picsAmount.state.js";
-import { $, hideElement, qs } from "../../../utils/dom.js";
+import { $, hideElement } from "../../../utils/dom.js";
 import { initModalListeners } from "../event/picsAmount.event.js";
 
 export let clearCurrentFile = () => {
@@ -17,13 +17,13 @@ export let clearCurrentFile = () => {
     payment.file = null;
 
     // Limpieza visual
-    const inputElement = $(DOMRefs.currentReceiptInputId.value);
+    const inputElement = $(DOMRefs.refs.currentReceiptInputId.value);
     if (inputElement) inputElement.value = '';
 
     const btn = inputElement?.nextElementSibling;
     btn?.classList.remove("receipt-loaded");
     btn.innerHTML = `<span class="icon">Añadir comprobante</span>`;
-    updateModalContent(null, payment);
+    updateModalContent(null, payment, DOMRefs.refs);
 };
 
 
@@ -31,11 +31,11 @@ export let selectFile = (e, payment) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const inputId = DOMRefs.currentReceiptInputId.value;
+    const inputId = DOMRefs.refs.currentReceiptInputId.value;
     const paymentItem = $(inputId).closest('.paymentItem');
     // Guardar archivo en selectedAmounts
     payment.file = file;
-    updateModalContent(null, payment);
+    updateModalContent(null, payment, DOMRefs.refs);
 
     // Actualizar botón del abono para indicar que hay archivo
     $(inputId).dataset.payId = payment.id;
@@ -45,12 +45,12 @@ export let selectFile = (e, payment) => {
 }
 
 export const closeModalAndClean = () => {
-    qs(".containerModal").classList.add('hide');
-    DOMRefs.currentReceiptInputId.value = '';
+    hideElement(DOMRefs.refs.modalContainer);
+    DOMRefs.refs.currentReceiptInputId.value = '';
 };
 
 export const onClickBtnSelect = () => {
-    const inputElement = $(DOMRefs.currentReceiptInputId.value);
+    const inputElement = $(DOMRefs.refs.currentReceiptInputId.value);
     if (inputElement) {
         // Limpiamos el valor para forzar el evento 'change' si selecciona el mismo archivo
         inputElement.value = '';
@@ -62,8 +62,8 @@ export const initializeModalListeners = (state, isViewingReceipt) => {
     picsAmountState.paymentsState = state; // 👈 inyección de estado
     picsAmountState.isViewingReceipt = isViewingReceipt;
     const refs = DOMRefs.init();
-    initModalListeners({ clearCurrentFile, closeModalAndClean, onClickBtnSelect });
-    if(picsAmountState.isViewingReceipt) {
+    initModalListeners({ Refs: refs, clearCurrentFile, closeModalAndClean, onClickBtnSelect, onCloseLightbox: () => closeLightbox(refs.voucherLightbox) });
+    if (picsAmountState.isViewingReceipt) {
         hideElement(refs.btnClearFile);
         hideElement(refs.btnSelectFile);
     }

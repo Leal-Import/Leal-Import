@@ -1,7 +1,7 @@
 // modules/employees/employees.controller.js
 
 import { employeesState } from '../../core/state/employees.state.js';
-import { insertEmployees, renderRolesSelects, fillEmployeesForm, DOMRefs } from '../../core/dom/employees.dom.js';
+import { insertEmployees, renderRolesSelects, fillEmployeesForm, DOMRefs, rewriteModalElements } from '../../core/dom/employees.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import {
     validateEmployee,
@@ -33,7 +33,7 @@ const pagination = createPagination({
     }
 });
 
-export async function loadRoles() {
+export const loadRoles = async () => {
     try {
         const roles = await getRoles();
         employeesState.roles = roles;
@@ -48,7 +48,7 @@ export async function loadRoles() {
     }
 }
 
-export async function loadEmployees() {
+export const loadEmployees = async () => {
     try {
         showElement(DOMRefs.refs.loaderEmployees)
         const { page, size } = employeesState.pagination;
@@ -89,7 +89,7 @@ export async function loadEmployees() {
     }
 }
 
-export async function onSubmitEmployee(e) {
+export const onSubmitEmployee = async (e) => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmEmployees));
@@ -129,13 +129,17 @@ export async function onSubmitEmployee(e) {
    ACCIONES DE FILA (⋯)
 ================================ */
 
-function handleEmployeeActions(event, employee) {
+const handleEmployeeActions = async (event, employee) => {
     event.stopPropagation();
 
     showFloatingMenu(event, [
         {
-            label: 'Editar empleado',
+            label: 'Actualizar empleado',
             onClick: () => editEmployee(employee)
+        },
+        {
+            label: 'Ver detalles',
+            onClick: () => viewEmployee(employee)
         },
         {
             label: employee.status === STATUS.ACTIVE
@@ -146,10 +150,6 @@ function handleEmployeeActions(event, employee) {
                     employee.username.username,
                     employee.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
                 )
-        },
-        {
-            label: 'Ver detalles',
-            onClick: () => viewEmployee(employee)
         }
     ]);
 }
@@ -158,25 +158,38 @@ function handleEmployeeActions(event, employee) {
    EDITAR / VER
 ================================ */
 
-function editEmployee(employee) {
+const editEmployee = (employee) => {
     employeesState.selectedId = employee.idEmployee;
-    fillEmployeesForm(employee, "Actualizar empleado", DOMRefs.refs.btnAddEmployee, DOMRefs.refs.modalEmployees);
-    toggleModal(DOMRefs.refs.modalEmployees, true)
+    fillEmployeesForm(employee);
+    rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Actualizar');
     setFormReadOnly('#frmEmployees', false);
+    toggleModal(DOMRefs.refs.modalEmployees, true);
 }
 
-function viewEmployee(employee) {
+const viewEmployee = (employee) => {
     employeesState.selectedId = null;
-    fillEmployeesForm(employee, "Ver empleado", DOMRefs.refs.btnAddEmployee, DOMRefs.refs.modalEmployees);
-    toggleModal(DOMRefs.refs.modalEmployees, true)
+    fillEmployeesForm(employee);
     setFormReadOnly('#frmEmployees', true);
+    rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Ver');
+    toggleModal(DOMRefs.refs.modalEmployees, true);
+}
+
+const onCloseModal = () => {
+    employeesState.selectedId = null;
+    toggleModal(DOMRefs.refs.modalEmployees);
+}
+const onOpenModal = () => {
+    rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Agregar');
+    DOMRefs.refs.frmEmployees.reset();
+    setFormReadOnly('#frmEmployees', false);
+    toggleModal(DOMRefs.refs.modalEmployees, true); 
 }
 
 /* ===============================
    ACTIVAR / DESACTIVAR
 ================================ */
 
-async function toggleEmployeeStatus(username, status) {
+const toggleEmployeeStatus = async (username, status) => {
     try {
         await patchEmployee(username, status);
         showMessage('Empleado', status === STATUS.ACTIVE ? 'Empleado activado' : 'Empleado desactivado', 'success');
@@ -196,7 +209,7 @@ async function toggleEmployeeStatus(username, status) {
    FILTROS
 ================================ */
 
-async function onSearchEmployee(filters) {
+const onSearchEmployee = async (filters) => {
     employeesState.filters = {
         ...employeesState.filters,
         ...filters
@@ -218,7 +231,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
-    initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onReset: () => employeesState.selectedId = null });
+    initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal});
 }
 
 const loadDataFlow = async () => {

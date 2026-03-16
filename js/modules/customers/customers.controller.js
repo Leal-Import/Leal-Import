@@ -4,7 +4,7 @@ import { toggleModal, showMessage, showFloatingMenu, setFormReadOnly, showElemen
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateCustomer, mapCustomerForm } from '../../core/logic/customers.logic.js';
 import { initCustomerEvents } from './customers.events.js';
-import { DOMRefs, fillCustomerForm, insertCustomers } from '../../core/dom/customers.dom.js';
+import { DOMRefs, fillCustomerForm, insertCustomers, rewriteModalText } from '../../core/dom/customers.dom.js';
 import { initSession } from '../../utils/api.utils.js';
 
 const STATUS = { ACTIVE: 'T', INACTIVE: 'F' };
@@ -18,7 +18,7 @@ const pagination = createPagination({
     }
 });
 
-export async function loadCustomers() {
+export const loadCustomers = async () => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customersState.pagination;
@@ -61,13 +61,17 @@ export async function loadCustomers() {
 }
 
 
-function handleCustomerActions(event, customer) {
+const handleCustomerActions = (event, customer) => {
     event.stopPropagation();
 
     showFloatingMenu(event, [
         {
-            label: 'Editar cliente',
+            label: 'Actualizar cliente',
             onClick: () => editCustomer(customer)
+        },
+        {
+            label: 'Ver detalles',
+            onClick: () => viewCustomer(customer)
         },
         {
             label: customer.status === STATUS.ACTIVE
@@ -78,16 +82,12 @@ function handleCustomerActions(event, customer) {
                     customer.idCustomer,
                     customer.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
                 )
-        },
-        {
-            label: 'Ver detalles',
-            onClick: () => viewCustomer(customer)
         }
     ]);
 }
 
 
-async function toggleCustomerStatus(id, status) {
+const toggleCustomerStatus = async (id, status) => {
     try {
         await patchCustomer(id, status);
         showMessage('Cliente', status === STATUS.ACTIVE ? 'Cliente activado' : 'Cliente desactivado', 'success');
@@ -103,22 +103,36 @@ async function toggleCustomerStatus(id, status) {
     }
 }
 
-function editCustomer(customer) {
+const editCustomer = (customer) => {
     customersState.selectedId = customer.idCustomer;
-    fillCustomerForm(customer, "Actualizar cliente", DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.modalCustomers);
-    toggleModal(DOMRefs.refs.modalCustomers, true);
+    fillCustomerForm(customer);
+    rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Actualizar");
     setFormReadOnly('#frmCustomers', false);
-}
-
-function viewCustomer(customer) {
-    customersState.selectedId = null;
-    fillCustomerForm(customer, "Ver cliente", DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.modalCustomers);
     toggleModal(DOMRefs.refs.modalCustomers, true);
-    setFormReadOnly('#frmCustomers', true);
 }
 
+const viewCustomer = (customer) => {
+    customersState.selectedId = null;
+    fillCustomerForm(customer);
+    rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Ver");
+    setFormReadOnly('#frmCustomers', true);
+    toggleModal(DOMRefs.refs.modalCustomers, true);
+}
 
-export async function onSubmitCustomer(e) {
+const onOpenModal = () => {
+    customersState.selectedId = null;
+    DOMRefs.refs.frmCustomers.reset();
+    rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Agregar");
+    setFormReadOnly('#frmCustomers', false);
+    toggleModal(DOMRefs.refs.modalCustomers, true);
+}
+
+const onCloseModal = () => {
+    customersState.selectedId = null;
+    toggleModal(DOMRefs.refs.modalCustomers, false);
+}
+
+const onSubmitCustomer = async (e) => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmCustomers));
@@ -153,7 +167,7 @@ export async function onSubmitCustomer(e) {
     }
 }
 
-export function onSearchCustomer(filters) {
+const onSearchCustomer = (filters) => {
     customersState.filters = {
         ...customersState.filters,
         ...filters
@@ -173,7 +187,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
-    initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onCleanState });
+    initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onCleanState, onOpenModal, onCloseModal });
 }
 
 const loadDataFlow = async () => {

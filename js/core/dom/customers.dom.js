@@ -15,13 +15,16 @@ export const DOMRefs = {
             txtCustomerDUI: $("txtCustomerDUI"),
             txtSearchData: $("txtSearchData"),
             cmbSearchByStatus: $("cmbSearchByStatus"),
-            tableCustomers: qs(".table")
+            tableCustomers: qs(".table"),
+            btnCloseModalCustomer: $("btnCloseModalCustomer"),
+            btnOpenModalCustomer: $("btnOpenModalCustomer"),
+            titleModal: qs(".titleModal")
         };
         return this.refs;
     }
 };
 
-export function insertCustomers(container, customers, onActions, tableCustomers) {
+export const insertCustomers = (container, customers, onActions, tableCustomers) => {
     const fragment = document.createDocumentFragment();
     if (!container) return;
     container.innerHTML = "";
@@ -31,13 +34,11 @@ export function insertCustomers(container, customers, onActions, tableCustomers)
         const td = document.createElement("td");
         td.colSpan = 5;
         td.textContent = "No hay datos disponibles";
-        td.style.textAlign = "center";
-        td.style.padding = "15px";
-        td.style.color = "#777";
         tr.appendChild(td);
         fragment.appendChild(tr);
-        tableCustomers.style.height = "100%";
+        tableCustomers.classList.add("noDataMessage");
     } else {
+        tableCustomers.classList.remove("noDataMessage");
         customers.forEach(customer => {
             const tr = document.createElement("tr");
             const tdName = document.createElement("td");
@@ -63,12 +64,15 @@ export function insertCustomers(container, customers, onActions, tableCustomers)
     container.appendChild(fragment);
 }
 
-export function fillCustomerForm(customer, text, btnNewCustomer, modalCustomers) {
+export const fillCustomerForm = (customer) => {
     fillForm('#frmCustomers', {
         txtFullName: customer.fullName,
         txtCustomerDUI: customer.dui,
         txtCustomerPhone: customer.personalPhone
     });
-    btnNewCustomer.querySelector("span").textContent = text;
-    modalCustomers.querySelector('.titleModal').textContent = text;
+}
+
+export const rewriteModalText = (button, title, text) => {
+    title.textContent = `${text} cliente`;
+    button.querySelector("span").textContent = text;
 }

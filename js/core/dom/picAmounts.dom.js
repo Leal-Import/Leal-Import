@@ -1,5 +1,6 @@
 import { selectFile } from "../../modules/picsAmounts/controller/picsAmount.controller.js";
-import { $, qs } from "../../utils/dom.js";
+import { $, hideElement, qs, showElement, toggleModal } from "../../utils/dom.js";
+import { picsAmountState } from "../state/picsAmount.state.js";
 
 export const DOMRefs = {
     refs: {},
@@ -9,7 +10,12 @@ export const DOMRefs = {
             currentReceiptInputId: $('currentReceiptInputId'),
             modalContainer: qs('.containerModal'),
             btnSelectFile: $('btnSelectFile'),
-            btnClearFile: $('btnClearFile')
+            btnClearFile: $('btnClearFile'),
+            modalPreviewArea: $('modalPreviewArea'),
+            modalAbonoTitle: $('modalAbonoTitle'),
+            voucherLightbox: $('voucherLightbox'),
+            btnCloseLightbox: qs('.btnCloseLightBox'),
+            btnCloseVoucherModal: $('btnCloseVoucherModal'),
         };
         return this.refs;
     }
@@ -55,26 +61,27 @@ export let createBtnUrl = (index, receiptUrl, payment) => {
 
 // Función para abrir el modal de comprobante
 function openReceiptModal(inputElement, receiptUrl, payment) {
-    const modalContainer = document.querySelector('.containerModal');
-    const inputIdField = document.getElementById('currentReceiptInputId');
+    const Refs = DOMRefs.init();
+    const modalContainer = Refs.modalContainer;
+    const inputIdField = Refs.currentReceiptInputId;
     const abonoIndex = inputElement.closest('.paymentItem').getAttribute('data-index');
 
     // 1. CONEXIÓN: Guardar el ID del input dinámico
     inputIdField.value = inputElement.id;
     modalContainer.dataset.paymentId = payment.id;
-    document.getElementById('modalAbonoTitle').textContent = `${abonoIndex}`;
+    Refs.modalAbonoTitle.textContent = `${abonoIndex}`;
 
     // 2. ACTUALIZAR VISUALES del modal
-    updateModalContent(receiptUrl, payment);
+    updateModalContent(receiptUrl, payment, Refs);
 
     // 3. Mostrar el modal
-    modalContainer.classList.remove('hide');
+    toggleModal(modalContainer, true);
 }
 
 // Función para actualizar el contenido del modal según el estado del input
-export function updateModalContent(receiptUrl, payment) {
-    const previewArea = document.getElementById('modalPreviewArea');
-    const btnClear = document.getElementById('btnClearFile');
+export function updateModalContent(receiptUrl, payment, Refs) {
+    const previewArea = Refs.modalPreviewArea;
+    const btnClear = Refs.btnClearFile;
 
     const hasLocalFile = (payment?.file && payment.file instanceof File) || false;
     const hasRemoteUrl = receiptUrl && receiptUrl.startsWith('http');
@@ -88,7 +95,7 @@ export function updateModalContent(receiptUrl, payment) {
 
     if (isLoaded) {
         // ✅ HAY ARCHIVO: Mostrar preview
-        btnClear.classList.remove('hide');
+        if(!picsAmountState.isViewingReceipt) showElement(btnClear);
 
         let urlToPreview = hasLocalFile
             ? URL.createObjectURL(payment.file)
@@ -101,34 +108,34 @@ export function updateModalContent(receiptUrl, payment) {
         // Obtener información del archivo
         const fileName = payment?.file?.name || receiptUrl?.split('/').pop() || 'documento.jpg';
         const fileSize = payment?.file?.size ? formatFileSize(payment.file.size) : 'Tamaño desconocido';
-
+        
         // 🔑 IMPORTANTE: Añadir clase has-file PRIMERO
         previewArea.classList.add('has-file');
-
+        
         // Limpiar contenido
         previewArea.innerHTML = '';
-
+        
         // Crear estructura de preview
         const previewContent = document.createElement('div');
         previewContent.className = 'preview-content';
-
+        
         const previewImageWrapper = document.createElement('div');
         previewImageWrapper.className = 'preview-image-wrapper';
-
+        
         // Botón de zoom
         const zoomBtn = document.createElement('button');
         zoomBtn.className = 'zoom-btn';
         zoomBtn.type = 'button';
         zoomBtn.setAttribute('aria-label', 'Ampliar imagen');
         zoomBtn.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM13 10l4 4M13 6l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM13 10l4 4M13 6l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         `;
-
+        
         // Evento para ampliar imagen
-        zoomBtn.addEventListener('click', () => openLightbox(urlToPreview));
-
+        zoomBtn.addEventListener('click', () => openLightbox(urlToPreview, Refs.voucherLightbox));
+        
         // Crear elemento de preview (img o embed)
         let previewElement;
         if (isPdf) {
@@ -142,14 +149,15 @@ export function updateModalContent(receiptUrl, payment) {
             previewElement.alt = 'Comprobante';
             previewElement.className = 'preview-image';
         }
-
+        
         // Overlay con información del archivo
         const previewOverlay = document.createElement('div');
         previewOverlay.className = 'preview-overlay';
+
         previewOverlay.innerHTML = `
-            <div class="file-details">
-                <svg class="file-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M9 1H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-6-6z" stroke="currentColor" stroke-width="1.5"/>
+        <div class="file-details">
+        <svg class="file-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M9 1H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-6-6z" stroke="currentColor" stroke-width="1.5"/>
                     <path d="M9 1v6h6" stroke="currentColor" stroke-width="1.5"/>
                 </svg>
                 <div class="file-info">
@@ -158,7 +166,6 @@ export function updateModalContent(receiptUrl, payment) {
                 </div>
             </div>
         `;
-
         // Ensamblar estructura
         previewImageWrapper.appendChild(zoomBtn);
         previewImageWrapper.appendChild(previewElement);
@@ -168,10 +175,11 @@ export function updateModalContent(receiptUrl, payment) {
 
         previewContent.appendChild(previewImageWrapper);
         previewArea.appendChild(previewContent);
+        if(picsAmountState.isViewingReceipt) hideElement(previewOverlay.querySelector('.file-size'));
 
     } else {
         // ❌ NO HAY ARCHIVO: Mostrar estado vacío
-        btnClear.classList.add('hide');
+        hideElement(btnClear);
 
         // 🔑 IMPORTANTE: Remover clase has-file
         previewArea.classList.remove('has-file');
@@ -202,46 +210,25 @@ function formatFileSize(bytes) {
 }
 
 // Función para abrir lightbox (vista ampliada)
-function openLightbox(imageUrl) {
-    let lightbox = document.getElementById('voucherLightbox');
-
-    if (!lightbox) {
-        lightbox = document.createElement('div');
-        lightbox.id = 'voucherLightbox';
-        lightbox.className = 'voucherLightbox';
-        lightbox.innerHTML = `
-            <div class="lightboxContent" onclick="event.stopPropagation()">
-                <button class="lightboxClose" onclick="closeLightbox()"></button>
-                <img id="lightboxImage" class="lightboxImage" alt="Comprobante ampliado">
-            </div>
-        `;
-        document.body.appendChild(lightbox);
-
-        lightbox.addEventListener('click', closeLightbox);
-    }
-
-    const lightboxImage = document.getElementById('lightboxImage');
+function openLightbox(imageUrl, lightbox) {
+    const lightboxImage = $('lightboxImage');
     lightboxImage.src = imageUrl;
     lightbox.classList.add('active');
 
-    document.addEventListener('keydown', handleEscapeKey);
+    document.addEventListener('keydown',(e) => handleEscapeKey(e, lightbox));
 }
 
 // Función para cerrar lightbox
-function closeLightbox() {
-    const lightbox = document.getElementById('voucherLightbox');
+export function closeLightbox(lightbox) {
     if (lightbox) {
         lightbox.classList.remove('active');
     }
-    document.removeEventListener('keydown', handleEscapeKey);
+    document.removeEventListener('keydown',(e) => handleEscapeKey(e, lightbox));
 }
 
 // Handler para tecla Escape
-function handleEscapeKey(e) {
+function handleEscapeKey(e, lightbox) {
     if (e.key === 'Escape') {
-        closeLightbox();
+        closeLightbox(lightbox);
     }
 }
-
-// Hacer closeLightbox global
-window.closeLightbox = closeLightbox;

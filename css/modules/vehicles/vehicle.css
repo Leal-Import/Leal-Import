@@ -53,12 +53,6 @@
     border-color: var(--danger-color);
 }
 
-.statIcon {
-    font-size: var(--font-size-lg);
-    opacity: 0.8;
-    line-height: 1;
-}
-
 .statInfo {
     width: 100%;
 }
@@ -103,10 +97,6 @@
     gap: 20px;
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
     color: var(--text-color);
-}
-
-.totalSales .statIcon {
-    font-size: var(--font-size-breadcrumb);
 }
 
 .totalSales .statTitle {

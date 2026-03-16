@@ -1,43 +1,43 @@
-import { setupModal } from '../../utils/dom.js';
 import { formatPhoneNumber } from '../../utils/formatters.js';
 
 
-export function initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onReset }) {
+export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal }) => {
+    const { txtEmployeePhone, cmbSearchByStatus, cmbSearchByRole, txtSearchData, frmEmployees, btnCloseModalEmployee, modalEmployees, btnOpenModalEmployees } = Refs
 
+    let pointerDownOnOverlay = false;
     let searchTimeout = null;
-
-    if (Refs.txtEmployeePhone) {
-        Refs.txtEmployeePhone.addEventListener('input', (e) => {
-            formatPhoneNumber(e.target);
-        });
-    }
-
-    setupModal('#OpenModalEmployees', '#modalEmployees', '#closeAddEmployee', '#frmEmployees', 'Agregar empleado', onReset);
-
     const emitFilters = () => {
         clearTimeout(searchTimeout)
         searchTimeout = setTimeout(() => {
             onSearchEmployee({
-                search: Refs.txtSearchData?.value.trim() || '',
-                idRole: Refs.cmbSearchByRole?.value || '',
-                status: Refs.cmbSearchByStatus?.value || ''
+                search: txtSearchData?.value.trim() || '',
+                idRole: cmbSearchByRole?.value || '',
+                status: cmbSearchByStatus?.value || ''
             });
         }, 1000)
     };
 
-    if (Refs.cmbSearchByStatus) {
-        Refs.cmbSearchByStatus.addEventListener('change', emitFilters);
-    }
+    txtEmployeePhone.addEventListener('input', (e) => {
+        formatPhoneNumber(e.target);
+    });
 
-    if (Refs.cmbSearchByRole) {
-        Refs.cmbSearchByRole.addEventListener('change', emitFilters);
-    }
+    btnOpenModalEmployees.addEventListener("click", onOpenModal);
 
-    if (Refs.txtSearchData) {
-        Refs.txtSearchData.addEventListener('input', emitFilters);
-    }
+    btnCloseModalEmployee.addEventListener("click", onCloseModal);
 
-    if (Refs.frmEmployees) {
-        Refs.frmEmployees.addEventListener('submit', onSubmitEmployee);
-    }
+    modalEmployees.addEventListener('pointerdown', (e) => {
+        pointerDownOnOverlay = e.target === modalEmployees;
+    });
+    modalEmployees.addEventListener('pointerup', (e) => {
+        if (pointerDownOnOverlay && e.target === modalEmployees) onCloseModal();
+        pointerDownOnOverlay = false;
+    });
+
+    cmbSearchByStatus.addEventListener('change', emitFilters);
+
+    cmbSearchByRole.addEventListener('change', emitFilters);
+
+    txtSearchData.addEventListener('input', emitFilters);
+
+    frmEmployees.addEventListener('submit', onSubmitEmployee);
 }

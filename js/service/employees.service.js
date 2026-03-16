@@ -4,7 +4,7 @@ const API_URL = `${API_BASE_URL}/employees`;
 const API_URLR = `${API_BASE_URL}/roles`;
 const API_URLUS = `${API_BASE_URL}/users`;
 
-export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "", status = "") => {
+export const getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "", status = "") => {
 
     try {
         const params = new URLSearchParams({ page, size, search, idRole, status })
@@ -23,7 +23,7 @@ export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole 
     }
 };
 
-export let postEmployee = async (employeeData) => {
+export const postEmployee = async (employeeData) => {
     try {
         const request = await fetch(`${API_URL}/postEmployee`, {
             method: 'POST',
@@ -110,7 +110,7 @@ export const patchEmployee = async (username, value) => {
 };
 
 
-export let putEmployee = async (employeeData, id) => {
+export const putEmployee = async (employeeData, id) => {
     try {
         const request = await fetch(`${API_URL}/putEmployee/${id}`, {
             method: 'PUT',
@@ -155,7 +155,7 @@ export let putEmployee = async (employeeData, id) => {
 };
 
 // GET para obtener los roles del empleado
-export let getRoles = async () => {
+export const getRoles = async () => {
     try {
         const request = await fetch(`${API_URLR}/getRoles`, {
             credentials: 'include'
