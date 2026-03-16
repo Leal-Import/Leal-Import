@@ -52,17 +52,17 @@
 }
 
 .dashAlertIconDanger {
-    background-color: rgba(211, 24, 19, 0.08);
+    background-color: var(--bg-color);
     color: var(--danger-color);
 }
 
 .dashAlertIconWarning {
-    background-color: rgba(255, 178, 53, 0.12);
+    background-color: var(--bg-color);
     color: var(--warning-color);
 }
 
 .dashAlertIconSuccess {
-    background-color: rgba(109, 190, 69, 0.1);
+    background-color: var(--bg-color);
     color: var(--dark-success-color);
 }
 
@@ -139,7 +139,7 @@
 
 .dashPeriodBtnActive {
     background-color: var(--danger-color) !important;
-    color: #fff !important;
+    color: var(--text-color-light) !important;
     font-weight: var(--font-weight-semibold);
     box-shadow: var(--bx-shadow-btn-primary);
 }
@@ -237,17 +237,17 @@
 }
 
 .dashChipUp {
-    background-color: rgba(109, 190, 69, 0.12);
+    background-color: var(--bg-color);
     color: var(--dark-success-color);
 }
 
 .dashChipDown {
-    background-color: rgba(211, 24, 19, 0.1);
+    background-color: var(--bg-color);
     color: var(--danger-color);
 }
 
 .dashChipFlat {
-    background-color: rgba(129, 133, 158, 0.12);
+    background-color: var(--bg-color);
     color: var(--text-color-secondary);
 }
 
@@ -302,21 +302,21 @@
 }
 
 .dashTagDanger {
-    background-color: rgba(211, 24, 19, 0.08);
+    background-color: var(--bg-color);
     color: var(--danger-color);
-    border: 1px solid rgba(211, 24, 19, 0.2);
+    border: 1px solid rgb(211 24 19 / 0.2);
 }
 
 .dashTagWarning {
-    background-color: rgba(255, 178, 53, 0.1);
+    background-color: var(--bg-color);
     color: var(--dark-warning-color);
-    border: 1px solid rgba(255, 178, 53, 0.25);
+    border: 1px solid rgb(255 178 53 / 0.25);
 }
 
 .dashTagBlue {
-    background-color: rgba(59, 130, 246, 0.1);
+    background-color: var(--bg-color);
     color: var(--helper-stat-color);
-    border: 1px solid rgba(59, 130, 246, 0.2);
+    border: 1px solid rgb(59 130 246 / 0.2);
 }
 
 /* ── FILAS ── */
@@ -356,8 +356,8 @@
     width: 48px;
     height: 48px;
     border-radius: var(--border-radius-btn);
-    background-color: rgba(211, 24, 19, 0.08);
-    border: 1px solid rgba(211, 24, 19, 0.2);
+    background-color: var(--bg-color);
+    border: 1px solid rgb(211 24 19 / 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -409,7 +409,7 @@
     align-items: center;
     gap: 10px;
     padding: 8px 0;
-    border-bottom: 1px solid rgba(129, 133, 158, 0.1);
+    border-bottom: 1px solid rgb(129 133 158 / 0.1);
 }
 
 .dashRankRow:last-child {
@@ -429,15 +429,15 @@
 }
 
 .dashRankSilver {
-    color: #9ca3af;
+    color: var(--text-color-secondary);
 }
 
 .dashRankBronze {
-    color: #b45412;
+    color: var(--dark-warning-color);
 }
 
 .dashRankNormal {
-    color: var(--text-color-secondary);
+    color: var(--text-color);
 }
 
 .dashRankAvatar {
@@ -453,8 +453,8 @@
 }
 
 .dashRankAvatarTop {
-    background-color: rgba(211, 24, 19, 0.08);
-    border: 1px solid rgba(211, 24, 19, 0.2);
+    background-color: var(--bg-color);
+    border: 1px solid rgb(211 24 19 / 0.2);
     color: var(--danger-color);
 }
 
@@ -494,7 +494,7 @@
 }
 
 .dashRankFillDim {
-    background-color: rgba(129, 133, 158, 0.3);
+    background-color: var(--text-color-secondary);
 }
 
 .dashRankAmt {
@@ -519,7 +519,7 @@
     align-items: center;
     gap: 10px;
     padding: 8px 0;
-    border-bottom: 1px solid rgba(129, 133, 158, 0.1);
+    border-bottom: 1px solid rgb(129 133 158 / 0.1);
 }
 
 .dashSaleItem:last-child {
@@ -529,7 +529,7 @@
 .dashSaleNum {
     font-size: var(--font-size-very-sh);
     font-weight: var(--font-weight-bold);
-    color: rgba(129, 133, 158, 0.5);
+    color: var(--text-color-secondary);
     width: 18px;
     flex-shrink: 0;
     text-align: center;
@@ -620,7 +620,7 @@
 
 .dashTable td {
     padding: 9px 0;
-    border-bottom: 1px solid rgba(129, 133, 158, 0.08);
+    border-bottom: 1px solid rgb(129 133 158 / 0.08);
     color: var(--text-color-secondary);
     vertical-align: middle;
 }
@@ -659,21 +659,28 @@
 
 .dashBadge::before {
     content: '●';
-    font-size: 0.5em;
+    font-size: var(--font-size-very-sh);
 }
 
+
 .dashBadgeSuccess {
-    background-color: rgba(109, 190, 69, 0.1);
+    --color-badge: rgb(109 190 69 / 0.1);
+
+    background-color: var(--color-badge);
     color: var(--dark-success-color);
 }
 
 .dashBadgeWarning {
-    background-color: rgba(255, 178, 53, 0.1);
+    --color-badge: rgb(255 178 53 / 0.1);
+
+    background-color: var(--color-badge);
     color: var(--dark-warning-color);
 }
 
 .dashBadgeDanger {
-    background-color: rgba(211, 24, 19, 0.08);
+    --color-badge: rgb(211 24 19 / 0.08);
+    
+    background-color: var(--color-badge);
     color: var(--danger-color);
 }
 
@@ -688,7 +695,7 @@
     align-items: center;
     gap: 12px;
     padding: 10px 0;
-    border-bottom: 1px solid rgba(129, 133, 158, 0.08);
+    border-bottom: 1px solid rgb(129 133 158 / 0.08);
 }
 
 .dashCobroItem:last-child {
@@ -798,7 +805,7 @@
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (width <= 600px) {
     .dashKpis {
         grid-template-columns: 1fr;
     }
@@ -835,7 +842,7 @@
 .dateRangeBtn:hover {
     border-color: var(--danger-color);
     color: var(--danger-color);
-    background-color: rgba(211, 24, 19, 0.05);
+    background-color: var(--bg-color);
 }
 
 .dateRangeBtn svg {

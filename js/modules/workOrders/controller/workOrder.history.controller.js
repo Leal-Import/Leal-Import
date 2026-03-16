@@ -27,7 +27,7 @@ const loadWorkOrderHistoryStatus = async() => {
     try {
         const states = await getWOStatus();
         workOrderHistoryState.stateList = states;
-        fillSelect('cmbSearchByStatus', workOrderHistoryState.stateList, 'idOrdersStatus', 'ordersStatus');
+        fillSelect('cmbSearchByStatus', workOrderHistoryState.stateList, 'idOrdersStatus', 'ordersStatus', null, "Todas");
     } catch (error) {
         showMessage('Error', 'No se pudieron cargar los estados del historial', 'error');
         console.error(error);

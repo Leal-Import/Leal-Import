@@ -118,7 +118,7 @@
 }
 
 .vehicleType {
-    color: #FFFFFF;
+    color: var(--text-color-light);
     background-color: var(--danger-color);
 }
 
@@ -272,9 +272,9 @@
 }
 
 .optionSale:hover {
-    border-color: #e53e3e;
+    border-color: var(--danger-color);
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(229, 62, 62, 0.15);
+    box-shadow: 0 12px 24px rgb(229 62 62 / 0.15);
 }
 
 .optionSale:active {
@@ -341,7 +341,7 @@
 
 /* Additional hover effects */
 .optionSale:hover .optionContent {
-    background: linear-gradient(to bottom, transparent 0%, rgba(229, 62, 62, 0.02) 100%);
+    background: linear-gradient(to bottom, transparent 0%, rgb(229 62 62 / 0.02) 100%);
 }
 
 /* Focus states for accessibility */
@@ -361,7 +361,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(255 255 255 / 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -369,7 +369,7 @@
 
 
 /* Tablets medianas (< 900px) - Ajustar paneles */
-@media screen and (max-width: 899px) {
+@media screen and (width <= 899px) {
     .panel {
         height: auto;
         min-height: 190px;
@@ -397,14 +397,13 @@
 
     .containerButtonsData {
         position: relative;
-        padding: 15px 0 0 0;
+        padding: 15px 0 0;
         justify-content: flex-start;
     }
 }
 
 /* Móviles (< 768px) - Cards compactas */
-@media screen and (max-width: 767px) {
-
+@media screen and (width <= 767px) {
     /* Tabs más compactos */
     .containerFilterType {
         gap: 5px;
@@ -587,8 +586,7 @@
 }
 
 /* Móviles pequeños (< 500px) */
-@media screen and (max-width: 499px) {
-
+@media screen and (width <= 499px) {
     .panel {
         border-radius: 12px;
     }
@@ -607,13 +605,13 @@
     }
 
     .amountQuantity {
-        font-size: 18px;
+        font-size: var(--font-size-lg);
     }
 
     .typeSale {
         width: 32px;
         height: 32px;
-        font-size: 12px;
+        font-size: var(--font-size-sm);
     }
 
     .filterType {
@@ -622,6 +620,6 @@
     }
 
     .filterType span {
-        font-size: 13px;
+        font-size: var(--font-size-sm);
     }
 }

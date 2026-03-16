@@ -19,7 +19,7 @@ const loadStatusSelect = async() => {
     try {
         const status = await getStatus();
         vehiclesState.statusList = status;
-        fillSelect('cmbSearchByStatus', vehiclesState.statusList, 'idStatus', 'statusName', 'Buscar por estado');
+        fillSelect('cmbSearchByStatus', vehiclesState.statusList, 'idStatus', 'statusName', null, 'Todos');
     } catch (error) {
         showMessage(
             'Error',

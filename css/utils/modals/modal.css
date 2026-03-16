@@ -8,7 +8,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    -webkit-animation-name: slideIn;
     animation-name: slideIn;
     animation-duration: 0.4s;
 }
@@ -42,10 +41,8 @@
     top: 0;
     width: 36px;
     height: 36px;
-    background: none;
-    border: none;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgb(0 0 0 / 0.05);
     cursor: pointer;
     transition: all 0.3s ease;
     display: grid;
@@ -59,7 +56,7 @@
 }
 
 .btnClose:hover {
-    background: rgba(211, 24, 19, 0.1);
+    background: rgb(211 24 19 / 0.1);
     transform: rotate(90deg);
 }
 
@@ -75,7 +72,7 @@
     }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (width <= 500px) {
     .modalAdd {
         padding: 40px 20px;
     }
@@ -89,7 +86,7 @@
     }
 }
 
-@-webkit-keyframes slideIn {
+@keyframes slideIn {
     from {
         bottom: -300px;
         opacity: 0

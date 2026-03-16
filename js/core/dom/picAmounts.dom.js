@@ -52,7 +52,7 @@ export const createBtnUrl = (index, receiptUrl, payment) => {
     receiptContainer.append(receiptInput, receiptButton);
 
     if (receiptUrl && receiptUrl.startsWith('http')) {
-        receiptButton.classList.add("receipt-loaded");
+        receiptButton.classList.add("receiptLoaded");
         receiptButton.innerHTML = `<span class="icon">Ver comprobante</span>`;
     }
 
@@ -110,21 +110,21 @@ export const updateModalContent = (receiptUrl, payment, Refs) => {
         const fileSize = payment?.file?.size ? formatFileSize(payment.file.size) : 'Tamaño desconocido';
 
         // 🔑 IMPORTANTE: Añadir clase has-file PRIMERO
-        previewArea.classList.add('has-file');
+        previewArea.classList.add('hasFile');
 
         // Limpiar contenido
         previewArea.innerHTML = '';
 
         // Crear estructura de preview
         const previewContent = document.createElement('div');
-        previewContent.className = 'preview-content';
+        previewContent.className = 'previewContent';
 
         const previewImageWrapper = document.createElement('div');
-        previewImageWrapper.className = 'preview-image-wrapper';
+        previewImageWrapper.className = 'previewImageWrapper';
 
         // Botón de zoom
         const zoomBtn = document.createElement('button');
-        zoomBtn.className = 'zoom-btn';
+        zoomBtn.className = 'zoomBtn';
         zoomBtn.type = 'button';
         zoomBtn.setAttribute('aria-label', 'Ampliar imagen');
         zoomBtn.innerHTML = `
@@ -142,27 +142,27 @@ export const updateModalContent = (receiptUrl, payment, Refs) => {
             previewElement = document.createElement('embed');
             previewElement.src = urlToPreview;
             previewElement.type = 'application/pdf';
-            previewElement.className = 'preview-image';
+            previewElement.className = 'previewImage';
         } else {
             previewElement = document.createElement('img');
             previewElement.src = urlToPreview;
             previewElement.alt = 'Comprobante';
-            previewElement.className = 'preview-image';
+            previewElement.className = 'previewImage';
         }
 
         // Overlay con información del archivo
         const previewOverlay = document.createElement('div');
-        previewOverlay.className = 'preview-overlay';
+        previewOverlay.className = 'previewOverlay';
 
         previewOverlay.innerHTML = `
-        <div class="file-details">
-        <svg class="file-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <div class="fileDetails">
+        <svg class="fileIcon" width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M9 1H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-6-6z" stroke="currentColor" stroke-width="1.5"/>
                     <path d="M9 1v6h6" stroke="currentColor" stroke-width="1.5"/>
                 </svg>
-                <div class="file-info">
-                    <span class="file-name">${fileName}</span>
-                    <span class="file-size">${fileSize}</span>
+                <div class="fileInfo">
+                    <span class="fileName">${fileName}</span>
+                    <span class="fileSize">${fileSize}</span>
                 </div>
             </div>
         `;
@@ -175,25 +175,25 @@ export const updateModalContent = (receiptUrl, payment, Refs) => {
 
         previewContent.appendChild(previewImageWrapper);
         previewArea.appendChild(previewContent);
-        if (picsAmountState.isViewingReceipt) hideElement(previewOverlay.querySelector('.file-size'));
+        if (picsAmountState.isViewingReceipt) hideElement(previewOverlay.querySelector('.fileSize'));
 
     } else {
         // ❌ NO HAY ARCHIVO: Mostrar estado vacío
         hideElement(btnClear);
 
         // 🔑 IMPORTANTE: Remover clase has-file
-        previewArea.classList.remove('has-file');
+        previewArea.classList.remove('hasFile');
 
         // Restaurar estructura de estado vacío
         previewArea.innerHTML = `
-            <div class="empty-state">
-                <div class="upload-icon-wrapper">
-                    <div class="upload-icon"></div>
+            <div class="emptyState">
+                <div class="uploadIconWrapper">
+                    <div class="uploadIcon"></div>
                 </div>
-                <div class="upload-content">
-                    <h3 class="upload-title">Selecciona tu comprobante</h3>
-                    <p class="upload-description">Arrastra y suelta tu archivo aquí o haz clic en el botón</p>
-                    <p class="upload-formats">JPG, PNG o PDF • Máximo 10MB</p>
+                <div class="uploadContent">
+                    <h3 class="uploadTitle">Selecciona tu comprobante</h3>
+                    <p class="uploadDescription">Arrastra y suelta tu archivo aquí o haz clic en el botón</p>
+                    <p class="uploadFormats">JPG, PNG o PDF • Máximo 10MB</p>
                 </div>
             </div>
         `;

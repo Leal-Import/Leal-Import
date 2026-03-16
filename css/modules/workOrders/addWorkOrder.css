@@ -2,8 +2,7 @@
    Layout general
 ======================= */
 .content {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
 }
 
 .wrapperColumns{
@@ -49,7 +48,7 @@
 }
 
 .moreDataContainer:hover {
-    box-shadow: 0 4px 12px rgba(205, 144, 143, 0.3);
+    box-shadow: 0 4px 12px rgb(205 144 143 / 0.3);
 }
 
 .moreDataContainer h2 {
@@ -116,9 +115,9 @@
 }
 
 .rowVehicle .dataInfo:hover {
-    background-color: rgba(211, 24, 19, 0.02);
+    background-color: var(--bg-danger-badge);
     border-color: var(--danger-color);
-    box-shadow: 0 6px 16px rgba(211, 24, 19, 0.15);
+    box-shadow: 0 6px 16px rgb(211 24 19 / 0.15);
     transform: translateY(-2px);
 }
 
@@ -142,7 +141,6 @@
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
     border-radius: 10px;
     overflow: hidden;
-    padding: 0;
     box-shadow: var(--bx-shadow-btn-primary);
     gap: 10px;
     padding: 10px;
@@ -157,14 +155,14 @@
     align-items: center;
     padding: 18px 20px;
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--bg-danger-badge);
     backdrop-filter: blur(10px);
     flex-basis: 250px;
     gap: 10px;
 }
 
 .rowCosts .dataInfo:not(:last-child) {
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-right: 1px solid rgb(255 255 255 / 0.2);
 }
 
 .rowCosts .lblInfo {
@@ -186,12 +184,12 @@
 }
 
 .rowCosts .totalHighlight {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgb(255 255 255 / 0.15);
 }
 
 .rowCosts .valueInfo.danger {
     font-size: var(--font-size-breadcrumb);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 2px 4px rgb(0 0 0 / 0.2);
 }
 
 /* =======================
@@ -229,7 +227,7 @@
 }
 
 .tableContainer:hover {
-    box-shadow: 0 4px 12px rgba(205, 144, 143, 0.3);
+    box-shadow: 0 4px 12px rgb(205 144 143 / 0.3);
 }
 
 .tableContainer h2 {

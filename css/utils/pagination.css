@@ -63,7 +63,7 @@
 
 .pageBtn.active {
     background-color: var(--danger-color);
-    color: #FFF;
+    color: var(--text-color-light);
     font-weight: var(--font-weight-medium);
     border-color: var(--danger-color);
     cursor: default;
@@ -75,7 +75,7 @@
 }
 
 
-@media screen and (max-width: 600px) {
+@media screen and (width <= 600px) {
     .paginationContainer {
         flex-direction: column;
         align-items: center;

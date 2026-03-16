@@ -1,0 +1,33 @@
+{
+    "extends": "stylelint-config-standard",
+    "rules": {
+        "selector-class-pattern": "^[a-z][a-zA-Z0-9]*$",
+        "selector-id-pattern": "^[a-z][a-zA-Z0-9]*$",
+        "keyframes-name-pattern": "^[a-z][a-zA-Z0-9]*$",
+        "container-name-pattern": "^[a-z][a-zA-Z0-9]*$",
+        "color-function-alias-notation": null,
+        "alpha-value-notation": null,
+        "declaration-property-value-no-unknown": null,
+        "no-descending-specificity": null,
+        "declaration-property-value-allowed-list": [
+            {
+                "color": ["/^var\\(--/", "transparent", "inherit", "currentColor"],
+                "background-color": ["/^var\\(--/", "transparent", "inherit"],
+                "border-color": ["/^var\\(--/", "transparent", "inherit"],
+                "font-size": ["/^var\\(--/", "inherit"],
+                "font-weight": ["/^var\\(--/", "inherit"]
+            }
+        ]
+    },
+    "overrides": [
+        {
+            "files": [
+                "**/swiper*",
+                "swiper*"
+            ],
+            "rules": {
+                "selector-class-pattern": null
+            }
+        }
+    ]
+}

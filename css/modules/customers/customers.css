@@ -1,5 +1,6 @@
 .modalAdd {
     padding: 40px !important;
+
     --width-modal: clamp(250px, 90%, 550px);
 }
 
@@ -29,7 +30,7 @@
 
 /* Móviles (< 768px) - Transformar tabla en cards */
 
-@media screen and (max-width: 850px) {
+@media screen and (width <= 850px) {
     .content {
         height: fit-content;
     }
@@ -37,7 +38,6 @@
 
 
 @container content (max-width: 800px) {
-
     .containerTable {
         min-height: 400px;
     }
@@ -65,13 +65,13 @@
         padding: 20px;
         margin-bottom: 15px;
         border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(205, 144, 143, 0.15);
+        box-shadow: 0 2px 8px rgb(205 144 143 / 0.15);
         border: none;
         transition: box-shadow 0.2s;
     }
 
     .table tbody tr:hover {
-        box-shadow: 0 4px 12px rgba(205, 144, 143, 0.25);
+        box-shadow: 0 4px 12px rgb(205 144 143 / 0.25);
     }
 
     /* Mensaje de "No hay datos" */
@@ -91,12 +91,13 @@
         padding: 0;
         border: none;
         font-size: var(--font-size-sm);
-        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
     /* Añadir labels antes de cada TD usando ::before */
     .table tbody tr td:nth-child(1)::before {
         content: "Nombre: ";
+        display: none;
     }
 
     .table tbody tr td:nth-child(2)::before {
@@ -123,11 +124,6 @@
         font-size: var(--font-size-base);
         font-weight: var(--font-weight-semibold);
         color: var(--text-color);
-    }
-
-    .table tbody tr td:nth-child(1)::before {
-        display: none;
-        /* No mostrar label para nombre */
     }
 
     /* DUI - segunda fila */
@@ -176,7 +172,7 @@
 }
 
 /* Móviles pequeños (< 500px) */
-@media screen and (max-width: 499px) {
+@media screen and (width <= 499px) {
     .content {
         padding: 70px 15px 15px;
     }

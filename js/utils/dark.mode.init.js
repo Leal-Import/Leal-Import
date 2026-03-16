@@ -11,7 +11,7 @@
         const isDark = localStorage.getItem(STORAGE_KEY) === 'true';
 
         if (isDark) {
-            document.documentElement.classList.add('dark-mode');
+            document.documentElement.classList.add('darkMode');
         }
     };
 

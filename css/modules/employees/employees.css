@@ -20,13 +20,13 @@
 
 /* Móviles (< 768px) - Transformar tabla en cards */
 
-@media screen and (max-width: 1025px) {
+@media screen and (width <= 1025px) {
     .content{
         height: fit-content;
     }
 }
-@container content (max-width: 950px) {
 
+@container content (max-width: 950px) {
     .containerTable{
         min-height: 400px;
     }
@@ -53,17 +53,17 @@
         padding: 20px;
         margin-bottom: 15px;
         border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(205, 144, 143, 0.15);
+        box-shadow: 0 2px 8px rgb(205 144 143 / 0.15);
         border: none;
         transition: box-shadow 0.2s;
     }
 
     .table tbody tr:hover {
-        box-shadow: 0 4px 12px rgba(205, 144, 143, 0.25);
+        box-shadow: 0 4px 12px rgb(205 144 143 / 0.25);
     }
 
     /* Mensaje de "No hay datos" */
-    .table tbody tr td.no-data-message {
+    .table tbody tr td.noDataMessage {
         grid-column: 1 / -1;
         text-align: center;
         padding: 40px 20px;
@@ -77,12 +77,13 @@
         padding: 0;
         border: none;
         font-size: var(--font-size-base);
-        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
     /* Añadir labels antes de cada TD usando data-label */
     .table tbody tr td:nth-child(1)::before {
         content: "Nombre:";
+        display: none;
     }
 
     .table tbody tr td:nth-child(2)::before {
@@ -95,6 +96,7 @@
 
     .table tbody tr td:nth-child(4)::before {
         content: "Rol:";
+        display: none;
     }
 
     .table tbody tr td::before {
@@ -105,6 +107,7 @@
     }
 
     /* Layout de la grid */
+
     /* Nombre completo - ocupa toda la primera fila */
     .table tbody tr td:nth-child(1) {
         grid-column: 1 / -1;
@@ -113,44 +116,26 @@
         color: var(--text-color);
     }
 
-    .table tbody tr td:nth-child(1)::before {
-        display: none;
-        /* No mostrar label para nombre */
-    }
-
     /* Rol - Badge en la primera fila junto al nombre */
-    .table tbody tr td:nth-child(4) {
-        grid-column: 1 / -1;
-        grid-row: 2;
-        order: -1;
-        /* Mover arriba */
-    }
-
-    .table tbody tr td:nth-child(4)::before {
-        display: none;
-    }
-
-    /* Convertir el rol en un badge */
     .table tbody tr td:nth-child(4) {
         display: inline-flex;
         align-self: center;
         padding: 4px 12px;
-        background-color: rgba(211, 24, 19, 0.1);
+        background-color: var(--bg-color);
         color: var(--danger-color);
         border-radius: 12px;
         font-size: var(--font-size-sh);
         font-weight: var(--font-weight-medium);
         width: fit-content;
+        grid-column: 1 / -1;
+        grid-row: 2;
+        order: -1;
     }
 
     /* Correo - segunda fila */
     .table tbody tr td:nth-child(2) {
         grid-column: 1 / -1;
         grid-row: 3;
-    }
-
-    .table tbody tr td:nth-child(2)::before {
-        content: "Correo:";
     }
 
     /* Teléfono - tercera fila */
@@ -184,8 +169,7 @@
 }
 
 /* Móviles pequeños (< 500px) */
-@media screen and (max-width: 499px) {
-
+@media screen and (width <= 499px) {
     .table tbody tr {
         padding: 15px;
     }
