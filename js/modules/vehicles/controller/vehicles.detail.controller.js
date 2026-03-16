@@ -1,18 +1,20 @@
 import { vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
 import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage } from "../../../utils/dom.js";
-import { closeAndCleanUpdateModal, DOMRefs, hideCustomerSelected, loadDomData, openUploadModal, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, showInvalidUrl, showCustomerSelected, showValidUrl, showDefaultText } from "../../../core/dom/vehicles.detail.dom.js";
-import { applyExternalMode, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
+import { closeAndCleanUpdateModal, DOMRefs, loadDomData, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, UPLOAD_CONFIG, verifyBtnsCarousel } from "../../../core/dom/vehicles.detail.dom.js";
+import { applyExternalMode, calculateTotal, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, resetState, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js"
 import { initSession } from "../../../utils/api.utils.js";
-import { formatWithCommas } from "../../../utils/formatters.js";
-import { isValidURL, safeParseFloat } from "../../../utils/validators.js";
+import { isValidURL } from "../../../utils/validators.js";
 import { initUploadModalEvents } from "../event/vehicles.uploads.events.js";
 import { getVehicles, postVehicle, putVehicle } from "../../../service/vehicles.detail.service.js";
 
-export async function loadVehicle() {
+async function loadVehicle() {
     const vehicle = await getVehicles(vehicleDetailState.context.currentId);
-    loadDomData();
+    loadDomData(DOMRefs.refs.typeAction, DOMRefs.refs.btnSaveData);
+    DOMRefs.refs.externalElements.forEach(el => {
+        hideElement(el);
+    })
     fillVehiclesBaseForm(vehicle);
     onValidateUrl(vehicle.lote.linkLote);
     if (vehicle.costs) {
@@ -26,25 +28,39 @@ export async function loadVehicle() {
         DOMRefs.refs.isExternalOpt.dispatchEvent(new Event('change'));
         vehicleDetailState.customerId = vehicle.idOwnerCustomer;
         DOMRefs.refs.txtCustomer.value = vehicle.customerName;
-        showCustomerSelected();
+        showElement(DOMRefs.refs.selectedCustomerText);
     }
     vehicleDetailState.loteId = vehicle.lote.idLote;
     loadBackendImages(vehicle.photos);
     renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click())
 }
 
-export function onExternalChange(isExternal) {
+function onExternalChange(isExternal) {
     vehicleDetailState.isExternal = isExternal;
+    const uiState = applyExternalMode(vehicleDetailState.isExternal);
+    renderExternalMode(uiState, DOMRefs.refs.txtCosts, DOMRefs.refs.btnImgs, DOMRefs.refs.groupCustomer, DOMRefs.refs.txtCustomer, DOMRefs.refs.txtTotal);
+    if (vehicleDetailState.isExternal) {
+        vehicleDetailState.urls = {
+            bill: null,
+            taxes: null,
+            ship: null
+        };
+        vehicleDetailState.uploads = {
+            bill: null,
+            taxes: null,
+            ship: null
+        };
+        hideElement(DOMRefs.refs.costsSection);
+    } else {
+        showElement(DOMRefs.refs.costsSection);
+    }
 
-    const uiState = applyExternalMode(isExternal);
-    renderExternalMode(uiState);
 }
 
-export async function onSubmitVehicle(e) {
+async function onSubmitVehicle(e) {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmVehicles));
     const fd = new FormData();
-
     let payloadVehicle;
     let vehiclesImagesValid;
     if (vehicleDetailState.context.currentId) {
@@ -125,8 +141,8 @@ export async function onSubmitVehicle(e) {
     }
 }
 
-export let onSearchCustomer = async (e) => {
-    const q = e.target.value.trim();
+const onSearchCustomer = async (q) => {
+    q = q.trim();
     if (!q) { DOMRefs.refs.boxCustomer.classList.add("hide"); return; }
     try {
         const res = await getCustomers(0, 15, q);
@@ -134,15 +150,15 @@ export let onSearchCustomer = async (e) => {
     } catch (err) { console.error(err); }
 };
 
-let onSelectCustomer = (customer) => {
+const onSelectCustomer = (customer) => {
     DOMRefs.refs.txtCustomer.value = customer.fullName;
     vehicleDetailState.customerId = customer.idCustomer;
     DOMRefs.refs.boxCustomer.classList.add("hide");
     DOMRefs.refs.boxCustomer.classList.remove("show");
-    showCustomerSelected();
+    showElement(DOMRefs.refs.selectedCustomerText);
 }
 
-export let onAddImage = (e) => {
+const onAddImage = (e) => {
     const files = [...e.target.files];
     const error = validateImages(vehicleDetailState.images, files);
     if (error) {
@@ -164,57 +180,51 @@ export let onAddImage = (e) => {
     renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click());
     DOMRefs.refs.previewImage ? DOMRefs.refs.mainSwiperWrapper.classList.add("mainSwiperUsed") : DOMRefs.refs.mainSwiperWrapper.classList.remove("mainSwiperUsed")
     DOMRefs.refs.imageInput.value = "";
+    verifyBtnsCarousel(DOMRefs.refs.btnsCarousel, DOMRefs.refs.mainSwiperWrapper);
 }
 
-export let cleanCustomer = () => {
+const cleanCustomer = () => {
     if (vehicleDetailState.customerId) {
         vehicleDetailState.customerId = null;
-        hideCustomerSelected();
+        hideElement(DOMRefs.refs.selectedCustomerText);
     }
 }
 
-function onCalculateTotal() {
-    let total = 0;
-
-    DOMRefs.refs.txtCosts.forEach(input => {
-        // Quitar comas antes de convertir a número
-        const cleanValue = safeParseFloat(input.value);
-
-        total += cleanValue;
-    });
-    DOMRefs.refs.txtTotal.value = formatWithCommas(total);
+const onCloseModalUpload = (Refs) => {
+    vehicleDetailState.currentUploadType = null;
+    closeAndCleanUpdateModal(Refs);
+    toggleModal(Refs.modalUpload, false);
 }
 
-let openLinkLoteModal = () => {
-    toggleModal(DOMRefs.refs.modalLinkLote, true);
-}
-
-let closeLinkLoteModal = () => {
-    toggleModal(DOMRefs.refs.modalLinkLote, false);
-}
-
-let initCloseModalUpload = () => {
-    closeAndCleanUpdateModal(vehicleDetailState);
-}
-
-let initOpenModalUpload = (type) => {
-    openUploadModal(type, vehicleDetailState)
+const onOpenUploadModal = (type) => {
+    const config = UPLOAD_CONFIG[type];
+    if (!config) return;
+    vehicleDetailState.currentUploadType = type;
+    if (vehicleDetailState.urls[type]) renderUploadPreview(vehicleDetailState.urls[type], DOMRefs.refs.uploadDropArea);
+    DOMRefs.refs.uploadTitle.textContent = config.title;
+    toggleModal(DOMRefs.refs.modalUpload, true);
 }
 
 const onValidateUrl = (url) => {
     if (url != "") {
         const isValid = isValidURL(url);
         if (isValid) {
-            showValidUrl();
+            hideElement(DOMRefs.refs.defaultText);
+            hideElement(DOMRefs.refs.errorLinkLote);
+            showElement(DOMRefs.refs.validateUrlMessage);
         } else {
-            showInvalidUrl();
+            hideElement(DOMRefs.refs.defaultText);
+            showElement(DOMRefs.refs.errorLinkLote);
+            hideElement(DOMRefs.refs.validateUrlMessage);
         }
     } else {
-        showDefaultText();
+        showElement(DOMRefs.refs.defaultText);
+        hideElement(DOMRefs.refs.errorLinkLote);
+        hideElement(DOMRefs.refs.validateUrlMessage);
     }
 }
 
-let onChangeUpload = (e) => {
+const onChangeUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const invalidate = validateSizeTypeImage(file);
@@ -223,13 +233,13 @@ let onChangeUpload = (e) => {
         return;
     }
     handleUploadFile(file);
-    const urlImage = renderUploadPreview(file);
+    const urlImage = renderUploadPreview(file, DOMRefs.refs.uploadDropArea);
     vehicleDetailState.urls[vehicleDetailState.currentUploadType] = urlImage
 
     e.target.value = "";
 }
 
-let onDropModal = (e) => {
+const onDropModal = (e) => {
     e.preventDefault();
     DOMRefs.refs.uploadDropArea.classList.remove("dragover");
 
@@ -237,11 +247,11 @@ let onDropModal = (e) => {
     if (!file) return;
 
     handleUploadFile(file);
-    renderUploadPreview(file);
+    renderUploadPreview(file, DOMRefs.refs.uploadDropArea);
 }
 
 
-let deleteImage = (index) => {
+const deleteImage = (index) => {
     const img = vehicleDetailState.images[index];
     if (!img.isNew && img.id) {
         vehicleDetailState.photosToDeleteIds.push(img.id);
@@ -249,10 +259,12 @@ let deleteImage = (index) => {
 
     vehicleDetailState.images.splice(index, 1);
     renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click());
+    verifyBtnsCarousel(DOMRefs.refs.btnsCarousel, DOMRefs.refs.mainSwiperWrapper);
 };
 
 const setupApplication = async () => {
     // 1. Validar sesión
+    resetState();
     const user = await initSession();
     if (!user) return false;
 
@@ -260,17 +272,18 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initUploadModalEvents({ onChangeUpload, onDropModal, closeModalUpload: initCloseModalUpload, openUploadModal: initOpenModalUpload });
+const initializeUI = (Refs) => {
+    initUploadModalEvents({ Refs, onChangeUpload, onDropModal, onCloseModalUpload: () => onCloseModalUpload(Refs), onOpenUploadModal: (type) => onOpenUploadModal(type) });
 
     initVehicleDetailEvents({
+        Refs,
         onSubmit: onSubmitVehicle,
         onSearchCustomer: onSearchCustomer,
         onAddImage: onAddImage,
         onExternalChange: onExternalChange,
-        onCalculateTotal,
-        openLinkLoteModal,
-        closeLinkLoteModal,
+        onCalculateTotal: () => calculateTotal(DOMRefs.refs.txtCosts, DOMRefs.refs.txtTotal),
+        openLinkLoteModal: () => toggleModal(DOMRefs.refs.modalLinkLote, true),
+        onCloseLinkLoteModal: () => toggleModal(DOMRefs.refs.modalLinkLote, false),
         cleanCustomer,
         onValidateUrl
     });
@@ -292,9 +305,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        DOMRefs.init();
-
-        initializeUI();
+        const refs = DOMRefs.init();
+        initializeUI(refs);
 
         await loadDataFlow();
     } catch (error) {

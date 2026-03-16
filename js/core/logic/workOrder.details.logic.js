@@ -38,9 +38,10 @@ export const hydrateContextFromURL = async (state) => {
 };
 
 export const pushSparePart = (state, sparePart) => {
-    if (existsById(state, sparePart.id, 'id')) return null;
+    const id = sparePart.id || sparePart.idSparePart || sparePart.idSpareParts || null;
+    if (id && existsById(state, id, 'id')) return null;
     const normalizedPart = {
-        id: sparePart.idSparePart || sparePart.idSpareParts || crypto.randomUUID(),
+        id: id || crypto.randomUUID(),
         idSparePart: sparePart.idSparePart || sparePart.idSpareParts,
         name: sparePart.sparePartName || sparePart.nameSpareParts || sparePart.name || '',
         priceApplied: sparePart.priceApplied || sparePart.suggestedPrice || 0,
@@ -51,10 +52,10 @@ export const pushSparePart = (state, sparePart) => {
 }
 
 export const pushService = (state, service) => {
-    if (existsById(state, service.id, 'id')) return null;
-
+    const id = service.id || service.idService || null;
+    if (id && existsById(state, id, 'id')) return null;
     const normalizedPart = {
-        id: service.idService || crypto.randomUUID(),
+        id: id || crypto.randomUUID(),
         idService: service.idService || null,
         name: service.nameService || service.name || '',
         priceApplied: service.priceApplied || 0.00,

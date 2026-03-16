@@ -7,7 +7,7 @@ import { getDetailsOrders, getDashboardWorkorder } from "../../../service/workOr
 import { getWOStatus } from "../../../service/workOrders.service.js";
 import { initSession } from "../../../utils/api.utils.js";
 
-import { $, asUUID, fillSelect, hideElement, showElement, showFloatingMenu, showMessage } from "../../../utils/dom.js";
+import { asUUID, fillSelect, hideElement, showElement, showFloatingMenu, showMessage } from "../../../utils/dom.js";
 import { initWorkOrderHistoryEvents } from "../event/workOrder.history.event.js";
 
 /* ===============================
@@ -37,8 +37,8 @@ const loadWorkOrderHistoryStatus = async () => {
 const loadDashboard = async () => {
     try {
         const data = await getDashboardWorkorder(workOrderHistoryState.context.idVehicle);
-        loadStats(data);
-        loadVehicleInfo(data);
+        loadStats(data, DOMRefs.refs);
+        loadVehicleInfo(data, DOMRefs.refs);
     } catch (error) {
         showMessage("Error", "No se pudieron cargar las estadisticas de ordenes del vehiculo.", "error");
         console.error(error)
@@ -57,7 +57,7 @@ async function loadWorkOrderHistory() {
         workOrderHistoryState.pagination.total = data.page.totalElements;
         workOrderHistoryState.pagination.totalPages = data.page.totalPages;
 
-        insertWorkOrderHistory(DOMRefs.refs.woDetailsTBody, workOrderHistoryState.list, handleOrdersActions);
+        insertWorkOrderHistory(DOMRefs.refs.woDetailsTBody, workOrderHistoryState.list, handleOrdersActions, DOMRefs.refs.tableHistory);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -76,7 +76,7 @@ async function loadWorkOrderHistory() {
 const handleOrdersActions = (e, order) => {
     e.stopPropagation();
 
-    const woId = order.idWorkOrder ?? Math.random().toString(36).slice(2);
+    const woId = order.idWorkOrder ?? crypto.randomUUID();
 
     showFloatingMenu(e, [
         {
@@ -92,11 +92,11 @@ const handleOrdersActions = (e, order) => {
     ]);
 }
 
-let viewWorkOrder = (idWorkOrder, idVehicle) => {
+const viewWorkOrder = (idWorkOrder, idVehicle) => {
     window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}&isView=true`;
 }
 
-let editWorkOrder = (idWorkOrder, idVehicle) => {
+const editWorkOrder = (idWorkOrder, idVehicle) => {
     window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}`;
 }
 
@@ -118,10 +118,19 @@ function onSearchWorkOrderHistory(filters) {
    INIT
 ================================ */
 
-const hydrateContextFromURL = () => {
+const hydrateContextFromURL = async () => {
     const params = new URLSearchParams(window.location.search);
-    workOrderHistoryState.context.idVehicle = asUUID(params.get('idVehicle'));
+    const idVehicle = asUUID(params.get('idVehicle'));
+
+    if (!idVehicle) {
+        await showMessage('Error', 'Vehículo no especificado', 'error');
+        window.location.href = 'workOrders.html';
+        return false;
+    }
+
+    workOrderHistoryState.context.idVehicle = idVehicle;
     workOrderHistoryState.context.idCustomer = asUUID(params.get('idCustomer'));
+    return true;
 };
 
 const loadBtnAdd = () => {
@@ -133,14 +142,15 @@ const setupApplication = async () => {
     const user = await initSession();
     if (!user) return false;
 
-    hydrateContextFromURL();
+    const isContextValid = await hydrateContextFromURL();
+    if (!isContextValid) return false;
 
     return true;
 };
 
-const initializeUI = () => {
+const initializeUI = (Refs) => {
     loadBtnAdd();
-    initWorkOrderHistoryEvents({ onSearchWorkOrderHistory });
+    initWorkOrderHistoryEvents({ Refs, onSearchWorkOrderHistory });
 };
 
 const loadDataFlow = async () => {
@@ -152,9 +162,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
-        initializeUI();
+        initializeUI(refs);
 
         await loadDataFlow();
     } catch (error) {

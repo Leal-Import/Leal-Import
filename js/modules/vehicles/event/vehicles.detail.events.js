@@ -1,55 +1,44 @@
-import { $, qs, qsa } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatYearInput } from "../../../utils/formatters.js";
 
-export function initVehicleDetailEvents({ onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, closeLinkLoteModal, cleanCustomer, onValidateUrl }) {
-    const isExternalOpt = $('isExternalOpt');
-    const btnLink = qs('.btnLinkLote');
-    const modalLinkLote = $('modalLinkLote');
-    const btnCloseLink = modalLinkLote.querySelector('.btnClose');
-    const btnSaveLinkLote = $('btnSaveLinkLote');
-    const txtFormat = qsa('.txtFormat');
-    const txtCosts = qsa('.txtCosts');
-    const txtMileage = $("txtMileage");
-    const txtLink = $("txtLink");
+export function initVehicleDetailEvents({ Refs, onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, onCloseLinkLoteModal, cleanCustomer, onValidateUrl }) {
 
     let searchTimeout = null;
 
-    const frmVehicles = $('frmVehicles');
-    const txtCustomer = $('txtCustomer');
-    const imageInput = $('imageInput');
+    Refs.frmVehicles.addEventListener("submit", onSubmit);
 
-    frmVehicles.addEventListener("submit", onSubmit);
-
-    txtCustomer.addEventListener("input", (e) => {
+    Refs.txtCustomer.addEventListener("input", () => {
         clearTimeout(searchTimeout);
         cleanCustomer();
-        searchTimeout = setTimeout(() => onSearchCustomer(e), 1500);
+        searchTimeout = setTimeout(() => onSearchCustomer(Refs.txtCustomer.value), 1500);
     });
 
-    txtLink.addEventListener("input", (e) => {
-        onValidateUrl(e.target.value.trim());
+    Refs.txtLink.addEventListener("input", () => {
+        onValidateUrl(Refs.txtLink.value.trim());
     })
 
-    if (isExternalOpt) {
-        isExternalOpt.addEventListener('change', e => {
-            onExternalChange(e.target.checked);
+    if (Refs.isExternalOpt) {
+        Refs.isExternalOpt.addEventListener('change', () => {
+            onExternalChange(Refs.isExternalOpt.checked);
             cleanCustomer();
         });
     }
-    imageInput.addEventListener("change", onAddImage);
-    btnLink.addEventListener("click", openLinkLoteModal);
-    btnCloseLink.addEventListener("click", closeLinkLoteModal);
-    btnSaveLinkLote.addEventListener("click", closeLinkLoteModal);
+    Refs.imageInput.addEventListener("change", onAddImage);
+    Refs.btnLinkLote.addEventListener("click", openLinkLoteModal);
+    Refs.modalLinkLote.addEventListener("click", (e) => {
+        if (e.target === Refs.modalLinkLote) onCloseLinkLoteModal();
+    });
+    Refs.btnCloseLink.addEventListener("click", onCloseLinkLoteModal);
+    Refs.btnSaveLinkLote.addEventListener("click", onCloseLinkLoteModal);
 
-    txtFormat.forEach(txt => {
+    Refs.txtFormat.forEach(txt => {
         txt.addEventListener("focus", (e) => { formatOnFocus(e, true); });
         txt.addEventListener("blur", (e) => { formatOnBlur(e, true); });
         formatDecimalInput(txt);
     });
     
-    txtCosts.forEach(txt => {
+    Refs.txtCosts.forEach(txt => {
         txt.addEventListener("input", onCalculateTotal);
     });
-    formatYearInput($("txtYear"));
-    formatDecimalInput(txtMileage);
+    formatYearInput(Refs.txtYear);
+    formatDecimalInput(Refs.txtMileage);
 }

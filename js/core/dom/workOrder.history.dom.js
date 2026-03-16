@@ -9,26 +9,35 @@ export const DOMRefs = {
             woDetailsTBody: $('woDetailsTBody'),
             loaderWorkOrders: $('loaderWorkOrders'),
             btnAddOrder: $('btnAddOrder'),
+            txtSearchData: $('txtSearchData'),
+            cmbSearchByStatus: $('cmbSearchByStatus'),
+            infoItem: $('infoItem'),
+            vin: $('vin'),
+            finalized: $('finalized'),
+            pending: $('pending'),
+            delayed: $('delayed'),
+            totalOrdersQuantity: $('totalOrdersQuantity'),
+            tableHistory: $('tableHistory')
         };
 
         return this.refs;
     }
 };
 
-export const loadStats = (data) => {
-    $("finalized").textContent = data.statistics.finalized;
-    $("pending").textContent = data.statistics.pending;
-    $("delayed").textContent = data.statistics.delayed;
-    $("totalOrdersQuantity").textContent = `$${formatWithCommas(data.statistics.totalBilled)}`;
+export const loadStats = (data, Refs) => {
+    Refs.finalized.textContent = data.statistics.finalized;
+    Refs.pending.textContent = data.statistics.pending;
+    Refs.delayed.textContent = data.statistics.delayed;
+    Refs.totalOrdersQuantity.textContent = `$${formatWithCommas(data.statistics.totalBilled)}`;
 }
 
-export const loadVehicleInfo = (data) => {
-    $("infoItem").textContent = `${data.vehicleInfo.brand} ${data.vehicleInfo.model} ${data.vehicleInfo.year}`;
-    $("vin").textContent = data.vehicleInfo.vin;
+export const loadVehicleInfo = (data, Refs) => {
+    Refs.infoItem.textContent = `${data.vehicleInfo.brand} ${data.vehicleInfo.model} ${data.vehicleInfo.year}`;
+    Refs.vin.textContent = data.vehicleInfo.vin;
 }
 
-export const insertWorkOrderHistory = (container, workOrders, onActions) => {
-    if (!container) return;
+export const insertWorkOrderHistory = (container, workOrders, onActions, tableHistory) => {
+    if (!container || !tableHistory) return;
 
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
@@ -47,10 +56,10 @@ export const insertWorkOrderHistory = (container, workOrders, onActions) => {
         tr.appendChild(td);
         fragment.appendChild(tr);
         container.appendChild(fragment);
-        document.querySelector(".table").style.height = "100%";
+        tableHistory.style.height = "100%";
         return;
     }
-    document.querySelector(".table").style.height = "fit-content";
+    tableHistory.style.height = "fit-content";
     workOrders.forEach(wo => {
         const tr = document.createElement("tr");
 
@@ -58,7 +67,7 @@ export const insertWorkOrderHistory = (container, workOrders, onActions) => {
         tdEmployee.textContent = wo.employeeName ?? "—";
 
         const tdCustomer = document.createElement("td");
-        tdCustomer.textContent = wo.employeeName ?? "—";//Por el momento sale el empleado pero aca va el cliente
+        tdCustomer.textContent = wo.customerName ?? "—";
 
         const tdOrderDate = document.createElement("td");
         tdOrderDate.textContent = wo.estimatedDate;

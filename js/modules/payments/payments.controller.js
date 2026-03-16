@@ -3,18 +3,18 @@
 import {
     addPayment,
 } from '../../core/logic/payments.logic.js';
-import { renderPayments } from '../../core/dom/payments.dom.js';
+import { DOMRefs, renderPayments, resetDomPayments } from '../../core/dom/payments.dom.js';
 import { getPaymentMethods } from '../../service/configuration.service.js';
 import { paymentsState } from '../../core/state/payments.state.js';
-import { $, fillSelect } from '../../utils/dom.js';
+import { fillSelect } from '../../utils/dom.js';
 
 /* Aca se cargan todos los metodos de pago */
-export async function loadPayMethods() {
+export async function loadPayMethods(Refs) {
     try {
         const roles = await getPaymentMethods();
         // Tu API puede devolver array o { content: [...] }
         paymentsState.paymentMethods = Array.isArray(roles) ? roles : (roles?.content || []);
-        const cmbPaymentMethod = $("paymentMethod");
+        const cmbPaymentMethod = Refs.paymentMethod;
         if(cmbPaymentMethod){
             fillSelect(cmbPaymentMethod, paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Metodo de pago");
         }
@@ -25,11 +25,17 @@ export async function loadPayMethods() {
 }
 
 export async function initPaymentsController({ totalCalculator, onStateChange, createReceiptBtn, isView }) {
-    await loadPayMethods();
-    paymentsState.onSaveState = onStateChange;
-    paymentsState.onCalculateTotal = totalCalculator;
-    paymentsState.onCreateButton = createReceiptBtn;
-    paymentsState.context.isView = isView
+    try {
+        const refs = DOMRefs.init();
+    
+        await loadPayMethods(refs);
+        paymentsState.onSaveState = onStateChange;
+        paymentsState.onCalculateTotal = totalCalculator;
+        paymentsState.onCreateButton = createReceiptBtn;
+        paymentsState.context.isView = isView;    
+    } catch (error) {
+        throw new Error("Error al inicializar el controlador de pagos: " + error.message);
+    }
 }
 
 
@@ -45,7 +51,7 @@ export function addNewPayment({ state, totals, payment }) {
     paymentsState.onCalculateTotal();
 }
 
-let onDeletePayment = (payments, index, totals, paymentsToDelete) => {
+const onDeletePayment = (payments, index, totals, paymentsToDelete) => {
     if (index === -1) return;
     const payment = payments[index];
     if (payment.idPayment) {
@@ -58,7 +64,7 @@ let onDeletePayment = (payments, index, totals, paymentsToDelete) => {
     paymentsState.onCalculateTotal();
 }
 
-export let onResetPayments = (state, totals) => {
+export const onResetPayments = (state, totals) => {
     // 1. Limpiar payments (manteniendo referencia)
     state.payments.length = 0;
 
@@ -68,15 +74,19 @@ export let onResetPayments = (state, totals) => {
     totals.total = 0;
 }
 
+export const onResetDomPayments = () => {
+    resetDomPayments(DOMRefs.refs);
+}
+
 function renderPaymentsController(payments, totals, paymentsToDelete) {
     renderPayments({
         payments: payments,
         totals,
-        paymentsMethods: paymentsState.paymentMethods,
         onDeletePayment,
         paymentsToDelete,
         showReceiptBtn: true,
         createReceiptButton: paymentsState.onCreateButton,
-        isView: paymentsState.context.isView
+        isView: paymentsState.context.isView,
+        container: DOMRefs.refs.paymentsList
     });
 }

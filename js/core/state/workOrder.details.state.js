@@ -6,7 +6,7 @@ export const workOrderDetailsState = {
         idWorkOrder: null,
         customerName: '',
         vehiclePrice: 0,
-        isView: null,
+        isView: false,
         isNewPart: null,
         idNewPart: null,
         newPartName: null,
@@ -24,6 +24,7 @@ export const workOrderDetailsState = {
         notes: '',
         estimatedDate: null
     },
+    workOrder: null,
     totals: {
         total: 0,
         due: 0,

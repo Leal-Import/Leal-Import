@@ -1,0 +1,159 @@
+
+.bodySection {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+.infoDarkContainer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-color-white);
+    padding: 20px;
+    height: 100px;
+    border-radius: 5px;
+    border: var(--border);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.containerIconDarkMode {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.containerIconDarkMode span{
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+}
+
+.modalAdd {
+    --width-modal: clamp(250px, 90%, 550px);
+}
+
+.modalEmployeeBody {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modalAdd .formGroup {
+    flex-basis: 0;
+}
+
+.modalNewPasswordCard {
+    --width-modal: clamp(200px, 90%, 450px);
+    padding: 20px !important;
+}
+
+#btnVerifyCurrentPassword, #btnSaveUsername{
+    align-self: end;
+    padding: 5px 40px;
+}
+
+/* ===== CONFIGURATION PAGE ===== */
+
+.configSectionTitle {
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-color-secondary);
+    padding: 0 4px;
+    margin-bottom: -8px;
+}
+
+.configCard {
+    background-color: var(--bg-color-white);
+    border: var(--border);
+    border-radius: 5px;
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.configRow {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: background 0.18s ease;
+}
+
+.configRow:hover {
+    background-color: var(--bg-color);
+}
+
+.configDivider {
+    height: 0.5px;
+    border: var(--border);
+    margin: 0 20px;
+}
+
+.configItemIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--text-color);
+}
+
+.configItemIconDanger {
+    background-color: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.2);
+    color: var(--danger-color);
+}
+
+.configItemText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.configItemLabel {
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+}
+
+.configItemLabelDanger {
+    color: var(--danger-color);
+}
+
+.configItemSub {
+    font-size: var(--font-size-sh, 0.72rem);
+    color: var(--text-color-secondary);
+    font-weight: 400;
+}
+
+.configChevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-color-secondary);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.configRow:hover .configChevron {
+    transform: translateX(3px);
+}
+
+.configChevronDanger {
+    color: var(--danger-color);
+}
+
+/* Ajuste del icono de modo oscuro al nuevo tamaño */
+.infoDarkContainer .configItemIcon svg {
+    width: 20px;
+    height: 20px;
+}

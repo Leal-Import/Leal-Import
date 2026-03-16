@@ -10,7 +10,19 @@ export const DOMRefs = {
             tBodySelected: $('tBodySelected'),
             loaderSpareParts: $('loaderSpareParts'),
             loaderAddSale: $('loaderAddSale'),
-            btnSaveSale: $('btnSaveSale')
+            btnSaveSale: $('btnSaveSale'),
+            frmSparePartSale: $("frmSparePartSale"),
+            btnAddPayment: $("btnAddPayment"),
+            txtSearchData: $("txtSearchData"),
+            btnOrderPart: $("btnOrderPart"),
+            txtNotes: $("txtNotes"),
+            txtAmount: $("txtAmount"),
+            customerName: $("customerName"),
+            due: $("due"),
+            totalPaid: $("totalPaid"),
+            totalSale: $("totalSale"),
+            paymentMethod: $("paymentMethod"),
+            tableInventory: $("tableInventory"),
         };
 
         return this.refs;
@@ -21,10 +33,11 @@ export const DOMRefs = {
 export function insertSpareParts(
     spareParts,
     container,
+    tableInventory,
     verifyIds,
     onAddSparePart
 ) {
-    if (!container) return;
+    if (!container || !tableInventory) return;
 
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
@@ -35,7 +48,7 @@ export function insertSpareParts(
 
         td.colSpan = 5;
         td.textContent = "No hay datos disponibles";
-        td.classList.add("no-data-message");
+        td.classList.add("noDataMessage");
         td.style.textAlign = "center";
         td.style.padding = "15px";
         td.style.color = "#777";
@@ -43,14 +56,14 @@ export function insertSpareParts(
         tr.appendChild(td);
         fragment.appendChild(tr);
 
-        const tableEl = document.querySelector(".table");
-        if (tableEl) tableEl.style.height = "100%";
+        tableInventory.style.height = "100%";
 
         container.appendChild(fragment);
         return;
     }
 
     for (const sparePart of spareParts) {
+        tableInventory.style.height = "fit-content";
         if (verifyIds?.(sparePart.idSpareParts)) continue;
 
         const tr = document.createElement("tr");
@@ -60,6 +73,7 @@ export function insertSpareParts(
         const cost = document.createElement("td");
         const suggestedPriceTd = document.createElement("td");
 
+        console.log(sparePart);
         image.src = sparePart.photoUrl || "";
         name.textContent = sparePart.nameSpareParts || sparePart.sparePartName;
         cost.textContent = `$${formatWithCommas(sparePart.total || sparePart.totalCost || 0)}`;
@@ -82,7 +96,7 @@ export function insertSpareParts(
 }
 
 
-let createBtnAdd = (sparePart, tr, onAddSparePart) => {
+function createBtnAdd (sparePart, tr, onAddSparePart) { 
     const btnAddSparePart = document.createElement("button");
     btnAddSparePart.classList.add("btnAddItem");
     btnAddSparePart.textContent = "+";
@@ -120,7 +134,7 @@ export function createRowTable(container, sparePart, onDeleteSparePart, onWriteP
 
 }
 
-let addEventsPrice = (price, id, onWritePrice) => {
+const addEventsPrice = (price, id, onWritePrice) => {
     price.contentEditable = "plaintext-only";  // ← FIX DEL CURSOR
     formatDecimalInput(price);
 
@@ -135,7 +149,7 @@ let addEventsPrice = (price, id, onWritePrice) => {
     });
 }
 
-let createTrashOption = (container, tr, id, idSaleItem, onDeleteSparePart) => {
+const createTrashOption = (container, tr, id, idSaleItem, onDeleteSparePart) => {
     const btnTrash = document.createElement("button");
     btnTrash.className = "btnTrash";
     btnTrash.type = "button";
@@ -154,7 +168,7 @@ let createTrashOption = (container, tr, id, idSaleItem, onDeleteSparePart) => {
     return btnTrash;
 }
 
-export let createNoDataSelectedMessage = (container) => {
+export const createNoDataSelectedMessage = (container) => {
     const trNoData = document.createElement("tr");
     trNoData.classList.add("rowNoData");
     const tdNoData = document.createElement("td");
@@ -165,11 +179,11 @@ export let createNoDataSelectedMessage = (container) => {
     container.appendChild(trNoData);
 }
 
-export let loadCustomerName = (customerName) => {
-    $("customerName").textContent = customerName;
+export const loadCustomerName = (spancustomerName, customerName) => {
+    spancustomerName.textContent = customerName;
 }
 
-export let loadBtnOrder = (customerId, customerName, idSale) => {
+export const loadBtnOrder = (customerId, customerName, idSale) => {
     let url = `sparePartsDetails.html?sale=true&idCustomer=${customerId}&customerName=${encodeURIComponent(customerName)}`;
 
     if (idSale != null && idSale !== '') {
@@ -180,34 +194,29 @@ export let loadBtnOrder = (customerId, customerName, idSale) => {
 };
 
 
-export let loadDomData = (notes) => {
-    $("txtNotes").value = notes;
-    $("btnSaveSale").querySelector("span").textContent = "Actualizar venta";
+export const loadDomData = (txtNotes, btnSaveSale, notes) => {
+    txtNotes.value = notes;
+    btnSaveSale.querySelector("span").textContent = "Actualizar venta";
 }
 
-export let loadNotes = (notes) => {
-    $("txtNotes").value = notes;
+export const loadNotes = (txtNotes, notes) => {
+    txtNotes.value = notes;
 }
 
 //A esto todavia le falta diseño
-export function renderTotals({ total, due, totalPaid }) {
-    const dueText = $("due");
-    const paidText = $('totalPaid');
-    const totalText = $('totalSale');
-    if (paidText) {
-        paidText.textContent = `$${formatWithCommas(totalPaid)}`
+export function renderTotals({ total, due, totalPaid }, Refs) {
+    if (Refs.totalPaid) {
+        Refs.totalPaid.textContent = `$${formatWithCommas(totalPaid)}`
     }
-    if (dueText) {
-        dueText.textContent = `$${formatWithCommas(due)}`;
+    if (Refs.due) {
+        Refs.due.textContent = `$${formatWithCommas(due)}`;
     }
-    if (totalText) {
-        totalText.textContent = `$${formatWithCommas(total)}`;
+    if (Refs.totalSale) {
+        Refs.totalSale.textContent = `$${formatWithCommas(total)}`;
     }
 }
 
-export const cleanPaymentCamps = () => {
-    const amountInput = $('txtAmount');
-    const methodSelect = $('paymentMethod');
-    if (amountInput) amountInput.value = '';
-    if (methodSelect) methodSelect.value = '';
+export const cleanPaymentCamps = (txtAmount, paymentMethod) => {
+    if (txtAmount) txtAmount.value = '';
+    if (paymentMethod) paymentMethod.value = '';
 }

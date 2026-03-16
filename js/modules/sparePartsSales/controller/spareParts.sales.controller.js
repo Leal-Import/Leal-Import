@@ -10,7 +10,6 @@ import { createPagination } from '../../../pagination/pagination.controller.js'
 
 import {
     showMessage,
-    $,
     showElement,
     hideElement,
     disableElement,
@@ -22,7 +21,7 @@ import { cleanPaymentCamps, createNoDataSelectedMessage, createRowTable, DOMRefs
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale, verifyIds } from '../../../core/logic/spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { getCurrentEmployeeId, initSession } from '../../../utils/api.utils.js';
-import { addNewPayment, initPaymentsController } from '../../payments/payments.controller.js';
+import { addNewPayment, initPaymentsController, onResetDomPayments } from '../../payments/payments.controller.js';
 import { safeParseFloat, validatePayment } from '../../../utils/validators.js';
 
 const pagination = createPagination({
@@ -50,7 +49,7 @@ export async function loadInventory() {
         spareSaleState.pagination.total = data.page.totalElements;
         spareSaleState.pagination.totalPages = data.page.totalPages;
 
-        insertSpareParts(spareSaleState.list, DOMRefs.refs.tableBody, verifyIds, onAddSparePart)
+        insertSpareParts(spareSaleState.list, DOMRefs.refs.tableBody,DOMRefs.refs.tableInventory, verifyIds, onAddSparePart)
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -67,7 +66,7 @@ export async function loadInventory() {
     }
 }
 
-let recalculateTotals = () => {
+const recalculateTotals = () => {
     const { total, due } = calculateTotals({
         items: spareSaleState.data.selectedItems,
         paid: spareSaleState.totals.totalPaid
@@ -76,10 +75,10 @@ let recalculateTotals = () => {
     spareSaleState.totals.total = total;
     spareSaleState.totals.due = due;
 
-    renderTotals({ total, due, totalPaid: spareSaleState.totals.totalPaid });
+    renderTotals({ total, due, totalPaid: spareSaleState.totals.totalPaid }, DOMRefs.refs);
 }
 
-let pushSparePart = (sparePart) => {
+const pushSparePart = (sparePart) => {
     if (verifyIds(sparePart.idSparePart)) return null;
     const normalizedPart = {
         idSparePart: sparePart.idSpareParts || sparePart.idSparePart,
@@ -91,7 +90,7 @@ let pushSparePart = (sparePart) => {
     return normalizedPart;
 }
 
-let onAddSparePart = (sparePart, tr) => {
+const onAddSparePart = (sparePart, tr) => {
     tr.remove();
     const partToAppend = pushSparePart(sparePart);
     if (partToAppend) {
@@ -101,7 +100,7 @@ let onAddSparePart = (sparePart, tr) => {
     }
 }
 
-let onDeleteSparePart = (container, tr, id, idSaleItem) => {
+const onDeleteSparePart = (container, tr, id, idSaleItem) => {
     const index = spareSaleState.data.selectedItems.findIndex(item => String(item.idSparePart) === String(id));
     if (index !== -1) spareSaleState.data.selectedItems.splice(index, 1);
     tr.remove();
@@ -110,6 +109,7 @@ let onDeleteSparePart = (container, tr, id, idSaleItem) => {
     if (idSaleItem) spareSaleState.data.itemsToDelete.push(idSaleItem);
     if (container.children.length === 0) {
         createNoDataSelectedMessage(container);
+        onResetDomPayments();
     }
     pagination.update({});
 }
@@ -158,26 +158,26 @@ async function onSubmitSpareSale(e) {
     }
 }
 const onAddPayment = () => {
-    const amount = $('txtAmount').value.trim();
-    const method = $('paymentMethod').value;
-    const errorMsg = validatePayment(safeParseFloat(amount), method);
+    const amount = DOMRefs.refs.txtAmount;
+    const method = DOMRefs.refs.paymentMethod;
+    const errorMsg = validatePayment(safeParseFloat(amount.value.trim()), method.value);
     if (errorMsg) {
         showMessage('Error de validación', errorMsg, 'warning');
         return;
     }
     const payment = {
-        amount: safeParseFloat(amount) || 0,
-        idPaymentMethod: method || null
+        amount: safeParseFloat(amount.value.trim()) || 0,
+        idPaymentMethod: method.value || null
     }
     addNewPayment({
         state: spareSaleState.data,
         totals: spareSaleState.totals,
         payment
     });
-    cleanPaymentCamps();
+    cleanPaymentCamps(amount, method);
 };
 
-let onWritePrice = (price, id) => {
+const onWritePrice = (price, id) => {
     const cleanValue = safeParseFloat(price.textContent) || 0;
     const item = spareSaleState.data.selectedItems.find(i => String(i.idSparePart) === String(id));
     if (item) item.priceApplied = cleanValue;
@@ -185,13 +185,13 @@ let onWritePrice = (price, id) => {
     saveSaleState();
 }
 
-let onOrderClick = (e) => {
+const onOrderClick = (e) => {
     e.preventDefault();
     saveSaleState();
     loadBtnOrder(spareSaleState.context.idCustomer, spareSaleState.context.customerName, spareSaleState.context.idSale || "")
 }
 
-let onSearchSparePart = (filters) => {
+const onSearchSparePart = (filters) => {
     spareSaleState.filters = {
         ...spareSaleState.filters,
         ...filters
@@ -201,7 +201,7 @@ let onSearchSparePart = (filters) => {
 }
 
 
-let saveSaleState = () => {
+const saveSaleState = () => {
     const toSave = {
         data: spareSaleState.data,
         totals: spareSaleState.totals
@@ -209,17 +209,17 @@ let saveSaleState = () => {
     localStorage.setItem(spareSaleState.saleKey, JSON.stringify(toSave));
 }
 
-let cleanWindow = () => {
+const cleanWindow = () => {
     localStorage.removeItem(spareSaleState.saleKey);
-    $("frmSparePartSale").reset();
+    DOMRefs.refs.frmSparePartSale.reset();
 }
 
-let onSaveNotes = (e) => {
+const onSaveNotes = (e) => {
     spareSaleState.data.notes = e.target.value || '';
     saveSaleState();
 }
 
-let loadOrderSparePart = () => {
+const loadOrderSparePart = () => {
     const newSparePart = {
         idSparePart: spareSaleState.context.newPartId,
         sparePartName: spareSaleState.context.newPartName,
@@ -233,15 +233,15 @@ let loadOrderSparePart = () => {
     }
 }
 
-let existSavedData = () => {
+const existSavedData = () => {
     return localStorage.getItem(spareSaleState.saleKey) !== null;
 }
 
-async function loadExistingSale() {
+async function loadExistingSale(txtNotes, btnSaveSale) {
     const sale = await getSparePartById(spareSaleState.context.idSale);
 
     spareSaleState.data.notes = sale.notes || '';
-    loadDomData(spareSaleState.data.notes);
+    loadDomData(txtNotes, btnSaveSale, spareSaleState.data.notes);
     const partsToAppend = [];
     sale.sparePartItems.forEach(part => {
         partsToAppend.push(pushSparePart(part));
@@ -262,12 +262,12 @@ async function loadExistingSale() {
     recalculateTotals();
 }
 
-let loadDraft = () => {
+const loadDraft = (txtNotes) => {
     const item = localStorage.getItem(spareSaleState.saleKey);
     const storageItem = JSON.parse(item);
     spareSaleState.data = storageItem.data;
     spareSaleState.totals = storageItem.totals;
-    loadNotes(spareSaleState.data.notes);
+    loadNotes(txtNotes, spareSaleState.data.notes);
     spareSaleState.data.selectedItems.forEach(part => {
         createRowTable(DOMRefs.refs.tBodySelected, part, onDeleteSparePart, onWritePrice);
     });
@@ -278,7 +278,7 @@ let loadDraft = () => {
     saveSaleState();
 }
 
-let cleanOneShotParams = () => {
+const cleanOneShotParams = () => {
     const url = new URL(window.location.href);
 
     // parámetros de acción (one-shot)
@@ -306,17 +306,17 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = async () => {
-    loadCustomerName(spareSaleState.context.customerName);
-    initSpareSaleEvents({ onSubmitSpareSale, onAddPayment, onSearchSparePart, onOrderClick, onSaveNotes });
+const initializeUI = async (Refs) => {
+    loadCustomerName(Refs.customerName, spareSaleState.context.customerName);
+    initSpareSaleEvents({ Refs, onSubmitSpareSale, onAddPayment, onSearchSparePart, onOrderClick, onSaveNotes });
     await initPaymentsController({ totalCalculator: recalculateTotals, onStateChange: saveSaleState })
 };
 
-const loadDataFlow = async () => {
+const loadDataFlow = async (Refs) => {
     if (spareSaleState.context.idSale) {
-        await loadExistingSale();
+        await loadExistingSale(Refs.txtNotes, Refs.btnSaveSale);
     } else if (existSavedData()) {
-        loadDraft();
+        loadDraft(Refs.txtNotes);
     }
     
     // 2. Agregar nuevo repuesto SOLO después
@@ -332,11 +332,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
-        await initializeUI();
+        await initializeUI(refs);
 
-        await loadDataFlow();
+        await loadDataFlow(refs);
     } catch (error) {
         console.error('Error inicializando la aplicación: ', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');

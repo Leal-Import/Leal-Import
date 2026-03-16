@@ -1,54 +1,61 @@
 import { formatWithCommas } from "../../utils/formatters.js";
 import { $, qs } from "../../utils/dom.js";
 
-const pictureSparePart = $('pictureSparePart');
-const name = $('name');
-const brand = $('brand');
-const model = $('model');
-const year = $('year');
-const status = $('status');
-const suggestedPrice = $('suggestedPrice');
-const tracking = $('tracking');
-const purchasePrice = $('purchasePrice');
-const taxes = $('taxes');
-const totalCost = $('totalCost');
+export const DOMRefs = {
+    refs: {},
 
-const btnEditSparePart = $("btnEditSparePart");
-const btnSellSparePart = $("btnSellSparePart");
-const statusPart = qs(".statusBadgeSparePart");
+    init() {
+        this.refs = {
+            pictureSparePart: $('pictureSparePart'),
+            name: $('name'),
+            brand: $('brand'),
+            model: $('model'),
+            year: $('year'),
+            status: $('status'),
+            suggestedPrice: $('suggestedPrice'),
+            tracking: $('tracking'),
+            purchasePrice: $('purchasePrice'),
+            taxes: $('taxes'),
+            totalCost: $('totalCost'),
+            btnEditSparePart: $('btnEditSparePart'),
+            btnSellSparePart: $('btnSellSparePart'),
+            statusPart: qs('.statusBadgeSparePart'),
+            btnGeneratePdf: $("btnGeneratePdf")
+        };
 
-export const loadSparePart = (sparePart) => {
-    loadSparePartInfo(sparePart);
-    loadDownButtons(sparePart);
+        return this.refs;
+    }
+};
+
+export const loadSparePart = (sparePart, Refs) => {
+    loadSparePartInfo(sparePart, Refs);
+    loadDownButtons(sparePart, Refs);
 }
 
-const loadDownButtons = (sparePart) => {
-    btnEditSparePart.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
-    btnSellSparePart.href = `addCustomerSale.html?type=sparePart&id=${sparePart.idSparePart}&`
-    console.log(statusPart)
-    if (sparePart.status == "Disponible") {
-        statusPart.querySelector(".statusTextSparePart").textContent = "Disponible";
-        statusPart.classList.add("aviable");
-    } else if (sparePart.status == "Vendido") {
-        statusPart.querySelector(".statusTextSparePart").textContent = "Vendido";
-        statusPart.classList.add("sold");
-    } else {
-
+const loadDownButtons = (sparePart, Refs) => {
+    Refs.btnEditSparePart.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
+    Refs.btnSellSparePart.href = `addCustomerSale.html?type=sparePart&newSparePartId=${sparePart.idSparePart}&newSparePartName=${encodeURIComponent(sparePart.nameSpareParts)}&newSuggestedPrice=${sparePart.sparePartsCosts.suggestedPrice}`;
+    if (sparePart.status === "Disponible") {
+        Refs.statusPart.querySelector(".statusTextSparePart").textContent = "Disponible";
+        Refs.statusPart.classList.add("aviable");
+    } else if (sparePart.status === "Vendido") {
+        Refs.statusPart.querySelector(".statusTextSparePart").textContent = "Vendido";
+        Refs.statusPart.classList.add("sold");
     }
 }
 
-const loadSparePartInfo = (sparePart) => {
-    pictureSparePart.src = sparePart.photoUrl;
-    name.textContent = sparePart.nameSpareParts;
-    sparePart.billUrl ? name.href = sparePart.billUrl : null;
-    brand.textContent = sparePart.brand;
-    model.textContent = sparePart.model;
-    year.textContent = sparePart.yearPart;
-    status.textContent = sparePart.state;
-    suggestedPrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.suggestedPrice)}`;
-    tracking.textContent = sparePart.tracking.numTracking;
-    sparePart.tracking.linkTracking ? tracking.href = sparePart.tracking.linkTracking : null;
-    purchasePrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.purchasePrice)}`;
-    taxes.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.taxes)}`;
-    totalCost.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.totalCost)}`;
+const loadSparePartInfo = (sparePart, Refs) => {
+    Refs.pictureSparePart.src = sparePart.photoUrl;
+    Refs.name.textContent = sparePart.nameSpareParts;
+    sparePart.billUrl ? Refs.name.href = sparePart.billUrl : null;
+    Refs.brand.textContent = sparePart.brand;
+    Refs.model.textContent = sparePart.model;
+    Refs.year.textContent = sparePart.yearPart;
+    Refs.status.textContent = sparePart.state;
+    Refs.suggestedPrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.suggestedPrice)}`;
+    Refs.tracking.textContent = sparePart.tracking.numTracking;
+    sparePart.tracking.linkTracking ? Refs.tracking.href = sparePart.tracking.linkTracking : null;
+    Refs.purchasePrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.purchasePrice)}`;
+    Refs.taxes.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.taxes)}`;
+    Refs.totalCost.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.totalCost)}`;
 }

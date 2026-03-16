@@ -1,5 +1,5 @@
 import { formatDecimalInput, formatWithCommas, formatOnFocus, formatOnBlur } from "../../utils/formatters.js";
-import { $, existsById, hideElement, qs, qsa, showElement } from "../../utils/dom.js";
+import { $, existsById, qs, qsa, showElement } from "../../utils/dom.js";
 
 export const DOMRefs = {
     refs: {},
@@ -11,14 +11,36 @@ export const DOMRefs = {
             dtEstimated: $("dtEstimated"),
             boxServ: $("suggestionsService"),
             boxSparePart: $("suggestionsSpareParts"),
-            tBodySpareParts: $("tBodySpareParts"),
-            tBodyServices: $("tBodyServices"),
-            txtAddSparePart: $("txtSearchSparePart"),
+            txtSearchSparePart: $("txtSearchSparePart"),
             txtAddService: $("txtAddService"),
+            separator: $("separator"),
             loaderAddOrder: $("loaderAddOrder"),
             btnSaveOrder: $("btnSaveOrder"),
+            btnAddPayment: $("btnAddPayment"),
+            frmWorkOrder: $("frmWorkOrder"),
+            txtNotes: $("txtNotes"),
+            tBodySpareParts: $("tBodySpareParts"),
+            tBodyServices: $("tBodyServices"),
+            totalCost: $("totalCost"),
+            totalRepairCost: $("totalRepairCost"),
+            vehiclePrice: $("vehiclePrice"),
+            totalValueSpareParts: $("totalValueSpareParts"),
+            totalValueService: $("totalValueService"),
+            totalOrder: $("totalOrder"),
+            totalPaid: $("totalPaid"),
+            due: $("due"),
+            firstBread: $("firstBread"),
+            secondBread: $("secondBread"),
+            paymentForm: qs(".paymentForm"),
+            year: $("year"),
+            brand: $("brand"),
+            model: $("model"),
+            vin: $("vin"),
+            txts: qsa(".rightColumn .txtInputs"),
+            txtTotal: $("txtTotal"),
             btnCompleteOrder: $("btnCompleteOrder"),
-            loaderCompleteOrder: $("loaderCompleteOrder")
+            loaderCompleteOrder: $("loaderCompleteOrder"),
+            btnGeneratePdf: $("btnGeneratePdf")
         };
         return this.refs;
     }
@@ -33,61 +55,37 @@ const SELECTORS = {
     BTN_TRASH: '.btnTrash'
 };
 
-export const loadViewUpdateOrder = (vin) => {
-    $("btnSaveOrder").querySelector("span").textContent = "Actualizar";
-    $("firstBread").textContent = "Actualizar orden >";
-    $("firstBread").href = "workOrders.html";
-    $("secondBread").textContent = vin;
+export const loadViewUpdateOrder = (vin, Refs) => {
+    Refs.btnSaveOrder.querySelector("span").textContent = "Actualizar";
+    Refs.firstBread.textContent = "Actualizar orden >";
+    Refs.firstBread.href = "workOrders.html";
+    Refs.secondBread.textContent = vin;
 }
 
-export const loadViewSaleInfo = (vin) => {
-    qs(".btnSubmitData").value = "Agregar orden + venta";
-    $("firstBread").textContent = "Ventas >";
-    $("firstBread").href = "sales.html";
-    $("secondBread").textContent = vin;
+export const loadViewSaleInfo = (vin, Refs) => {
+    Refs.firstBread.textContent = "Ventas >";
+    Refs.firstBread.href = "sales.html";
+    Refs.secondBread.textContent = vin;
 }
 
-export const renderVehicleData = (data) => {
+export const renderVehicleData = (data, Refs) => {
     if (!data) return;
-    if ($('vin')) $('vin').textContent = data.vin || '-';
-    if ($('model')) $('model').textContent = data.model || '-';
-    if ($('brand')) $('brand').textContent = data.brand || '-';
-    if ($('year')) $('year').textContent = data.year || '-';
+    if (Refs.vin) Refs.vin.textContent = data.vin || '-';
+    if (Refs.model) Refs.model.textContent = data.model || '-';
+    if (Refs.brand) Refs.brand.textContent = data.brand || '-';
+    if (Refs.year) Refs.year.textContent = data.year || '-';
 }
 
-export const loadViewDom = (onCompleteOrder) => {
-    const txts = qsa(".rightColumn .txtInputs");
-    txts.forEach(txt => {
+export const loadViewDom = (Refs) => {
+    Refs.txts.forEach(txt => {
         txt.disabled = true;
     })
-    hideElement(qs(".paymentForm"));
-    hideElement($("txtSearchSparePart"));
-    hideElement($("txtAddService"));
-    $("firstBread").textContent = "Ver orden >";
-    const btnCompleteOrder = createCompleteBtn(onCompleteOrder);
-    $("btnSaveOrder").replaceWith(btnCompleteOrder);
+    Refs.firstBread.textContent = "Ver orden >";
 }
 
-const createCompleteBtn = (onCompleteOrder) => {
-    const btn = document.createElement("button");
-    const text = document.createElement("span");
-    const loader = document.createElement("div");
-    loader.classList.add("loader", "hide");
-    loader.id = "loaderCompleteOrder";
-    btn.id = "btnCompleteOrder";
-    btn.type = "button";
-    btn.classList.add("btnPrimary");
-    text.textContent = "Completar orden";
-    btn.append(text, loader);
-    btn.addEventListener("click", onCompleteOrder)
-    return btn;
-}
-
-export const cleanPaymentCamps = () => {
-    const amountInput = $('txtAmount');
-    const methodSelect = $('paymentMethod');
-    if (amountInput) amountInput.value = '';
-    if (methodSelect) methodSelect.value = '';
+export const cleanPaymentCamps = (txtAmount, paymentMethod) => {
+    if (txtAmount) txtAmount.value = '';
+    if (paymentMethod) paymentMethod.value = '';
 }
 
 const MIN_STATIC_ROWS = 7;
@@ -147,19 +145,19 @@ export function renderServiceSuggestions(selectedServices, boxServ, list, onAddS
 const findOrCreateEmptyRow = (tBody) => {
     let emptyRow = [...tBody.querySelectorAll('tr')]
         .find(r => r.querySelector(SELECTORS.TD_NAME)?.textContent.trim() === '');
-    
+
     if (!emptyRow) {
         emptyRow = createEmptyRow();
         tBody.appendChild(emptyRow);
     }
-    
+
     return emptyRow;
 };
 
 const setupPriceCell = (priceCell, data, onWritePrice, isView) => {
     priceCell.textContent = `$${formatWithCommas(data.priceApplied)}`;
     priceCell.classList.add('finalPrice');
-    
+
     if (!isView) {
         priceCell.setAttribute('contenteditable', 'true');
         formatDecimalInput(priceCell);
@@ -260,7 +258,7 @@ export function reindexTable(tBody) {
     tBody.appendChild(frag);
 }
 
-export function renderImportButton(tBody, onImport) {
+export function renderImportButton(tBody, onImport, tBodyServices, tBodySpareParts) {
     if (!tBody) return;
 
     tBody.querySelectorAll(SELECTORS.BTN_IMPORT).forEach(b => b.remove());
@@ -271,7 +269,7 @@ export function renderImportButton(tBody, onImport) {
     );
 
     if (!targetRow) {
-        addRowToBothTables();
+        addRowToBothTables(tBodyServices, tBodySpareParts);
         targetRow = [...tBody.querySelectorAll('tr')]
             .find(r => r.querySelector(SELECTORS.TD_NAME)?.textContent.trim() === '' && r.querySelector(SELECTORS.TD_PRICE)?.textContent.trim() === '');
     }
@@ -288,18 +286,15 @@ export function renderImportButton(tBody, onImport) {
 }
 
 
-export function renderTotalsPanel({ total, due, totalPaid }) {
-    const dueText = $("due");
-    const paidText = $('totalPaid');
-    const totalText = $('totalOrder');
-    if (paidText) {
-        paidText.textContent = `$${formatWithCommas(totalPaid)}`
+export function renderTotalsPanel({ total, due, totalPaid }, Refs) {
+    if (Refs.totalPaid) {
+        Refs.totalPaid.textContent = `$${formatWithCommas(totalPaid)}`
     }
-    if (dueText) {
-        dueText.textContent = `$${formatWithCommas(due)}`;
+    if (Refs.due) {
+        Refs.due.textContent = `$${formatWithCommas(due)}`;
     }
-    if (totalText) {
-        totalText.textContent = `$${formatWithCommas(total)}`;
+    if (Refs.totalOrder) {
+        Refs.totalOrder.textContent = `$${formatWithCommas(total)}`;
     }
 }
 
@@ -307,7 +302,7 @@ export const cleanRow = (row) => {
     const tdName = row.querySelector(SELECTORS.TD_NAME);
     const tdPrice = row.querySelector(SELECTORS.TD_PRICE);
     const btnTrash = row.querySelector(SELECTORS.BTN_TRASH);
-    
+
     if (tdName) tdName.textContent = "";
     if (tdPrice) {
         tdPrice.textContent = "";
@@ -324,55 +319,45 @@ export const renderTotals = ({
     due,
     orderTotal,
     vehiclePrice
-}) => {
-    renderTotalServices(servicesTotal);
-    renderTotalSpareParts(sparePartsTotal)
-    renderTotalRepairCost(total);
-    renderTotalsPanel({ total, due, totalPaid });
-    renderOrderTotal(orderTotal);
-    renderVehiclePrice(vehiclePrice);
+}, Refs) => {
+    renderTotalServices(servicesTotal, Refs.totalValueService);
+    renderTotalSpareParts(sparePartsTotal, Refs.totalValueSpareParts)
+    renderTotalRepairCost(total, Refs.totalRepairCost, Refs.txtTotal);
+    renderTotalsPanel({ total, due, totalPaid }, Refs);
+    renderOrderTotal(orderTotal, Refs.totalCost);
 }
 
-export const renderTotalServices = (servicesTotal) => {
-    const totalService = $('totalValueService');
-    if (totalService) totalService.textContent = `$${formatWithCommas(servicesTotal)}`;
+export const renderTotalServices = (servicesTotal, spanTotal) => {
+    if (spanTotal) spanTotal.textContent = `$${formatWithCommas(servicesTotal)}`;
 }
 
-export const renderTotalSpareParts = (sparePartsTotal) => {
-    const totalSpareParts = $('totalValueSpareParts');
-    if (totalSpareParts) totalSpareParts.textContent = `$${formatWithCommas(sparePartsTotal)}`;
+export const renderTotalSpareParts = (sparePartsTotal, spanTotal) => {
+    if (spanTotal) spanTotal.textContent = `$${formatWithCommas(sparePartsTotal)}`;
 }
 
-export const renderTotalRepairCost = (total) => {
-    const totalRepairCost = $('totalRepairCost');
-    const txtTotal = $('txtTotal');
-    if (totalRepairCost) totalRepairCost.textContent = `$${formatWithCommas(total)}`;
+export const renderTotalRepairCost = (total, spanTotal, txtTotal) => {
+    if (spanTotal) spanTotal.textContent = `$${formatWithCommas(total)}`;
     if (txtTotal) txtTotal.value = `$${formatWithCommas(total)}`;
 }
 
-export const loadExtraInputs = (notes, date) => {
-    const dtEstimated = $("dtEstimated");
-    const txtNotes = $("txtNotes");
-    
-    if (dtEstimated) dtEstimated.value = date;
-    if (txtNotes) txtNotes.value = notes || '';
+export const loadExtraInputs = (notes, date, Refs) => {
+    if (Refs.dtEstimated) Refs.dtEstimated.value = date;
+    if (Refs.txtNotes) Refs.txtNotes.value = notes || '';
 }
 
-export const renderOrderTotal = (orderTotal) => {
-    const element = $("totalCost");
-    if (element) element.textContent = `$${formatWithCommas(orderTotal)}`;
+export const renderOrderTotal = (orderTotal, spanTotal) => {
+    if (spanTotal) spanTotal.textContent = `$${formatWithCommas(orderTotal)}`;
 }
 
-export const renderVehiclePrice = (vehiclePrice) => {
-    const element = $("vehiclePrice");
-    if (element) element.textContent = `$${formatWithCommas(vehiclePrice)}`;
+export const renderVehiclePrice = (vehiclePrice, spanVehiclePrice) => {
+    if (spanVehiclePrice) spanVehiclePrice.textContent = `$${formatWithCommas(vehiclePrice) || 0.00}`;
 }
 
 function createEmptyRow() {
     const tr = document.createElement('tr');
-    const tdName = document.createElement('td'); 
+    const tdName = document.createElement('td');
     tdName.classList.add(SELECTORS.TD_NAME.slice(1));
-    const tdPrice = document.createElement('td'); 
+    const tdPrice = document.createElement('td');
     tdPrice.classList.add(SELECTORS.TD_PRICE.slice(1));
     const tdTrash = document.createElement("td");
     tdTrash.classList.add(SELECTORS.TD_TRASH.slice(1));
@@ -380,9 +365,7 @@ function createEmptyRow() {
     return tr;
 }
 
-export function addRowToBothTables() {
-    const tBodyServices = $('tBodyServices');
-    const tBodyParts = $('tBodySpareParts');
+export function addRowToBothTables(tBodyServices, tBodySpareParts) {
     if (tBodyServices) tBodyServices.appendChild(createEmptyRow());
-    if (tBodyParts) tBodyParts.appendChild(createEmptyRow());
+    if (tBodySpareParts) tBodySpareParts.appendChild(createEmptyRow());
 }

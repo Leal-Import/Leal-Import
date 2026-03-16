@@ -1,19 +1,14 @@
-import { updateModalContent } from "../../../core/dom/picAmounts.dom.js";
-import { $, qs } from "../../../utils/dom.js";
+import { updateModalContent, DOMRefs, closeLightbox } from "../../../core/dom/picAmounts.dom.js";
+import { picsAmountState } from "../../../core/state/picsAmount.state.js";
+import { $, hideElement } from "../../../utils/dom.js";
 import { initModalListeners } from "../event/picsAmount.event.js";
 
-const inputIdField = $('currentReceiptInputId');
-const modalContainer = qs('.containerModal');
-
-let paymentsState = null;
-
-
 export let clearCurrentFile = () => {
-    const paymentId = modalContainer.dataset.paymentId;
+    const paymentId = DOMRefs.refs.modalContainer.dataset.paymentId;
     if (!paymentId) return;
 
     // 🔑 Buscar el payment real en el estado
-    const payment = paymentsState.payments
+    const payment = picsAmountState.paymentsState.payments
         .find(p => String(p.id) === String(paymentId));
 
     if (!payment) return;
@@ -22,13 +17,13 @@ export let clearCurrentFile = () => {
     payment.file = null;
 
     // Limpieza visual
-    const inputElement = document.getElementById(inputIdField.value);
+    const inputElement = $(DOMRefs.refs.currentReceiptInputId.value);
     if (inputElement) inputElement.value = '';
 
     const btn = inputElement?.nextElementSibling;
     btn?.classList.remove("receipt-loaded");
     btn.innerHTML = `<span class="icon">Añadir comprobante</span>`;
-    updateModalContent(null, payment);
+    updateModalContent(null, payment, DOMRefs.refs);
 };
 
 
@@ -36,11 +31,11 @@ export let selectFile = (e, payment) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const inputId = inputIdField.value;
+    const inputId = DOMRefs.refs.currentReceiptInputId.value;
     const paymentItem = $(inputId).closest('.paymentItem');
     // Guardar archivo en selectedAmounts
     payment.file = file;
-    updateModalContent(null, payment);
+    updateModalContent(null, payment, DOMRefs.refs);
 
     // Actualizar botón del abono para indicar que hay archivo
     $(inputId).dataset.payId = payment.id;
@@ -50,12 +45,12 @@ export let selectFile = (e, payment) => {
 }
 
 export const closeModalAndClean = () => {
-    qs(".containerModal").classList.add('hide');
-    inputIdField.value = '';
+    hideElement(DOMRefs.refs.modalContainer);
+    DOMRefs.refs.currentReceiptInputId.value = '';
 };
 
 export const onClickBtnSelect = () => {
-    const inputElement = $(inputIdField.value);
+    const inputElement = $(DOMRefs.refs.currentReceiptInputId.value);
     if (inputElement) {
         // Limpiamos el valor para forzar el evento 'change' si selecciona el mismo archivo
         inputElement.value = '';
@@ -63,7 +58,13 @@ export const onClickBtnSelect = () => {
     }
 }
 
-export const initializeModalListeners = (state) => {
-    paymentsState = state; // 👈 inyección de estado
-    initModalListeners({ clearCurrentFile, closeModalAndClean, onClickBtnSelect });
+export const initializeModalListeners = (state, isViewingReceipt) => {
+    picsAmountState.paymentsState = state; // 👈 inyección de estado
+    picsAmountState.isViewingReceipt = isViewingReceipt;
+    const refs = DOMRefs.init();
+    initModalListeners({ Refs: refs, clearCurrentFile, closeModalAndClean, onClickBtnSelect, onCloseLightbox: () => closeLightbox(refs.voucherLightbox) });
+    if (picsAmountState.isViewingReceipt) {
+        hideElement(refs.btnClearFile);
+        hideElement(refs.btnSelectFile);
+    }
 }

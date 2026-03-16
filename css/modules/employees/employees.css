@@ -27,6 +27,10 @@
 }
 @container content (max-width: 950px) {
 
+    .containerTable{
+        min-height: 400px;
+    }
+
     /* Ocultar thead */
     .table thead {
         display: none;
@@ -181,9 +185,6 @@
 
 /* Móviles pequeños (< 500px) */
 @media screen and (max-width: 499px) {
-    .content {
-        padding: 70px 15px 15px;
-    }
 
     .table tbody tr {
         padding: 15px;

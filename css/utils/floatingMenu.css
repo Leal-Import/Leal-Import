@@ -27,7 +27,7 @@
 
 .floatingMenuButton:hover {
     background-color: var(--danger-color);
-    color: var(--bg-color-white);
+    color: var(--text-color-light);
 }
 
 

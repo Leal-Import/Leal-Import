@@ -1,10 +1,10 @@
-import { getCookie } from "../utils/api.utils.js";
+import { API_BASE_URL } from "../utils/api.utils.js";
 
-const API_URL = "http://127.0.0.1:8080/api/employees";
-const API_URLR = "http://127.0.0.1:8080/api/roles";
-const API_URLUS = "http://127.0.0.1:8080/api/users";
+const API_URL = `${API_BASE_URL}/employees`;
+const API_URLR = `${API_BASE_URL}/roles`;
+const API_URLUS = `${API_BASE_URL}/users`;
 
-export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "", status = "") => {
+export const getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "", status = "") => {
 
     try {
         const params = new URLSearchParams({ page, size, search, idRole, status })
@@ -23,14 +23,13 @@ export let getActiveEmployees = async (page = 0, size = 15, search = "", idRole 
     }
 };
 
-export let postEmployee = async (employeeData) => {
+export const postEmployee = async (employeeData) => {
     try {
         const request = await fetch(`${API_URL}/postEmployee`, {
             method: 'POST',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json',
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(employeeData),
         });
@@ -69,16 +68,15 @@ export let postEmployee = async (employeeData) => {
     }
 };
 
-export const patchEmployee = async (obj, value) => {
+export const patchEmployee = async (username, value) => {
     try {
         const response = await fetch(
-            `${API_URLUS}/${obj.username}/status?value=${value}`,
+            `${API_URLUS}/${username}/status?value=${value}`,
             {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                    'Content-Type': 'application/json'
                 }
             }
         );
@@ -112,14 +110,13 @@ export const patchEmployee = async (obj, value) => {
 };
 
 
-export let putEmployee = async (employeeData, id) => {
+export const putEmployee = async (employeeData, id) => {
     try {
         const request = await fetch(`${API_URL}/putEmployee/${id}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json',
-                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(employeeData),
         });
@@ -158,7 +155,7 @@ export let putEmployee = async (employeeData, id) => {
 };
 
 // GET para obtener los roles del empleado
-export let getRoles = async () => {
+export const getRoles = async () => {
     try {
         const request = await fetch(`${API_URLR}/getRoles`, {
             credentials: 'include'

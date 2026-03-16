@@ -163,18 +163,25 @@ export const showFloatingMenu = (event, actions) => {
     }, 0);
 };
 
+const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 /* Mensajes globales (SweetAlert2) */
 export const showMessage = async (
     title,
     message,
     type = 'info',
-    isToast = false
+    isToast = false,
+    cancelButton = false
 ) => {
+    const dangerColor = cssVar('--danger-color');
+    const warningColor = cssVar('--warning-color');
+    const helperStatColor = cssVar('--helper-stat-color');
     let config = {
         icon: type,
         title,
         text: message,
-        confirmButtonColor: '#007bff'
+        showCancelButton: cancelButton,
+        cancelButtonColor: dangerColor || '#F44336',
+        confirmButtonColor: helperStatColor || '#007bff',
     };
 
     if (isToast) {
@@ -183,7 +190,7 @@ export const showMessage = async (
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
-            timer: 3000,
+            timer: 2000,
             timerProgressBar: true,
             didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer);
@@ -192,16 +199,16 @@ export const showMessage = async (
         };
     } else {
         if (type === 'error') {
-            config.confirmButtonColor = '#F44336';
+            config.confirmButtonColor = dangerColor || '#F44336';
         } else if (type === 'warning') {
-            config.confirmButtonColor = '#ffc107';
+            config.confirmButtonColor = warningColor || '#ff9800';
         } else if (type === 'success') {
             config.showConfirmButton = false;
             config.timer = 2000;
         }
     }
 
-    await Swal.fire(config);
+    return await Swal.fire(config);
 };
 
 export function enableFormUI(frm) {
@@ -220,9 +227,9 @@ export const setupModal = (
     const closeBtn = qs(closeBtnSelector);
     const modal = qs(modalSelector);
     const form = qs(formId);
-    
+
     if (!openBtn || !closeBtn || !modal) return;
-    
+
     openBtn.addEventListener("click", () => {
         if (typeof onClose === 'function') {
             onClose(); // ← limpia selectedId
@@ -233,7 +240,7 @@ export const setupModal = (
         modal.querySelector(".btnAddData").querySelector("span").textContent = "Agregar";
         enableFormUI(formId);
     });
-    
+
     const closeHandler = () => {
         toggleModal(modal, false);
         form?.reset();

@@ -13,10 +13,10 @@
 </head>
 
 <body>
+    <div class="containerMobileHeader"></div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
-            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadcrumbSection">
                     <a href="spareParts.html" class="breadcrumb">Repuestos ></a>
@@ -78,8 +78,7 @@
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Costo total:</span>
-                                    <span id="totalCost" class="value redColor"
-                                        style="font-weight: var(--font-weight-medium);"></span>
+                                    <span id="totalCost" class="value redColor"></span>
                                 </div>
                             </div>
                         </div>
@@ -94,6 +93,10 @@
                     <span class="statusTextSparePart">Disponible</span>
                 </div>
                 <div class="btnGroupSparePart">
+                    <button type="button" class="btnActionSparePart btnDangerSparePart" id="btnGeneratePdf">
+                        <span>📄</span>
+                        <span>Reporte del repuesto</span>
+                    </button>
                     <a type="button" class="btnActionSparePart btnSecondarySparePart" id="btnEditSparePart">
                         <span class="btnIconSparePart">✏️</span>
                         <span>Editar</span>
@@ -105,7 +108,9 @@
             </div>
         </div>
     </div>
-    <script src="../js/sidebar.js"></script>
+    <script src="../js/components/sidebar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/spareParts/controller/spareParts.view.controller.js"></script>
 </body>

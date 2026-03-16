@@ -15,6 +15,12 @@
     flex-basis: 900px;
 }
 
+.btnSecondary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 /* ============================================
    BREADCRUMB SECTION
    ============================================ */
@@ -41,13 +47,13 @@
     gap: 20px;
 }
 
-/* ============================================
-   VEHICLE VIEW CONTAINER (OVERLAY)
-   ============================================ */
-
 .filterSection {
     justify-content: space-between;
 }
+
+/* ============================================
+   VEHICLE VIEW CONTAINER (OVERLAY)
+   ============================================ */
 
 .viewVechicleContainer {
     padding: 20px 0;
@@ -63,6 +69,18 @@
     animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/*Estilos especificos del carrucel*/
+
+.containerCarousel{
+    flex-direction: row-reverse !important;
+    flex-wrap: wrap;
+    height: fit-content;
+}
+
+#mainSwiper, #thumbnailImagesContainer{
+    flex: 1 350px !important;
+}
+
 .swiper-slide {
     width: 100% !important;
     /* Antes estaba "auto" → CAUSABA EL BUG */
@@ -71,16 +89,6 @@
     justify-content: center;
     align-items: center;
 }
-
-#mainSwiper {
-    padding: 5px;
-    width: 90%;
-    max-height: 250px;
-    border: 1px solid #8884;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
 #mainSwiper img {
     border: var(--border);
     width: 100%;
@@ -99,22 +107,6 @@
     max-width: 100px;
 }
 
-#thumbsSwiper {
-    height: 70px;
-    width: 90%;
-    padding: 5px;
-    background-color: var(--bg-color);
-    border-radius: var(--border-radius-input);
-}
-
-#thumbsSwiper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: solid 1px #888;
-    border-radius: 6px;
-}
-
 .vehicleInfo {
     flex: 2;
     display: flex;
@@ -128,39 +120,7 @@
 /* Images Section */
 .imagesSection {
     padding: 24px;
-    border-bottom: 2px solid #f1f3f5;
-}
-
-.vehicleImagesSection {
-    border-radius: 12px;
-    overflow: hidden;
-    background-color: var(--bg-color);
-}
-
-.swiper {
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.thumbnailImagesContainer {
-    margin-top: 16px;
-}
-
-.thumbs-swiper .swiper-slide {
-    cursor: pointer;
-    opacity: 0.6;
-    transition: all 0.3s ease;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.thumbs-swiper .swiper-slide:hover {
-    opacity: 0.8;
-}
-
-.thumbs-swiper .swiper-slide-thumb-active {
-    opacity: 1;
-    box-shadow: 0 0 0 3px #d32f2f;
+    border-bottom: var(--border);
 }
 
 .mainInfoContainer {
@@ -186,6 +146,7 @@
 
 .columnInfo h2 {
     border-bottom: var(--border);
+    color: var(--text-color);
     padding-bottom: 10px;
     text-align: center;
     font-weight: var(--font-weight-medium);

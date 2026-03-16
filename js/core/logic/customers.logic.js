@@ -1,6 +1,6 @@
 import { isValidPhone } from '../../utils/validators.js';
 
-export function validateCustomer(data) {
+export const validateCustomer = (data) => {
     const fullName = data.fullName || '';
     if (!fullName) {
         return 'El nombre es requerido';
@@ -25,7 +25,7 @@ export function validateCustomer(data) {
 }
 
 
-export function mapCustomerForm(formData) {
+export const mapCustomerForm = (formData) => {
     return {
         fullName: formData.txtFullName,
         dui: formData.txtCustomerDUI,

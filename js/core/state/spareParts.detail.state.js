@@ -19,8 +19,8 @@ export const sparePartDetailState = {
     },
 
     links: {
-        bill: null,
-        tracking: null
+        bill: "",
+        tracking: ""
     },
 
     costsId: null,

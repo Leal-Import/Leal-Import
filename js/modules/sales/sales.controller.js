@@ -1,10 +1,10 @@
 // modules/sales/sales.controller.js
 
-import { insertSales, selectLineButton, openAskModal, closeAskModal, DOMRefs } from "../../core/dom/sales.dom.js";
+import { insertSales, selectLineButton, DOMRefs } from "../../core/dom/sales.dom.js";
 import { salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
-import { fillSelect, showMessage } from "../../utils/dom.js";
+import { fillSelect, showMessage, toggleModal } from "../../utils/dom.js";
 import { initSession } from "../../utils/api.utils.js";
 import { hideElement, showElement } from "../../utils/dom.js";
 import { initSalesEvents } from "./sales.event.js";
@@ -22,7 +22,7 @@ const pagination = createPagination({
     }
 });
 
-let loadStateSales = async () => {
+const loadStateSales = async () => {
     try {
         const status = await getStateSales();
         salesState.stateList = status;
@@ -60,11 +60,15 @@ async function loadSales() {
     }
 }
 
+const onClickBtnFilter = (btn) => {
+    selectLineButton(btn, DOMRefs.refs.selectedLines);
+}
+
 /* ===============================
    FILTROS
 ================================ */
 
-export function onSearchSale(filters) {
+function onSearchSale(filters) {
     salesState.filters = {
         ...salesState.filters,
         ...filters
@@ -85,8 +89,8 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initSalesEvents({ onSearchSale, onClickBtnFilter: selectLineButton, onOpenModal: openAskModal, onCloseModal: closeAskModal });
+const initializeUI = (Refs) => {
+    initSalesEvents({ Refs, onSearchSale, onClickBtnFilter, onOpenModal: () => toggleModal(Refs.modalAskSale, true), onCloseModal: () => toggleModal(Refs.modalAskSale, false) });
 }
 
 const loadDataFlow = async () => {
@@ -98,9 +102,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        initializeUI();
+        const refs = DOMRefs.init();
 
-        DOMRefs.init();
+        initializeUI(refs);
 
         await loadDataFlow();
     } catch (error) {

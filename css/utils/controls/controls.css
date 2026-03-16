@@ -81,7 +81,7 @@
     min-width: 120px;
 }
 
-.btnPrimary:disabled {
+.btnPrimary:disabled, .btnSecondary:disabled {
     opacity: .5;
 }
 

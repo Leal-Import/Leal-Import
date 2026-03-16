@@ -1,23 +1,34 @@
-import { setupModal, $ } from '../../utils/dom.js';
+import { setupModal } from '../../utils/dom.js';
 import { formatDUIInput, formatPhoneNumber } from '../../utils/formatters.js';
 
-let searchTimeout = null;
 
-export function initCustomerEvents({ onSubmitCustomer, onSearchCustomer, onCleanState }) {
+export function initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal }) {
 
-    const frmCustomers = $("frmCustomers");
-    const txtSearchCustomer = $("txtSearchData");
-    const txtCustomerPhone = $("txtCustomerPhone");
-    const txtCustomerDUI = $("txtCustomerDUI");
+    let pointerDownOnOverlay = false;
+    let searchTimeout = null;
+    const { frmCustomers, txtCustomerPhone, txtCustomerDUI, txtSearchData, cmbSearchByStatus, modalCustomers, btnCloseModalCustomer, btnOpenModalCustomer } = Refs;
 
-    setupModal(
-        '#openModalCustomer',
-        '#modalCustomers',
-        '#closeAddCustomer',
-        '#frmCustomers',
-        'Agregar cliente',
-        onCleanState
-    );
+    const emiFilters = () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            onSearchCustomer({
+                search: txtSearchData.value.trim(),
+                status: cmbSearchByStatus.value
+            });
+        }, 1000);
+    }
+
+    btnOpenModalCustomer.addEventListener('click', onOpenModal);
+
+    btnCloseModalCustomer.addEventListener('click', onCloseModal);
+
+    modalCustomers.addEventListener('pointerdown', (e) => {
+        pointerDownOnOverlay = e.target === modalCustomers;
+    });
+    modalCustomers.addEventListener('pointerup', (e) => {
+        if (pointerDownOnOverlay && e.target === modalCustomers) onCloseModal();
+        pointerDownOnOverlay = false;
+    });
 
     frmCustomers.addEventListener("submit", onSubmitCustomer);
 
@@ -29,12 +40,6 @@ export function initCustomerEvents({ onSubmitCustomer, onSearchCustomer, onClean
         formatDUIInput(e.target);
     });
 
-    txtSearchCustomer.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            onSearchCustomer({
-                search: txtSearchCustomer.value.trim()
-            });
-        }, 1000);
-    });
+    txtSearchData.addEventListener('input', emiFilters);
+    cmbSearchByStatus.addEventListener('change', emiFilters);
 }

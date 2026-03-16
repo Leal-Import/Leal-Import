@@ -1,22 +1,18 @@
-import { $, qs } from "../../../utils/dom.js";
-
-
 /*Esta funcion inicializa los listeners del modal de comprobantes */
-export function initModalListeners({ clearCurrentFile, closeModalAndClean, onClickBtnSelect }) {
-    const modalContainer = qs('.containerModal');
-    const btnClose = $('closeVoucherModal');
-    const btnSelectFile = $('btnSelectFile');
-    const btnClearFile = $('btnClearFile');
+export function initModalListeners({ Refs, clearCurrentFile, closeModalAndClean, onClickBtnSelect, onCloseLightbox }) {
+    const { modalContainer, btnCloseVoucherModal, btnSelectFile, btnClearFile, btnCloseLightbox, voucherLightbox } = Refs;
 
-    // --- 1. Cerrar Modal ---
-    btnClose.addEventListener("click", closeModalAndClean);
+    btnCloseVoucherModal.addEventListener("click", closeModalAndClean);
     modalContainer.addEventListener("click", (e) => {
         if (e.target == modalContainer) closeModalAndClean();
     });
 
-    // --- 2. Acción: SELECCIONAR/CAMBIAR ---
+    btnCloseLightbox.addEventListener("click", onCloseLightbox);
+    voucherLightbox.addEventListener("click", (e) => {
+        if (e.target == voucherLightbox) onCloseLightbox();
+    });
+
     btnSelectFile.addEventListener("click", onClickBtnSelect)
 
-    // --- 3. Acción: ELIMINAR ---
     btnClearFile.addEventListener("click", clearCurrentFile);
 }

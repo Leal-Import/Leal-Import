@@ -16,7 +16,7 @@ const pagination = createPagination({
 });
 
 
-let loadCustomers = async () => {
+const loadCustomers = async () => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customerSaleState.pagination;
@@ -24,13 +24,13 @@ let loadCustomers = async () => {
         const data = await getCustomers(
             page - 1,
             size,
-            search || ''
+            search || '',
         );
 
         customerSaleState.list = data.content;
         customerSaleState.pagination.total = data.page.totalElements;
         customerSaleState.pagination.totalPages = data.page.totalPages;
-        insertCustomers(DOMRefs.refs.cardContainer, customerSaleState.list, customerSaleState.type, customerSaleState.context.id);
+        insertCustomers(DOMRefs.refs.cardContainer, customerSaleState.list, customerSaleState.type, customerSaleState.context.id, customerSaleState.sparePart);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -47,11 +47,32 @@ let loadCustomers = async () => {
 }
 
 
-const hydrateContextFromURL = () => {
+const hydrateContextFromURL = async () => {
     const params = new URLSearchParams(window.location.search);
     const type = params.get("type");
+    const newSparePartId = params.get("newSparePartId");
+    const newSparePartName = params.get("newSparePartName");
+    const newSuggestedPrice = params.get("newSuggestedPrice");
+    const isNewPart = newSparePartId && newSparePartName && newSuggestedPrice ? true : false;
+    if (!type) {
+        await showMessage('Error', 'Tipo de venta no especificado', 'error');
+        // opcional: redirigir
+        window.location.href = 'sales.html';
+        return false;
+    }
+
+    if (newSparePartId && newSparePartName && newSuggestedPrice) {
+        customerSaleState.sparePart = {
+            id: newSparePartId,
+            name: newSparePartName,
+            suggestedPrice: parseFloat(newSuggestedPrice),
+            isNewPart
+        };
+    }
+
     customerSaleState.type = type;
     customerSaleState.context.id = params.get("id");
+    return true;
 }
 
 export function onSearchCustomer(filters) {
@@ -64,19 +85,19 @@ export function onSearchCustomer(filters) {
 }
 
 const setupApplication = async () => {
-    // 1. Validar sesión
+    // Validar sesión
     const user = await initSession();
     if (!user) return false;
 
-    // 3. Hidratar contexto desde URL
-    hydrateContextFromURL();
+    // Hidratar contexto desde URL
+    const contextReady = await hydrateContextFromURL();
+    if (!contextReady) return false;
 
     return true;
 };
 
-const initializeUI = () => {
-    initCustomerSaleEvents({ onSearchCustomer });
-
+const initializeUI = (Refs) => {
+    initCustomerSaleEvents({ Refs, onSearchCustomer });
 }
 
 const loadDataFlow = async () => {
@@ -85,17 +106,17 @@ const loadDataFlow = async () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // 1. Configurar aplicación
+        // Validar sesión y preparar contexto
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        // 2. Inicializar referencias del DOMRefs
-        DOMRefs.init();
+        // Inicializar referencias del DOMRefs
+        const refs = DOMRefs.init();
 
-        // 3. Inicializar componentes UI
-        initializeUI();
+        // Inicializar componentes UI
+        initializeUI(refs);
 
-        // 4. Cargar datos según el flujo
+        // Cargar datos según el flujo
         await loadDataFlow();
     } catch (error) {
         console.error('Error initializing application:', error);

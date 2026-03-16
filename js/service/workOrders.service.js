@@ -1,7 +1,9 @@
-const API_URL = "http://127.0.0.1:8080/api/ViewWorkOrder";
-const API_URLSTAT = "http://127.0.0.1:8080/api/OrdersStatus";
+import { API_BASE_URL } from "../utils/api.utils.js";
 
-export let getVehiclesWOrders = async (page = 0, size = 15, search = "", idStatus = "") => {
+const API_URL = `${API_BASE_URL}/ViewWorkOrder`;
+const API_URLSTAT = `${API_BASE_URL}/OrdersStatus`;
+
+export const getVehiclesWOrders = async (page = 0, size = 15, search = "", idStatus = "") => {
     try {
         const params = new URLSearchParams({ page, size, search, idStatus})
         const request = await fetch(`${API_URL}/getVehiclesWithOrders?${params.toString()}`, {
@@ -19,7 +21,7 @@ export let getVehiclesWOrders = async (page = 0, size = 15, search = "", idStatu
     }
 };
 
-export let getWOStatus = async () => {
+export const getWOStatus = async () => {
     try {
         const request = await fetch(`${API_URLSTAT}/getOrdersStatus`, {
             credentials: 'include'

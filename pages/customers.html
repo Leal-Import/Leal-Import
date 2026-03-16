@@ -22,8 +22,11 @@
 <body>
     <div class="containerModal hide" id="modalCustomers">
         <form class="modalAdd" id="frmCustomers">
-            <button id="closeAddCustomer" class="btnClose" type="button">
-                <img src="../media/appMedia/closeIcon.svg" alt="">
+            <button id="btnCloseModalCustomer" class="btnClose" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
             </button>
             <h2 class="titleModal">Agregar cliente</h2>
             <div class="modalCustomerBody">
@@ -48,10 +51,10 @@
             </button>
         </form>
     </div>
+    <div class="containerMobileHeader"></div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
-            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadCrumbSection">
                     <a class="breadcrumb">Clientes</a>
@@ -59,7 +62,12 @@
                 <div class="filterSection">
                     <input type="text" id="txtSearchData" class="txtSearchData"
                         placeholder="Buscar por: nombre, Dui o teléfono">
-                    <button id="openModalCustomer" class="btnPrimary btnOpenModal">Añadir</button>
+                        <select id="cmbSearchByStatus" class="cmbFilterData">
+                            <option value="">Todos</option>
+                            <option value="T" selected>Activos</option>
+                            <option value="F">Inactivos</option>
+                        </select>
+                    <button id="btnOpenModalCustomer" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>
             </div>
             <div class="containerTable">
@@ -107,7 +115,7 @@
             </div>
         </div>
     </div>
-    <script src="../js/sidebar.js"></script>
+    <script src="../js/components/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/customers/customers.controller.js"></script>
 </body>

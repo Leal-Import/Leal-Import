@@ -1,38 +1,34 @@
-import { $, qsa } from "../../../utils/dom.js";
+export function initUploadModalEvents({ Refs, onChangeUpload, onDropModal, onCloseModalUpload, onOpenUploadModal }) {
+    const { uploadDropArea, uploadFileInput, btnSelectFile, btnCloseUpload, modalUpload, btnBill, btnTaxes, btnsTransport } = Refs;
 
-export function initUploadModalEvents({ onChangeUpload, onDropModal, closeModalUpload, openUploadModal }) {
-    const dropArea = $("uploadDropArea");
-    const inputFile = $("uploadFileInput");
-    const btnSelect = $("btnSelectFile");
+    if (!uploadDropArea || !uploadFileInput || !btnSelectFile) return;
 
-    if (!dropArea || !inputFile || !btnSelect) return;
+    const selectFile = () => uploadFileInput.click();
 
-    const selectFile = () => inputFile.click();
+    uploadDropArea.addEventListener("click", selectFile);
+    btnSelectFile.addEventListener("click", selectFile);
 
-    dropArea.addEventListener("click", selectFile);
-    btnSelect.addEventListener("click", selectFile);
+    uploadFileInput.addEventListener("change", onChangeUpload);
 
-    inputFile.addEventListener("change", onChangeUpload);
-
-    dropArea.addEventListener("dragover", e => {
+    uploadDropArea.addEventListener("dragover", e => {
         e.preventDefault();
-        dropArea.classList.add("dragover");
+        uploadDropArea.classList.add("dragover");
     });
 
-    dropArea.addEventListener("dragleave", () => {
-        dropArea.classList.remove("dragover");
+    uploadDropArea.addEventListener("dragleave", () => {
+        uploadDropArea.classList.remove("dragover");
     });
 
-    dropArea.addEventListener("drop", onDropModal);
+    uploadDropArea.addEventListener("drop", onDropModal);
 
-    $("btnCloseUpload").addEventListener('click', closeModalUpload);
-    $("modalUpload").addEventListener('click', e => {
-        if (e.target === $("modalUpload")) closeModalUpload();
+    btnCloseUpload.addEventListener('click', onCloseModalUpload);
+    modalUpload.addEventListener('click', e => {
+        if (e.target === modalUpload) onCloseModalUpload();
     });
 
-    $('btnBill').addEventListener('click', () => openUploadModal('bill'));
-    $('btnTaxes').addEventListener('click', () => openUploadModal('taxes'));
-    qsa('.btnsTransport').forEach(btn => {
-        btn.addEventListener('click', () => openUploadModal('ship'));
+    btnBill.addEventListener('click', () => onOpenUploadModal('bill'));
+    btnTaxes.addEventListener('click', () => onOpenUploadModal('taxes'));
+    btnsTransport.forEach(btn => {
+        btn.addEventListener('click', () => onOpenUploadModal('ship'));
     });
 }

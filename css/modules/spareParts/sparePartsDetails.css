@@ -49,9 +49,10 @@ fieldset:hover,
     display: flex;
     gap: 20px;
     flex-direction: column;
-    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
+    background-color: var(--bg-color);
     position: relative;
     overflow: hidden;
+    border: var(--border);
 }
 
 .imgData::before {
@@ -131,21 +132,10 @@ fieldset:hover,
     border: none;
 }
 
-.containerActionsImg .btnPrimary {
-    background-color: var(--bg-color-white);
-    color: var(--danger-color);
-}
 
 .containerActionsImg .btnPrimary:hover {
-    background-color: var(--bg-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
-}
-
-.containerActionsImg .btnSecondary {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--bg-color-white);
-    border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
 .containerActionsImg .btnSecondary:hover {

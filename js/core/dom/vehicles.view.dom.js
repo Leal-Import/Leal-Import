@@ -1,155 +1,102 @@
 import { $ } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
+import { renderAndInitViewCarousel } from "./carousel.dom.js";
 
-// Contenedores HTML
-const vin = $("vin");
-const brand = $("brand");
-const model = $("model");
-const year = $("year");
-const mileage = $("mileage");
-const lote = $("lote");
-const purchaseDate = $("purchaseDate");
-const status = $("status");
-const description = $("description");
+export const DOMRefs = {
+    refs: {},
 
-const bill = $("bill");
-const transfer = $("transfer");
-const storage = $("storage");
-const transport = $("transport");
-const ship = $("ship");
-const taxes = $("taxes");
-const iva = $("iva");
-const pa = $("pa");
-const total = $("total");
-const suggestedPrice = $("suggestedPrice");
-
-const vehicleStatus = $("vehicleStatus");
-const btnEdit = $("btnEdit");
-const btnSell = $("btnSell");
-const btnHistorial = $("btnHistorial");
-
-
-// Imágenes
-const mainSwiperWrapper = $("mainSwiperWrapper");
-const imageGrid = $("imageGrid");
-
-let mainSwiper;
+    init() {
+        this.refs = {
+            vin: $("vin"),
+            brand: $("brand"),
+            model: $("model"),
+            year: $("year"),
+            mileage: $("mileage"),
+            lote: $("lote"),
+            purchaseDate: $("purchaseDate"),
+            status: $("status"),
+            description: $("description"),
+            bill: $("bill"),
+            transfer: $("transfer"),
+            storage: $("storage"),
+            transport: $("transport"),
+            ship: $("ship"),
+            taxes: $("taxes"),
+            iva: $("iva"),
+            pa: $("pa"),
+            total: $("total"),
+            suggestedPrice: $("suggestedPrice"),
+            vehicleStatus: $("vehicleStatus"),
+            btnEdit: $("btnEdit"),
+            btnSell: $("btnSell"),
+            btnHistorial: $("btnHistorial"),
+            mainSwiperWrapper: $("mainSwiperWrapper"),
+            thumbsWrapper: $("thumbsWrapper"),
+            btnGeneratePdf: $("btnGeneratePdf")
+        };
+        return this.refs;
+    }
+};
 
 export const loadVehicleData = (vehicle) => {
     loadVehicleInfo(vehicle);
     loadDownButtons(vehicle);
-    loadImages(vehicle.photos);
+    renderAndInitViewCarousel({
+        photos: vehicle.photos,
+        mainWrapper: DOMRefs.refs.mainSwiperWrapper,
+        thumbsWrapper: null,
+        thumbsWrapper: DOMRefs.refs.thumbsWrapper
+    });
 }
 
 const loadDownButtons = (vehicle) => {
-    btnEdit.href = `vehicleDetails.html?id=${vehicle.idVehicle}`
-    btnSell.href = `addCustomerSale.html?type=vehicle&id=${vehicle.idVehicle}`;
-    btnHistorial.href = `workOrderDetails.html?idVehicle=${vehicle.idVehicle}&idCustomer=${vehicle.idOwnerCustomer}`;
+    DOMRefs.refs.btnEdit.href = `vehicleDetails.html?id=${vehicle.idVehicle}`
+    DOMRefs.refs.btnSell.href = `addCustomerSale.html?type=vehicle&id=${vehicle.idVehicle}`;
+    DOMRefs.refs.btnHistorial.href = `workOrderDetails.html?idVehicle=${vehicle.idVehicle}&idCustomer=${vehicle.idOwnerCustomer}`;
     if (vehicle.status == "Disponible") {
-        vehicleStatus.querySelector(".statusText").textContent = "Disponible";
-        vehicleStatus.classList.add("aviable");
+        DOMRefs.refs.vehicleStatus.querySelector(".statusText").textContent = "Disponible";
+        DOMRefs.refs.vehicleStatus.classList.add("aviable");
     } else if (vehicle.status == "Vendido") {
-        vehicleStatus.querySelector(".statusText").textContent = "Vendido";
-        vehicleStatus.classList.add("sold");
+        DOMRefs.refs.vehicleStatus.querySelector(".statusText").textContent = "Vendido";
+        DOMRefs.refs.vehicleStatus.classList.add("sold");
     } else {
 
     }
 }
 
 const loadVehicleInfo = (vehicle) => {
-    vin.textContent = vehicle.vin;
-    brand.textContent = vehicle.brand;
-    model.textContent = vehicle.model;
-    year.textContent = vehicle.year;
-    mileage.textContent = vehicle.mileage;
-    lote.textContent = vehicle.lote.numLote;
-    purchaseDate.textContent = vehicle.purchaseDate;
-    status.textContent = vehicle.status;
-    vehicle.lote.linkLote != null ? lote.href = vehicle.lote.linkLote : null;
-    description.textContent = vehicle.description;
+    DOMRefs.refs.vin.textContent = vehicle.vin;
+    DOMRefs.refs.brand.textContent = vehicle.brand;
+    DOMRefs.refs.model.textContent = vehicle.model;
+    DOMRefs.refs.year.textContent = vehicle.year;
+    DOMRefs.refs.mileage.textContent = vehicle.mileage;
+    DOMRefs.refs.lote.textContent = vehicle.lote.numLote;
+    DOMRefs.refs.purchaseDate.textContent = vehicle.purchaseDate;
+    DOMRefs.refs.status.textContent = vehicle.status;
+    if (vehicle.lote.linkLote) {
+        DOMRefs.refs.lote.href = vehicle.lote.linkLote;
+        DOMRefs.refs.lote.target = "_blank";
+    }
+    DOMRefs.refs.description.textContent = vehicle.description;
 
-    description.style.height = "auto";         // resetear para recalcular
-    description.style.height = description.scrollHeight + "px";
-    description.readOnly = true;
+    DOMRefs.refs.description.style.height = "auto";         // resetear para recalcular
+    DOMRefs.refs.description.style.height = DOMRefs.refs.description.scrollHeight + "px";
+    DOMRefs.refs.description.readOnly = true;
 
     if (vehicle.costs) {
-        bill.textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
-        vehicle.costs.costPhoto.billPhoto != null ? bill.href = vehicle.costs.costPhoto.billPhoto : null;
-        transfer.textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
-        storage.textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
-        transport.textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
-        vehicle.costs.costPhoto.shipPhoto != null ? transport.href = vehicle.costs.costPhoto.shipPhoto : transport;
-        ship.textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
-        vehicle.costs.costPhoto.shipPhoto != null ? ship.href = vehicle.costs.costPhoto.shipPhoto : null;
-        taxes.textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
-        vehicle.costs.costPhoto.taxesPhoto != null ? taxes.href = vehicle.costs.costPhoto.taxesPhoto : null;
-        iva.textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
-        pa.textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
-        vehicle.costs.suggestedPrice != null ? suggestedPrice.textContent = `$${vehicle.costs.suggestedPrice}` : suggestedPrice.style.display = "none";
-        total.textContent = `$${formatWithCommas(vehicle.costs.total)}`;
+        DOMRefs.refs.bill.textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
+        vehicle.costs.costPhoto.billPhoto != null ? DOMRefs.refs.bill.href = vehicle.costs.costPhoto.billPhoto : null;
+        DOMRefs.refs.transfer.textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
+        DOMRefs.refs.storage.textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
+        DOMRefs.refs.transport.textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
+        vehicle.costs.costPhoto.shipPhoto != null ? DOMRefs.refs.transport.href = vehicle.costs.costPhoto.shipPhoto : DOMRefs.refs.transport;
+        DOMRefs.refs.ship.textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
+        vehicle.costs.costPhoto.shipPhoto != null ? DOMRefs.refs.ship.href = vehicle.costs.costPhoto.shipPhoto : null;
+        DOMRefs.refs.taxes.textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
+        vehicle.costs.costPhoto.taxesPhoto != null ? DOMRefs.refs.taxes.href = vehicle.costs.costPhoto.taxesPhoto : null;
+        DOMRefs.refs.iva.textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
+        DOMRefs.refs.pa.textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
+        vehicle.costs.suggestedPrice != null ? DOMRefs.refs.suggestedPrice.textContent = `$${vehicle.costs.suggestedPrice}` : DOMRefs.refs.suggestedPrice.style.display = "none";
+        DOMRefs.refs.total.textContent = `$${formatWithCommas(vehicle.costs.total)}`;
     }
-}
-
-const loadImages = (photos) => {
-    // -------------------------
-    // Llenar imágenes
-    // -------------------------
-    photos.forEach(img => {
-        mainSwiperWrapper.innerHTML += `
-            <div class="swiper-slide">
-                <img src="${img.photoUrl}" />
-            </div>
-        `;
-
-        imageGrid.innerHTML += `
-            <img src="${img.photoUrl}" />
-        `;
-    });
-
-    // -------------------------
-    // Inicializar Swiper
-    // -------------------------
-    mainSwiper = new Swiper("#mainSwiper", {
-        spaceBetween: 10,
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        }
-    });
-
-    // -------------------------
-    // Sincronizar grid con el swiper
-    // -------------------------
-
-    const gridImages = document.querySelectorAll(".imageGrid img");
-
-    // Seleccionar primera imagen por defecto
-    if (gridImages.length > 0) {
-        gridImages[0].classList.add("selected");
-    }
-
-    // Click en miniatura → cambiar slide + focus
-    gridImages.forEach((imgElement, index) => {
-        imgElement.addEventListener("click", () => {
-
-            mainSwiper.slideTo(index);
-
-            gridImages.forEach(img => img.classList.remove("selected"));
-            imgElement.classList.add("selected");
-        });
-    });
-
-    // Flechas → actualizar el focus automáticamente
-    mainSwiper.on("slideChange", () => {
-        const currentIndex = mainSwiper.activeIndex;
-
-        // Limpiar anteriores
-        gridImages.forEach(img => img.classList.remove("selected"));
-
-        // Aplicar foco al que corresponde
-        if (gridImages[currentIndex]) {
-            gridImages[currentIndex].classList.add("selected");
-        }
-    });
-
 }

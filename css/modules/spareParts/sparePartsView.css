@@ -36,7 +36,6 @@
 .mainContainer {
     display: flex;
     border: 2px solid rgba(129, 133, 158, 0.2);
-    max-height: 100dvh;
     border-radius: 12px;
     background: var(--bg-color-white);
     box-shadow: var(--bx-shadow-primary);
@@ -68,8 +67,7 @@
 
 .containerImgSparePart {
     width: 100%;
-    height: 100%;
-    border: 3px dashed rgba(129, 133, 158, 0.3);
+    max-height: 70dvh;
     border-radius: 12px;
     overflow: hidden;
     background: var(--bg-color-white);
@@ -258,11 +256,11 @@
 }
 
 .sparePartCost .dataInfo:last-child .label {
-    color: var(--bg-color-white);
+    color: var(--text-color-light);
 }
 
 .sparePartCost .dataInfo:last-child .value {
-    color: var(--bg-color-white) !important;
+    color: var(--text-color-light) !important;
     font-size: var(--font-size-title-lg) !important;
 }
 
@@ -531,7 +529,7 @@
 /* Botón Danger (Eliminar) */
 .btnActionSparePart.btnDangerSparePart {
     background: var(--danger-color);
-    color: var(--bg-color-white);
+    color: var(--text-color-light) !important;
     box-shadow: var(--bx-shadow-btn-primary);
 }
 

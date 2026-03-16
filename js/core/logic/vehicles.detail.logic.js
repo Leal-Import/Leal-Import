@@ -1,4 +1,4 @@
-import { $, asUUID, fillForm, highlightAndFocus } from "../../utils/dom.js";
+import { asUUID, fillForm, highlightAndFocus } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
 import { validateImageSize, validateImageType, validateImagesGeneral } from "../../utils/images.validators.js";
 import { isValidURL, safeParseFloat } from "../../utils/validators.js";
@@ -26,22 +26,48 @@ function validateDuplicateImages(currentImages = [], newFiles = []) {
     return null;
 }
 
+export function resetState() {
+    vehicleDetailState.context.currentId = null;
+    vehicleDetailState.context.hasSale = null;
+    vehicleDetailState.context.hasWorkOrder = null;
+    vehicleDetailState.context.idCustomer = null;
+    vehicleDetailState.context.customerName = null;
+
+    vehicleDetailState.customerId = null;
+    vehicleDetailState.isExternal = false;
+    vehicleDetailState.images = [];
+    vehicleDetailState.photosToDeleteIds = [];
+    vehicleDetailState.currentUploadType = null;
+
+    vehicleDetailState.uploads.bill = null;
+    vehicleDetailState.uploads.taxes = null;
+    vehicleDetailState.uploads.ship = null;
+
+    vehicleDetailState.urls.bill = null;
+    vehicleDetailState.urls.taxes = null;
+    vehicleDetailState.urls.ship = null;
+
+    vehicleDetailState.costsId = null;
+    vehicleDetailState.loteId = null;
+}
+
 export function calculateTotal(txtCosts, txtTotal) {
     let total = 0;
     txtCosts.forEach(input => {
-        const cleanValue = input.value.replace(/,/g, "");
+        const cleanValue = safeParseFloat(input.value) || 0;
         total += parseFloat(cleanValue) || 0;
     });
+
     txtTotal.value = formatWithCommas(total.toFixed(2));
 }
 
-export let validateImages = (currentImages, newFiles) => {
+export const validateImages = (currentImages, newFiles) => {
     return (validateImagesGeneral(newFiles) || validateDuplicateImages(currentImages, newFiles) || validateMaxImages(currentImages, newFiles));
 };
 
-export let validateCustomer = () => {
+export const validateCustomer = () => {
     if (!vehicleDetailState.customerId) {
-        highlightAndFocus($("txtCustomer"));
+        highlightAndFocus('txtCustomer');
         return "Debes seleccionar un cliente";
     }
     return null;
@@ -56,7 +82,6 @@ export function validateBaseVehicle({
     txtLote,
     txtLink
 }) {
-
     if (!txtVin) {
         highlightAndFocus('txtVin');
         return 'El VIN es obligatorio.';
@@ -96,7 +121,6 @@ export function validateBaseVehicle({
         highlightAndFocus('txtLote');
         return 'El lote es obligatorio.';
     }
-
     if(txtLink.trim() != ""){
         if(!isValidURL(txtLink)) return "Link del lote no valido";
     }
@@ -104,7 +128,7 @@ export function validateBaseVehicle({
     return null;
 }
 
-export let validateSizeTypeImage = (source) => {
+export const validateSizeTypeImage = (source) => {
     const messageSize = validateImageSize(source);
     const messageType = validateImageType(source);
     if (messageSize) return messageSize;
@@ -127,7 +151,8 @@ export function validateVehicle({
     txtTaxes,
     txtIva,
     txtPa,
-    txtSuggestedPrice
+    txtSuggestedPrice,
+    txtLink
 }) {
     // Validación base
     const baseError = validateBaseVehicle({
@@ -136,7 +161,8 @@ export function validateVehicle({
         txtModel,
         txtYear,
         txtMileage,
-        txtLote
+        txtLote,
+        txtLink
     });
 
     if (baseError) return baseError;
@@ -170,13 +196,13 @@ export function validateVehicle({
     return null;
 }
 
-export let mapVehicleImages = (fd) => {
-    vehicleDetailState.images.forEach(file => {
-        fd.append("photos", file.file);
-    })
+export const mapVehicleImages = (fd) => {
+    vehicleDetailState.images
+    .filter(img => img.isNew)
+    .forEach(img => fd.append("photos", img.file));
 }
 
-export let mapVouchers = (fd) => {
+export const mapVouchers = (fd) => {
     if (vehicleDetailState.uploads.bill) fd.append("billPhoto", vehicleDetailState.uploads.bill);
     if (vehicleDetailState.uploads.taxes) fd.append("taxesPhoto", vehicleDetailState.uploads.taxes);
     if (vehicleDetailState.uploads.ship) fd.append("TransferShipPhoto", vehicleDetailState.uploads.ship);
@@ -216,7 +242,7 @@ export function mapVehicleData(formData) {
     };
 }
 
-export let fillVehiclesBaseForm = (vehicle) => {
+export const fillVehiclesBaseForm = (vehicle) => {
     fillForm('#frmVehicles', {
         txtVin: vehicle.vin,
         txtBrand: vehicle.brand,
@@ -229,7 +255,7 @@ export let fillVehiclesBaseForm = (vehicle) => {
     });
 }
 
-export let fillVehicleCosts = (costs) => {
+export const fillVehicleCosts = (costs) => {
     fillForm('#frmVehicles', {
         txtBill: formatWithCommas(costs.bill),
         txtTransfer: formatWithCommas(costs.transfer),
@@ -244,7 +270,7 @@ export let fillVehicleCosts = (costs) => {
     })
 }
 
-export let loadBackendImages = (photos) => {
+export const loadBackendImages = (photos) => {
     vehicleDetailState.images = photos.map(p => ({
         id: p.idPhoto,
         url: p.photoUrl,

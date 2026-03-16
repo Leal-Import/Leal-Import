@@ -44,7 +44,7 @@ export const hydrateContextFromURL = async (state) => {
     // UX
     state.context.customerName = params.get('customerName')?.trim() || '';
 
-    state.context.isView = params.get('isView');
+    state.context.isView = params.get('isView') === 'true';
 
     // 🔵 Opcional (vehículo)
     const idVehicle = asUUID(getNullableParam(params.get('idVehicle')));

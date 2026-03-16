@@ -8,7 +8,7 @@ import {
 } from "../../../core/logic/spareParts.detail.logic.js";
 import { disableElement, fillSelect, hideElement, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
-import { safeParseFloat } from "../../../utils/validators.js";
+import { isValidURL, safeParseFloat } from "../../../utils/validators.js";
 import { initSparePartDetailEvents } from "../event/spareParts.detail.event.js";
 import { initImageEvents } from "../event/spareParts.uploads.event.js";
 import { DOMRefs, loadImage, loadUpdateInfo, openLinkModal, saveLinkModal } from "../../../core/dom/spareParts.detail.dom.js";
@@ -31,13 +31,13 @@ async function loadStatusSelect() {
     }
 }
 
-export async function loadSparePart() {
+async function loadSparePart() {
     try {
         const sparePart = await getSparePart(sparePartDetailState.context.currentId);
-        loadUpdateInfo();
+        loadUpdateInfo(DOMRefs.refs);
 
         fillSparePartsBaseForm(sparePart)
-        loadImage(sparePart.photoUrl);
+        loadImage(sparePart.photoUrl, DOMRefs.refs);
         sparePartDetailState.trackingId = sparePart.tracking.idTracking;
         sparePartDetailState.costsId = sparePart.sparePartsCosts.idCostSparePart;
         sparePartDetailState.links.bill = sparePart.billUrl;
@@ -48,7 +48,7 @@ export async function loadSparePart() {
     }
 }
 
-export async function onSubmitSparePart(e) {
+async function onSubmitSparePart(e) {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmSpareParts));
@@ -65,7 +65,7 @@ export async function onSubmitSparePart(e) {
         showMessage('Imagen no valida', imagesValid, 'warning');
         return;
     }
-    const error = validateBaseSparePart(formData);
+    const error = validateBaseSparePart(formData, sparePartDetailState.links.bill, sparePartDetailState.links.tracking);
     if (error) {
         showMessage('Datos no válidos', error, 'warning');
         return;
@@ -138,7 +138,7 @@ export async function onSubmitSparePart(e) {
 }
 
 
-export let onAddImage = () => DOMRefs.refs.fileInput.click();
+const onAddImage = () => DOMRefs.refs.fileInput.click();
 
 function onCalculateTotal() {
     let total = 0;
@@ -146,10 +146,10 @@ function onCalculateTotal() {
     DOMRefs.refs.txtTotal.value = formatWithCommas(total);
 }
 
-let onOpenModal = (type) => openLinkModal(type, sparePartDetailState);
-let onSaveDataModal = () => saveLinkModal(sparePartDetailState);
+const onOpenModal = (type) => openLinkModal(type, sparePartDetailState, DOMRefs.refs, onValidateUrl);
+const onSaveDataModal = () => saveLinkModal(sparePartDetailState, DOMRefs.refs);
 
-let onChangeUpload = (e) => {
+const onChangeUpload = (e) => {
     const file = e.target.files[0];
     const error = validateImage(file);
 
@@ -161,10 +161,29 @@ let onChangeUpload = (e) => {
     sparePartDetailState.image.file = file;
     sparePartDetailState.image.url = URL.createObjectURL(file)
 
-    loadImage(file);
+    loadImage(file, DOMRefs.refs);
 };
 
-let onDeleteImage = () => {
+const onValidateUrl = (url) => {
+    if (url != "") {
+        const isValid = isValidURL(url);
+        if (isValid) {
+            hideElement(DOMRefs.refs.defaultText);
+            hideElement(DOMRefs.refs.errorLinkLote);
+            showElement(DOMRefs.refs.validateUrlMessage);
+        } else {
+            hideElement(DOMRefs.refs.defaultText);
+            showElement(DOMRefs.refs.errorLinkLote);
+            hideElement(DOMRefs.refs.validateUrlMessage);
+        }
+    } else {
+        showElement(DOMRefs.refs.defaultText);
+        hideElement(DOMRefs.refs.errorLinkLote);
+        hideElement(DOMRefs.refs.validateUrlMessage);
+    }
+}
+
+const onDeleteImage = () => {
     sparePartDetailState.image.file = null;
     sparePartDetailState.image.url = null;
 
@@ -174,17 +193,17 @@ let onDeleteImage = () => {
     DOMRefs.refs.fileInput.value = "";
 };
 
-let onDropModal = (e) => {
+const onDropModal = (e) => {
     e.preventDefault();
     DOMRefs.refs.dropArea.classList.remove("dragover");
 }
 
-let onDragOver = (e) => {
+const onDragOver = (e) => {
     e.preventDefault();
     DOMRefs.refs.dropArea.classList.add("dragover");
 }
 
-let onDragLeave = () => {
+const onDragLeave = () => {
     DOMRefs.refs.dropArea.classList.remove("dragover");
 }
 
@@ -199,8 +218,8 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = () => {
-    initSparePartDetailEvents({ onSubmit: onSubmitSparePart, onCalculateTotal, onOpenModal, onSaveDataModal, });
+const initializeUI = (Refs) => {
+    initSparePartDetailEvents({ Refs, onSubmit: onSubmitSparePart, onCalculateTotal, onOpenModal, onSaveDataModal, onValidateUrl });
     initImageEvents({ onChangeUpload, onDropModal, onAddImage, onDeleteImage, onDragOver, onDragLeave });
 }
 
@@ -216,9 +235,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const isReady = await setupApplication();
         if (!isReady) return;
 
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
-        initializeUI();
+        initializeUI(refs);
 
         await loadDataFlow();
     } catch (error) {

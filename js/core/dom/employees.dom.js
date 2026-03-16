@@ -1,7 +1,5 @@
 // modules/employees/employees.view.js
-import { fillForm, toggleModal, $, fillSelect } from '../../utils/dom.js';
-
-const modalEmployees = $('modalEmployees');
+import { fillForm, $, fillSelect, qs } from '../../utils/dom.js';
 
 export const DOMRefs = {
     refs: {},
@@ -11,15 +9,22 @@ export const DOMRefs = {
             employeesTableBody: $('employeesTableBody'),
             modalEmployees: $('modalEmployees'),
             frmEmployees: $('frmEmployees'),
-            userInput: $("userInput"),
-            passwordInput: $("passwordInput"),
-            loaderEmployees: $("loaderEmployees")
+            loaderEmployees: $("loaderEmployees"),
+            btnCloseModalEmployee: $("btnCloseModalEmployee"),
+            btnOpenModalEmployees: $("btnOpenModalEmployees"),
+            txtEmployeePhone: $('txtEmployeePhone'),
+            txtSearchData: $('txtSearchData'),
+            cmbSearchByRole: $("cmbSearchByRole"),
+            cmbSearchByStatus: $("cmbSearchByStatus"),
+            btnAddEmployee: $("btnAddEmployee"),
+            btnAddEmployeeLoader: $("btnAddEmployeeLoader"),
+            titleModal: qs('.titleModal')
         };
         return this.refs;
     }
 };
 
-export function fillEmployeesForm(employee, text) {
+export const fillEmployeesForm = (employee) => {
     fillForm('#frmEmployees', {
         txtFullName: employee.fullName,
         txtEmployeeEmail: employee.email,
@@ -27,17 +32,19 @@ export function fillEmployeesForm(employee, text) {
         txtUsername: employee.username.username,
         cmbUserRole: employee.idRole
     });
-    $('btnAddEmployee').querySelector("span").textContent = text;
-    modalEmployees.querySelector('.titleModal').textContent = text;
-    toggleModal(modalEmployees, true);
 }
 
-export function renderRolesSelects(roles) {
+export const rewriteModalElements = (button, title, text) => {
+    title.textContent = `${text} Empleado`;
+    button.querySelector("span").textContent = text;
+}
+
+export const renderRolesSelects = (roles) => {
     fillSelect('cmbUserRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
-    fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
+    fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Buscar por rol');
 }
 
-export function insertEmployees(container, employees, onActions) {
+export const insertEmployees = (container, employees, onActions) => {
     container.innerHTML = '';
 
     if (!employees || employees.length === 0) {
@@ -45,13 +52,14 @@ export function insertEmployees(container, employees, onActions) {
         const td = document.createElement('td');
 
         td.colSpan = 5;
-        td.className = 'no-data-message';
         td.textContent = 'No hay datos disponibles';
 
         tr.appendChild(td);
+        container.closest(".table").classList.add("noDataMessage");
         container.appendChild(tr);
         return;
     }
+    container.closest(".table").classList.remove("noDataMessage");
 
     const fragment = document.createDocumentFragment();
 
@@ -74,13 +82,13 @@ export function insertEmployees(container, employees, onActions) {
    Helpers internos DOM
 ====================== */
 
-function createCell(text) {
+const createCell = (text) => {
     const td = document.createElement('td');
     td.textContent = text ?? '';
     return td;
 }
 
-function createActionsCell(employee, onActions) {
+const createActionsCell = (employee, onActions) => {
     const td = document.createElement('td');
     const button = document.createElement('button');
 

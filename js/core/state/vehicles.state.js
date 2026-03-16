@@ -7,7 +7,7 @@ export const vehiclesState = {
     filters: {
         search: '',
         year: '',
-        stateId: ''
+        statusId: ''
     },
     pagination: {
         page: 1,

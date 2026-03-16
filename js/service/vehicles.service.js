@@ -1,5 +1,7 @@
-const API_URL = "http://127.0.0.1:8080/api/Vehicle";
-const API_URLS = "http://127.0.0.1:8080/api/Status";
+import { API_BASE_URL } from "../utils/api.utils.js";
+
+const API_URL = `${API_BASE_URL}/Vehicle`;
+const API_URLS = `${API_BASE_URL}/Sales`;
 
 export let getVehicles = async (page = 0, size = 15, search = "", statusId = "", year = "") => {
     try {

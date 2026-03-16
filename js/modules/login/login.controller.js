@@ -1,7 +1,7 @@
 'use strict'
 
-import { changePasswordType, cleanAuthCamps, clearPasswodPamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType } from "../../core/dom/login.dom.js";
-import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown, validatePassword } from "../../core/logic/login.logic.js";
+import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswordCamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType, setReq, updateLabel } from "../../core/dom/login.dom.js";
+import { clearCountdown, clearCurrentFlow, getPasswordStrengthOptions, getScore, maskEmailSimple, renderMaskedEmail, startCountdown, validateMatch, validatePassword } from "../../core/logic/login.logic.js";
 import { loginState } from "../../core/state/login.state.js";
 import { login, resetPassword, verifyEmail, verifyPIN } from "../../service/login.service.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
@@ -9,13 +9,14 @@ import { isValidEmail } from "../../utils/validators.js";
 import { initLoginEvents } from "./login.event.js";
 
 
-const onTogglePassword = () => {
-    const icon = DOMRefs.refs.togglePassword.querySelector("i");
-    changeStyleIconPassword(icon, loginState);
-    if (DOMRefs.refs.passwordInput.type === 'password') {
-        resetInputType(DOMRefs.refs.passwordInput, icon);
+const onTogglePassword = (e, txtPassword) => {
+    const btn = e.currentTarget;
+    const icon = btn.querySelector('svg');
+    changeStyleTogglePassword(icon);
+    if (txtPassword.type === 'password') {
+        resetInputType(txtPassword, icon);
     } else {
-        changePasswordType(DOMRefs.refs.passwordInput, icon);
+        changePasswordType(txtPassword, icon);
     }
 }
 
@@ -30,10 +31,6 @@ const onOpenModalRecovery = (e) => {
     toggleModal(DOMRefs.refs.modalRecovery, true);
 }
 
-const onCloseModalRecovery = () => {
-    toggleModal(DOMRefs.refs.modalRecovery, false);
-}
-
 const onOpenAuthEmail = (e) => {
     e.preventDefault();
     toggleModal(DOMRefs.refs.modalRecovery, false);
@@ -43,22 +40,16 @@ const onOpenAuthEmail = (e) => {
 const onCloseAuthEmail = () => {
     toggleModal(DOMRefs.refs.modalAuth, false);
     toggleModal(DOMRefs.refs.modalRecovery, true);
-    cleanAuthCamps(DOMRefs.refs.authSuccess, DOMRefs.refs.authEmail);
+    cleanAuthCamps(DOMRefs.refs.authSuccess, DOMRefs.refs.txtAuthEmail);
 }
 
 const onClosePin = () => {
-    toggleModal(DOMRefs.refs.modalCode, false);
-    toggleModal(DOMRefs.refs.modalRecovery, true);
     clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
     DOMRefs.refs.codeDigits.forEach(i => i.value = '');
 
     toggleModal(DOMRefs.refs.modalCode, false);
     toggleModal(DOMRefs.refs.modalAuth, false);
     toggleModal(DOMRefs.refs.modalRecovery, true);
-}
-
-const onCloseNewPassword = () => {
-    toggleModal(DOMRefs.refs.modalNewPassword, false);
 }
 
 const onSubmitLogin = async (e) => {
@@ -99,7 +90,7 @@ const onAuthEmail = async (e) => {
     e.preventDefault();
 
     if (loginState.flags.pendingSend) return;
-    const email = DOMRefs.refs.authEmail.value.trim().toLowerCase();
+    const email = DOMRefs.refs.txtAuthEmail.value.trim().toLowerCase();
     if (!isValidEmail(email)) {
         showMessage("Advertencia", "Email invalido", "warning");
         return;
@@ -115,13 +106,13 @@ const onAuthEmail = async (e) => {
         if (!loginState.auth.resetId) showMessage("Error", "El servidor no respondio correctamente,", "error");
         const minutes = (typeof data?.minutes === 'number') ? data.minutes : 15;
 
-        await showMessage("Enlace enviado", `Se ha enviado un mensaje al correo ${maskEmailSimple(email)}.`, true);
+        await showMessage("Enlace enviado", `Se ha enviado un mensaje al correo ${maskEmailSimple(email)}.`, 'info', true);
 
         loginState.auth.email = email;
 
         toggleModal(DOMRefs.refs.modalAuth, false);
         toggleModal(DOMRefs.refs.modalCode, true);
-        renderMaskedEmail(email);
+        renderMaskedEmail(DOMRefs.refs.modalCodeBody, email);
         startCountdown(minutes, loginState, DOMRefs.refs.modalCodeBody);
         focusFirstCodeInput(DOMRefs.refs.codeDigits);
     } catch (error) {
@@ -164,7 +155,7 @@ const onSendCode = async (e) => {
         toggleModal(DOMRefs.refs.modalNewPassword, true);
         clearCountdown(loginState, DOMRefs.refs.modalCodeBody);
     } catch (error) {
-        await showMessage("Codigo invalido", err?.message || 'No se pudo verificar el código.', "error");
+        await showMessage("Codigo invalido", error?.message || 'No se pudo verificar el código.', "error");
         focusFirstCodeInput(DOMRefs.refs.codeDigits);
     } finally {
         loginState.flags.pendingVerify = false;
@@ -176,8 +167,8 @@ const onSendCode = async (e) => {
 const onUpdatePassword = async () => {
     if (loginState.flags.pendingUpdate) return;
 
-    const newPass = DOMRefs.refs.newPassword?.value?.trim() ?? '';
-    const confirmPass = DOMRefs.refs.confirmPassword?.value?.trim() ?? '';
+    const newPass = DOMRefs.refs.txtNewPassword?.value?.trim() ?? '';
+    const confirmPass = DOMRefs.refs.txtConfirmPassword?.value?.trim() ?? '';
 
     if (!newPass || !confirmPass) {
         await showMessage("Campos incompletos", "Por favor, completa ambos campos.", "warning");
@@ -207,7 +198,7 @@ const onUpdatePassword = async () => {
     try {
         await resetPassword(loginState.auth.ticket, newPass);
         await showMessage("Contraseña actualizada", "Tu contraseña ha sido actualizada correctamente. Inicia sesión con tu nueva contraseña.", "success");
-        clearPasswodPamps(DOMRefs.refs.newPassword, DOMRefs.refs.confirmPassword);
+        clearPasswordCamps(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
         toggleModal(DOMRefs.refs.modalNewPassword, false);
         clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
 
@@ -216,22 +207,82 @@ const onUpdatePassword = async () => {
         await showMessage("Error", error?.message || 'No se pudo actualizar la contraseña', "error");
 
     } finally {
-        loginState.flags.pendingUpdate = true;
-        removeDisable(DOMRefs.refs.btnCodeContinue);
-        hideElement(DOMRefs.refs.btnCodeContinueLoader);
+        loginState.flags.pendingUpdate = false;
+        removeDisable(DOMRefs.refs.btnUpdatePassword);
+        hideElement(DOMRefs.refs.btnUpdatePasswordLoader);
+    }
+}
+
+const onVerifyNewPassword = () => {
+    const pw1 = DOMRefs.refs.txtNewPassword;
+    const pw2 = DOMRefs.refs.txtConfirmPassword;
+    const score = getScore(pw1.value);
+    const options = getPasswordStrengthOptions(score);
+
+    if (pw1.value.length > 0) {
+        DOMRefs.refs.strengthWrap.classList.add('visible');
+        DOMRefs.refs.passwordRequirements.classList.add('visible');
+    } else {
+        DOMRefs.refs.strengthWrap.classList.remove('visible');
+        DOMRefs.refs.passwordRequirements.classList.remove('visible');
+    }
+
+    DOMRefs.refs.segs.forEach((seg, i) => {
+        seg.style.background = i < score ? options.color : '';
+    });
+
+    updateLabel(DOMRefs.refs.strengthLabel, options);
+
+    setReq('reqLength', pw1.value.length >= 8);
+    setReq('reqUppercase', /[A-Z]/.test(pw1.value));
+    setReq('reqLowercase', /[a-z]/.test(pw1.value));
+    setReq('reqNumber', /[0-9]/.test(pw1.value));
+    setReq('reqSpecial', /[^A-Za-z0-9]/.test(pw1.value));
+
+    pw1.classList.toggle('inputValid', score === 5);
+    pw1.classList.toggle('inputInvalid', pw1.value.length > 0 && score < 5);
+
+    if (pw2.value) validateMatch(pw1, pw2, DOMRefs.refs.passwordMatchHint);
+    checkBtn(score, pw1, pw2);
+}
+
+const checkBtn = (score, pw1, pw2) => {
+    if ((score === 5) && pw1.value === pw2.value && pw1.value.length > 0) {
+        removeDisable(DOMRefs.refs.btnUpdatePassword);
+    } else {
+        disableElement(DOMRefs.refs.btnUpdatePassword);
     }
 }
 
 const initializeUI = (Refs) => {
-    initLoginEvents({ Refs, onTogglePassword, onBackHome, onOpenModalRecovery, onCloseModalRecovery, onOpenAuthEmail, onCloseAuthEmail, onClosePin, onCloseNewPassword, onSubmitLogin, onAuthEmail, onSendCode, onUpdatePassword });
+    initLoginEvents({
+        Refs,
+        onTogglePassword: (e, txtPassword) => onTogglePassword(e, txtPassword),
+        onBackHome,
+        onOpenModalRecovery,
+        onCloseModalRecovery: () => toggleModal(Refs.modalRecovery, false),
+        onOpenAuthEmail,
+        onCloseAuthEmail,
+        onClosePin,
+        onCloseNewPassword: () => toggleModal(Refs.modalNewPassword, false),
+        onSubmitLogin,
+        onAuthEmail,
+        onSendCode,
+        onUpdatePassword,
+        onVerifyNewPassword,
+        onVerifyConfirmPassword: () => {
+            validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
+            checkBtn(getScore(DOMRefs.refs.txtNewPassword.value), DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
+        }
+    });
     initDigitInputs(Refs.codeDigits);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
-        initializeUI(DOMRefs.refs);
+        initializeUI(refs);
     } catch (error) {
         console.error('Error inicializando la aplicación: ', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');

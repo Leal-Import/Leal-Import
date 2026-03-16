@@ -7,6 +7,7 @@ export const customerSaleState = {
     context: {
         id: null
     },
+    sparePart: null,
     pagination: {
         page: 1,
         size: 10,

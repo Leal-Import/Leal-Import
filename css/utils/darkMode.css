@@ -1,9 +1,7 @@
 
 .dark-mode {
-
     --bg-color-white: #1a1816;
     --bg-color: #0f0d0c;
-
 
     --text-color: #f5f3f0;
     --text-color-secondary: #a8a5a0;
@@ -18,7 +16,7 @@
     --helper-color: #e8b5b3;
     --helper-stat-color: #60a5ff;
 
-    --bg-color-modal: rgba(0, 0, 0, 0.75);
+    --bg-color-modal: rgba(0, 0, 0, 0.25);
 
     --bx-shadow-primary: 0 4px 12px rgba(0, 0, 0, 0.5);
     --bx-shadow-btn-primary: 0 4px 16px rgba(255, 77, 71, 0.4);

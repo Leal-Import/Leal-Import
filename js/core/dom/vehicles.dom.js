@@ -10,6 +10,9 @@ export const DOMRefs = {
             cardContainer: qs('.cardContainer'),
             loaderVehicles: $('loaderVehicles'),
             btnAddVehicle: $('btnAddVehicle'),
+            txtSearchData:  $('txtSearchData'),
+            txtSearchYear:  $('txtSearchYear'),
+            cmbSearchByStatus:  $('cmbSearchByStatus')
         };
         return this.refs;
     }
@@ -67,7 +70,7 @@ function createHeader(vehicle) {
 
     const price = document.createElement('span');
     price.classList.add('vehiclePrice');
-    price.textContent = `$${formatWithCommas(vehicle.total)}`;
+    price.textContent = `$${formatWithCommas(vehicle.total || 0)}`;
 
     header.appendChild(brand);
     header.appendChild(price);

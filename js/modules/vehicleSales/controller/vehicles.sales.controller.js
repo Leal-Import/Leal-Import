@@ -5,29 +5,21 @@ import {
     postVehicle as postVehicleSale,
     putVehicle as putVehicleSale
 } from '../../../service/vehicles.sales.service.js';
-
 import { getVehicles as getVehicleById } from '../../../service/vehicles.detail.service.js';
-
 import { createPagination } from '../../../pagination/pagination.controller.js';
-
-import { showMessage, qs, hideElement, showElement, disableElement, removeDisable } from '../../../utils/dom.js';
-
+import { showMessage, hideElement, showElement, disableElement, removeDisable } from '../../../utils/dom.js';
 import { vehicleSaleState } from '../../../core/state/vehicles.sales.state.js';
 import { initVehicleSaleEvents } from '../event/vehicles.sales.events.js';
 import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
-
 import { cleanPaymentCamps, DOMRefs, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals } from '../../../core/dom/vehicles.sales.dom.js';
-
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from '../../../core/logic/vehicles.sales.logic.js';
-
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
-
 import { getCurrentEmployeeId, initSession } from '../../../utils/api.utils.js';
-
-import { addNewPayment, initPaymentsController, onResetPayments } from '../../payments/payments.controller.js';
+import { addNewPayment, initPaymentsController, onResetDomPayments, onResetPayments } from '../../payments/payments.controller.js';
 import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
 import { safeParseFloat, validatePayment } from '../../../utils/validators.js';
 import { workOrderDetailsState } from '../../../core/state/workOrder.details.state.js';
+import { generateVehicleSaleReport } from '../../../core/reports/workorders/vehicles.sales.report.js';
 
 
 /* ================= PAGINATION ================= */
@@ -56,7 +48,8 @@ export async function loadInventory() {
         insertVehicles(
             DOMRefs.refs.tBodyInventory,
             vehicleSaleState.list,
-            onAddVehicle
+            onAddVehicle,
+            DOMRefs.refs.tableVehicles
         );
 
         pagination.setTotal({
@@ -83,7 +76,7 @@ const recalculateTotals = () => {
 
     vehicleSaleState.totals.total = total;
     vehicleSaleState.totals.due = due;
-    renderTotals({ total, due, totalPaid: vehicleSaleState.totals.totalPaid });
+    renderTotals({ total, due, totalPaid: vehicleSaleState.totals.totalPaid }, DOMRefs.refs);
 };
 
 const onAddVehicle = async (vehicle) => {
@@ -93,14 +86,14 @@ const onAddVehicle = async (vehicle) => {
     hideElement(DOMRefs.refs.addVehicleLoader);
     vehicleSaleState.data.salePrice = vehicleToAppend.costs ? vehicleToAppend.costs.suggestedPrice : 0;
     vehicleSaleState.totals.total = vehicleToAppend.costs ? vehicleToAppend.costs.suggestedPrice : 0;
-    loadVehicle(vehicleToAppend, vehicleSaleState.context.idSale);
+    loadVehicle(vehicleToAppend, vehicleSaleState.context.idSale, DOMRefs.refs);
     recalculateTotals();
     saveSaleState();
 };
 
 const onCancelVehicle = () => {
-    hideElement(qs(".viewVechicleContainer"));
-    showElement(qs(".dataLeft"));
+    hideElement(DOMRefs.refs.viewVechicleContainer);
+    showElement(DOMRefs.refs.dataLeft);
 
     vehicleSaleState.idVehicle = null;
     vehicleSaleState.data.salePrice = 0;
@@ -110,6 +103,7 @@ const onCancelVehicle = () => {
     DOMRefs.refs.frmVehicleSale.reset();
 
     onResetPayments(vehicleSaleState.data, vehicleSaleState.totals);
+    onResetDomPayments();
     recalculateTotals();
 };
 
@@ -131,20 +125,33 @@ const onAddPayment = () => {
         totals: vehicleSaleState.totals,
         payment
     });
-    cleanPaymentCamps();
+    cleanPaymentCamps(DOMRefs.refs.txtAmount, DOMRefs.refs.cmbPaymentMethod);
 };
 
 /* ================= SUBMIT ================= */
-async function onSubmitVehicleSale(e) {
+async function onSubmitVehicleSale(e, isWorkOrder) {
     e.preventDefault();
+    const response = await createNewSale(isWorkOrder);
+    if (response) {
+        window.location.href = `addWorkOrder.html?idSale=${response.idSale}&customerName=${encodeURIComponent(response.customerName)}&idVehicle=${response.idVehicle}&idCustomer=${vehicleSaleState.context.idCustomer}&totalPrice=${response.price}`;
+    } else {
+        window.location.href = 'sales.html';
+    }
+}
 
+const createNewSale = async (isWorkOrder) => {
     const error = validateSale(vehicleSaleState.data, vehicleSaleState.idVehicle, vehicleSaleState.context.idCustomer, vehicleSaleState.context.idSale);
     if (error) {
         showMessage('Error de validación', error, 'warning');
         return;
     }
-    showElement(DOMRefs.refs.btnSaveSaleLoader);
-    disableElement(DOMRefs.refs.btnSaveSale);
+    if (isWorkOrder) {
+        disableElement(DOMRefs.refs.btnCreateOrder);
+        showElement(DOMRefs.refs.btnCreateOrderLoader);
+    } else {
+        showElement(DOMRefs.refs.btnSaveSaleLoader);
+        disableElement(DOMRefs.refs.btnSaveSale);
+    }
     let payload;
     if (vehicleSaleState.context.idSale) {
         payload = buildPutSalePayload(vehicleSaleState);
@@ -171,15 +178,28 @@ async function onSubmitVehicleSale(e) {
             cleanWindow();
             const cleanUrl = window.location.pathname;
             history.replaceState({}, "", cleanUrl);
+            if (isWorkOrder) {
+                return {
+                    idVehicle: response.data.idVehicle,
+                    price: response.data.salePrice,
+                    idSale: response.data.idSale
+                };
+            } else {
+                return false;
+            }
         };
-        window.location.href = 'sales.html';
 
     } catch (error) {
         console.error(error);
         showMessage(error.message || 'Error al procesar venta', error, 'error');
     } finally {
-        hideElement(DOMRefs.refs.btnSaveSaleLoader);
-        removeDisable(DOMRefs.refs.btnSaveSale);
+        if (isWorkOrder) {
+            hideElement(DOMRefs.refs.btnCreateOrderLoader);
+            removeDisable(DOMRefs.refs.btnCreateOrder);
+        } else {
+            hideElement(DOMRefs.refs.btnSaveSaleLoader);
+            removeDisable(DOMRefs.refs.btnSaveSale);
+        }
     }
 }
 
@@ -210,16 +230,15 @@ const cleanWindow = () => {
 };
 
 /* ================= LOAD EXISTING ================= */
-async function loadExistingSale() {
+function loadExistingSale(sale, vehicle) {
     showElement(DOMRefs.refs.addVehicleLoader);
-    const sale = await getSaleById(vehicleSaleState.context.idSale);
-    const vehicle = await getVehicleById(sale.idVehicle);
-    loadVehicle(vehicle);
+    hideElement(DOMRefs.refs.btnCancelVehicle);
+    loadVehicle(vehicle, vehicleSaleState.context.idSale, DOMRefs.refs);
     hideElement(DOMRefs.refs.addVehicleLoader);
     vehicleSaleState.data.notes = sale.notes || '';
     vehicleSaleState.data.salePrice = sale.fullTotalCost || 0;
     vehicleSaleState.data.commission = sale.commission || 0;
-    loadDomData(vehicleSaleState.data);
+    loadDomData(vehicleSaleState.data, DOMRefs.refs);
 
     sale.payments.forEach(p => {
         addNewPayment({
@@ -242,7 +261,7 @@ const loadDraft = async () => {
     vehicleSaleState.totals = storage.totals;
     if (vehicleSaleState.idVehicle) {
         const vehicle = await getVehicleById(vehicleSaleState.idVehicle);
-        loadVehicle(vehicle);
+        loadVehicle(vehicle, vehicleSaleState.context.idSale, DOMRefs.refs);
     }
     vehicleSaleState.data.payments.forEach(p => {
         addNewPayment({
@@ -273,18 +292,19 @@ const onSaveComission = (e) => {
 };
 
 const onImportVehicle = () => {
-    window.location.href = `vehicleDetails.html?sale=true&idCustomer=${vehicleSaleState.context.idCustomer}&customerName=${vehicleSaleState.context.customerName}`;
+    window.location.href = `vehicleDetails.html?sale=true&idCustomer=${vehicleSaleState.context.idCustomer}&customerName=${encodeURIComponent(vehicleSaleState.context.customerName)}`;
 };
 
-const initializeUI = async () => {
+const initializeUI = async (Refs) => {
     await initPaymentsController({
         totalCalculator: recalculateTotals,
         onStateChange: saveSaleState,
-        createReceiptBtn: createBtnUrl
+        createReceiptBtn: createBtnUrl,
+        isView: vehicleSaleState.context.isView
     });
-    loadCustomerName(vehicleSaleState.context.customerName);
-    initVehicleSaleEvents({ onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
-    initializeModalListeners(vehicleSaleState.data);
+    loadCustomerName(DOMRefs.refs.customerName, vehicleSaleState.context.customerName);
+    initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
+    initializeModalListeners(vehicleSaleState.data, vehicleSaleState.context.isView);
 }
 
 const setupApplication = async () => {
@@ -304,15 +324,30 @@ const setupApplication = async () => {
 
 const loadDataFlow = async () => {
     if (vehicleSaleState.context.idSale) {
-        await loadExistingSale();
+        const sale = await getSaleById(vehicleSaleState.context.idSale);
+        const vehicle = await getVehicleById(sale.idVehicle);
+        loadExistingSale(sale, vehicle);
+        if (vehicleSaleState.context.isView) {
+            hideElement(DOMRefs.refs.btnSaveSale);
+            disableElement(DOMRefs.refs.btnImportVehicle);
+            disableElement(DOMRefs.refs.txtNotes);
+            disableElement(DOMRefs.refs.txtTotal);
+            disableElement(DOMRefs.refs.txtCommission);
+            hideElement(DOMRefs.refs.paymentForm);
+            showElement(DOMRefs.refs.btnGeneratePdf);
+            DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => generateVehicleSaleReport(sale, vehicle, vehicleSaleState.context.customerName));
+        }
     } else if (vehicleSaleState.context.idVehicle) {
         showElement(DOMRefs.refs.addVehicleLoader);
         const vehicle = await getVehicleById(vehicleSaleState.context.idVehicle);
-        loadVehicle(vehicle);
+        loadVehicle(vehicle, vehicleSaleState.context.idSale, DOMRefs.refs);
+        if (vehicle.costs && vehicle.costs.suggestedPrice) {
+            vehicleSaleState.data.salePrice = vehicle.costs.suggestedPrice;
+        }
         hideElement(DOMRefs.refs.addVehicleLoader);
         recalculateTotals();
     } else if (existSavedData()) {
-        loadDraft();
+        await loadDraft();
     }
     await loadInventory();
 };
@@ -324,10 +359,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!isReady) return;
 
         // 2. Inicializar referencias del DOMRefs
-        DOMRefs.init();
+        const refs = DOMRefs.init();
 
         // 3. Inicializar componentes UI
-        await initializeUI();
+        await initializeUI(refs);
 
         // 4. Cargar datos según el flujo
         await loadDataFlow();

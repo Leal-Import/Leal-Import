@@ -20,10 +20,10 @@
 </head>
 
 <body>
+    <div class="containerMobileHeader"></div>
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
-            <div class="containerMobileHeader"></div>
             <div class="headerContent">
                 <div class="breadCrumbSection">
                     <a class="breadcrumb" href="workOrders.html">Ordenes > </a>
@@ -66,7 +66,7 @@
                     <div class="loader"></div>
                     <div>Cargando el historial del vehiculo...</div>
                 </div>
-                <table class="table">
+                <table class="table" id="tableHistory">
                     <thead>
                         <tr>
                             <th>Empleado</th>
@@ -108,7 +108,7 @@
             </div>
         </div>
     </div>
-    <script src="../js/sidebar.js"></script>
+    <script src="../js/components/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/workOrders/controller/workOrder.history.controller.js"></script>
 </body>

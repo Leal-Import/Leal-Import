@@ -66,15 +66,15 @@
 }
 
 #Stock {
-    border-left: 4px solid #e53e3e;
+    border-left: 4px solid var(--danger-color);
 }
 
 #Requested {
-    border-left: 4px solid #48bb78;
+    border-left: 4px solid var(--success-color);
 }
 
 #TotalCost {
-    border-left: 4px solid #4299e1;
+    border-left: 4px solid var(--helper-stat-color);
 }
 
 .card {
@@ -178,7 +178,7 @@
 
 .footerCard .btnPrimary {
     background-color: var(--danger-color);
-    color: var(--bg-color-white);;
+    color: #FFFFFF;
     border: none;
 }
 
@@ -186,4 +186,14 @@
     background-color: var(--bg-color-white);
     color: var(--danger-color);
     border: 2px solid var(--danger-color);
+}
+
+.noDataMessage {
+    font-size: var(--font-size-lg);
+    color: var(--text-color-secondary);
+    width: 100%;
+    height: 100%;
+    grid-column: 1 / -1;
+    display: grid;
+    place-content: center;
 }

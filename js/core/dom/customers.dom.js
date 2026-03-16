@@ -1,4 +1,4 @@
-import { fillForm, toggleModal, $ } from "../../utils/dom.js";
+import { fillForm, $, qs } from "../../utils/dom.js";
 
 export const DOMRefs = {
     refs: {},
@@ -10,13 +10,21 @@ export const DOMRefs = {
             frmCustomers: $('frmCustomers'),
             loaderAddCustomer: $("loaderAddCustomer"),
             loaderCustomers: $("loaderCustomers"),
-            btnAddNewCustomer: $("btnAddNewCustomer")
+            btnAddNewCustomer: $("btnAddNewCustomer"),
+            txtCustomerPhone: $("txtCustomerPhone"),
+            txtCustomerDUI: $("txtCustomerDUI"),
+            txtSearchData: $("txtSearchData"),
+            cmbSearchByStatus: $("cmbSearchByStatus"),
+            tableCustomers: qs(".table"),
+            btnCloseModalCustomer: $("btnCloseModalCustomer"),
+            btnOpenModalCustomer: $("btnOpenModalCustomer"),
+            titleModal: qs(".titleModal")
         };
         return this.refs;
     }
 };
 
-export function insertCustomers(container, customers, onActions) {
+export const insertCustomers = (container, customers, onActions, tableCustomers) => {
     const fragment = document.createDocumentFragment();
     if (!container) return;
     container.innerHTML = "";
@@ -26,13 +34,11 @@ export function insertCustomers(container, customers, onActions) {
         const td = document.createElement("td");
         td.colSpan = 5;
         td.textContent = "No hay datos disponibles";
-        td.style.textAlign = "center";
-        td.style.padding = "15px";
-        td.style.color = "#777";
         tr.appendChild(td);
         fragment.appendChild(tr);
-        document.querySelector(".table").style.height = "100%";
+        tableCustomers.classList.add("noDataMessage");
     } else {
+        tableCustomers.classList.remove("noDataMessage");
         customers.forEach(customer => {
             const tr = document.createElement("tr");
             const tdName = document.createElement("td");
@@ -58,18 +64,15 @@ export function insertCustomers(container, customers, onActions) {
     container.appendChild(fragment);
 }
 
-export function fillCustomerForm(customer, text) {
+export const fillCustomerForm = (customer) => {
     fillForm('#frmCustomers', {
         txtFullName: customer.fullName,
         txtCustomerDUI: customer.dui,
         txtCustomerPhone: customer.personalPhone
     });
-    $('btnAddNewCustomer').querySelector("span").textContent = text;
-    modalCustomers.querySelector('.titleModal').textContent = text;
-    toggleModal(modalCustomers, true);
 }
 
-export function resetCustomerForm(frm, modal) {
-    frm.reset();
-    toggleModal(modal, false);
+export const rewriteModalText = (button, title, text) => {
+    title.textContent = `${text} cliente`;
+    button.querySelector("span").textContent = text;
 }

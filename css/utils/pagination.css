@@ -57,7 +57,7 @@
 
 .pageBtn:hover {
     background-color: var(--danger-color);
-    color: var(--bg-color-white);
+    color: var(--text-color-light);
     border-color: var(--danger-color);
 }
 
@@ -72,4 +72,19 @@
 .pageDots {
     padding: 0 5px;
     color: var(--text-color-secondary);
+}
+
+
+@media screen and (max-width: 600px) {
+    .paginationContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .paginationLeft {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
 }

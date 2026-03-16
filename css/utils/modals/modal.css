@@ -2,12 +2,15 @@
 .containerModal {
     position: fixed;
     inset: 0;
-    background-color: var(--text-color);
+    background-color: var(--bg-color-modal);
     backdrop-filter: blur(4px);
     z-index: 999;
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-animation-name: slideIn;
+    animation-name: slideIn;
+    animation-duration: 0.4s;
 }
 
 .modalAdd {
@@ -48,17 +51,16 @@
     display: grid;
     place-content: center;
     color: var(--text-color);
+    border: var(--border);
+}
+
+.btnClose svg line {
+    stroke: var(--text-color);
 }
 
 .btnClose:hover {
     background: rgba(211, 24, 19, 0.1);
     transform: rotate(90deg);
-}
-
-.btnClose img {
-    width: 16px;
-    height: 16px;
-    pointer-events: none;
 }
 
 @keyframes modalSlideIn {
@@ -74,15 +76,39 @@
 }
 
 @media screen and (max-width: 500px) {
-    .modalAdd{
+    .modalAdd {
         padding: 40px 20px;
     }
 
-    .titleModal{
+    .titleModal {
         font-size: var(--font-size-lg);
     }
 
-    .lblInputs{
+    .lblInputs {
         font-size: var(--font-size-sm);
+    }
+}
+
+@-webkit-keyframes slideIn {
+    from {
+        bottom: -300px;
+        opacity: 0
+    }
+
+    to {
+        bottom: 0;
+        opacity: 1
+    }
+}
+
+@keyframes slideIn {
+    from {
+        bottom: -300px;
+        opacity: 0
+    }
+
+    to {
+        bottom: 0;
+        opacity: 1
     }
 }
