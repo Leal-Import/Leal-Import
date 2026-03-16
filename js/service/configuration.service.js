@@ -5,8 +5,7 @@ const API_URL = `${API_BASE_URL}/auth`;
 const APIPW_URL = `${API_BASE_URL}/passwordReset`;
 const APIME_URL = `${API_BASE_URL}/me`;
 
-
-export const getPaymentMethods = async () => {
+export const getPaymentMethods = async() => {
     try {
         const request = await fetch(`${APIPAY_URL}/getPaymentMethod`, {
             credentials: 'include'
@@ -19,11 +18,11 @@ export const getPaymentMethods = async () => {
 
     } catch (error) {
         console.error("Error en getPaymentMethods:", error);
-        throw new Error("Fallo al conectar con el servicio de metodos de pago.");
+        throw new Error("Fallo al conectar con el servicio de metodos de pago.", { cause: error });
     }
 };
 
-export const logout = async () => {
+export const logout = async() => {
     try {
         const request = await fetch(`${API_URL}/logout`, {
             credentials: 'include',
@@ -37,11 +36,11 @@ export const logout = async () => {
 
     } catch (error) {
         console.error("Error en autenticacion:", error);
-        throw new Error("Fallo al conectar con el servicio de autenticacion");
+        throw new Error("Fallo al conectar con el servicio de autenticacion", { cause: error });
     }
 };
 
-export const verifyCurrentPassword = async (currentPassword) => {
+export const verifyCurrentPassword = async(currentPassword) => {
     try {
         const request = await fetch(`${APIPW_URL}/verifyPassword`, {
             credentials: 'include',
@@ -61,7 +60,7 @@ export const verifyCurrentPassword = async (currentPassword) => {
     }
 };
 
-export const editProfile = async (profile) => {
+export const editProfile = async(profile) => {
     try {
         const request = await fetch(`${APIME_URL}/profile`, {
             credentials: 'include',
@@ -81,7 +80,7 @@ export const editProfile = async (profile) => {
     }
 };
 
-export const changePassword = async (newPassword, ticket) => {
+export const changePassword = async(newPassword, ticket) => {
     try {
         const request = await fetch(`${APIPW_URL}/newPassword`, {
             credentials: 'include',
@@ -99,7 +98,7 @@ export const changePassword = async (newPassword, ticket) => {
 
     } catch (error) {
         console.error("Error en cambio de contraseña:", error);
-        throw new Error("Fallo al conectar con el servicio de cambio de contraseña");
+        throw new Error("Fallo al conectar con el servicio de cambio de contraseña", { cause: error });
     }
 };
 

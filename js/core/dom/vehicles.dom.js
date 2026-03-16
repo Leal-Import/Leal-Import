@@ -18,7 +18,7 @@ export const DOMRefs = {
     }
 };
 
-export function insertVehicles(container, vehicles, hasWorkOrder) {
+export const insertVehicles = (container, vehicles, hasWorkOrder) => {
     if (!Array.isArray(vehicles)) return;
     container.innerHTML = '';
 
@@ -35,21 +35,21 @@ export function insertVehicles(container, vehicles, hasWorkOrder) {
     });
 
     container.appendChild(fragment);
-}
+};
 
 /* ===============================
    COMPONENTES
 ================================ */
 
-function createNoDataMessage() {
+const  createNoDataMessage = () => {
     const div = document.createElement('div');
     div.textContent = 'No hay vehículos disponibles.';
     div.classList.add('noDataMessage');
     div.style.gridColumn = '1 / -1';
     return div;
-}
+};
 
-function createVehicleCard(vehicle, hasWorkOrder) {
+const createVehicleCard = (vehicle, hasWorkOrder) => {
     const card = document.createElement('div');
     card.classList.add('card');
 
@@ -58,9 +58,9 @@ function createVehicleCard(vehicle, hasWorkOrder) {
     card.appendChild(createFooter(vehicle, hasWorkOrder));
 
     return card;
-}
+};
 
-function createHeader(vehicle) {
+const createHeader = (vehicle) => {
     const header = document.createElement('div');
     header.classList.add('headerCard');
 
@@ -76,9 +76,9 @@ function createHeader(vehicle) {
     header.appendChild(price);
 
     return header;
-}
+};
 
-function createImage(vehicle) {
+const createImage = (vehicle) => {
     const container = document.createElement('div');
     container.classList.add('containerImgVehicle');
 
@@ -88,9 +88,9 @@ function createImage(vehicle) {
 
     container.appendChild(img);
     return container;
-}
+};
 
-function createFooter(vehicle, hasWorkOrder) {
+const createFooter = (vehicle, hasWorkOrder) => {
     const footer = document.createElement('div');
     footer.classList.add('footerCard');
 
@@ -103,9 +103,9 @@ function createFooter(vehicle, hasWorkOrder) {
     footer.appendChild(createButtons(vehicle, hasWorkOrder));
 
     return footer;
-}
+};
 
-function createVehicleInfo(vehicle) {
+const createVehicleInfo = (vehicle) => {
     const container = document.createElement('div');
     container.classList.add('containerInfoVehicle');
 
@@ -114,9 +114,9 @@ function createVehicleInfo(vehicle) {
     container.appendChild(createInfoItem('Modelo', vehicle.model));
 
     return container;
-}
+};
 
-function createInfoItem(label, value) {
+const createInfoItem = (label, value) => {
     const item = document.createElement('div');
     item.classList.add('infoVehicleItem');
 
@@ -130,9 +130,9 @@ function createInfoItem(label, value) {
     item.appendChild(span);
 
     return item;
-}
+};
 
-function createButtons(vehicle, hasWorkOrder) {
+const createButtons = (vehicle, hasWorkOrder) => {
     const container = document.createElement('div');
     container.classList.add('containerButtons');
 
@@ -158,4 +158,4 @@ function createButtons(vehicle, hasWorkOrder) {
     }
 
     return container;
-}
+};

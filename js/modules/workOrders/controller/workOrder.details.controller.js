@@ -19,7 +19,7 @@ const addNewPartToTable = () => {
         sparePartName: workOrderDetailsState.context.newPartName,
         priceApplied: workOrderDetailsState.context.newPartSuggestedPrice
     });
-    if (normalizedPart == null) return;
+    if (normalizedPart === null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodySpareParts,
         data: normalizedPart,
@@ -29,7 +29,7 @@ const addNewPartToTable = () => {
         onDelete,
         renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
     });
-}
+};
 
 const onWritePrice = (e, data) => {
     const value = safeParseFloat(e.target.textContent);
@@ -39,7 +39,7 @@ const onWritePrice = (e, data) => {
 
 const onAddService = (service) => {
     const normalizedService = pushService(workOrderDetailsState.data.selectedServices, service);
-    if (normalizedService == null) return;
+    if (normalizedService === null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodyServices,
         data: normalizedService,
@@ -53,11 +53,11 @@ const onAddService = (service) => {
     reindexTable(DOMRefs.refs.tBodyServices);
     hideElement(DOMRefs.refs.boxServ);
     calculateAllTotals();
-}
+};
 
 const onAddSparePart = (sparePart) => {
     const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, sparePart);
-    if (normalizedPart == null) return;
+    if (normalizedPart === null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodySpareParts,
         data: normalizedPart,
@@ -73,7 +73,7 @@ const onAddSparePart = (sparePart) => {
     hideElement(DOMRefs.refs.boxSparePart);
     renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts);
     calculateAllTotals();
-}
+};
 
 const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) => {
     const index = arraySelected.indexOf(item);
@@ -89,16 +89,15 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
     calculateAllTotals();
     reindexTable(tBody);
     renderButton?.(DOMRefs.refs.tBodySpareParts, onImportSparePart);
-}
-
+};
 
 const onSearchService = (e) => {
     onSearch(e, getServices, renderServiceSuggestions, DOMRefs.refs.boxServ, onAddService, workOrderDetailsState.data.selectedServices);
-}
+};
 
 const onSearchSpareParts = (e) => {
     onSearch(e, getSpareParts, renderSparePartSuggestions, DOMRefs.refs.boxSparePart, onAddSparePart, workOrderDetailsState.data.selectedSpareParts);
-}
+};
 
 const onAddPayment = () => {
     const amount = DOMRefs.refs.txtAmount;
@@ -111,7 +110,7 @@ const onAddPayment = () => {
     const payment = {
         amount: safeParseFloat(amount.value.trim()) || 0,
         idPaymentMethod: method.value || null
-    }
+    };
     addNewPayment({
         state: workOrderDetailsState.data,
         totals: workOrderDetailsState.totals,
@@ -120,7 +119,7 @@ const onAddPayment = () => {
     cleanPaymentCamps(amount, method);
 };
 
-const onSubmitOrder = async (e) => {
+const onSubmitOrder = async(e) => {
     e.preventDefault();
     let fd;
     if (workOrderDetailsState.context.idWorkOrder) {
@@ -168,19 +167,19 @@ const onSubmitOrder = async (e) => {
         hideElement(DOMRefs.refs.loaderAddOrder);
         removeDisable(DOMRefs.refs.btnSaveOrder);
     }
-}
+};
 
 const onSaveNotes = (e) => {
     const value = e.target.value.trim() || '';
     workOrderDetailsState.data.notes = value;
-}
+};
 
 const onSaveDate = (e) => {
     const value = e.target.value || null;
     workOrderDetailsState.data.estimatedDate = value;
 };
 
-const loadDataVehicle = async (Refs) => {
+const loadDataVehicle = async(Refs) => {
     try {
         const vehicle = await getDataVehicleById(workOrderDetailsState.context.idVehicle);
         if (workOrderDetailsState.context.idSale) {
@@ -192,9 +191,9 @@ const loadDataVehicle = async (Refs) => {
         renderVehiclePrice(workOrderDetailsState.context.vehiclePrice, Refs.vehiclePrice);
     } catch (error) {
         showMessage("Error", "No se pudieron cargar los datos del vehiculo", "error");
-        console.log(error)
+        console.log(error);
     }
-}
+};
 
 const onImportSparePart = () => {
     saveWorkOrderState();
@@ -206,16 +205,16 @@ const onImportSparePart = () => {
         idVehicle: workOrderDetailsState.context.idVehicle,
         idCustomer: workOrderDetailsState.context.idCustomer,
         totalPrice: workOrderDetailsState.context.vehiclePrice
-    })
+    });
     window.location.href = `../../pages/sparePartsDetails.html?${params.toString()}`;
-}
+};
 
 const saveWorkOrderState = () => {
     localStorage.setItem(workOrderDetailsState.saleKey, JSON.stringify({
         data: workOrderDetailsState.data,
         totals: workOrderDetailsState.totals
     }));
-}
+};
 
 const recalculateTotalsPanel = () => {
     const items = [
@@ -261,7 +260,7 @@ const loadDraft = (Refs) => {
         // Cargar spare parts
         storageItem.data?.selectedSpareParts?.forEach(part => {
             const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, part);
-            if (normalizedPart == null) return;
+            if (normalizedPart === null) return;
             appendToDom({
                 tBody: DOMRefs.refs.tBodySpareParts,
                 data: normalizedPart,
@@ -275,7 +274,7 @@ const loadDraft = (Refs) => {
         // Cargar servicios
         storageItem.data?.selectedServices?.forEach(service => {
             const normalizedService = pushService(workOrderDetailsState.data.selectedServices, service);
-            if (normalizedService == null) return;
+            if (normalizedService === null) return;
             appendToDom({
                 tBody: DOMRefs.refs.tBodyServices,
                 data: normalizedService,
@@ -297,12 +296,12 @@ const loadDraft = (Refs) => {
         console.error('Error loading draft:', error);
         showMessage('Advertencia', 'No se pudo cargar el borrador guardado', 'warning');
     }
-}
+};
 
-const loadWorkOrder = async (Refs) => {
+const loadWorkOrder = async(Refs) => {
     const workOrder = await getWorkOrderById(workOrderDetailsState.context.idWorkOrder);
     workOrderDetailsState.workOrder = workOrder;
-    workOrderDetailsState.context.idVehicle = workOrder.idVehicle
+    workOrderDetailsState.context.idVehicle = workOrder.idVehicle;
     workOrderDetailsState.data.estimatedDate = workOrder.estimatedDate || "";
     workOrderDetailsState.data.notes = workOrder.notes || "";
     loadViewUpdateOrder(workOrder.vehicleInfo.vin, Refs);
@@ -342,14 +341,14 @@ const loadWorkOrder = async (Refs) => {
     });
 };
 
-const onCompleteOrder = async () => {
+const onCompleteOrder = async() => {
     try {
         showElement(DOMRefs.refs.loaderCompleteOrder);
         disableElement(DOMRefs.refs.btnCompleteOrder);
         const answer = await patchWorkOrder(workOrderDetailsState.context.idWorkOrder);
         await showMessage("Exito", "Orden completada", "success", true);
         if (answer) {
-            window.location.href = `workOrderDetails.html?idVehicle=${workOrderDetailsState.context.idVehicle}&idCustomer=${workOrderDetailsState.context.idCustomer}`
+            window.location.href = `workOrderDetails.html?idVehicle=${workOrderDetailsState.context.idVehicle}&idCustomer=${workOrderDetailsState.context.idCustomer}`;
         }
     } catch (error) {
         console.error(error);
@@ -358,9 +357,9 @@ const onCompleteOrder = async () => {
         hideElement(DOMRefs.refs.loaderCompleteOrder);
         removeDisable(DOMRefs.refs.btnCompleteOrder);
     }
-}
+};
 
-const onSearch = async (e, getData, renderData, box, onAdd, selected) => {
+const onSearch = async(e, getData, renderData, box, onAdd, selected) => {
     const query = e.target.value.trim();
     if (!query) {
         hideElement(box);
@@ -370,7 +369,7 @@ const onSearch = async (e, getData, renderData, box, onAdd, selected) => {
         const res = await getData(query);
         renderData(selected, box, res.content || [], onAdd);
     } catch (err) { console.error(err); }
-}
+};
 
 const onAddNewService = (e) => {
     if (e.key === 'Enter') {
@@ -379,17 +378,17 @@ const onAddNewService = (e) => {
         if (!val) return;
         onAddService({ idService: null, nameService: val, priceApplied: 0 });
     }
-}
+};
 
 // Funciones auxiliares para cada flujo
-const initNewPartFlow = async (Refs) => {
+const initNewPartFlow = async(Refs) => {
     addNewPartToTable();
     loadDraft(Refs);
     validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
     await loadDataVehicle(Refs);
 };
 
-const initEditOrderFlow = async (Refs) => {
+const initEditOrderFlow = async(Refs) => {
     await loadWorkOrder(Refs);
 
     if (workOrderDetailsState.context.isView) {
@@ -406,12 +405,12 @@ const initEditOrderFlow = async (Refs) => {
     }
 };
 
-const initNewOrderFlow = async (Refs) => {
+const initNewOrderFlow = async(Refs) => {
     await loadDataVehicle(Refs);
     validateDate(Refs.dtEstimated, new Date());
 };
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -426,7 +425,7 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = async (Refs) => {
+const initializeUI = async(Refs) => {
     // Inicialización de componentes UI
     initStaticRows();
 
@@ -453,13 +452,13 @@ const initializeUI = async (Refs) => {
     initializeModalListeners(workOrderDetailsState.data, workOrderDetailsState.context.isView);
 };
 
-const loadDataFlow = async (Refs) => {
+const loadDataFlow = async(Refs) => {
     const { context } = workOrderDetailsState;
 
     // Determinar qué flujo ejecutar
     if (context.isNewPart) {
         await initNewPartFlow(Refs);
-    } else if (context.idWorkOrder != null) {
+    } else if (context.idWorkOrder !== null) {
         await initEditOrderFlow(Refs);
     } else {
         await initNewOrderFlow(Refs);
@@ -479,7 +478,7 @@ const finalizeTotals = () => {
 // ============================================
 // INICIALIZACIÓN PRINCIPAL
 // ============================================
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         // 1. Configurar aplicación
         const isReady = await setupApplication();

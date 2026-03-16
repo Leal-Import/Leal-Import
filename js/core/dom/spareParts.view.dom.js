@@ -30,7 +30,7 @@ export const DOMRefs = {
 export const loadSparePart = (sparePart, Refs) => {
     loadSparePartInfo(sparePart, Refs);
     loadDownButtons(sparePart, Refs);
-}
+};
 
 const loadDownButtons = (sparePart, Refs) => {
     Refs.btnEditSparePart.href = `sparePartsDetails.html?id=${sparePart.idSparePart}`;
@@ -42,7 +42,7 @@ const loadDownButtons = (sparePart, Refs) => {
         Refs.statusPart.querySelector(".statusTextSparePart").textContent = "Vendido";
         Refs.statusPart.classList.add("sold");
     }
-}
+};
 
 const loadSparePartInfo = (sparePart, Refs) => {
     Refs.pictureSparePart.src = sparePart.photoUrl;
@@ -58,4 +58,4 @@ const loadSparePartInfo = (sparePart, Refs) => {
     Refs.purchasePrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.purchasePrice)}`;
     Refs.taxes.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.taxes)}`;
     Refs.totalCost.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.totalCost)}`;
-}
+};

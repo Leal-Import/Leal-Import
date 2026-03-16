@@ -3,4 +3,4 @@ export const sparePartViewState = {
         idSparePart: null
     },
     sparePart: null
-}
+};

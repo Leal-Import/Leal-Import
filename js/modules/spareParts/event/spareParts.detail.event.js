@@ -1,23 +1,23 @@
 import {
     formatDecimalInput,
     formatOnBlur,
-    formatOnFocus,
+    formatOnFocus
 } from "../../../utils/formatters.js";
 
-export function initSparePartDetailEvents({
+export const initSparePartDetailEvents = ({
     Refs,
     onSubmit,
     onCalculateTotal,
     onOpenModal,
     onSaveDataModal,
     onValidateUrl
-}) {
+}) => {
     Refs.frmSpareParts.addEventListener("submit", onSubmit);
     Refs.btnOpenLinkBill.addEventListener("click", () => onOpenModal("bill"));
     Refs.btnOpenLinkTracking.addEventListener("click", () => onOpenModal("tracking"));
 
     Refs.btnCloseLink.addEventListener("click", () => {
-        onSaveDataModal()
+        onSaveDataModal();
     });
 
     Refs.txtLink.addEventListener("input", () => {
@@ -29,7 +29,7 @@ export function initSparePartDetailEvents({
     });
 
     Refs.btnSaveLink.addEventListener("click", () => {
-        onSaveDataModal()
+        onSaveDataModal();
     });
 
     Refs.txtFormat.forEach(txt => {
@@ -41,4 +41,4 @@ export function initSparePartDetailEvents({
     Refs.txtCosts.forEach(txt => {
         txt.addEventListener("input", onCalculateTotal);
     });
-}
+};

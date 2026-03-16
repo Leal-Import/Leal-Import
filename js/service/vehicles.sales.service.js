@@ -3,7 +3,7 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 const API_URL = `${API_BASE_URL}/VehicleSale`;
 const API_URLVeh = `${API_BASE_URL}/Vehicle`;
 
-export const postVehicle = async (sale, id) => {
+export const postVehicle = async(sale, id) => {
     try {
         const request = await fetch(`${API_URL}/postVehicleSale/${id}`, {
             method: 'POST',
@@ -17,17 +17,18 @@ export const postVehicle = async (sale, id) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -37,14 +38,14 @@ export const postVehicle = async (sale, id) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
     }
 };
 
-export const putVehicle = async (vehicleData, id) => {
+export const putVehicle = async(vehicleData, id) => {
     try {
         const request = await fetch(`${API_URL}/putVehicleSale/${id}`, {
             method: 'PUT',
@@ -58,17 +59,18 @@ export const putVehicle = async (vehicleData, id) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -78,14 +80,14 @@ export const putVehicle = async (vehicleData, id) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
     }
 };
 
-export const getSaleById = async (id) => {
+export const getSaleById = async(id) => {
     try {
         const request = await fetch(`${API_URL}/getVehicleSaleById/${id}`, {
             credentials: 'include'
@@ -107,7 +109,7 @@ export const getSaleById = async (id) => {
     }
 };
 
-export const getVehiclesAviable = async (page = 0, size = 15, search = '') => {
+export const getVehiclesAviable = async(page = 0, size = 15, search = '') => {
     try {
         const request = await fetch(`${API_URLVeh}/getSaleSummary?page=${page}&size=${size}&search=${search}`, {
             credentials: 'include'
@@ -125,6 +127,6 @@ export const getVehiclesAviable = async (page = 0, size = 15, search = '') => {
 
     } catch (error) {
         console.error("Error en getVehicles:", error);
-        throw new Error("Fallo al conectar con el servicio de vehiculos.");
+        throw new Error("Fallo al conectar con el servicio de vehiculos.", { cause: error });
     }
 };

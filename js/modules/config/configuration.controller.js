@@ -10,7 +10,7 @@ const onChangeDarkMode = () => {
     const isDarkMode = localStorage.getItem('app.theme.dark') === 'true' ? false : true;
     toggleDarkMode(isDarkMode);
     localStorage.setItem('app.theme.dark', isDarkMode);
-}
+};
 
 const onTogglePassword = (e, txtPassword) => {
     const btn = e.currentTarget;
@@ -21,9 +21,9 @@ const onTogglePassword = (e, txtPassword) => {
     } else {
         changePasswordType(txtPassword, icon);
     }
-}
+};
 
-const onVerifyPassword = async (e) => {
+const onVerifyPassword = async(e) => {
     e.preventDefault();
 
     const password = DOMRefs.refs.txtVerifyPassword.value.trim();
@@ -41,7 +41,6 @@ const onVerifyPassword = async (e) => {
         toggleModal(DOMRefs.refs.modalNewPassword, true);
         toggleModal(DOMRefs.refs.modalVerifyPassword, false);
     } catch (error) {
-        console.log(error.message)
         await showMessage('Error', error.message || 'Ocurrió un error al verificar la contraseña. Inténtalo de nuevo.', 'error');
     } finally {
         const btn = DOMRefs.refs.toggleVerifyPassword;
@@ -50,7 +49,7 @@ const onVerifyPassword = async (e) => {
         removeDisable(DOMRefs.refs.btnVerifyCurrentPassword);
         cleanTxtVerifyPassword(DOMRefs.refs.txtVerifyPassword, icon);
     }
-}
+};
 
 const onVerifyNewPassword = () => {
     const pw1 = DOMRefs.refs.txtNewPassword;
@@ -82,9 +81,9 @@ const onVerifyNewPassword = () => {
     pw1.classList.toggle('inputInvalid', pw1.value.length > 0 && score < 5);
     if (pw2.value) validateMatch(pw1, pw2, DOMRefs.refs.passwordMatchHint);
     checkBtn(score, pw1, pw2);
-}
+};
 
-const onChangePassword = async (e) => {
+const onChangePassword = async(e) => {
     e.preventDefault();
     const pw1 = DOMRefs.refs.txtNewPassword;
     const pw2 = DOMRefs.refs.txtConfirmPassword;
@@ -109,7 +108,7 @@ const onChangePassword = async (e) => {
         removeDisable(DOMRefs.refs.btnUpdatePassword);
         cleanNewPasswordForm();
     }
-}
+};
 
 const cleanNewPasswordForm = () => {
     const toggle1 = DOMRefs.refs.toggleNewPassword;
@@ -120,7 +119,7 @@ const cleanNewPasswordForm = () => {
     onVerifyNewPassword(); // Para resetear el estado del botón y validaciones
     checkBtn(0, DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
     validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
-}
+};
 
 const checkBtn = (score, pw1, pw2) => {
     if ((score === 5) && pw1.value === pw2.value && pw1.value.length > 0) {
@@ -128,36 +127,36 @@ const checkBtn = (score, pw1, pw2) => {
     } else {
         disableElement(DOMRefs.refs.btnUpdatePassword);
     }
-}
+};
 
 const onOpenEditProfile = () => {
     toggleModal(DOMRefs.refs.modalProflile, true);
     fillProfileForm(configurationState.profile, DOMRefs.refs);
-}
+};
 
 const onOpenToggleUsername = () => {
     toggleModal(DOMRefs.refs.modalChangeUsername, true);
     filltxtUsername(configurationState.profile.username, DOMRefs.refs.txtCurrentUsername);
-}
+};
 
 const onCloseNewPassword = () => {
     toggleModal(DOMRefs.refs.modalNewPassword, false);
     cleanNewPasswordForm();
-}
+};
 
 const onCloseVerifyPassword = () => {
     const btn = DOMRefs.refs.toggleVerifyPassword;
     const icon = btn.querySelector('svg');
     toggleModal(DOMRefs.refs.modalVerifyPassword, false);
     cleanTxtVerifyPassword(DOMRefs.refs.txtVerifyPassword, icon);
-}
+};
 
 const onCloseToggleUsername = () => {
     const btn = DOMRefs.refs.togglePasswordForUsername;
     const icon = btn.querySelector('svg');
     toggleModal(DOMRefs.refs.modalChangeUsername, false);
     cleanCampsToggleUsername(DOMRefs.refs, icon);
-}
+};
 
 const onVerifyButtonUsername = () => {
     const btn = DOMRefs.refs.btnSaveUsername;
@@ -170,9 +169,9 @@ const onVerifyButtonUsername = () => {
     } else {
         disableElement(btn);
     }
-}
+};
 
-const onLogout = async () => {
+const onLogout = async() => {
     const response = await showMessage('Confirmar', '¿Estás seguro que deseas cerrar sesión?', 'question', false, true);
     if (response.isConfirmed) {
         try {
@@ -184,9 +183,9 @@ const onLogout = async () => {
             window.location.href = 'login.html';
         }
     }
-}
+};
 
-const onEditProfile = async (e) => {
+const onEditProfile = async(e) => {
     e.preventDefault();
     const txtFullName = DOMRefs.refs.txtFullName;
     const txtEmail = DOMRefs.refs.txtEmployeeEmail;
@@ -206,7 +205,7 @@ const onEditProfile = async (e) => {
     showElement(DOMRefs.refs.btnEditProfileLoader);
     disableElement(DOMRefs.refs.btnEditProfile);
     try {
-        await editProfile(payload)
+        await editProfile(payload);
         await showMessage('Éxito', 'Perfil actualizado correctamente', 'success', true);
         configurationState.profile.fullName = txtFullName.value.trim();
         configurationState.profile.email = txtEmail.value.trim();
@@ -219,10 +218,9 @@ const onEditProfile = async (e) => {
         hideElement(DOMRefs.refs.btnEditProfileLoader);
         removeDisable(DOMRefs.refs.btnEditProfile);
     }
-}
+};
 
-
-const onChangeUsername = async (e) => {
+const onChangeUsername = async(e) => {
     e.preventDefault();
     const txtCurrentUsername = DOMRefs.refs.txtCurrentUsername;
     const txtNewUsername = DOMRefs.refs.txtNewUsername;
@@ -238,7 +236,7 @@ const onChangeUsername = async (e) => {
     disableElement(DOMRefs.refs.btnSaveUsername);
 
     try {
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        //await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
         await showMessage('Éxito', 'Nombre de usuario actualizado correctamente', 'success', true);
         configurationState.profile.username = txtNewUsername.value.trim();
     } catch (error) {
@@ -250,7 +248,7 @@ const onChangeUsername = async (e) => {
         toggleModal(DOMRefs.refs.modalChangeUsername, false);
         cleanCampsToggleUsername(DOMRefs.refs, DOMRefs.refs.togglePasswordForUsername.querySelector('svg'));
     }
-}
+};
 
 const initializeUi = (Refs) => {
     initConfigurationEvents({
@@ -276,13 +274,13 @@ const initializeUi = (Refs) => {
             checkBtn(getScore(DOMRefs.refs.txtNewPassword.value), DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
         }
     });
-}
+};
 
 const loadDataFlow = (Refs) => {
     toggleSwitch(Refs.darkModeToggle, configurationState.isDarkMode);
-}
+};
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -292,7 +290,7 @@ const setupApplication = async () => {
     return true;
 };
 
-const loadState = async () => {
+const loadState = async() => {
     try {
         configurationState.isDarkMode = localStorage.getItem('app.theme.dark') === 'true' ? true : false;
         const employee = await getCurrentEmployee();
@@ -308,9 +306,9 @@ const loadState = async () => {
         console.error('Error loading configuration state: ', error);
         return false;
     }
-}
+};
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

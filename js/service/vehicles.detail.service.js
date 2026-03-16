@@ -2,7 +2,7 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 
 const API_URL = `${API_BASE_URL}/Vehicle`;
 
-export let getVehicles = async (id) => {
+export const getVehicles = async(id) => {
     try {
         const request = await fetch(`${API_URL}/getVehicleById/${id}`, {
             credentials: 'include'
@@ -15,11 +15,11 @@ export let getVehicles = async (id) => {
 
     } catch (error) {
         console.error("Error en getVehicles:", error);
-        throw new Error("Fallo al conectar con el servicio de vehiculos.");
+        throw new Error("Fallo al conectar con el servicio de vehiculos.", { cause: error });
     }
 };
 
-export let postVehicle = async (vehicleData) => {
+export const postVehicle = async(vehicleData) => {
     try {
         const request = await fetch(`${API_URL}/postVehicle`, {
             method: 'POST',
@@ -33,17 +33,18 @@ export let postVehicle = async (vehicleData) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -53,14 +54,14 @@ export let postVehicle = async (vehicleData) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
     }
 };
 
-export let putVehicle = async (vehicleData, id) => {
+export const putVehicle = async(vehicleData, id) => {
     try {
         const request = await fetch(`${API_URL}/putVehicle/${id}`, {
             method: 'PUT',
@@ -74,17 +75,18 @@ export let putVehicle = async (vehicleData, id) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -94,7 +96,7 @@ export let putVehicle = async (vehicleData, id) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;

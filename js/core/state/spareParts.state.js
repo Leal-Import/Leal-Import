@@ -10,5 +10,5 @@ export const sparePartsState = {
         total: 0,
         totalPages: 0
     },
-    statusList: [],
+    statusList: []
 };

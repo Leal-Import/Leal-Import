@@ -7,13 +7,47 @@ export const DOMRefs = {
         this.refs = {
             loaderCustomers: $('loaderCustomers'),
             txtSearchData: $('txtSearchData'),
-            cardContainer: qs('.cardContainer'),
+            cardContainer: qs('.cardContainer')
         };
         return this.refs;
     }
 };
 
+const createSVG = (pathD, options = {}) => {
+    const { strokeWidth = "2", className = "" } = options;
 
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    if (className) svg.setAttribute("class", className);
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    path.setAttribute("stroke-width", strokeWidth);
+    path.setAttribute("d", pathD);
+
+    svg.appendChild(path);
+    return svg;
+};
+
+const createInfoRow = (svg, label, value) => {
+    const icon = document.createElement("div");
+    icon.className = "infoIcon";
+    icon.appendChild(svg);
+
+    const content = document.createElement("div");
+    content.className = "infoContent";
+    content.append(
+        Object.assign(document.createElement("div"), { className: "infoLabel", textContent: label }),
+        Object.assign(document.createElement("span"), { textContent: value })
+    );
+    const row = document.createElement("div");
+    row.className = "customerInfoRow";
+    row.append(icon, content);
+    return row;
+};
 export const insertCustomers = (container, customers, type, idVehicle, newSparePart) => {
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
@@ -74,39 +108,3 @@ export const insertCustomers = (container, customers, type, idVehicle, newSpareP
     container.appendChild(fragment);
 };
 
-function createInfoRow(svg, label, value) {
-    const icon = document.createElement("div");
-    icon.className = "infoIcon";
-    icon.appendChild(svg);
-
-    const content = document.createElement("div");
-    content.className = "infoContent";
-    content.append(
-        Object.assign(document.createElement("div"), { className: "infoLabel", textContent: label }),
-        Object.assign(document.createElement("span"), { textContent: value })
-    );
-
-    const row = document.createElement("div");
-    row.className = "customerInfoRow";
-    row.append(icon, content);
-    return row;
-}
-
-function createSVG(pathD, options = {}) {
-    const { strokeWidth = "2", className = "" } = options;
-
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("fill", "none");
-    svg.setAttribute("stroke", "currentColor");
-    svg.setAttribute("viewBox", "0 0 24 24");
-    if (className) svg.setAttribute("class", className);
-
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("stroke-linecap", "round");
-    path.setAttribute("stroke-linejoin", "round");
-    path.setAttribute("stroke-width", strokeWidth);
-    path.setAttribute("d", pathD);
-
-    svg.appendChild(path);
-    return svg;
-}

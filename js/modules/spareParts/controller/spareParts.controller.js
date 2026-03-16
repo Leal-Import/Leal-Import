@@ -3,7 +3,7 @@ import { createPagination } from '../../../pagination/pagination.controller.js';
 import { showMessage, fillSelect, showElement, hideElement } from '../../../utils/dom.js';
 import { initSparePartsEvents } from '../event/spareParts.events.js';
 import { getSpareParts, getStatus } from '../../../service/spareParts.service.js';
-import { DOMRefs, insertSpareParts } from '../../../core/dom/spareParts.dom.js'
+import { DOMRefs, insertSpareParts } from '../../../core/dom/spareParts.dom.js';
 import { initSession } from '../../../utils/api.utils.js';
 
 const pagination = createPagination({
@@ -15,11 +15,11 @@ const pagination = createPagination({
     }
 });
 
-async function loadStatusSelect() {
+const loadStatusSelect = async() => {
     try {
         const status = await getStatus();
         sparePartsState.statusList = status;
-        fillSelect("cmbSearchByStatus", status, 'idPartsState', 'state')
+        fillSelect("cmbSearchByStatus", status, 'idPartsState', 'state');
     } catch (error) {
         showMessage(
             'Error',
@@ -28,9 +28,9 @@ async function loadStatusSelect() {
         );
         console.error(error);
     }
-}
+};
 
-export async function loadSpareParts() {
+export const loadSpareParts = async() => {
     try {
         showElement(DOMRefs.refs.loaderSpareParts);
         const { page, size } = sparePartsState.pagination;
@@ -61,18 +61,18 @@ export async function loadSpareParts() {
     } finally {
         hideElement(DOMRefs.refs.loaderSpareParts);
     }
-}
+};
 
-export function onSearchSpareParts(filters) {
+export const onSearchSpareParts = (filters) => {
     sparePartsState.filters = {
         ...sparePartsState.filters,
         ...filters
     };
     sparePartsState.pagination.page = 1;
     loadSpareParts();
-}
+};
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -82,14 +82,14 @@ const setupApplication = async () => {
 
 const initializeUI = (Refs) => {
     initSparePartsEvents({ Refs, onSearchSpareParts });
-}
+};
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await Promise.all([loadStatusSelect(), loadSpareParts()]);
 
-}
+};
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

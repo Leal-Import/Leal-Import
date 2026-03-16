@@ -62,7 +62,7 @@ export const insertCustomers = (container, customers, onActions, tableCustomers)
         });
     }
     container.appendChild(fragment);
-}
+};
 
 export const fillCustomerForm = (customer) => {
     fillForm('#frmCustomers', {
@@ -70,9 +70,9 @@ export const fillCustomerForm = (customer) => {
         txtCustomerDUI: customer.dui,
         txtCustomerPhone: customer.personalPhone
     });
-}
+};
 
 export const rewriteModalText = (button, title, text) => {
     title.textContent = `${text} cliente`;
     button.querySelector("span").textContent = text;
-}
+};

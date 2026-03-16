@@ -15,8 +15,7 @@ const pagination = createPagination({
     }
 });
 
-
-const loadCustomers = async () => {
+const loadCustomers = async() => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customerSaleState.pagination;
@@ -24,7 +23,7 @@ const loadCustomers = async () => {
         const data = await getCustomers(
             page - 1,
             size,
-            search || '',
+            search || ''
         );
 
         customerSaleState.list = data.content;
@@ -44,10 +43,9 @@ const loadCustomers = async () => {
     } finally {
         hideElement(DOMRefs.refs.loaderCustomers);
     }
-}
+};
 
-
-const hydrateContextFromURL = async () => {
+const hydrateContextFromURL = async() => {
     const params = new URLSearchParams(window.location.search);
     const type = params.get("type");
     const newSparePartId = params.get("newSparePartId");
@@ -73,18 +71,18 @@ const hydrateContextFromURL = async () => {
     customerSaleState.type = type;
     customerSaleState.context.id = params.get("id");
     return true;
-}
+};
 
-export function onSearchCustomer(filters) {
+export const onSearchCustomer = (filters) => {
     customerSaleState.filters = {
         ...customerSaleState.filters,
         ...filters
     };
     customerSaleState.pagination.page = 1;
     loadCustomers();
-}
+};
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -98,13 +96,13 @@ const setupApplication = async () => {
 
 const initializeUI = (Refs) => {
     initCustomerSaleEvents({ Refs, onSearchCustomer });
-}
+};
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await loadCustomers();
-}
+};
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         // Validar sesión y preparar contexto
         const isReady = await setupApplication();

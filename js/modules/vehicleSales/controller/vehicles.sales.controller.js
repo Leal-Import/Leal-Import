@@ -21,7 +21,6 @@ import { safeParseFloat, validatePayment } from '../../../utils/validators.js';
 import { workOrderDetailsState } from '../../../core/state/workOrder.details.state.js';
 import { generateVehicleSaleReport } from '../../../core/reports/workorders/vehicles.sales.report.js';
 
-
 /* ================= PAGINATION ================= */
 const pagination = createPagination({
     initialSize: vehicleSaleState.pagination.size,
@@ -33,7 +32,7 @@ const pagination = createPagination({
 });
 
 /* ================= INVENTORY ================= */
-export async function loadInventory() {
+export const loadInventory = async() => {
     try {
         showElement(DOMRefs.refs.tableVehiclesLoader);
         const { page, size } = vehicleSaleState.pagination;
@@ -65,7 +64,7 @@ export async function loadInventory() {
     } finally {
         hideElement(DOMRefs.refs.tableVehiclesLoader);
     }
-}
+};
 
 /* ================= TOTALS ================= */
 const recalculateTotals = () => {
@@ -79,7 +78,7 @@ const recalculateTotals = () => {
     renderTotals({ total, due, totalPaid: vehicleSaleState.totals.totalPaid }, DOMRefs.refs);
 };
 
-const onAddVehicle = async (vehicle) => {
+const onAddVehicle = async(vehicle) => {
     vehicleSaleState.idVehicle = vehicle.idVehicle;
     showElement(DOMRefs.refs.addVehicleLoader);
     const vehicleToAppend = await getVehicleById(vehicle.idVehicle);
@@ -119,7 +118,7 @@ const onAddPayment = () => {
     const payment = {
         amount: safeParseFloat(amount) || 0,
         idPaymentMethod: method || null
-    }
+    };
     addNewPayment({
         state: vehicleSaleState.data,
         totals: vehicleSaleState.totals,
@@ -129,7 +128,7 @@ const onAddPayment = () => {
 };
 
 /* ================= SUBMIT ================= */
-async function onSubmitVehicleSale(e, isWorkOrder) {
+export const onSubmitVehicleSale = async(e, isWorkOrder) => {
     e.preventDefault();
     const response = await createNewSale(isWorkOrder);
     if (response) {
@@ -137,12 +136,12 @@ async function onSubmitVehicleSale(e, isWorkOrder) {
     } else {
         window.location.href = 'sales.html';
     }
-}
+};
 
-const createNewSale = async (isWorkOrder) => {
-    const error = validateSale(vehicleSaleState.data, vehicleSaleState.idVehicle, vehicleSaleState.context.idCustomer, vehicleSaleState.context.idSale);
-    if (error) {
-        showMessage('Error de validación', error, 'warning');
+const createNewSale = async(isWorkOrder) => {
+    const invalidate = validateSale(vehicleSaleState.data, vehicleSaleState.idVehicle, vehicleSaleState.context.idCustomer, vehicleSaleState.context.idSale);
+    if (invalidate) {
+        showMessage('Error de validación', invalidate, 'warning');
         return;
     }
     if (isWorkOrder) {
@@ -201,9 +200,9 @@ const createNewSale = async (isWorkOrder) => {
             removeDisable(DOMRefs.refs.btnSaveSale);
         }
     }
-}
+};
 
-const onSearchVehicle = async (filters) => {
+const onSearchVehicle = async(filters) => {
     vehicleSaleState.filters = {
         ...vehicleSaleState.filters,
         ...filters
@@ -230,7 +229,7 @@ const cleanWindow = () => {
 };
 
 /* ================= LOAD EXISTING ================= */
-function loadExistingSale(sale, vehicle) {
+const loadExistingSale = (sale, vehicle) => {
     showElement(DOMRefs.refs.addVehicleLoader);
     hideElement(DOMRefs.refs.btnCancelVehicle);
     loadVehicle(vehicle, vehicleSaleState.context.idSale, DOMRefs.refs);
@@ -249,14 +248,14 @@ function loadExistingSale(sale, vehicle) {
     });
     recalculateTotals();
     saveSaleState();
-}
+};
 
 /* ================= LOAD DRAFT ================= */
-const loadDraft = async () => {
+const loadDraft = async() => {
     const storage = JSON.parse(
         localStorage.getItem(vehicleSaleState.saleKey)
     );
-    vehicleSaleState.idVehicle = storage.idVehicle
+    vehicleSaleState.idVehicle = storage.idVehicle;
     vehicleSaleState.data = storage.data;
     vehicleSaleState.totals = storage.totals;
     if (vehicleSaleState.idVehicle) {
@@ -295,7 +294,7 @@ const onImportVehicle = () => {
     window.location.href = `vehicleDetails.html?sale=true&idCustomer=${vehicleSaleState.context.idCustomer}&customerName=${encodeURIComponent(vehicleSaleState.context.customerName)}`;
 };
 
-const initializeUI = async (Refs) => {
+const initializeUI = async(Refs) => {
     await initPaymentsController({
         totalCalculator: recalculateTotals,
         onStateChange: saveSaleState,
@@ -305,9 +304,9 @@ const initializeUI = async (Refs) => {
     loadCustomerName(DOMRefs.refs.customerName, vehicleSaleState.context.customerName);
     initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
     initializeModalListeners(vehicleSaleState.data, vehicleSaleState.context.isView);
-}
+};
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -322,7 +321,7 @@ const setupApplication = async () => {
     return true;
 };
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     if (vehicleSaleState.context.idSale) {
         const sale = await getSaleById(vehicleSaleState.context.idSale);
         const vehicle = await getVehicleById(sale.idVehicle);
@@ -352,7 +351,7 @@ const loadDataFlow = async () => {
     await loadInventory();
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         // 1. Configurar aplicación
         const isReady = await setupApplication();

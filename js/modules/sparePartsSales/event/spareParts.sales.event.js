@@ -1,14 +1,13 @@
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
-
-export function initSpareSaleEvents({
+export const initSpareSaleEvents = ({
     Refs,
     onSubmitSpareSale,
     onAddPayment,
     onSearchSparePart,
     onOrderClick,
     onSaveNotes
-}) {
+}) => {
     let searchTimeout = null;
 
     if (Refs.frmSparePartSale) {
@@ -34,7 +33,7 @@ export function initSpareSaleEvents({
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 onSearchSparePart({
-                    search: Refs.txtSearchData?.value.trim() || '',
+                    search: Refs.txtSearchData?.value.trim() || ''
                 });
             }, 1000);
         });
@@ -44,4 +43,4 @@ export function initSpareSaleEvents({
         Refs.btnOrderPart.addEventListener("click", onOrderClick);
     }
 
-}
+};

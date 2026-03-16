@@ -1,5 +1,5 @@
 export const calculateTotals = ({ items = 0, paid = 0 }) => {
-    let total = 0;
+    let total;
 
     if (Array.isArray(items)) {
         total = items.reduce(

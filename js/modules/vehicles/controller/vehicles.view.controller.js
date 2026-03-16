@@ -6,7 +6,7 @@ import { initSession } from "../../../utils/api.utils.js";
 import { initEventsVehiclesView } from "../event/vehicles.view.event.js";
 import { generateVehicleReport } from "../../../core/reports/vehicles/vehicles.report.js";
 
-const loadData = async () => {
+const loadData = async() => {
     try {
         const vehicle = await getVehicles(vehicleViewState.context.idVehicle);
         vehicleViewState.vehicle = vehicle;
@@ -15,9 +15,9 @@ const loadData = async () => {
         console.error("Error loading vehicle data:", error);
         showMessage("Error", "No se pudo cargar la información del vehículo.", "error");
     }
-}
+};
 
-const hydrateContextFromURL = async () => {
+const hydrateContextFromURL = async() => {
     const params = new URLSearchParams(window.location.search);
     const idVehicle = params.get('id');
     if (!idVehicle) {
@@ -29,7 +29,7 @@ const hydrateContextFromURL = async () => {
     return true;
 };
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -39,15 +39,15 @@ const setupApplication = async () => {
     return true;
 };
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await loadData();
-}
+};
 
 const initializeUI = (Refs) => {
     initEventsVehiclesView({ Refs, onGeneratePdf: () => generateVehicleReport(vehicleViewState.vehicle) });
-}
+};
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", async() => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

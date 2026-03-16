@@ -4,9 +4,9 @@ import { workOrderDetailsState } from "../state/workOrder.details.state.js";
 
 export const verifyIds = (state, idSparePart) => {
     return state.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
-}
+};
 
-export const hydrateContextFromURL = async (state) => {
+export const hydrateContextFromURL = async(state) => {
     const params = new URLSearchParams(window.location.search);
 
     const idCustomer = asUUID(getNullableParam(params.get('idCustomer')));
@@ -45,11 +45,11 @@ export const pushSparePart = (state, sparePart) => {
         idSparePart: sparePart.idSparePart || sparePart.idSpareParts,
         name: sparePart.sparePartName || sparePart.nameSpareParts || sparePart.name || '',
         priceApplied: sparePart.priceApplied || sparePart.suggestedPrice || 0,
-        idWorkOrderSpareParts: sparePart.idWorkOrderSpareParts || null,
-    }
+        idWorkOrderSpareParts: sparePart.idWorkOrderSpareParts || null
+    };
     state.push(normalizedPart);
     return normalizedPart;
-}
+};
 
 export const pushService = (state, service) => {
     const id = service.id || service.idService || null;
@@ -59,18 +59,18 @@ export const pushService = (state, service) => {
         idService: service.idService || null,
         name: service.nameService || service.name || '',
         priceApplied: service.priceApplied || 0.00,
-        idWorkOrderService: service.idWorkOrderService || null,
-    }
+        idWorkOrderService: service.idWorkOrderService || null
+    };
     state.push(normalizedPart);
     return normalizedPart;
-}
+};
 
-export function calculateWorkOrderTotals({
+export const calculateWorkOrderTotals = ({
     services = [],
     spareParts = [],
     payments = [],
     vehiclePrice = 0
-}) {
+}) => {
     const servicesTotal = services.reduce((acc, s) => acc + safeParseFloat(s.priceApplied), 0);
     const sparePartsTotal = spareParts.reduce((acc, p) => acc + safeParseFloat(p.priceApplied), 0);
     const total = servicesTotal + sparePartsTotal;
@@ -89,14 +89,14 @@ export function calculateWorkOrderTotals({
         orderTotal,
         vehiclePrice
     };
-}
+};
 
 export const cleanWindow = () => {
     localStorage.removeItem(workOrderDetailsState.saleKey);
     $("frmWorkOrder").reset();
 };
 
-export function validatePostOrder(data, idVehicle) {
+export const validatePostOrder = (data, idVehicle) => {
     const {
         selectedServices,
         selectedSpareParts,
@@ -137,9 +137,9 @@ export function validatePostOrder(data, idVehicle) {
     }
 
     return null;
-}
+};
 
-export function validatePutOrder(data, idVehicle) {
+export const validatePutOrder = (data, idVehicle) => {
     const {
         selectedServices,
         selectedSpareParts,
@@ -177,7 +177,7 @@ export function validatePutOrder(data, idVehicle) {
     }
 
     return null;
-}
+};
 
 export const buildPostWorkOrderFormData = (state) => {
     const fd = new FormData();
@@ -221,7 +221,6 @@ const buildPutWorkOrderPayload = (state) => {
     };
 };
 
-
 const buildPostWorkOrderPayload = (state) => {
     const { data, context, idEmployee } = state;
 
@@ -235,7 +234,6 @@ const buildPostWorkOrderPayload = (state) => {
         idEmployee //el idEmployee esta de momento pero despues se quitara
     };
 };
-
 
 const appendPaymentFiles = (fd, payments, isEdit) => {
     payments.forEach(p => {

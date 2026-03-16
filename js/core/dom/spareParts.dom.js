@@ -31,21 +31,21 @@ export const insertSpareParts = (container, spareParts) => {
     container.appendChild(fragment);
 };
 
-function createNoDataMessage() {
+const  createNoDataMessage = () => {
     const div = document.createElement("div");
     div.textContent = "No hay repuestos disponibles.";
     div.classList.add("noDataMessage");
     return div;
-}
+};
 
-function createSparePartCard(sparePart) {
+const createSparePartCard = (sparePart) => {
     const card = document.createElement("div");
     card.classList.add("card");
     card.append(createCardBody(sparePart), createCardFooter(sparePart));
     return card;
-}
+};
 
-function createCardBody(sparePart) {
+const createCardBody = (sparePart) => {
     const body = document.createElement("div");
     body.classList.add("bodyCard");
 
@@ -71,9 +71,9 @@ function createCardBody(sparePart) {
     info.append(name, brandModel);
     body.append(imgContainer, info, createMoreInfo(sparePart));
     return body;
-}
+};
 
-function createMoreInfo(sparePart) {
+const createMoreInfo = (sparePart) => {
     const container = document.createElement("div");
     container.classList.add("moreInfoContainer");
 
@@ -95,9 +95,9 @@ function createMoreInfo(sparePart) {
     left.append(status, year);
     container.append(left, price);
     return container;
-}
+};
 
-function createCardFooter(sparePart) {
+const createCardFooter = (sparePart) => {
     const footer = document.createElement("div");
     footer.classList.add("footerCard");
 
@@ -113,4 +113,4 @@ function createCardFooter(sparePart) {
 
     footer.append(btnView, btnEdit);
     return footer;
-}
+};

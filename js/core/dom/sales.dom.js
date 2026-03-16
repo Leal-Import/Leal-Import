@@ -27,7 +27,7 @@ export const insertSales = (container, sales) => {
         const noDataMessage = document.createElement("div");
         noDataMessage.textContent = "No hay ventas registradas";
         noDataMessage.classList.add("noDataMessage");
-        fragment.appendChild(noDataMessage)
+        fragment.appendChild(noDataMessage);
     } else {
         sales.forEach(sale => {
             const panel = document.createElement("div");
@@ -63,11 +63,11 @@ export const insertSales = (container, sales) => {
             nameVehicle.textContent = sale.productName || "Producto Desconocido"; // Nombre del Vehículo/Producto
             productData.appendChild(nameVehicle);
 
-            if (sale.productType == "SparePart" && sale.extraPartsCount > 0) {
+            if (sale.productType === "SparePart" && sale.extraPartsCount > 0) {
                 const moreParts = document.createElement("span");
                 moreParts.textContent = `+ ${sale.extraPartsCount} Repuestos`;
-                moreParts.classList.add("moreParts")
-                productData.appendChild(moreParts)
+                moreParts.classList.add("moreParts");
+                productData.appendChild(moreParts);
             }
 
             const dateDataSale = document.createElement("div");
@@ -90,7 +90,7 @@ export const insertSales = (container, sales) => {
 
             const typeSale = document.createElement("div");
             typeSale.classList.add("typeSale");
-            if (sale.productType == "Vehicle") {
+            if (sale.productType === "Vehicle") {
                 // VIN
                 const vinDataSale = document.createElement("div");
                 vinDataSale.classList.add("dataSale");
@@ -145,7 +145,7 @@ export const insertSales = (container, sales) => {
             lblTotal.textContent = "Monto total:";
             const totalSpan = document.createElement("span");
             totalSpan.classList.add("amountQuantity");
-            totalSpan.textContent = sale.totalAmount != null ? `$${sale.totalAmount.toLocaleString('es-SV')}` : "$N/A";
+            totalSpan.textContent = sale.totalAmount !== null ? `$${sale.totalAmount.toLocaleString('es-SV')}` : "$N/A";
             totalAmountData.append(lblTotal, totalSpan);
 
             // Deuda
@@ -155,7 +155,7 @@ export const insertSales = (container, sales) => {
             lblDue.classList.add("lbl");
             lblDue.textContent = "Deuda:";
             const dueSpan = document.createElement("span");
-            dueSpan.textContent = sale.amountDue != null ? `$${sale.amountDue.toLocaleString('es-SV')}` : "$N/A";
+            dueSpan.textContent = sale.amountDue !== null ? `$${sale.amountDue.toLocaleString('es-SV')}` : "$N/A";
             amountDueData.append(lblDue, dueSpan);
 
             // Contenedor de Botones
@@ -167,13 +167,12 @@ export const insertSales = (container, sales) => {
             btnView.classList.add("btnSecondary");
             btnView.textContent = "Ver mas";
 
-
             // Botón "Editar"
             const btnEdit = document.createElement("a");
             btnEdit.classList.add("btnPrimary");
             btnEdit.textContent = "Editar";
 
-            if (sale.productType == "Vehicle") {
+            if (sale.productType === "Vehicle") {
                 btnEdit.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}`;
                 btnView.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}&isView=true`;
             } else {
@@ -194,9 +193,9 @@ export const insertSales = (container, sales) => {
 
     }
     container.appendChild(fragment);
-}
+};
 
 export const selectLineButton = (filterBtn, selectedLines) => {
     selectedLines.forEach(l => l.classList.remove("selected"));
     filterBtn.querySelector(".lineSelected")?.classList.add("selected");
-}
+};

@@ -18,7 +18,7 @@ const pagination = createPagination({
     }
 });
 
-export const loadCustomers = async () => {
+export const loadCustomers = async() => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customersState.pagination;
@@ -28,7 +28,7 @@ export const loadCustomers = async () => {
             size,
             search || '',
             status || ''
-            
+
         );
 
         customersState.list = data.content;
@@ -58,8 +58,7 @@ export const loadCustomers = async () => {
     } finally {
         hideElement(DOMRefs.refs.loaderCustomers);
     }
-}
-
+};
 
 const handleCustomerActions = (event, customer) => {
     event.stopPropagation();
@@ -84,10 +83,9 @@ const handleCustomerActions = (event, customer) => {
                 )
         }
     ]);
-}
+};
 
-
-const toggleCustomerStatus = async (id, status) => {
+const toggleCustomerStatus = async(id, status) => {
     try {
         await patchCustomer(id, status);
         showMessage('Cliente', status === STATUS.ACTIVE ? 'Cliente activado' : 'Cliente desactivado', 'success');
@@ -101,7 +99,7 @@ const toggleCustomerStatus = async (id, status) => {
         );
         console.error(error);
     }
-}
+};
 
 const editCustomer = (customer) => {
     customersState.selectedId = customer.idCustomer;
@@ -109,7 +107,7 @@ const editCustomer = (customer) => {
     rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Actualizar");
     setFormReadOnly('#frmCustomers', false);
     toggleModal(DOMRefs.refs.modalCustomers, true);
-}
+};
 
 const viewCustomer = (customer) => {
     customersState.selectedId = null;
@@ -117,7 +115,7 @@ const viewCustomer = (customer) => {
     rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Ver");
     setFormReadOnly('#frmCustomers', true);
     toggleModal(DOMRefs.refs.modalCustomers, true);
-}
+};
 
 const onOpenModal = () => {
     customersState.selectedId = null;
@@ -125,14 +123,14 @@ const onOpenModal = () => {
     rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Agregar");
     setFormReadOnly('#frmCustomers', false);
     toggleModal(DOMRefs.refs.modalCustomers, true);
-}
+};
 
 const onCloseModal = () => {
     customersState.selectedId = null;
     toggleModal(DOMRefs.refs.modalCustomers, false);
-}
+};
 
-const onSubmitCustomer = async (e) => {
+const onSubmitCustomer = async(e) => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmCustomers));
@@ -153,7 +151,6 @@ const onSubmitCustomer = async (e) => {
             showMessage('Exito', 'Cliente agregado exitosamente', 'success');
         }
 
-
     } catch (err) {
         console.error(err);
         showMessage('Error', err.message || 'Error al guardar cliente', 'error');
@@ -165,7 +162,7 @@ const onSubmitCustomer = async (e) => {
         toggleModal(DOMRefs.refs.modalCustomers, false);
         pagination.update({});
     }
-}
+};
 
 const onSearchCustomer = (filters) => {
     customersState.filters = {
@@ -174,11 +171,9 @@ const onSearchCustomer = (filters) => {
     };
     customersState.pagination.page = 1;
     loadCustomers();
-}
+};
 
-const onCleanState = () => customersState.selectedId = null
-
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -187,14 +182,14 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
-    initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onCleanState, onOpenModal, onCloseModal });
-}
+    initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal });
+};
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await loadCustomers();
-}
+};
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         // 1. Configurar aplicación
         const isReady = await setupApplication();

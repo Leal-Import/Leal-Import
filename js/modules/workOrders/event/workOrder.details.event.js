@@ -1,4 +1,3 @@
-import { $ } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
 export const initWorkOrdersEvents = ({
@@ -59,7 +58,7 @@ export const initWorkOrdersEvents = ({
         Refs.dtEstimated.addEventListener("change", onSaveDate);
     }
 
-    if(Refs.btnCompleteOrder) {
+    if (Refs.btnCompleteOrder) {
         Refs.btnCompleteOrder.addEventListener("click", onCompleteOrder);
     }
 

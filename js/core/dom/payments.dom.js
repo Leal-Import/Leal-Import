@@ -1,63 +1,13 @@
 // payments.dom.js
 import { $ } from '../../utils/dom.js';
+
 import { formatWithCommas } from '../../utils/formatters.js';
 import { getMethodNameById } from '../logic/payments.logic.js';
-
-export const DOMRefs = {
-    refs: {},
-
-    init() {
-        this.refs = {
-            paymentsList: $('paymentsList'),
-            paymentMethod: $('paymentMethod'),
-            txtAmount: $('txtAmount'),
-            paymentMethod: $('paymentMethod'),
-            txtTotal: $('txtTotal'),
-            txtCommission: $('txtCommission'),
-            txtNotes: $('txtNotes')
-        };
-        return this.refs;
-    }
-};
-
-/* ======================================================
-   Render principal
-====================================================== */
-export function renderPayments({
-    payments = [],
-    totals,
-    onDeletePayment,
-    paymentsToDelete,
-    showReceiptBtn = false,
-    createReceiptButton,
-    isView,
-    container
-}) {
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    payments.forEach((payment, index) => {
-        container.appendChild(
-            createPaymentRow({
-                payment,
-                payments,
-                totals,
-                index,
-                onDeletePayment,
-                paymentsToDelete,
-                showReceiptBtn,
-                createReceiptButton,
-                isView
-            })
-        );
-    });
-}
 
 /* ======================================================
    Crear fila individual
 ====================================================== */
-function createPaymentRow({
+const  createPaymentRow = ({
     payment,
     payments,
     totals,
@@ -67,7 +17,7 @@ function createPaymentRow({
     showReceiptBtn,
     createReceiptButton,
     isView
-}) {
+}) => {
     const paymentItem = document.createElement('div');
     paymentItem.className = 'paymentItem';
     paymentItem.dataset.index = index + 1;
@@ -115,7 +65,57 @@ function createPaymentRow({
 
     paymentItem.append(paymentInfo, actions);
     return paymentItem;
-}
+};
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            paymentsList: $('paymentsList'),
+            paymentMethod: $('paymentMethod'),
+            txtAmount: $('txtAmount'),
+            txtTotal: $('txtTotal'),
+            txtCommission: $('txtCommission'),
+            txtNotes: $('txtNotes')
+        };
+        return this.refs;
+    }
+};
+
+/* ======================================================
+   Render principal
+====================================================== */
+export const  renderPayments = ({
+    payments = [],
+    totals,
+    onDeletePayment,
+    paymentsToDelete,
+    showReceiptBtn = false,
+    createReceiptButton,
+    isView,
+    container
+}) => {
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    payments.forEach((payment, index) => {
+        container.appendChild(
+            createPaymentRow({
+                payment,
+                payments,
+                totals,
+                index,
+                onDeletePayment,
+                paymentsToDelete,
+                showReceiptBtn,
+                createReceiptButton,
+                isView
+            })
+        );
+    });
+};
 
 export const resetDomPayments = (Refs) => {
     if (Refs.txtAmount) Refs.txtAmount.value = '';
@@ -124,4 +124,4 @@ export const resetDomPayments = (Refs) => {
     if (Refs.txtCommission) Refs.txtCommission.value = '';
     if (Refs.txtNotes) Refs.txtNotes.value = '';
     if (Refs.paymentsList) Refs.paymentsList.innerHTML = '';
-}
+};

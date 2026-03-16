@@ -3,9 +3,9 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 const API_URL = `${API_BASE_URL}/ViewWorkOrder`;
 const API_URLSTAT = `${API_BASE_URL}/OrdersStatus`;
 
-export const getVehiclesWOrders = async (page = 0, size = 15, search = "", idStatus = "") => {
+export const getVehiclesWOrders = async(page = 0, size = 15, search = "", idStatus = "") => {
     try {
-        const params = new URLSearchParams({ page, size, search, idStatus})
+        const params = new URLSearchParams({ page, size, search, idStatus });
         const request = await fetch(`${API_URL}/getVehiclesWithOrders?${params.toString()}`, {
             credentials: 'include'
         });
@@ -17,11 +17,11 @@ export const getVehiclesWOrders = async (page = 0, size = 15, search = "", idSta
 
     } catch (error) {
         console.error("Error en getVehiclesWOrders:", error);
-        throw new Error("Fallo al conectar con el servicio de ordenes.");
+        throw new Error("Fallo al conectar con el servicio de ordenes.", { cause: error });
     }
 };
 
-export const getWOStatus = async () => {
+export const getWOStatus = async() => {
     try {
         const request = await fetch(`${API_URLSTAT}/getOrdersStatus`, {
             credentials: 'include'
@@ -34,6 +34,6 @@ export const getWOStatus = async () => {
 
     } catch (error) {
         console.error("Error en getVehiclesWOrders:", error);
-        throw new Error("Fallo al conectar con el servicio de los estados.");
+        throw new Error("Fallo al conectar con el servicio de los estados.", { cause: error });
     }
 };

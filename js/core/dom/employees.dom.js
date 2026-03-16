@@ -3,7 +3,6 @@ import { fillForm, $, fillSelect, qs } from '../../utils/dom.js';
 
 export const DOMRefs = {
     refs: {},
-
     init() {
         this.refs = {
             employeesTableBody: $('employeesTableBody'),
@@ -24,6 +23,26 @@ export const DOMRefs = {
     }
 };
 
+const createCell = (text) => {
+    const td = document.createElement('td');
+    td.textContent = text ?? '';
+    return td;
+};
+
+const createActionsCell = (employee, onActions) => {
+    const td = document.createElement('td');
+    const button = document.createElement('button');
+
+    button.className = 'actionButton';
+    button.type = 'button';
+    button.textContent = '⋯';
+
+    button.addEventListener('click', e => onActions(e, employee));
+
+    td.appendChild(button);
+    return td;
+};
+
 export const fillEmployeesForm = (employee) => {
     fillForm('#frmEmployees', {
         txtFullName: employee.fullName,
@@ -32,17 +51,17 @@ export const fillEmployeesForm = (employee) => {
         txtUsername: employee.username.username,
         cmbUserRole: employee.idRole
     });
-}
+};
 
 export const rewriteModalElements = (button, title, text) => {
     title.textContent = `${text} Empleado`;
     button.querySelector("span").textContent = text;
-}
+};
 
 export const renderRolesSelects = (roles) => {
     fillSelect('cmbUserRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
     fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Buscar por rol');
-}
+};
 
 export const insertEmployees = (container, employees, onActions) => {
     container.innerHTML = '';
@@ -76,28 +95,5 @@ export const insertEmployees = (container, employees, onActions) => {
     });
 
     container.appendChild(fragment);
-}
+};
 
-/* ======================
-   Helpers internos DOM
-====================== */
-
-const createCell = (text) => {
-    const td = document.createElement('td');
-    td.textContent = text ?? '';
-    return td;
-}
-
-const createActionsCell = (employee, onActions) => {
-    const td = document.createElement('td');
-    const button = document.createElement('button');
-
-    button.className = 'actionButton';
-    button.type = 'button';
-    button.textContent = '⋯';
-
-    button.addEventListener('click', e => onActions(e, employee));
-
-    td.appendChild(button);
-    return td;
-}

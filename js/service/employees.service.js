@@ -4,10 +4,10 @@ const API_URL = `${API_BASE_URL}/employees`;
 const API_URLR = `${API_BASE_URL}/roles`;
 const API_URLUS = `${API_BASE_URL}/users`;
 
-export const getActiveEmployees = async (page = 0, size = 15, search = "", idRole = "", status = "") => {
+export const getActiveEmployees = async(page = 0, size = 15, search = "", idRole = "", status = "") => {
 
     try {
-        const params = new URLSearchParams({ page, size, search, idRole, status })
+        const params = new URLSearchParams({ page, size, search, idRole, status });
         const request = await fetch(`${API_URL}/getEmployees?${params.toString()}`, {
             credentials: 'include'
         });
@@ -19,11 +19,11 @@ export const getActiveEmployees = async (page = 0, size = 15, search = "", idRol
 
     } catch (error) {
         console.error("Error en getActiveEmployees:", error.message);
-        throw new Error("Fallo al conectar con el servicio de empleados." + error.message);
+        throw new Error("Fallo al conectar con el servicio de empleados." + error.message,{ cause: error });
     }
 };
 
-export const postEmployee = async (employeeData) => {
+export const postEmployee = async(employeeData) => {
     try {
         const request = await fetch(`${API_URL}/postEmployee`, {
             method: 'POST',
@@ -31,7 +31,7 @@ export const postEmployee = async (employeeData) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(employeeData),
+            body: JSON.stringify(employeeData)
         });
 
         if (!request.ok) {
@@ -41,17 +41,18 @@ export const postEmployee = async (employeeData) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -61,14 +62,14 @@ export const postEmployee = async (employeeData) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
     }
 };
 
-export const patchEmployee = async (username, value) => {
+export const patchEmployee = async(username, value) => {
     try {
         const response = await fetch(
             `${API_URLUS}/${username}/status?value=${value}`,
@@ -103,14 +104,13 @@ export const patchEmployee = async (username, value) => {
 
     } catch (error) {
         if (error instanceof TypeError) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
         throw error;
     }
 };
 
-
-export const putEmployee = async (employeeData, id) => {
+export const putEmployee = async(employeeData, id) => {
     try {
         const request = await fetch(`${API_URL}/putEmployee/${id}`, {
             method: 'PUT',
@@ -118,7 +118,7 @@ export const putEmployee = async (employeeData, id) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(employeeData),
+            body: JSON.stringify(employeeData)
         });
 
         if (!request.ok) {
@@ -128,17 +128,18 @@ export const putEmployee = async (employeeData, id) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             throw new Error(errorMessage);
@@ -147,7 +148,7 @@ export const putEmployee = async (employeeData, id) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
@@ -155,7 +156,7 @@ export const putEmployee = async (employeeData, id) => {
 };
 
 // GET para obtener los roles del empleado
-export const getRoles = async () => {
+export const getRoles = async() => {
     try {
         const request = await fetch(`${API_URLR}/getRoles`, {
             credentials: 'include'
@@ -170,6 +171,6 @@ export const getRoles = async () => {
 
     } catch (error) {
         console.error("Error en getRoles:", error);
-        throw new Error("Fallo al conectar con el servicio de roles.");
+        throw new Error("Fallo al conectar con el servicio de roles.", { cause: error });
     }
 };

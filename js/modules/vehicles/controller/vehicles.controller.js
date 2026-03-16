@@ -15,7 +15,7 @@ const pagination = createPagination({
     }
 });
 
-async function loadStatusSelect() {
+const loadStatusSelect = async() => {
     try {
         const status = await getStatus();
         vehiclesState.statusList = status;
@@ -28,9 +28,9 @@ async function loadStatusSelect() {
         );
         console.error(error);
     }
-}
+};
 
-export async function loadVehicles() {
+const loadVehicles = async() => {
     try {
         showElement(DOMRefs.refs.loaderVehicles);
         const { page, size } = vehiclesState.pagination;
@@ -61,27 +61,27 @@ export async function loadVehicles() {
     } finally {
         hideElement(DOMRefs.refs.loaderVehicles);
     }
-}
+};
 
-export function onSearchVehicles(filters) {
+const onSearchVehicles = (filters) => {
     vehiclesState.filters = {
         ...vehiclesState.filters,
         ...filters
     };
     vehiclesState.pagination.page = 1;
     loadVehicles();
-}
+};
 
 const workOrderBtn = () => {
     if (!DOMRefs.refs.btnAddVehicle) return;
     DOMRefs.refs.btnAddVehicle.href = `vehicleDetails.html?workOrder=${vehiclesState.context.hasWorkOrder}`;
-}
-function hydrateContextFromURL() {
+};
+const hydrateContextFromURL = () => {
     const params = new URLSearchParams(window.location.search);
     vehiclesState.context.hasWorkOrder = !!params.get("workOrder");
-}
+};
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -97,13 +97,13 @@ const initializeUI = (Refs) => {
     if (vehiclesState.context.hasWorkOrder) {
         workOrderBtn();
     }
-}
+};
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await Promise.all([loadStatusSelect(), loadVehicles()]);
-}
+};
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         // 1. Configurar aplicación
         const isReady = await setupApplication();

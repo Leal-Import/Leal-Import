@@ -140,7 +140,7 @@ export const generateWorkOrderReport = (order) => {
     const vehicleRows = [
         { label: 'Marca / Modelo', value: `${order.vehicleInfo.brand} ${order.vehicleInfo.model}` },
         { label: 'Año',            value: String(order.vehicleInfo.year) },
-        { label: 'VIN',            value: order.vehicleInfo.vin || '—' },
+        { label: 'VIN',            value: order.vehicleInfo.vin || '—' }
     ];
 
     vehicleRows.forEach((row, i) => {
@@ -176,7 +176,7 @@ export const generateWorkOrderReport = (order) => {
     const orderRows = [
         { label: 'Fecha de orden',     value: order.orderDate     || '—' },
         { label: 'Fecha estimada',     value: order.estimatedDate || '—' },
-        { label: 'Mecánico a cargo',   value: order.payments?.[0]?.employeeName || '—' },
+        { label: 'Mecánico a cargo',   value: order.payments?.[0]?.employeeName || '—' }
     ];
 
     orderRows.forEach((row, i) => {
@@ -211,7 +211,7 @@ export const generateWorkOrderReport = (order) => {
             `#${String(i + 1).padStart(2, '0')}`,
             s.nameService || '—',
             `$${Number(s.priceApplied).toFixed(2)}`
-          ])
+        ])
         : [['—', 'Sin servicios registrados', '$0.00']];
 
     doc.autoTable({
@@ -225,21 +225,21 @@ export const generateWorkOrderReport = (order) => {
             cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
             textColor:  [60, 60, 60],
             lineColor:  [235, 235, 235],
-            lineWidth:  0.3,
+            lineWidth:  0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
             fontSize:  7.5,
-            lineWidth: 0,
+            lineWidth: 0
         },
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
             1: { cellWidth: 'auto' },
-            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] },
+            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
-        alternateRowStyles: { fillColor: [252, 252, 252] },
+        alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
     y = doc.lastAutoTable.finalY + 10;
@@ -258,7 +258,7 @@ export const generateWorkOrderReport = (order) => {
             `#${String(i + 1).padStart(2, '0')}`,
             p.sparePartName || '—',
             `$${Number(p.priceApplied).toFixed(2)}`
-          ])
+        ])
         : [['—', 'Sin repuestos registrados', '$0.00']];
 
     doc.autoTable({
@@ -272,21 +272,21 @@ export const generateWorkOrderReport = (order) => {
             cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
             textColor:  [60, 60, 60],
             lineColor:  [235, 235, 235],
-            lineWidth:  0.3,
+            lineWidth:  0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
             fontSize:  7.5,
-            lineWidth: 0,
+            lineWidth: 0
         },
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
             1: { cellWidth: 'auto' },
-            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] },
+            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
-        alternateRowStyles: { fillColor: [252, 252, 252] },
+        alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
     y = doc.lastAutoTable.finalY + 10;
@@ -306,7 +306,7 @@ export const generateWorkOrderReport = (order) => {
             p.employeeName || '—',
             p.paymentDate  || '—',
             `$${Number(p.amount).toFixed(2)}`
-          ])
+        ])
         : [['—', '—', 'Sin abonos registrados', '$0.00']];
 
     doc.autoTable({
@@ -320,22 +320,22 @@ export const generateWorkOrderReport = (order) => {
             cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
             textColor:  [60, 60, 60],
             lineColor:  [235, 235, 235],
-            lineWidth:  0.3,
+            lineWidth:  0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
             fontSize:  7.5,
-            lineWidth: 0,
+            lineWidth: 0
         },
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
             1: { cellWidth: 'auto' },
             2: { cellWidth: 30, halign: 'center', textColor: [130, 130, 130] },
-            3: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] },
+            3: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
-        alternateRowStyles: { fillColor: [252, 252, 252] },
+        alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
     y = doc.lastAutoTable.finalY + 10;
@@ -367,7 +367,7 @@ export const generateWorkOrderReport = (order) => {
         { label: 'Total servicios',  value: `$${totalServices.toFixed(2)}`,   color: [220, 220, 220] },
         { label: 'Total repuestos',  value: `$${totalSpareParts.toFixed(2)}`,  color: [220, 220, 220] },
         { label: 'Costo de reparación', value: `$${Number(order.repairCost).toFixed(2)}`, color: [220, 220, 220] },
-        { label: 'Total abonado',    value: `$${totalPaid.toFixed(2)}`,        color: [109, 190, 69]  },
+        { label: 'Total abonado',    value: `$${totalPaid.toFixed(2)}`,        color: [109, 190, 69]  }
     ];
 
     finRows.forEach((row, i) => {

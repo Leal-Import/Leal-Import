@@ -1,4 +1,4 @@
-export function initUploadModalEvents({ Refs, onChangeUpload, onDropModal, onCloseModalUpload, onOpenUploadModal }) {
+export const initUploadModalEvents = ({ Refs, onChangeUpload, onDropModal, onCloseModalUpload, onOpenUploadModal }) => {
     const { uploadDropArea, uploadFileInput, btnSelectFile, btnCloseUpload, modalUpload, btnBill, btnTaxes, btnsTransport } = Refs;
 
     if (!uploadDropArea || !uploadFileInput || !btnSelectFile) return;
@@ -31,4 +31,4 @@ export function initUploadModalEvents({ Refs, onChangeUpload, onDropModal, onClo
     btnsTransport.forEach(btn => {
         btn.addEventListener('click', () => onOpenUploadModal('ship'));
     });
-}
+};

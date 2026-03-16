@@ -1,44 +1,45 @@
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatYearInput } from "../../../utils/formatters.js";
 
-export function initVehicleDetailEvents({ Refs, onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, onCloseLinkLoteModal, cleanCustomer, onValidateUrl }) {
+export const initVehicleDetailEvents = ({ Refs, onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, onCloseLinkLoteModal, cleanCustomer, onValidateUrl }) => {
+    const { frmVehicles, txtCustomer, txtLink, isExternalOpt, imageInput, btnLinkLote, modalLinkLote, btnCloseLink, btnSaveLinkLote, txtFormat, txtCosts, txtYear, txtMileage } = Refs;
 
     let searchTimeout = null;
 
-    Refs.frmVehicles.addEventListener("submit", onSubmit);
+    frmVehicles.addEventListener("submit", onSubmit);
 
-    Refs.txtCustomer.addEventListener("input", () => {
+    txtCustomer.addEventListener("input", () => {
         clearTimeout(searchTimeout);
         cleanCustomer();
-        searchTimeout = setTimeout(() => onSearchCustomer(Refs.txtCustomer.value), 1500);
+        searchTimeout = setTimeout(() => onSearchCustomer(txtCustomer.value), 1500);
     });
 
-    Refs.txtLink.addEventListener("input", () => {
+    txtLink.addEventListener("input", () => {
         onValidateUrl(Refs.txtLink.value.trim());
-    })
+    });
 
-    if (Refs.isExternalOpt) {
-        Refs.isExternalOpt.addEventListener('change', () => {
-            onExternalChange(Refs.isExternalOpt.checked);
+    if (isExternalOpt) {
+        isExternalOpt.addEventListener('change', () => {
+            onExternalChange(isExternalOpt.checked);
             cleanCustomer();
         });
     }
-    Refs.imageInput.addEventListener("change", onAddImage);
-    Refs.btnLinkLote.addEventListener("click", openLinkLoteModal);
-    Refs.modalLinkLote.addEventListener("click", (e) => {
+    imageInput.addEventListener("change", onAddImage);
+    btnLinkLote.addEventListener("click", openLinkLoteModal);
+    modalLinkLote.addEventListener("click", (e) => {
         if (e.target === Refs.modalLinkLote) onCloseLinkLoteModal();
     });
-    Refs.btnCloseLink.addEventListener("click", onCloseLinkLoteModal);
-    Refs.btnSaveLinkLote.addEventListener("click", onCloseLinkLoteModal);
+    btnCloseLink.addEventListener("click", onCloseLinkLoteModal);
+    btnSaveLinkLote.addEventListener("click", onCloseLinkLoteModal);
 
-    Refs.txtFormat.forEach(txt => {
+    txtFormat.forEach(txt => {
         txt.addEventListener("focus", (e) => { formatOnFocus(e, true); });
         txt.addEventListener("blur", (e) => { formatOnBlur(e, true); });
         formatDecimalInput(txt);
     });
-    
-    Refs.txtCosts.forEach(txt => {
+
+    txtCosts.forEach(txt => {
         txt.addEventListener("input", onCalculateTotal);
     });
-    formatYearInput(Refs.txtYear);
-    formatDecimalInput(Refs.txtMileage);
-}
+    formatYearInput(txtYear);
+    formatDecimalInput(txtMileage);
+};

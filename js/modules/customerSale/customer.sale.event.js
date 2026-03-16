@@ -1,6 +1,6 @@
 
-export function initCustomerSaleEvents({ Refs,  onSearchCustomer }) {
-    
+export const initCustomerSaleEvents = ({ Refs,  onSearchCustomer }) => {
+
     let searchTimeout = null;
 
     Refs.txtSearchData.addEventListener('input', () => {
@@ -11,4 +11,4 @@ export function initCustomerSaleEvents({ Refs,  onSearchCustomer }) {
             });
         }, 1000);
     });
-}
+};

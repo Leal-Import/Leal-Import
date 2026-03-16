@@ -33,7 +33,7 @@ const pagination = createPagination({
     }
 });
 
-export const loadRoles = async () => {
+export const loadRoles = async() => {
     try {
         const roles = await getRoles();
         employeesState.roles = roles;
@@ -46,11 +46,11 @@ export const loadRoles = async () => {
         );
         console.error(error);
     }
-}
+};
 
-export const loadEmployees = async () => {
+export const loadEmployees = async() => {
     try {
-        showElement(DOMRefs.refs.loaderEmployees)
+        showElement(DOMRefs.refs.loaderEmployees);
         const { page, size } = employeesState.pagination;
         const { search, idRole, status } = employeesState.filters;
         const data = await getActiveEmployees(
@@ -87,9 +87,9 @@ export const loadEmployees = async () => {
     } finally {
         hideElement(DOMRefs.refs.loaderEmployees);
     }
-}
+};
 
-export const onSubmitEmployee = async (e) => {
+export const onSubmitEmployee = async(e) => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmEmployees));
@@ -123,13 +123,13 @@ export const onSubmitEmployee = async (e) => {
         removeDisable(DOMRefs.refs.btnAddEmployee);
         pagination.update({});
     }
-}
+};
 
 /* ===============================
    ACCIONES DE FILA (⋯)
 ================================ */
 
-const handleEmployeeActions = async (event, employee) => {
+const handleEmployeeActions = (event, employee) => {
     event.stopPropagation();
 
     showFloatingMenu(event, [
@@ -152,7 +152,7 @@ const handleEmployeeActions = async (event, employee) => {
                 )
         }
     ]);
-}
+};
 
 /* ===============================
    EDITAR / VER
@@ -164,7 +164,7 @@ const editEmployee = (employee) => {
     rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Actualizar');
     setFormReadOnly('#frmEmployees', false);
     toggleModal(DOMRefs.refs.modalEmployees, true);
-}
+};
 
 const viewEmployee = (employee) => {
     employeesState.selectedId = null;
@@ -172,24 +172,24 @@ const viewEmployee = (employee) => {
     setFormReadOnly('#frmEmployees', true);
     rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Ver');
     toggleModal(DOMRefs.refs.modalEmployees, true);
-}
+};
 
 const onCloseModal = () => {
     employeesState.selectedId = null;
     toggleModal(DOMRefs.refs.modalEmployees);
-}
+};
 const onOpenModal = () => {
     rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Agregar');
     DOMRefs.refs.frmEmployees.reset();
     setFormReadOnly('#frmEmployees', false);
-    toggleModal(DOMRefs.refs.modalEmployees, true); 
-}
+    toggleModal(DOMRefs.refs.modalEmployees, true);
+};
 
 /* ===============================
    ACTIVAR / DESACTIVAR
 ================================ */
 
-const toggleEmployeeStatus = async (username, status) => {
+const toggleEmployeeStatus = async(username, status) => {
     try {
         await patchEmployee(username, status);
         showMessage('Empleado', status === STATUS.ACTIVE ? 'Empleado activado' : 'Empleado desactivado', 'success');
@@ -203,26 +203,26 @@ const toggleEmployeeStatus = async (username, status) => {
         );
         console.error(error);
     }
-}
+};
 
 /* ===============================
    FILTROS
 ================================ */
 
-const onSearchEmployee = async (filters) => {
+const onSearchEmployee = async(filters) => {
     employeesState.filters = {
         ...employeesState.filters,
         ...filters
     };
     employeesState.pagination.page = 1;
     await loadEmployees();
-}
+};
 
 /* ===============================
    INIT
 ================================ */
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -231,14 +231,14 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
-    initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal});
-}
+    initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal });
+};
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await Promise.all([loadRoles(), loadEmployees()]);
-}
+};
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

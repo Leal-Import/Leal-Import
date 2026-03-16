@@ -25,7 +25,7 @@ export const initSimpleCarousel = (
         spaceBetween: 10,
         navigation: {
             nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
+            prevEl: ".swiper-button-prev"
         },
         ...swiperOptions
     });
@@ -55,7 +55,6 @@ export const initSimpleCarousel = (
     return mainSwiperInstance;
 };
 
-
 export const initThumbsCarousel = (
     mainSelector = "#mainSwiper",
     thumbsSelector = "#thumbsSwiper",
@@ -75,10 +74,10 @@ export const initThumbsCarousel = (
         spaceBetween: 10,
         navigation: {
             nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
+            prevEl: ".swiper-button-prev"
         },
         thumbs: {
-            swiper: thumbsSwiperInstance,
+            swiper: thumbsSwiperInstance
         },
         lazy: true,
         ...mainOptions
@@ -92,6 +91,13 @@ export const verifyCarouselBtns = (btnsCarousel, mainWrapper) => {
     btnsCarousel.forEach(btn => btn.classList.toggle("hide", !hasImages));
 };
 
+const _createPlusButton = (wrapper, onAddClick) => {
+    const addThumb = document.createElement("div");
+    addThumb.classList.add("swiper-slide", "thumb-add");
+    addThumb.textContent = "+";
+    addThumb.addEventListener("click", onAddClick);
+    wrapper.appendChild(addThumb);
+};
 
 export const renderAndInitThumbsCarousel = ({
     images,
@@ -145,7 +151,6 @@ export const renderAndInitThumbsCarousel = ({
     initThumbsCarousel(mainSelector, thumbsSelector, mainOptions, thumbsOptions);
 };
 
-
 export const renderAndInitViewCarousel = ({
     photos,
     mainWrapper,
@@ -184,11 +189,3 @@ export const renderAndInitViewCarousel = ({
     }
 };
 
-// ─── Privado ───────────────────────────────────────────────
-const _createPlusButton = (wrapper, onAddClick) => {
-    const addThumb = document.createElement("div");
-    addThumb.classList.add("swiper-slide", "thumb-add");
-    addThumb.textContent = "+";
-    addThumb.addEventListener("click", onAddClick);
-    wrapper.appendChild(addThumb);
-};

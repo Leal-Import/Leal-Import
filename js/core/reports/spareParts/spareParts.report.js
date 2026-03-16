@@ -36,7 +36,7 @@ const checkPageBreak = (doc, y, needed, pageH, margin, pageW) => {
     return y;
 };
 
-export const generateSparePartReport = async (sparePart) => {
+export const generateSparePartReport = async(sparePart) => {
     const { jsPDF } = window.jspdf;
     const doc      = new jsPDF();
     const pageW    = doc.internal.pageSize.getWidth();
@@ -138,7 +138,7 @@ export const generateSparePartReport = async (sparePart) => {
             { label: 'Nombre',   value: sparePart.nameSpareParts?.trim() || '—' },
             { label: 'Marca',    value: sparePart.brand    || '—' },
             { label: 'Modelo',   value: sparePart.model    || '—' },
-            { label: 'Año',      value: sparePart.yearPart || '—' },
+            { label: 'Año',      value: sparePart.yearPart || '—' }
         ];
 
         const dataBoxH = imgH;
@@ -180,7 +180,7 @@ export const generateSparePartReport = async (sparePart) => {
             { label: 'Nombre',   value: sparePart.nameSpareParts?.trim() || '—' },
             { label: 'Marca',    value: sparePart.brand    || '—' },
             { label: 'Modelo',   value: sparePart.model    || '—' },
-            { label: 'Año',      value: sparePart.yearPart || '—' },
+            { label: 'Año',      value: sparePart.yearPart || '—' }
         ];
 
         const boxH = dataRows.length * 9 + 14;
@@ -269,7 +269,7 @@ export const generateSparePartReport = async (sparePart) => {
         head: [['Concepto', 'Monto']],
         body: [
             ['Precio de compra', `$${Number(costs?.purchasePrice ?? 0).toFixed(2)}`],
-            ['Impuestos',        `$${Number(costs?.taxes        ?? 0).toFixed(2)}`],
+            ['Impuestos',        `$${Number(costs?.taxes        ?? 0).toFixed(2)}`]
         ],
         startY: y,
         margin: { left: margin, right: margin },
@@ -279,20 +279,20 @@ export const generateSparePartReport = async (sparePart) => {
             cellPadding: { top: 4, bottom: 4, left: 4, right: 4 },
             textColor:  [60, 60, 60],
             lineColor:  [235, 235, 235],
-            lineWidth:  0.3,
+            lineWidth:  0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
             fontSize:  7.5,
-            lineWidth: 0,
+            lineWidth: 0
         },
         columnStyles: {
             0: { cellWidth: 'auto' },
-            1: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] },
+            1: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
-        alternateRowStyles: { fillColor: [252, 252, 252] },
+        alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
     y = doc.lastAutoTable.finalY;

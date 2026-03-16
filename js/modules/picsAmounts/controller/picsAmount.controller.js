@@ -3,7 +3,7 @@ import { picsAmountState } from "../../../core/state/picsAmount.state.js";
 import { $, hideElement } from "../../../utils/dom.js";
 import { initModalListeners } from "../event/picsAmount.event.js";
 
-export let clearCurrentFile = () => {
+export const clearCurrentFile = () => {
     const paymentId = DOMRefs.refs.modalContainer.dataset.paymentId;
     if (!paymentId) return;
 
@@ -26,8 +26,7 @@ export let clearCurrentFile = () => {
     updateModalContent(null, payment, DOMRefs.refs);
 };
 
-
-export let selectFile = (e, payment) => {
+export const selectFile = (e, payment) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -42,7 +41,7 @@ export let selectFile = (e, payment) => {
     const btn = paymentItem.querySelector('.btnAddPayment');
     btn.classList.add('receipt-loaded');
     btn.innerHTML = `<span class="icon">Ver comprobante</span>`;
-}
+};
 
 export const closeModalAndClean = () => {
     hideElement(DOMRefs.refs.modalContainer);
@@ -56,7 +55,7 @@ export const onClickBtnSelect = () => {
         inputElement.value = '';
         inputElement.click(); // Abre el selector de archivos
     }
-}
+};
 
 export const initializeModalListeners = (state, isViewingReceipt) => {
     picsAmountState.paymentsState = state; // 👈 inyección de estado
@@ -67,4 +66,4 @@ export const initializeModalListeners = (state, isViewingReceipt) => {
         hideElement(refs.btnClearFile);
         hideElement(refs.btnSelectFile);
     }
-}
+};

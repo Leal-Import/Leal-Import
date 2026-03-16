@@ -1,4 +1,4 @@
-export function initSparePartsEvents({ Refs,  onSearchSpareParts }) {
+export const initSparePartsEvents = ({ Refs,  onSearchSpareParts }) => {
     let searchTimeout = null;
 
     const emitFilters = () => {
@@ -8,7 +8,7 @@ export function initSparePartsEvents({ Refs,  onSearchSpareParts }) {
                 search: Refs.txtSearchData?.value.trim() || '',
                 idState: Refs.cmbSearchByStatus?.value || ''
             });
-        }, 1000)
+        }, 1000);
     };
 
     if (Refs.txtSearchData) {
@@ -18,4 +18,4 @@ export function initSparePartsEvents({ Refs,  onSearchSpareParts }) {
     if (Refs.cmbSearchByStatus) {
         Refs.cmbSearchByStatus.addEventListener('change', emitFilters);
     }
-}
+};

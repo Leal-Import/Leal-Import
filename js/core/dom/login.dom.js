@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 import { $, qs, qsa, toggleModal } from "../../utils/dom.js";
 
@@ -52,26 +52,26 @@ export const DOMRefs = {
 export const resetInputType = (input, icon) => {
     input.type = "text";
     icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/>`;
-}
+};
 
 export const clearPasswordCamps = (txtNewPassword, txtConfirmPassword) => {
     txtNewPassword.value = "";
     txtConfirmPassword.value = "";
-}
+};
 
 export const changePasswordType = (input, icon) => {
     input.type = "password";
     icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
-}
+};
 
 export const hideAllModals = () => {
     qsa(".modal").forEach(modal => toggleModal(modal, false));
-}
+};
 
 export const cleanAuthCamps = (divSuccess, txtAuthEmail) => {
     txtAuthEmail.value = "";
     divSuccess.innerHTML = "";
-}
+};
 
 export const initDigitInputs = (inputs) => {
     if (!inputs || inputs.length === 0) return;
@@ -103,15 +103,15 @@ export const initDigitInputs = (inputs) => {
             if (lastFilled >= 0) inputs[lastFilled].focus();
         });
     });
-}
+};
 
-export function focusFirstCodeInput(inputs) {
+export const  focusFirstCodeInput = (inputs) => {
     if (!inputs || inputs.length === 0) return;
-    inputs.forEach(i => i.value = '');
+    inputs.forEach((i) => {i.value = '';});
     inputs[0].focus();
-}
+};
 
-export function updateCountdownUI(modalCodeBody, state) {
+export const updateCountdownUI = (modalCodeBody, state) => {
     if (!modalCodeBody) return;
 
     let el = modalCodeBody.querySelector('#__pin_countdown');
@@ -126,26 +126,26 @@ export function updateCountdownUI(modalCodeBody, state) {
     const mins = Math.floor(state.countdown.remainingSeconds / 60);
     const secs = state.countdown.remainingSeconds % 60;
     el.textContent = `Código válido por ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-}
+};
 
 export const removeCountdown = (modalCodeBody) => {
     const el = modalCodeBody?.querySelector('#__pin_countdown');
     if (el) el.remove();
-}
+};
 
-export function changeStyleTogglePassword(icon) {
+export const changeStyleTogglePassword = (icon) => {
     const current = parseFloat(icon.dataset.rotate || '0');
     const next = current + 180;
     icon.dataset.rotate = next;
     icon.style.transition = 'transform 0.5s';
     icon.style.transform = `rotate(${next}deg)`;
-}
+};
 
-export function setReq(id, met) {
+export const setReq = (id, met) => {
     $(id).classList.toggle('met', met);
-}
+};
 
-export function updateLabel(label, data) {
+export const updateLabel = (label, data) => {
     label.textContent = data.type;
     label.style.color = data.color;
-}
+};

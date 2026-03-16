@@ -1,7 +1,6 @@
-import { qs } from "../../utils/dom.js"
+import { qs } from "../../utils/dom.js";
 
-
-export let initSalesEvents = ({ Refs, onSearchSale, onClickBtnFilter, onOpenModal, onCloseModal }) => {
+export const initSalesEvents = ({ Refs, onSearchSale, onClickBtnFilter, onOpenModal, onCloseModal }) => {
     let searchTimeout = null;
     const emitFilters = () => {
         clearTimeout(searchTimeout);
@@ -11,7 +10,7 @@ export let initSalesEvents = ({ Refs, onSearchSale, onClickBtnFilter, onOpenModa
                 search: Refs.txtSearchData?.value.trim() || '',
                 idState: Refs.cmbSearchByStatus?.value || '',
                 productType: selected?.dataset.value ?? ''
-            })
+            });
         }, 1000);
     };
     Refs.containerFilterType.addEventListener('click', (e) => {
@@ -24,12 +23,12 @@ export let initSalesEvents = ({ Refs, onSearchSale, onClickBtnFilter, onOpenModa
     Refs.txtSearchData.addEventListener('input', emitFilters);
     Refs.cmbSearchByStatus.addEventListener('change', emitFilters);
     Refs.btnAskSale.addEventListener("click", () => {
-        onOpenModal()
+        onOpenModal();
     });
     Refs.btnCloseModalAsk.addEventListener("click", () => {
         onCloseModal();
     });
     Refs.modalAskSale.addEventListener("click", (e) => {
-        if (e.target == Refs.modalAskSale) onCloseModal();
-    })
-}
+        if (e.target === Refs.modalAskSale) onCloseModal();
+    });
+};

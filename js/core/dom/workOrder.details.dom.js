@@ -60,13 +60,13 @@ export const loadViewUpdateOrder = (vin, Refs) => {
     Refs.firstBread.textContent = "Actualizar orden >";
     Refs.firstBread.href = "workOrders.html";
     Refs.secondBread.textContent = vin;
-}
+};
 
 export const loadViewSaleInfo = (vin, Refs) => {
     Refs.firstBread.textContent = "Ventas >";
     Refs.firstBread.href = "sales.html";
     Refs.secondBread.textContent = vin;
-}
+};
 
 export const renderVehicleData = (data, Refs) => {
     if (!data) return;
@@ -74,19 +74,19 @@ export const renderVehicleData = (data, Refs) => {
     if (Refs.model) Refs.model.textContent = data.model || '-';
     if (Refs.brand) Refs.brand.textContent = data.brand || '-';
     if (Refs.year) Refs.year.textContent = data.year || '-';
-}
+};
 
 export const loadViewDom = (Refs) => {
     Refs.txts.forEach(txt => {
         txt.disabled = true;
-    })
+    });
     Refs.firstBread.textContent = "Ver orden >";
-}
+};
 
 export const cleanPaymentCamps = (txtAmount, paymentMethod) => {
     if (txtAmount) txtAmount.value = '';
     if (paymentMethod) paymentMethod.value = '';
-}
+};
 
 const MIN_STATIC_ROWS = 7;
 export const initStaticRows = () => {
@@ -99,9 +99,9 @@ export const initStaticRows = () => {
         }
         tBody.appendChild(frag);
     });
-}
+};
 
-export function renderSparePartSuggestions(selectedSpareParts, boxSparePart, list, onAddSparePart) {
+export const renderSparePartSuggestions = (selectedSpareParts, boxSparePart, list, onAddSparePart) => {
     if (!boxSparePart) return;
     boxSparePart.innerHTML = '';
     list.forEach(p => {
@@ -118,17 +118,17 @@ export function renderSparePartSuggestions(selectedSpareParts, boxSparePart, lis
         const suggestedPrice = document.createElement('span');
         img.src = p.imageUrl;
         name.textContent = p.nameSpareParts;
-        suggestedPrice.textContent = `$${formatWithCommas(p.suggestedPrice)}`
+        suggestedPrice.textContent = `$${formatWithCommas(p.suggestedPrice)}`;
         containerImg.appendChild(img);
-        containerImgName.append(containerImg, name)
+        containerImgName.append(containerImg, name);
         div.append(containerImgName, suggestedPrice);
         div.addEventListener('click', () => onAddSparePart(p));
         boxSparePart.appendChild(div);
     });
     showElement(boxSparePart);
-}
+};
 
-export function renderServiceSuggestions(selectedServices, boxServ, list, onAddService) {
+export const renderServiceSuggestions = (selectedServices, boxServ, list, onAddService) => {
     if (!boxServ) return;
     boxServ.innerHTML = '';
     list.forEach(s => {
@@ -140,7 +140,7 @@ export function renderServiceSuggestions(selectedServices, boxServ, list, onAddS
         boxServ.appendChild(div);
     });
     showElement(boxServ);
-}
+};
 
 const findOrCreateEmptyRow = (tBody) => {
     let emptyRow = [...tBody.querySelectorAll('tr')]
@@ -205,7 +205,7 @@ export const appendToDom = ({
     return true;
 };
 
-export function createTrashOption({
+export const createTrashOption = ({
     row,
     item,
     arraySelected,
@@ -213,7 +213,7 @@ export function createTrashOption({
     onDelete,
     renderButton,
     tBody
-}) {
+}) => {
     const btn = document.createElement('button');
     btn.classList.add(SELECTORS.BTN_TRASH.slice(1));
     btn.type = 'button';
@@ -228,14 +228,14 @@ export function createTrashOption({
     `;
 
     btn.addEventListener('click', () => {
-        onDelete(item, arraySelected, arrayDelete, row, tBody, renderButton)
+        onDelete(item, arraySelected, arrayDelete, row, tBody, renderButton);
         row.querySelector(SELECTORS.TD_PRICE).classList.remove("finalPrice");
     });
 
     return btn;
-}
+};
 
-export function reindexTable(tBody) {
+export const reindexTable = (tBody) => {
     if (!tBody) return;
 
     const rows = [...tBody.querySelectorAll('tr')];
@@ -256,9 +256,9 @@ export function reindexTable(tBody) {
 
     tBody.innerHTML = '';
     tBody.appendChild(frag);
-}
+};
 
-export function renderImportButton(tBody, onImport, tBodyServices, tBodySpareParts) {
+export const renderImportButton = (tBody, onImport, tBodyServices, tBodySpareParts) => {
     if (!tBody) return;
 
     tBody.querySelectorAll(SELECTORS.BTN_IMPORT).forEach(b => b.remove());
@@ -283,12 +283,11 @@ export function renderImportButton(tBody, onImport, tBodyServices, tBodySparePar
     btn.addEventListener('click', onImport);
 
     targetRow.appendChild(btn);
-}
+};
 
-
-export function renderTotalsPanel({ total, due, totalPaid }, Refs) {
+export const renderTotalsPanel = ({ total, due, totalPaid }, Refs) => {
     if (Refs.totalPaid) {
-        Refs.totalPaid.textContent = `$${formatWithCommas(totalPaid)}`
+        Refs.totalPaid.textContent = `$${formatWithCommas(totalPaid)}`;
     }
     if (Refs.due) {
         Refs.due.textContent = `$${formatWithCommas(due)}`;
@@ -296,7 +295,7 @@ export function renderTotalsPanel({ total, due, totalPaid }, Refs) {
     if (Refs.totalOrder) {
         Refs.totalOrder.textContent = `$${formatWithCommas(total)}`;
     }
-}
+};
 
 export const cleanRow = (row) => {
     const tdName = row.querySelector(SELECTORS.TD_NAME);
@@ -309,7 +308,7 @@ export const cleanRow = (row) => {
         tdPrice.removeAttribute("contenteditable");
     }
     if (btnTrash) btnTrash.remove();
-}
+};
 
 export const renderTotals = ({
     servicesTotal,
@@ -317,43 +316,42 @@ export const renderTotals = ({
     total,
     totalPaid,
     due,
-    orderTotal,
-    vehiclePrice
+    orderTotal
 }, Refs) => {
     renderTotalServices(servicesTotal, Refs.totalValueService);
-    renderTotalSpareParts(sparePartsTotal, Refs.totalValueSpareParts)
+    renderTotalSpareParts(sparePartsTotal, Refs.totalValueSpareParts);
     renderTotalRepairCost(total, Refs.totalRepairCost, Refs.txtTotal);
     renderTotalsPanel({ total, due, totalPaid }, Refs);
     renderOrderTotal(orderTotal, Refs.totalCost);
-}
+};
 
 export const renderTotalServices = (servicesTotal, spanTotal) => {
     if (spanTotal) spanTotal.textContent = `$${formatWithCommas(servicesTotal)}`;
-}
+};
 
 export const renderTotalSpareParts = (sparePartsTotal, spanTotal) => {
     if (spanTotal) spanTotal.textContent = `$${formatWithCommas(sparePartsTotal)}`;
-}
+};
 
 export const renderTotalRepairCost = (total, spanTotal, txtTotal) => {
     if (spanTotal) spanTotal.textContent = `$${formatWithCommas(total)}`;
     if (txtTotal) txtTotal.value = `$${formatWithCommas(total)}`;
-}
+};
 
 export const loadExtraInputs = (notes, date, Refs) => {
     if (Refs.dtEstimated) Refs.dtEstimated.value = date;
     if (Refs.txtNotes) Refs.txtNotes.value = notes || '';
-}
+};
 
 export const renderOrderTotal = (orderTotal, spanTotal) => {
     if (spanTotal) spanTotal.textContent = `$${formatWithCommas(orderTotal)}`;
-}
+};
 
 export const renderVehiclePrice = (vehiclePrice, spanVehiclePrice) => {
     if (spanVehiclePrice) spanVehiclePrice.textContent = `$${formatWithCommas(vehiclePrice) || 0.00}`;
-}
+};
 
-function createEmptyRow() {
+const createEmptyRow = () => {
     const tr = document.createElement('tr');
     const tdName = document.createElement('td');
     tdName.classList.add(SELECTORS.TD_NAME.slice(1));
@@ -363,9 +361,9 @@ function createEmptyRow() {
     tdTrash.classList.add(SELECTORS.TD_TRASH.slice(1));
     tr.append(tdName, tdPrice, tdTrash);
     return tr;
-}
+};
 
-export function addRowToBothTables(tBodyServices, tBodySpareParts) {
+export const addRowToBothTables = (tBodyServices, tBodySpareParts) => {
     if (tBodyServices) tBodyServices.appendChild(createEmptyRow());
     if (tBodySpareParts) tBodySpareParts.appendChild(createEmptyRow());
-}
+};

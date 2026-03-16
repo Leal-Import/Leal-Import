@@ -63,7 +63,7 @@ export const DOMRefs = {
 export const cleanPaymentCamps = (txtAmount, cmbPaymentMethod) => {
     if (txtAmount) txtAmount.value = '';
     if (cmbPaymentMethod) cmbPaymentMethod.value = '';
-}
+};
 
 export const insertVehicles = (container, vehicles, onAddVehicle, tableVehicles) => {
     container.innerHTML = "";
@@ -120,7 +120,7 @@ export const insertVehicles = (container, vehicles, onAddVehicle, tableVehicles)
     }
 
     container.appendChild(fragment);
-}
+};
 
 export const loadVehicle = (vehicle, idSale, Refs) => {
     hideElement(Refs.dataLeft);
@@ -176,25 +176,24 @@ export const loadVehicle = (vehicle, idSale, Refs) => {
 
 export const loadCustomerName = (spancustomerName, customerName) => {
     spancustomerName.textContent = customerName;
-}
+};
 
 export const loadDomData = (data, Refs) => {
     Refs.txtNotes.value = data.notes;
     Refs.txtTotal.value = `$${formatWithCommas(data.salePrice)}`;
-    Refs.txtCommission.value = `$${formatWithCommas(data.commission)}`
+    Refs.txtCommission.value = `$${formatWithCommas(data.commission)}`;
     Refs.btnSaveSale.querySelector("span").textContent = "Actualizar venta";
     Refs.btnCreateOrder.replaceWith(document.createElement("div"));
-}
-
+};
 
 //A esto todavia le falta diseño
-export function renderTotals({ total, due, totalPaid }, Refs) {
+export const renderTotals = ({ total, due, totalPaid }, Refs) => {
     //const totalText = $("total");
     const dueText = Refs.due;
     const paidText = Refs.totalPaid;
     const totalText = Refs.totalVehicle;
     if (paidText) {
-        paidText.textContent = `$${formatWithCommas(totalPaid)}`
+        paidText.textContent = `$${formatWithCommas(totalPaid)}`;
     }
     if (dueText) {
         dueText.textContent = `$${formatWithCommas(due)}`;
@@ -202,4 +201,4 @@ export function renderTotals({ total, due, totalPaid }, Refs) {
     if (totalText) {
         totalText.textContent = `$${formatWithCommas(total)}`;
     }
-}
+};

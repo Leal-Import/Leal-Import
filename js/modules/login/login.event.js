@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 export const initLoginEvents = ({ Refs, onTogglePassword, onSubmitLogin, onBackHome, onOpenModalRecovery, onCloseModalRecovery, onOpenAuthEmail, onCloseAuthEmail, onClosePin, onCloseNewPassword, onAuthEmail, onSendCode, onUpdatePassword, onVerifyNewPassword, onVerifyConfirmPassword }) => {
 
@@ -18,4 +18,4 @@ export const initLoginEvents = ({ Refs, onTogglePassword, onSubmitLogin, onBackH
     Refs.btnUpdatePassword.addEventListener("click", onUpdatePassword);
     Refs.txtNewPassword.addEventListener("input", onVerifyNewPassword);
     Refs.txtConfirmPassword.addEventListener("input", onVerifyConfirmPassword);
-}  
+};

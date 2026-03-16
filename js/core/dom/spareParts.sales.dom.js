@@ -22,21 +22,20 @@ export const DOMRefs = {
             totalPaid: $("totalPaid"),
             totalSale: $("totalSale"),
             paymentMethod: $("paymentMethod"),
-            tableInventory: $("tableInventory"),
+            tableInventory: $("tableInventory")
         };
 
         return this.refs;
     }
 };
 
-
-export function insertSpareParts(
+export const insertSpareParts = (
     spareParts,
     container,
     tableInventory,
     verifyIds,
     onAddSparePart
-) {
+) => {
     if (!container || !tableInventory) return;
 
     container.innerHTML = "";
@@ -93,18 +92,17 @@ export function insertSpareParts(
     }
 
     container.appendChild(fragment);
-}
+};
 
-
-function createBtnAdd (sparePart, tr, onAddSparePart) { 
+const createBtnAdd = (sparePart, tr, onAddSparePart) => {
     const btnAddSparePart = document.createElement("button");
     btnAddSparePart.classList.add("btnAddItem");
     btnAddSparePart.textContent = "+";
     btnAddSparePart.addEventListener("click", () => onAddSparePart(sparePart, tr));
     return btnAddSparePart;
-}
+};
 
-export function createRowTable(container, sparePart, onDeleteSparePart, onWritePrice) {
+export const createRowTable = (container, sparePart, onDeleteSparePart, onWritePrice) => {
     if (!container) return;
     // Remover row 'no data' si existe
     const rowNoData = container.querySelector(".rowNoData");
@@ -126,13 +124,13 @@ export function createRowTable(container, sparePart, onDeleteSparePart, onWriteP
     tdPrice.classList.add("finalPrice");
     tr.classList.add("tableRow");
 
-    let btnTrash = createTrashOption(container, tr, idSparePart, idSaleItem, onDeleteSparePart);
+    const btnTrash = createTrashOption(container, tr, idSparePart, idSaleItem, onDeleteSparePart);
     if (btnTrash) tdTrash.appendChild(btnTrash);
     if (addEventsPrice) addEventsPrice(tdPrice, idSparePart, onWritePrice);
     tr.append(partName, tdPrice, tdTrash);
     container.appendChild(tr);
 
-}
+};
 
 const addEventsPrice = (price, id, onWritePrice) => {
     price.contentEditable = "plaintext-only";  // ← FIX DEL CURSOR
@@ -147,7 +145,7 @@ const addEventsPrice = (price, id, onWritePrice) => {
     price.addEventListener("blur", (e) => {
         formatOnBlur(e);
     });
-}
+};
 
 const createTrashOption = (container, tr, id, idSaleItem, onDeleteSparePart) => {
     const btnTrash = document.createElement("button");
@@ -166,7 +164,7 @@ const createTrashOption = (container, tr, id, idSaleItem, onDeleteSparePart) => 
 
     btnTrash.addEventListener("click", () => onDeleteSparePart(container, tr, id, idSaleItem));
     return btnTrash;
-}
+};
 
 export const createNoDataSelectedMessage = (container) => {
     const trNoData = document.createElement("tr");
@@ -177,36 +175,35 @@ export const createNoDataSelectedMessage = (container) => {
     tdNoData.textContent = "No hay repuestos seleccionados";
     trNoData.appendChild(tdNoData);
     container.appendChild(trNoData);
-}
+};
 
 export const loadCustomerName = (spancustomerName, customerName) => {
     spancustomerName.textContent = customerName;
-}
+};
 
 export const loadBtnOrder = (customerId, customerName, idSale) => {
     let url = `sparePartsDetails.html?sale=true&idCustomer=${customerId}&customerName=${encodeURIComponent(customerName)}`;
 
-    if (idSale != null && idSale !== '') {
+    if (idSale !== null && idSale !== '') {
         url += `&idSale=${idSale}`;
     }
 
     window.location.href = url;
 };
 
-
 export const loadDomData = (txtNotes, btnSaveSale, notes) => {
     txtNotes.value = notes;
     btnSaveSale.querySelector("span").textContent = "Actualizar venta";
-}
+};
 
 export const loadNotes = (txtNotes, notes) => {
     txtNotes.value = notes;
-}
+};
 
 //A esto todavia le falta diseño
-export function renderTotals({ total, due, totalPaid }, Refs) {
+export const renderTotals = ({ total, due, totalPaid }, Refs) => {
     if (Refs.totalPaid) {
-        Refs.totalPaid.textContent = `$${formatWithCommas(totalPaid)}`
+        Refs.totalPaid.textContent = `$${formatWithCommas(totalPaid)}`;
     }
     if (Refs.due) {
         Refs.due.textContent = `$${formatWithCommas(due)}`;
@@ -214,9 +211,9 @@ export function renderTotals({ total, due, totalPaid }, Refs) {
     if (Refs.totalSale) {
         Refs.totalSale.textContent = `$${formatWithCommas(total)}`;
     }
-}
+};
 
 export const cleanPaymentCamps = (txtAmount, paymentMethod) => {
     if (txtAmount) txtAmount.value = '';
     if (paymentMethod) paymentMethod.value = '';
-}
+};
