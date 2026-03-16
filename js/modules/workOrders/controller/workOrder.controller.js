@@ -1,6 +1,5 @@
 // modules/workOrders/workOrders.controller.js
 
-
 import { DOMRefs, insertWorkOrders } from "../../../core/dom/workOrder.dom.js";
 import { workOrdersState } from "../../../core/state/workOrders.state.js";
 import { createPagination } from "../../../pagination/pagination.controller.js";
@@ -23,7 +22,7 @@ const pagination = createPagination({
     }
 });
 
-const loadStateWorkOrders = async () => {
+const loadStateWorkOrders = async() => {
     try {
         const states = await getWOStatus();
         workOrdersState.stateList = states;
@@ -35,7 +34,7 @@ const loadStateWorkOrders = async () => {
     }
 };
 
-async function loadWorkOrders() {
+const loadWorkOrders = async() => {
     try {
         showElement(DOMRefs.refs.loaderWorkOrders);
         const { page, size } = workOrdersState.pagination;
@@ -61,13 +60,13 @@ async function loadWorkOrders() {
     } finally {
         hideElement(DOMRefs.refs.loaderWorkOrders);
     }
-}
+};
 
 /* ===============================
    FILTROS
 ================================ */
 
-export function onSearchWorkOrder(filters) {
+const onSearchWorkOrder = (filters) => {
     workOrdersState.filters = {
         ...workOrdersState.filters,
         ...filters
@@ -75,10 +74,9 @@ export function onSearchWorkOrder(filters) {
 
     workOrdersState.pagination.page = 1;
     loadWorkOrders();
-}
+};
 
-
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -86,15 +84,15 @@ const setupApplication = async () => {
     return true;
 };
 
-const initializeUI = async (Refs) => {
+const initializeUI = (Refs) => {
     initWorkOrdersEvents({ Refs, onSearchWorkOrder });
 };
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await Promise.all([loadWorkOrders(), loadStateWorkOrders()]);
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

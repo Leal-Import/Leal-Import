@@ -18,7 +18,7 @@ const urlToBase64 = (url) => {
 };
 
 // ── Carga las primeras N fotos y las convierte a base64 ──
-const loadPhotos = async (photos = [], max = 4) => {
+const loadPhotos = async(photos = [], max = 4) => {
     const slice = photos.slice(0, max);
     const results = await Promise.all(
         slice.map(p => urlToBase64(p.photoUrl))
@@ -26,7 +26,7 @@ const loadPhotos = async (photos = [], max = 4) => {
     return results.filter(Boolean); // descarta las que fallaron
 };
 
-export const generateVehicleSaleReport = async (sale, vehicle, customerName) => {
+export const generateVehicleSaleReport = async(sale, vehicle, customerName) => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const pageW = doc.internal.pageSize.getWidth();
@@ -240,21 +240,21 @@ export const generateVehicleSaleReport = async (sale, vehicle, customerName) => 
             cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
             textColor: [60, 60, 60],
             lineColor: [235, 235, 235],
-            lineWidth: 0.3,
+            lineWidth: 0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
             fontSize: 7.5,
-            lineWidth: 0,
+            lineWidth: 0
         },
         columnStyles: {
             0: { cellWidth: 16, halign: 'center', textColor: [180, 180, 180] },
             1: { cellWidth: 'auto' },
-            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] },
+            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
-        alternateRowStyles: { fillColor: [252, 252, 252] },
+        alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
     // ═══════════════════════════════════════
@@ -281,7 +281,7 @@ export const generateVehicleSaleReport = async (sale, vehicle, customerName) => 
     const rows = [
         { label: 'Precio de venta', value: `$${Number(sale.fullTotalCost).toFixed(2)}`, color: [220, 220, 220] },
         { label: 'Comisión', value: `$${Number(sale.commission || 0).toFixed(2)}`, color: [180, 180, 180] },
-        { label: 'Total abonado', value: `$${Number(sale.totalPaid || 0).toFixed(2)}`, color: [109, 190, 69] },
+        { label: 'Total abonado', value: `$${Number(sale.totalPaid || 0).toFixed(2)}`, color: [109, 190, 69] }
     ];
 
     rows.forEach((row, i) => {

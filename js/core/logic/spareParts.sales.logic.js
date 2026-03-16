@@ -1,11 +1,11 @@
 import { asBoolean, asNumber, asUUID, showMessage } from "../../utils/dom.js";
 import { spareSaleState } from "../state/spareParts.sales.state.js";
 
-export let verifyIds = (idSparePart) => {
+export const verifyIds = (idSparePart) => {
     return spareSaleState.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
-}
+};
 
-export const hydrateContextFromURL = async (state) => {
+export const hydrateContextFromURL = async(state) => {
     const params = new URLSearchParams(window.location.search);
 
     // 🔴 Obligatorio
@@ -51,11 +51,8 @@ export const hydrateContextFromURL = async (state) => {
     return true;
 };
 
-
-
-
-export function validateSale() {
-    const { data: { selectedItems, payments, notes }, context, idEmployee } = spareSaleState;
+export const validateSale = () => {
+    const { data: { selectedItems, payments }, context, idEmployee } = spareSaleState;
 
     // Validar cliente
     if (!context.idCustomer) {
@@ -97,10 +94,9 @@ export function validateSale() {
 
     // Si pasa todas las validaciones
     return null;
-}
+};
 
-
-export function buildPutSalePayload(state) {
+export const buildPutSalePayload = (state) => {
     const { data, context, idEmployee } = state;
 
     const payments = data.payments.map(p => ({
@@ -125,9 +121,9 @@ export function buildPutSalePayload(state) {
         paymentsToDelete: data.paymentsToDelete,
         itemsToDelete: data.itemsToDelete
     };
-}
+};
 
-export function buildPostSalePayload(state) {
+export const buildPostSalePayloadq  = (state) => {
     const { data, context, idEmployee } = state;
 
     return {
@@ -146,4 +142,4 @@ export function buildPostSalePayload(state) {
             idSaleItem: null
         }))
     };
-}
+};

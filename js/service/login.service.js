@@ -1,13 +1,12 @@
-const API_URL = `https://leal-import-api-jsol.onrender.com/api/auth`
+const API_URL = `https://leal-import-api-jsol.onrender.com/api/auth`;
 const API_URLS = `https://leal-import-api-jsol.onrender.com/api/passwordReset`;
 
-
-export let login = async (credentials, password) => {
+export const login = async(credentials, password) => {
     try {
         const request = await fetch(`${API_URL}/login`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({credentials, password}),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credentials, password }),
             credentials: 'include'
         });
         if (!request.ok) {
@@ -17,17 +16,18 @@ export let login = async (credentials, password) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -37,14 +37,14 @@ export let login = async (credentials, password) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
     }
 };
 
-export let getAuthMe = async () => {
+export const getAuthMe = async() => {
     try {
         const request = await fetch(`${API_URL}/me`, {
             credentials: 'include'
@@ -57,17 +57,16 @@ export let getAuthMe = async () => {
 
     } catch (error) {
         console.error("Error en getAuthMe:", error);
-        throw new Error("Fallo al conectar con el servicio de Login.");
+        throw new Error("Fallo al conectar con el servicio de Login.", { cause: error });
     }
 };
 
-
-export let verifyEmail = async (email) => {
+export const verifyEmail = async(email) => {
     try {
         const request = await fetch(`${API_URLS}/request`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email}),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
             credentials: 'include'
         });
         if (!request.ok) {
@@ -77,17 +76,18 @@ export let verifyEmail = async (email) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
             throw new Error(errorMessage);
         }
@@ -95,19 +95,18 @@ export let verifyEmail = async (email) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
         throw error;
     }
 };
 
-
-export let verifyPIN = async (resetId, email, code) => {
+export const verifyPIN = async(resetId, email, code) => {
     try {
         const request = await fetch(`${API_URLS}/verify`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({resetId, email, code}),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resetId, email, code }),
             credentials: 'include'
         });
         if (!request.ok) {
@@ -117,17 +116,18 @@ export let verifyPIN = async (resetId, email, code) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
             throw new Error(errorMessage);
         }
@@ -135,18 +135,18 @@ export let verifyPIN = async (resetId, email, code) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
         throw error;
     }
-}
+};
 
-export let resetPassword = async (ticket, newPassword) => {
+export const resetPassword = async(ticket, newPassword) => {
     try {
         const request = await fetch(`${API_URLS}/confirm`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ticket, newPassword}),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticket, newPassword }),
             credentials: 'include'
         });
         if (!request.ok) {
@@ -156,17 +156,18 @@ export let resetPassword = async (ticket, newPassword) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
             throw new Error(errorMessage);
         }
@@ -174,8 +175,8 @@ export let resetPassword = async (ticket, newPassword) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
         throw error;
     }
-}
+};

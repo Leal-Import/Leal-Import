@@ -1,7 +1,6 @@
-import { getAuthMe } from '../js/service/serviceLogin.js'
+import { getAuthMe } from '../js/service/serviceLogin.js';
 
-
-export function safeParseFloat(v) { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; }
+export const safeParseFloat = (v) => { const n = parseFloat(String(v || '').replace(/[$,\s]/g, '')); return isNaN(n) ? 0 : n; };
 export const $ = id => document.getElementById(id);
 export const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
@@ -9,43 +8,6 @@ export const toggleModal = (modal, show) => {
     if (!modal) return;
     modal.classList.toggle("show", show);
     modal.classList.toggle("hide", !show);
-};
-
-export const setupModal = (openBtnSelector, modalSelector, closeBtnSelector, formId, text) => {
-    const openBtn = document.querySelector(openBtnSelector);
-    const closeBtn = document.querySelector(closeBtnSelector);
-    const modal = document.querySelector(modalSelector);
-    const form = document.querySelector(formId);
-
-    if (!openBtn || !closeBtn || !modal) return;
-
-    openBtn.addEventListener("click", () => {
-        toggleModal(modal, true);
-        form?.reset();
-        modal.querySelector('.titleModal').textContent = text;
-        if (!modalSelector == "#modalLinkTracking" || !modalSelector == "#modalLinkName") {
-            modal.querySelector('input[type="submit"]').value = "Agregar";
-            enableFormUI(formId);
-        }
-    });
-    closeBtn.addEventListener("click", () => {
-        if (modalSelector == "#modalVehicle") document.getElementById("txtCustomer").removeAttribute("data-id");
-        toggleModal(modal, false);
-        form?.reset();
-        if (!modalSelector == "#modalLinkTracking" || !modalSelector == "#modalLinkName") {
-            enableFormUI(formId);
-        }
-    });
-    modal.addEventListener("click", e => {
-        if (e.target === modal) {
-            if (modalSelector == "#modalVehicle") document.getElementById("txtCustomer").removeAttribute("data-id");
-            toggleModal(modal, false);
-            form?.reset();
-            if (!modalSelector == "#modalLinkTracking" || !modalSelector == "#modalLinkName") {
-                enableFormUI(formId);
-            }
-        }
-    });
 };
 
 export const validateDate = (input, minDate = null) => {
@@ -73,7 +35,6 @@ export const validateDate = (input, minDate = null) => {
     input.min = finalMinDate.toISOString().slice(0, 10);
 };
 
-
 export const getInputsValues = (form) => {
     const data = {};
     const inputs = form.querySelectorAll('input, textarea, select');
@@ -89,7 +50,7 @@ export const getInputsValues = (form) => {
     return data;
 };
 
-export const showMessage = async (title, message, type = 'info', isToast = false) => {
+export const showMessage = async(title, message, type = 'info', isToast = false) => {
     let config = {
         icon: type,
         title: title,
@@ -106,8 +67,8 @@ export const showMessage = async (title, message, type = 'info', isToast = false
             timer: 3000,
             timerProgressBar: true,
             didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
             }
         };
     } else {
@@ -131,7 +92,7 @@ let currentUser = null;
  * Inicializa la sesión. Debe llamarse al cargar cualquier página.
  * Si falla o no hay usuario, redirige al login automáticamente.
  */
-export const initSession = async () => {
+export const initSession = async() => {
     try {
         const response = await getAuthMe();
 
@@ -166,7 +127,7 @@ export const getCurrentUser = () => {
 };
 
 // Función auxiliar para sacar al usuario
-const forceLogout = async () => {
+const forceLogout = async() => {
     currentUser = null;
 
     if (!window.location.pathname.includes("login.html")) {
@@ -181,7 +142,7 @@ const forceLogout = async () => {
 };
 
 /* Llenar formulario */
-export let fillForm = (formSelector, data) => {
+export const fillForm = (formSelector, data) => {
     const form = document.querySelector(formSelector);
     if (!form) return console.error(`No se encontró el formulario ${formSelector}`);
 
@@ -207,13 +168,13 @@ export let fillForm = (formSelector, data) => {
             field.value = value ?? '';
         }
     });
-}
+};
 
 /* Validaciones */
 
 /* Esto es para que se haga focus en el elemento q esta mal */
 
-export function allowMotoYear(input) {
+export const allowMotoYear = (input) => {
 
     const currentYear = new Date().getFullYear();
     const maxYear = currentYear + 1;
@@ -232,7 +193,7 @@ export function allowMotoYear(input) {
 
         // Validar rango SOLO cuando llegue a 4 dígitos
         if (value.length === 4) {
-            let num = parseInt(value);
+            let num = parseInt(value, 10);
 
             if (num > maxYear) num = maxYear;
             if (num < minYear) num = minYear;
@@ -251,18 +212,17 @@ export function allowMotoYear(input) {
             return;
         }
 
-        const num = parseInt(text);
+        const num = parseInt(text, 10);
         if (num > maxYear || num < minYear) e.preventDefault();
     });
-}
-
+};
 
 export const highlightAndFocus = (element) => {
     element.classList.add('input-error');
     element.focus();
 };
 
-export let isValidImage = (file) => {
+export const isValidImage = (file) => {
     const validTypes = ["image/jpeg", "image/png", "image/jpg"];
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -277,8 +237,7 @@ export let isValidImage = (file) => {
     }
 
     return true;
-}
-
+};
 
 export const isValidEmail = (email) => {
     if (!email) {
@@ -296,7 +255,7 @@ export const isValidEmail = (email) => {
     const atIndex = email.lastIndexOf('@');
     const domain = email.substring(atIndex + 1);
     const domainParts = domain.split('.');
-    for (let part of domainParts) {
+    for (const part of domainParts) {
         if (part.length > 63) {
             return false;
         }
@@ -333,7 +292,7 @@ export const formatPhoneNumber = (inputElement) => {
     inputElement.value = value;
 };
 
-export let formatDUIInput = (inputElement) => {
+export const formatDUIInput = (inputElement) => {
     inputElement.addEventListener("input", (e) => {
         let valor = e.target.value;
 
@@ -352,9 +311,9 @@ export let formatDUIInput = (inputElement) => {
 
         e.target.value = valor;
     });
-}
+};
 
-export function formatWithCommas(number) {
+export const formatWithCommas = (number) => {
     if (number === null || number === undefined || number === "") return "";
 
     const num = parseFloat(number);
@@ -364,20 +323,20 @@ export function formatWithCommas(number) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
-}
+};
 
-export function cleanNumber(str) {
+export const cleanNumber = (str) => {
     if (!str) return "0";
 
     // Quitar $ y comas
-    str = str.replace(/[$,]/g, "");
+    const cleanStr = str.replace(/[$,]/g, "");
 
     // Si no contiene punto → retornar tal cual
-    if (!str.includes(".")) {
-        return str;
+    if (!cleanStr.includes(".")) {
+        return cleanStr;
     }
 
-    let [intPart, decPart] = str.split(".");
+    const [intPart, decPart] = cleanStr.split(".");
 
     // Si los decimales son 0 o vacíos → eliminar el punto y decimales
     if (!decPart || /^0+$/.test(decPart)) {
@@ -386,9 +345,9 @@ export function cleanNumber(str) {
 
     // Si los decimales son válidos → devolver número normal
     return `${intPart}.${decPart}`;
-}
+};
 
-export let allowDecimal = (element) => {
+export const allowDecimal = (element) => {
     const isInput = element instanceof HTMLInputElement;
     const isEditable = element.isContentEditable;
 
@@ -412,11 +371,10 @@ export let allowDecimal = (element) => {
         }
     };
 
-
     element.addEventListener("input", () => {
 
-        let cursorPos = getCaret();
-        let oldValue = getValue();
+        const cursorPos = getCaret();
+        const oldValue = getValue();
 
         // Limpiar caracteres
         let value = oldValue.replace(/[^0-9.]/g, "");
@@ -432,7 +390,7 @@ export let allowDecimal = (element) => {
             parts[1] = parts[1].slice(0, 2);
         }
 
-        let finalValue =
+        const finalValue =
             parts.length > 1
                 ? `${parts[0]}.${parts[1] ?? ""}`
                 : parts[0];
@@ -440,7 +398,7 @@ export let allowDecimal = (element) => {
         setValue(finalValue);
 
         // Ajustar cursor
-        let diff = finalValue.length - oldValue.length;
+        const diff = finalValue.length - oldValue.length;
         setCaret(cursorPos + diff);
     });
 
@@ -455,12 +413,12 @@ export let allowDecimal = (element) => {
     }
 
     element.addEventListener("blur", () => {
-        let value = getValue();
+        const value = getValue();
 
         if (!value.includes(".")) return;
 
-        let parts = value.split(".");
-        let decimal = parts[1];
+        const parts = value.split(".");
+        const decimal = parts[1];
 
         if (decimal.length === 1) {
             setValue(parts[0] + "." + decimal + "0");
@@ -469,54 +427,50 @@ export let allowDecimal = (element) => {
 
 };
 
-function getCaretPositionContentEditable(el) {
-    let caretOffset = 0;
-    let sel = window.getSelection();
+const getCaretPositionContentEditable = (el) => {
+    const sel = window.getSelection();
     if (!sel.rangeCount) return 0;
 
-    let range = sel.getRangeAt(0);
-    let preCaretRange = range.cloneRange();
+    const range = sel.getRangeAt(0);
+    const preCaretRange = range.cloneRange();
     preCaretRange.selectNodeContents(el);
     preCaretRange.setEnd(range.endContainer, range.endOffset);
 
-    caretOffset = preCaretRange.toString().length;
+    const caretOffset = preCaretRange.toString().length;
     return caretOffset;
-}
+};
 
-function setCaretPositionContentEditable(el, pos) {
-    let nodeStack = [el], node, found = false;
+const setCaretPositionContentEditable = (el, pos) => {
+    const nodeStack = [el]; // ← const porque nunca se reasigna
+    let node;
     let charIndex = 0;
-    let range = document.createRange();
+    const range = document.createRange();
     range.setStart(el, 0);
     range.collapse(true);
 
-    while (!found && (node = nodeStack.pop())) {
+    while ((node = nodeStack.pop())) {
         if (node.nodeType === 3) {
-            let nextCharIndex = charIndex + node.length;
+            const nextCharIndex = charIndex + node.length;
             if (pos >= charIndex && pos <= nextCharIndex) {
                 range.setStart(node, pos - charIndex);
-                found = true;
                 break;
             }
             charIndex = nextCharIndex;
         } else {
-            let children = node.childNodes;
+            const children = node.childNodes;
             for (let i = children.length - 1; i >= 0; i--) {
                 nodeStack.push(children[i]);
             }
         }
     }
 
-    let sel = window.getSelection();
+    const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
-}
-
-
-
+};
 
 // Helpers para modo lectura / UI
-export function setFormReadOnly(frm, readOnly) {
+export const setFormReadOnly = (frm, readOnly) => {
     const frmModal = document.querySelector(frm);
     const controls = frmModal.querySelectorAll('input, textarea, select, button[type="submit"]');
     controls.forEach(ctrl => {
@@ -526,11 +480,11 @@ export function setFormReadOnly(frm, readOnly) {
             ctrl.disabled = readOnly;
         }
     });
-}
+};
 
-export function enableFormUI(frm) {
+export const enableFormUI = (frm) => {
     setFormReadOnly(frm, false);
-}
+};
 
 /* Llenar select */
 export const fillSelect = (selectId, data, valueKey, textKey, defaultText = 'Seleccione una opción') => {
@@ -553,7 +507,7 @@ export const fillSelect = (selectId, data, valueKey, textKey, defaultText = 'Sel
         option.textContent = item[textKey];
         select.appendChild(option);
     });
-}
+};
 
 /*Menu flotante para las tablas */
 export const showFloatingMenu = (event, actions) => {
@@ -646,12 +600,12 @@ export const showFloatingMenu = (event, actions) => {
         onResize();
     };
 
-    function cleanup() {
+    const cleanup = () => {
         document.removeEventListener('click', onDocClick);
         document.removeEventListener('keydown', onEsc);
         window.removeEventListener('resize', onResize);
         window.removeEventListener('scroll', onScroll, true);
-    }
+    };
 
     // registrar listeners tras crear el menú (evita interferir con el click que lo abrió)
     setTimeout(() => {

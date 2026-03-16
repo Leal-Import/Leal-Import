@@ -16,7 +16,7 @@ const urlToBase64 = (url) => {
     });
 };
 
-const loadPhotos = async (photos = [], max = 4) => {
+const loadPhotos = async(photos = [], max = 4) => {
     const results = await Promise.all(
         photos.slice(0, max).map(p => urlToBase64(p.photoUrl))
     );
@@ -43,7 +43,7 @@ const checkPageBreak = (doc, y, needed, pageH, margin, pageW) => {
     return y;
 };
 
-export const generateVehicleReport = async (vehicle) => {
+export const generateVehicleReport = async(vehicle) => {
     const { jsPDF } = window.jspdf;
     const doc      = new jsPDF();
     const pageW    = doc.internal.pageSize.getWidth();
@@ -169,7 +169,7 @@ export const generateVehicleReport = async (vehicle) => {
         { label: 'Año',             value: String(vehicle.year) || '—' },
         { label: 'Kilometraje',     value: vehicle.mileage ? `${Number(vehicle.mileage).toLocaleString()} km` : '—' },
         { label: 'Fecha de compra', value: vehicle.purchaseDate || '—' },
-        { label: 'Procedencia',     value: vehicle.isExternal || '—' },
+        { label: 'Procedencia',     value: vehicle.isExternal || '—' }
     ];
 
     const leftBoxH = leftRows.length * 9 + 14;
@@ -272,7 +272,7 @@ export const generateVehicleReport = async (vehicle) => {
         ['Barco',   costs?.ship     ?? 0],
         ['Impuestos',      costs?.taxes    ?? 0],
         ['IVA',            costs?.iva      ?? 0],
-        ['PA',             costs?.pa       ?? 0],
+        ['PA',             costs?.pa       ?? 0]
     ];
 
     doc.autoTable({
@@ -286,20 +286,20 @@ export const generateVehicleReport = async (vehicle) => {
             cellPadding: { top: 4, bottom: 4, left: 4, right: 4 },
             textColor:  [60, 60, 60],
             lineColor:  [235, 235, 235],
-            lineWidth:  0.3,
+            lineWidth:  0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
             fontSize:  7.5,
-            lineWidth: 0,
+            lineWidth: 0
         },
         columnStyles: {
             0: { cellWidth: 'auto' },
-            1: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] },
+            1: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
-        alternateRowStyles: { fillColor: [252, 252, 252] },
+        alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
     y = doc.lastAutoTable.finalY;

@@ -76,12 +76,12 @@
             <!-- PERÍODO -->
             <div class="dashPeriodBar">
                 <div class="dashPeriodBtns">
-                    <button class="dashPeriodBtn" onclick="dashSetPeriod(this,'hoy')">Hoy</button>
-                    <button class="dashPeriodBtn" onclick="dashSetPeriod(this,'semana')">Esta semana</button>
-                    <button class="dashPeriodBtn dashPeriodBtnActive" onclick="dashSetPeriod(this,'mes')">Este
+                    <button class="dashPeriodBtn" data-period="hoy">Hoy</button>
+                    <button class="dashPeriodBtn" data-period="semana">Esta semana</button>
+                    <button class="dashPeriodBtn dashPeriodBtnActive" data-period="mes">Este
                         mes</button>
-                    <button class="dashPeriodBtn" onclick="dashSetPeriod(this,'trimestre')">Trimestre</button>
-                    <button class="dashPeriodBtn" onclick="dashSetPeriod(this,'año')">Este año</button>
+                    <button class="dashPeriodBtn" data-period="trimestre">Trimestre</button>
+                    <button class="dashPeriodBtn" data-period="año">Este año</button>
                 </div>
                 <span class="dashPeriodLabel">Comparado con el período anterior</span>
             </div>

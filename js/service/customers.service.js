@@ -2,7 +2,7 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 
 const API_URL = `${API_BASE_URL}/customer`;
 
-export let getCustomers = async (page = 0, size = 15, search = "", status = 'T') => {
+export const getCustomers = async(page = 0, size = 15, search = "", status = 'T') => {
     try {
         const params = new URLSearchParams({ page, size, search, status });
         const request = await fetch(`${API_URL}/getCustomers?${params.toString()}`, {
@@ -15,11 +15,11 @@ export let getCustomers = async (page = 0, size = 15, search = "", status = 'T')
         return await request.json();
     } catch (error) {
         console.error("Error en getCustomers:", error);
-        throw new Error("Fallo al conectar con el servicio de clientes.");
+        throw new Error("Fallo al conectar con el servicio de clientes.", { cause: error });
     }
 };
 
-export let postCustomer = async (customerData) => {
+export const postCustomer = async(customerData) => {
     try {
         const request = await fetch(`${API_URL}/postCustomer`, {
             method: 'POST',
@@ -27,7 +27,7 @@ export let postCustomer = async (customerData) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(customerData),
+            body: JSON.stringify(customerData)
         });
         if (!request.ok) {
             let errorMessage = `Error al crear cliente. Código: ${request.status}.`;
@@ -35,30 +35,31 @@ export let postCustomer = async (customerData) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
             throw new Error(errorMessage);
         }
         return await request.json();
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
         throw error;
     }
 };
 
-export let putCustomer = async (customerData, customerId) => {
+export const putCustomer = async(customerData, customerId) => {
     try {
         const request = await fetch(`${API_URL}/putCustomer/${customerId}`, {
             method: 'PUT',
@@ -66,7 +67,7 @@ export let putCustomer = async (customerData, customerId) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(customerData),
+            body: JSON.stringify(customerData)
         });
         if (!request.ok) {
             let errorMessage = `Error al actualizar cliente. Código: ${request.status}.`;
@@ -74,17 +75,18 @@ export let putCustomer = async (customerData, customerId) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
             throw new Error(errorMessage);
         }
@@ -92,13 +94,13 @@ export let putCustomer = async (customerData, customerId) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
         throw error;
     }
 };
 
-export const patchCustomer = async (id, value) => {
+export const patchCustomer = async(id, value) => {
     try {
         const response = await fetch(
             `${API_URL}/${id}/status?value=${value}`,
@@ -133,7 +135,7 @@ export const patchCustomer = async (id, value) => {
 
     } catch (error) {
         if (error instanceof TypeError) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
         throw error;
     }

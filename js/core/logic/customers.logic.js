@@ -22,8 +22,7 @@ export const validateCustomer = (data) => {
     }
 
     return null; // ✔ todo OK
-}
-
+};
 
 export const mapCustomerForm = (formData) => {
     return {
@@ -31,4 +30,4 @@ export const mapCustomerForm = (formData) => {
         dui: formData.txtCustomerDUI,
         personalPhone: formData.txtCustomerPhone
     };
-}
+};

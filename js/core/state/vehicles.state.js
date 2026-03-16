@@ -15,5 +15,5 @@ export const vehiclesState = {
         total: 0,
         totalPages: 0
     },
-    statusList: [],
+    statusList: []
 };

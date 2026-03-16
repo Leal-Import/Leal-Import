@@ -1,14 +1,14 @@
 import { formatWithCommas } from "../../utils/formatters.js";
-import { asUUID, fillForm } from "../../utils/dom.js"
+import { asUUID, fillForm, highlightAndFocus } from "../../utils/dom.js";
 import { validateImageSize, validateImageType } from "../../utils/images.validators.js";
 import { isValidURL, safeParseFloat } from "../../utils/validators.js";
 import { sparePartDetailState } from "../state/spareParts.detail.state.js";
 
-export function validateImage(file) {
+export const validateImage = (file) => {
     if (!(file instanceof File)) {
         return "Archivo inválido";
     }
-    const type = validateImageType(file)
+    const type = validateImageType(file);
     const size = validateImageSize(file);
 
     // Tipo
@@ -21,9 +21,9 @@ export function validateImage(file) {
     }
 
     return null;
-}
+};
 
-export let fillSparePartsBaseForm = (sparePart) => {
+export const fillSparePartsBaseForm = (sparePart) => {
     fillForm('#frmSpareParts', {
         txtPartName: sparePart.nameSpareParts,
         txtLinkName: sparePart.billUrl,
@@ -36,11 +36,11 @@ export let fillSparePartsBaseForm = (sparePart) => {
         txtPurchasePrice: formatWithCommas(sparePart.sparePartsCosts.purchasePrice),
         txtTaxes: formatWithCommas(sparePart.sparePartsCosts.taxes),
         txtSuggestedPrice: formatWithCommas(sparePart.sparePartsCosts.suggestedPrice),
-        txtTotalCost: formatWithCommas(sparePart.sparePartsCosts.totalCost),
+        txtTotalCost: formatWithCommas(sparePart.sparePartsCosts.totalCost)
     });
-}
+};
 
-export let validateBaseSparePart = ({
+export const validateBaseSparePart = ({
     txtPartName,
     txtPartBrand,
     txtPartModel,
@@ -112,9 +112,9 @@ export let validateBaseSparePart = ({
     }
 
     return null;
-}
+};
 
-export function mapSparePart(formData) {
+export const mapSparePart = (formData) => {
     const sparePart = {
         nameSpareParts: formData.txtPartName,
         brand: formData.txtPartBrand,
@@ -134,8 +134,7 @@ export function mapSparePart(formData) {
     };
 
     return sparePart;
-}
-
+};
 
 export const hydrateContextFromURL = (state) => {
     const params = new URLSearchParams(window.location.search);

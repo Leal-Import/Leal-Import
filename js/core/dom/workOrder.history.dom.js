@@ -29,12 +29,12 @@ export const loadStats = (data, Refs) => {
     Refs.pending.textContent = data.statistics.pending;
     Refs.delayed.textContent = data.statistics.delayed;
     Refs.totalOrdersQuantity.textContent = `$${formatWithCommas(data.statistics.totalBilled)}`;
-}
+};
 
 export const loadVehicleInfo = (data, Refs) => {
     Refs.infoItem.textContent = `${data.vehicleInfo.brand} ${data.vehicleInfo.model} ${data.vehicleInfo.year}`;
     Refs.vin.textContent = data.vehicleInfo.vin;
-}
+};
 
 export const insertWorkOrderHistory = (container, workOrders, onActions, tableHistory) => {
     if (!container || !tableHistory) return;
@@ -81,11 +81,11 @@ export const insertWorkOrderHistory = (container, workOrders, onActions, tableHi
         statusBadge.textContent = wo.statusName;
         containerDtStatus.appendChild(orderColor);
         containerDtStatus.appendChild(statusBadge);
-        tdStatus.appendChild(containerDtStatus)
-        if (wo.statusName == "Pendiente") {
+        tdStatus.appendChild(containerDtStatus);
+        if (wo.statusName === "Pendiente") {
             orderColor.classList.add("colorPending");
             statusBadge.classList.add("pendingOrder");
-        } else if (wo.statusName == "Completada") {
+        } else if (wo.statusName === "Completada") {
             orderColor.classList.add("colorCompleted");
             statusBadge.classList.add("completedOrder");
         } else {

@@ -14,10 +14,10 @@ export const isValidPhone = (phone) => {
     return /^\d{8}$/.test(cleanPhone);
 };
 
-export function safeParseFloat(v) {
+export const safeParseFloat = (v) => {
     const n = parseFloat(String(v || '').replace(/[$,\s]/g, ''));
     return isNaN(n) ? 0 : n;
-}
+};
 
 export const validateDate = (input, minDate = null) => {
     const today = new Date();
@@ -58,7 +58,7 @@ export const isValidURL = (url) => {
     try {
         const parsed = new URL(url);
         return parsed.protocol === "https:";
-    } catch (e) {
-        return false;
+    } catch (error) {
+        throw new Error("URL inválida: " + error.message, { cause: error });
     }
-}
+};

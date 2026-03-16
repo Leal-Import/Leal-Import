@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswordCamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType, setReq, updateLabel } from "../../core/dom/login.dom.js";
 import { clearCountdown, clearCurrentFlow, getPasswordStrengthOptions, getScore, maskEmailSimple, renderMaskedEmail, startCountdown, validateMatch, validatePassword } from "../../core/logic/login.logic.js";
@@ -7,7 +7,6 @@ import { login, resetPassword, verifyEmail, verifyPIN } from "../../service/logi
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { isValidEmail } from "../../utils/validators.js";
 import { initLoginEvents } from "./login.event.js";
-
 
 const onTogglePassword = (e, txtPassword) => {
     const btn = e.currentTarget;
@@ -18,41 +17,41 @@ const onTogglePassword = (e, txtPassword) => {
     } else {
         changePasswordType(txtPassword, icon);
     }
-}
+};
 
 const onBackHome = (e) => {
     e.preventDefault();
     hideAllModals();
     window.location.href = '/index.html';
-}
+};
 
 const onOpenModalRecovery = (e) => {
     e.preventDefault();
     toggleModal(DOMRefs.refs.modalRecovery, true);
-}
+};
 
 const onOpenAuthEmail = (e) => {
     e.preventDefault();
     toggleModal(DOMRefs.refs.modalRecovery, false);
     toggleModal(DOMRefs.refs.modalAuth, true);
-}
+};
 
 const onCloseAuthEmail = () => {
     toggleModal(DOMRefs.refs.modalAuth, false);
     toggleModal(DOMRefs.refs.modalRecovery, true);
     cleanAuthCamps(DOMRefs.refs.authSuccess, DOMRefs.refs.txtAuthEmail);
-}
+};
 
 const onClosePin = () => {
     clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
-    DOMRefs.refs.codeDigits.forEach(i => i.value = '');
+    DOMRefs.refs.codeDigits.forEach(i => {i.value = '';});
 
     toggleModal(DOMRefs.refs.modalCode, false);
     toggleModal(DOMRefs.refs.modalAuth, false);
     toggleModal(DOMRefs.refs.modalRecovery, true);
-}
+};
 
-const onSubmitLogin = async (e) => {
+const onSubmitLogin = async(e) => {
     e.preventDefault();
 
     const credentials = DOMRefs.refs.txtUserOrEmail.value;
@@ -84,9 +83,9 @@ const onSubmitLogin = async (e) => {
         removeDisable(DOMRefs.refs.btnLogin);
         hideElement(DOMRefs.refs.btnLoginLoader);
     }
-}
+};
 
-const onAuthEmail = async (e) => {
+const onAuthEmail = async(e) => {
     e.preventDefault();
 
     if (loginState.flags.pendingSend) return;
@@ -122,9 +121,9 @@ const onAuthEmail = async (e) => {
         removeDisable(DOMRefs.refs.authPrimaryBtn);
         hideElement(DOMRefs.refs.btnAuthSendLoader);
     }
-}
+};
 
-const onSendCode = async (e) => {
+const onSendCode = async(e) => {
     e.preventDefault();
 
     if (loginState.flags.pendingVerify) return;
@@ -162,9 +161,9 @@ const onSendCode = async (e) => {
         removeDisable(DOMRefs.refs.btnCodeContinue);
         hideElement(DOMRefs.refs.btnCodeContinueLoader);
     }
-}
+};
 
-const onUpdatePassword = async () => {
+const onUpdatePassword = async() => {
     if (loginState.flags.pendingUpdate) return;
 
     const newPass = DOMRefs.refs.txtNewPassword?.value?.trim() ?? '';
@@ -211,7 +210,7 @@ const onUpdatePassword = async () => {
         removeDisable(DOMRefs.refs.btnUpdatePassword);
         hideElement(DOMRefs.refs.btnUpdatePasswordLoader);
     }
-}
+};
 
 const onVerifyNewPassword = () => {
     const pw1 = DOMRefs.refs.txtNewPassword;
@@ -244,7 +243,7 @@ const onVerifyNewPassword = () => {
 
     if (pw2.value) validateMatch(pw1, pw2, DOMRefs.refs.passwordMatchHint);
     checkBtn(score, pw1, pw2);
-}
+};
 
 const checkBtn = (score, pw1, pw2) => {
     if ((score === 5) && pw1.value === pw2.value && pw1.value.length > 0) {
@@ -252,7 +251,7 @@ const checkBtn = (score, pw1, pw2) => {
     } else {
         disableElement(DOMRefs.refs.btnUpdatePassword);
     }
-}
+};
 
 const initializeUI = (Refs) => {
     initLoginEvents({
@@ -276,7 +275,7 @@ const initializeUI = (Refs) => {
         }
     });
     initDigitInputs(Refs.codeDigits);
-}
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     try {

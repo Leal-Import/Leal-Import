@@ -1,3 +1,3 @@
 export const initEventsVehiclesView = ({ Refs, onGeneratePdf }) => {
-    Refs.btnGeneratePdf.addEventListener("click", onGeneratePdf)
-}
+    Refs.btnGeneratePdf.addEventListener("click", onGeneratePdf);
+};

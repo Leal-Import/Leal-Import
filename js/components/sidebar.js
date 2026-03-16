@@ -1,8 +1,7 @@
 'use strict';
 
-
 const loadSidebar = () => {
-    let nav = document.getElementById('sidebar');
+    const nav = document.getElementById('sidebar');
     nav.innerHTML = `
     <div class="navbarContainer">
         <div class="navbar">
@@ -157,7 +156,7 @@ const loadSidebar = () => {
 
         </div>
     </div>`;
-}
+};
 
 const loadMobileHeader = () => {
     const mobileHeader = document.querySelector(".containerMobileHeader");
@@ -167,7 +166,7 @@ const loadMobileHeader = () => {
                     <div class="mobileHeaderLogo">Ris<span>kor</span></div>
                     <div style="width: 40px;"></div>
                 </div>`;
-}
+};
 
 const REFS = {
     sidebar: null,
@@ -186,7 +185,7 @@ const initReferences = () => {
     REFS.menuItems = document.querySelectorAll('.navbarItem');
     REFS.itemsNav = document.querySelectorAll('.itemNav');
     REFS.menuToggle = document.getElementById('menuToggle');
-    REFS.STORAGE_KEY = 'riskor.sidebar.collapsed'
+    REFS.STORAGE_KEY = 'riskor.sidebar.collapsed';
 };
 
 const isMobile = () => window.innerWidth < 1225;
@@ -194,7 +193,7 @@ const isMobile = () => window.innerWidth < 1225;
 /*
  * APLICA EL ESTADO COLAPSADO SINCRÓNICAMENTE
  */
-function applyInitialState() {
+const applyInitialState = () => {
     const collapsed = localStorage.getItem(REFS.STORAGE_KEY);
 
     if (isMobile()) {
@@ -216,7 +215,7 @@ function applyInitialState() {
 };
 
 /* --- Helper general applyState (para toggle y resize) --- */
-function applyState(collapsed) {
+const applyState = (collapsed) => {
     if (isMobile()) {
         REFS.sidebar.classList.remove('navbarCollapsed');
         REFS.sidebar.classList.toggle('navMobileHidden', collapsed);
@@ -226,17 +225,17 @@ function applyState(collapsed) {
     }
     REFS.btnNavbar.classList.toggle('rotate180', collapsed);
     REFS.btnNavbar.classList.toggle('btnNavClose', collapsed);
-}
+};
 
 /* --- Restaura el item activo --- */
-function restoreActiveItem() {
+const restoreActiveItem = () => {
     const savedId = localStorage.getItem('navItem');
     REFS.menuItems.forEach(el => el.classList.remove('activeNavbarItem'));
     if (savedId) {
         const active = document.getElementById(savedId);
         if (active) active.classList.add('activeNavbarItem');
     }
-}
+};
 
 const initEvents = () => {
     /* --- Click en item: marca activo --- */
@@ -295,7 +294,7 @@ const initEvents = () => {
     REFS.logo.addEventListener('click', () => {
         window.location.href = '../pages/dashboard.html';
     });
-}
+};
 
 /* --- DOMContentLoaded --- */
 window.addEventListener('DOMContentLoaded', () => {

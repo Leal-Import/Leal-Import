@@ -4,8 +4,7 @@ const API_URL = `${API_BASE_URL}/WorkOrder`;
 const API_URLVE = `${API_BASE_URL}/Vehicle`;
 const API_URLSPA = `${API_BASE_URL}/spareParts`;
 
-
-export let getServices = async (search) => {
+export const getServices = async(search) => {
     try {
         const request = await fetch(`${API_URL}/getService?search=${search}`, {
             credentials: 'include'
@@ -18,11 +17,11 @@ export let getServices = async (search) => {
 
     } catch (error) {
         console.error("Error en getServices:", error);
-        throw new Error("Fallo al conectar con el servicio de servicios.");
+        throw new Error("Fallo al conectar con el servicio de servicios.", { cause: error });
     }
 };
 
-export const patchWorkOrder = async (idWorkOrder) => {
+export const patchWorkOrder = async(idWorkOrder) => {
     try {
         const response = await fetch(
             `${API_URL}/patchWorkOrder/${idWorkOrder}/complete`,
@@ -57,13 +56,13 @@ export const patchWorkOrder = async (idWorkOrder) => {
 
     } catch (error) {
         if (error instanceof TypeError) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
         throw error;
     }
 };
 
-export let getDataVehicleById = async (id) => {
+export const getDataVehicleById = async(id) => {
     try {
         const request = await fetch(`${API_URLVE}/getWorkOrderVehicle/${id}`, {
             credentials: 'include'
@@ -76,11 +75,11 @@ export let getDataVehicleById = async (id) => {
 
     } catch (error) {
         console.error("Error en getDataVehicleById:", error);
-        throw new Error("Fallo al conectar con el servicio de vehiculos.");
+        throw new Error("Fallo al conectar con el servicio de vehiculos.", { cause: error });
     }
 };
 
-export let getWorkOrderById = async (id) => {
+export const getWorkOrderById = async(id) => {
     try {
         const request = await fetch(`${API_URL}/getWorkOrderById/${id}`, {
             credentials: 'include'
@@ -93,11 +92,11 @@ export let getWorkOrderById = async (id) => {
 
     } catch (error) {
         console.error("Error en getWorkOrderById:", error);
-        throw new Error("Fallo al conectar con el servicio de ordenes.");
+        throw new Error("Fallo al conectar con el servicio de ordenes.", { cause: error });
     }
 };
 
-export let getSpareParts = async () => {
+export const getSpareParts = async() => {
     try {
         const request = await fetch(`${API_URLSPA}/getWorkOrderSpareParts`, {
             credentials: 'include'
@@ -110,16 +109,12 @@ export let getSpareParts = async () => {
 
     } catch (error) {
         console.error("Error en getSpareParts:", error);
-        throw new Error("Fallo al conectar con el servicio de repuestos.");
+        throw new Error("Fallo al conectar con el servicio de repuestos.", { cause: error });
     }
 };
 
-export let postWorkOrder = async (workOrderData, idVehicle, idSale) => {
+export const postWorkOrder = async(workOrderData, idVehicle, idSale) => {
     try {
-        if (idSale === null || idSale === "null") {
-            idSale = "";
-        }
-
         const request = await fetch(`${API_URL}/postWorkOrder/${idVehicle}?idSale=${idSale}`, {
             method: 'POST',
             body: workOrderData,
@@ -132,17 +127,18 @@ export let postWorkOrder = async (workOrderData, idVehicle, idSale) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -152,14 +148,14 @@ export let postWorkOrder = async (workOrderData, idVehicle, idSale) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.",{ cause: error });
         }
 
         throw error;
     }
 };
 
-export let putWorkOrder = async (workOrderData, idWorkOrder) => {
+export const putWorkOrder = async(workOrderData, idWorkOrder) => {
     try {
 
         const request = await fetch(`${API_URL}/putWorkOrder/${idWorkOrder}`, {
@@ -174,17 +170,18 @@ export let putWorkOrder = async (workOrderData, idWorkOrder) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -194,7 +191,7 @@ export let putWorkOrder = async (workOrderData, idWorkOrder) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;

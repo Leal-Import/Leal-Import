@@ -1,8 +1,6 @@
-import { setupModal } from '../../utils/dom.js';
 import { formatDUIInput, formatPhoneNumber } from '../../utils/formatters.js';
 
-
-export function initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal }) {
+export const initCustomerEvents = ({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal }) => {
 
     let pointerDownOnOverlay = false;
     let searchTimeout = null;
@@ -16,7 +14,7 @@ export function initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, o
                 status: cmbSearchByStatus.value
             });
         }, 1000);
-    }
+    };
 
     btnOpenModalCustomer.addEventListener('click', onOpenModal);
 
@@ -42,4 +40,4 @@ export function initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, o
 
     txtSearchData.addEventListener('input', emiFilters);
     cmbSearchByStatus.addEventListener('change', emiFilters);
-}
+};

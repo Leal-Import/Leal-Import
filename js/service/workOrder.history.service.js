@@ -2,8 +2,7 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 
 const API_URL = `${API_BASE_URL}/ViewWorkOrderHistory`;
 
-
-export const getDetailsOrders = async (idVehicle, page = 0, size = 15, search = "", idStatus = "") => {
+export const getDetailsOrders = async(idVehicle, page = 0, size = 15, search = "", idStatus = "") => {
     try {
         const params = new URLSearchParams({ page, size, search, idStatus });
         const request = await fetch(`${API_URL}/getHistoryOrder/${idVehicle}?${params.toString()}`, {
@@ -22,12 +21,11 @@ export const getDetailsOrders = async (idVehicle, page = 0, size = 15, search = 
 
     } catch (error) {
         console.error("Error en getDetailsOrders:", error);
-        throw error; 
+        throw error;
     }
 };
 
-
-export const getDashboardWorkorder = async (id) => {
+export const getDashboardWorkorder = async(id) => {
     try {
         const request = await fetch(`${API_URL}/${id}/dashboard`, {
             credentials: 'include'
@@ -43,6 +41,6 @@ export const getDashboardWorkorder = async (id) => {
 
     } catch (error) {
         console.error("Error en getDashboardWorkorder:", error);
-        throw new Error("Fallo al conectar con el servicio de orden de trabajo.");
+        throw new Error("Fallo al conectar con el servicio de orden de trabajo.", { cause: error });
     }
 };

@@ -4,9 +4,8 @@ import { insertSales, selectLineButton, DOMRefs } from "../../core/dom/sales.dom
 import { salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
-import { fillSelect, showMessage, toggleModal } from "../../utils/dom.js";
+import { fillSelect, hideElement, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { initSession } from "../../utils/api.utils.js";
-import { hideElement, showElement } from "../../utils/dom.js";
 import { initSalesEvents } from "./sales.event.js";
 
 /* ===============================
@@ -22,7 +21,7 @@ const pagination = createPagination({
     }
 });
 
-const loadStateSales = async () => {
+const loadStateSales = async() => {
     try {
         const status = await getStateSales();
         salesState.stateList = status;
@@ -33,7 +32,7 @@ const loadStateSales = async () => {
     }
 };
 
-async function loadSales() {
+const loadSales = async() => {
     try {
         showElement(DOMRefs.refs.loaderSales);
         const { page, size } = salesState.pagination;
@@ -58,30 +57,30 @@ async function loadSales() {
     } finally {
         hideElement(DOMRefs.refs.loaderSales);
     }
-}
+};
 
 const onClickBtnFilter = (btn) => {
     selectLineButton(btn, DOMRefs.refs.selectedLines);
-}
+};
 
 /* ===============================
    FILTROS
 ================================ */
 
-function onSearchSale(filters) {
+const onSearchSale = (filters) => {
     salesState.filters = {
         ...salesState.filters,
         ...filters
     };
     salesState.pagination.page = 1;
     loadSales();
-}
+};
 
 /* ===============================
    INIT
 ================================ */
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -91,13 +90,13 @@ const setupApplication = async () => {
 
 const initializeUI = (Refs) => {
     initSalesEvents({ Refs, onSearchSale, onClickBtnFilter, onOpenModal: () => toggleModal(Refs.modalAskSale, true), onCloseModal: () => toggleModal(Refs.modalAskSale, false) });
-}
+};
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await Promise.all([loadSales(), loadStateSales()]);
-}
+};
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

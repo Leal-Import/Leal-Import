@@ -5,7 +5,7 @@ export const API_BASE_URL = 'https://leal-import-api-jsol.onrender.com/api';
 
 let currentUser = null;
 
-export const initSession = async () => {
+export const initSession = async() => {
     try {
         const response = await getAuthMe();
         if (response?.authenticated) {
@@ -25,7 +25,7 @@ export const initSession = async () => {
 };
 
 // Función auxiliar para sacar al usuario
-const forceLogout = async () => {
+const forceLogout = async() => {
     currentUser = null;
 
     if (!window.location.pathname.includes("login.html")) {

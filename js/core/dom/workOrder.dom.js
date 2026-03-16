@@ -35,7 +35,7 @@ export const insertWorkOrders = (container, workOrders) => {
 
             const img = document.createElement("img");
             img.src = workOrder.imageUrl || "";
-            img.alt = `${workOrder.brand} ${workOrder.model}` || "Vehículo";
+            img.alt = `${workOrder.brand || 'Vehículo'} ${workOrder.model || ''}`.trim();
 
             containerImgVehicle.appendChild(img);
 
@@ -44,7 +44,7 @@ export const insertWorkOrders = (container, workOrders) => {
 
             const vehicleName = document.createElement("span");
             vehicleName.classList.add("vehicleName");
-            vehicleName.textContent = `${workOrder.brand} ${workOrder.model}` || "Vehículo";
+            vehicleName.textContent = `${workOrder.brand || 'Vehículo'} ${workOrder.model || ''}`.trim();
 
             const containerInfoVehicle = document.createElement("div");
             containerInfoVehicle.classList.add("containerInfoVehicle");

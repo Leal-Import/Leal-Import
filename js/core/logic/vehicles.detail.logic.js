@@ -4,15 +4,14 @@ import { validateImageSize, validateImageType, validateImagesGeneral } from "../
 import { isValidURL, safeParseFloat } from "../../utils/validators.js";
 import { vehicleDetailState } from "../state/vehicles.detail.state.js";
 
-
-function validateMaxImages(currentImages = [], newFiles = [], max = 12) {
+const validateMaxImages = (currentImages = [], newFiles = [], max = 12) => {
     if (currentImages.length + newFiles.length > max) {
         return `Máximo ${max} imágenes permitidas`;
     }
     return null;
-}
+};
 
-function validateDuplicateImages(currentImages = [], newFiles = []) {
+const validateDuplicateImages = (currentImages = [], newFiles = []) => {
     const exists = newFiles.find(file =>
         currentImages.some(img =>
             img.file?.name === file.name &&
@@ -24,9 +23,9 @@ function validateDuplicateImages(currentImages = [], newFiles = []) {
         return 'Una o más imágenes ya fueron agregadas';
     }
     return null;
-}
+};
 
-export function resetState() {
+export const resetState = () => {
     vehicleDetailState.context.currentId = null;
     vehicleDetailState.context.hasSale = null;
     vehicleDetailState.context.hasWorkOrder = null;
@@ -49,9 +48,9 @@ export function resetState() {
 
     vehicleDetailState.costsId = null;
     vehicleDetailState.loteId = null;
-}
+};
 
-export function calculateTotal(txtCosts, txtTotal) {
+export const calculateTotal = (txtCosts, txtTotal) => {
     let total = 0;
     txtCosts.forEach(input => {
         const cleanValue = safeParseFloat(input.value) || 0;
@@ -59,7 +58,7 @@ export function calculateTotal(txtCosts, txtTotal) {
     });
 
     txtTotal.value = formatWithCommas(total.toFixed(2));
-}
+};
 
 export const validateImages = (currentImages, newFiles) => {
     return (validateImagesGeneral(newFiles) || validateDuplicateImages(currentImages, newFiles) || validateMaxImages(currentImages, newFiles));
@@ -71,9 +70,9 @@ export const validateCustomer = () => {
         return "Debes seleccionar un cliente";
     }
     return null;
-}
+};
 
-export function validateBaseVehicle({
+export const validateBaseVehicle = ({
     txtVin,
     txtBrand,
     txtModel,
@@ -81,7 +80,7 @@ export function validateBaseVehicle({
     txtMileage,
     txtLote,
     txtLink
-}) {
+}) => {
     if (!txtVin) {
         highlightAndFocus('txtVin');
         return 'El VIN es obligatorio.';
@@ -121,22 +120,22 @@ export function validateBaseVehicle({
         highlightAndFocus('txtLote');
         return 'El lote es obligatorio.';
     }
-    if(txtLink.trim() != ""){
-        if(!isValidURL(txtLink)) return "Link del lote no valido";
+    if (txtLink.trim() !== ""){
+        if (!isValidURL(txtLink)) return "Link del lote no valido";
     }
 
     return null;
-}
+};
 
 export const validateSizeTypeImage = (source) => {
     const messageSize = validateImageSize(source);
     const messageType = validateImageType(source);
     if (messageSize) return messageSize;
     if (messageType) return messageType;
-    return null
-}
+    return null;
+};
 
-export function validateVehicle({
+export const validateVehicle = ({
     txtVin,
     txtBrand,
     txtModel,
@@ -153,7 +152,7 @@ export function validateVehicle({
     txtPa,
     txtSuggestedPrice,
     txtLink
-}) {
+}) => {
     // Validación base
     const baseError = validateBaseVehicle({
         txtVin,
@@ -194,29 +193,28 @@ export function validateVehicle({
     }
 
     return null;
-}
+};
 
 export const mapVehicleImages = (fd) => {
     vehicleDetailState.images
-    .filter(img => img.isNew)
-    .forEach(img => fd.append("photos", img.file));
-}
+        .filter(img => img.isNew)
+        .forEach(img => fd.append("photos", img.file));
+};
 
 export const mapVouchers = (fd) => {
     if (vehicleDetailState.uploads.bill) fd.append("billPhoto", vehicleDetailState.uploads.bill);
     if (vehicleDetailState.uploads.taxes) fd.append("taxesPhoto", vehicleDetailState.uploads.taxes);
     if (vehicleDetailState.uploads.ship) fd.append("TransferShipPhoto", vehicleDetailState.uploads.ship);
-}
+};
 
-
-export function handleUploadFile(file) {
+export const handleUploadFile = (file) => {
     const type = vehicleDetailState.currentUploadType;
     if (!type || !file) return;
 
     vehicleDetailState.uploads[type] = file;
-}
+};
 
-export function mapVehicleData(formData) {
+export const mapVehicleData = (formData) => {
     return {
         vin: formData.txtVin,
         brand: formData.txtBrand,
@@ -240,7 +238,7 @@ export function mapVehicleData(formData) {
             suggestedPrice: safeParseFloat(formData.txtSuggestedPrice)
         }
     };
-}
+};
 
 export const fillVehiclesBaseForm = (vehicle) => {
     fillForm('#frmVehicles', {
@@ -251,9 +249,9 @@ export const fillVehiclesBaseForm = (vehicle) => {
         txtMileage: vehicle.mileage,
         txtLote: vehicle.lote.numLote,
         txtLink: vehicle.lote.linkLote,
-        txtDescription: vehicle.description,
+        txtDescription: vehicle.description
     });
-}
+};
 
 export const fillVehicleCosts = (costs) => {
     fillForm('#frmVehicles', {
@@ -267,8 +265,8 @@ export const fillVehicleCosts = (costs) => {
         txtPa: formatWithCommas(costs.pa),
         txtTotal: formatWithCommas(costs.total),
         txtSuggestedPrice: formatWithCommas(costs.suggestedPrice)
-    })
-}
+    });
+};
 
 export const loadBackendImages = (photos) => {
     vehicleDetailState.images = photos.map(p => ({
@@ -277,9 +275,9 @@ export const loadBackendImages = (photos) => {
         file: null,
         isNew: false
     }));
-}
+};
 
-export function mapExternalVehicle(formData) {
+export const mapExternalVehicle = (formData) => {
     return {
         vin: formData.txtVin,
         brand: formData.txtBrand,
@@ -293,9 +291,9 @@ export function mapExternalVehicle(formData) {
             numLote: formData.txtLote
         }
     };
-}
+};
 
-export function validateVehicleImages() {
+export const validateVehicleImages = () => {
     const images = vehicleDetailState.images;
     // 🔹 Al menos una imagen
     if (images.length === 0) {
@@ -328,9 +326,9 @@ export function validateVehicleImages() {
         };
     }
     return null;
-}
+};
 
-export function validateEditImages() {
+export const validateEditImages = () => {
     const totalFinal = vehicleDetailState.images.length;
 
     if (totalFinal === 0) {
@@ -348,12 +346,9 @@ export function validateEditImages() {
     }
 
     return null;
-}
+};
 
-
-
-
-export function applyExternalMode(isExternal) {
+export const applyExternalMode = (isExternal) => {
     if (isExternal) {
         return {
             readOnlyCosts: true,
@@ -373,7 +368,7 @@ export function applyExternalMode(isExternal) {
         showCustomer: false,
         customerRequired: false
     };
-}
+};
 
 export const hydrateContextFromURL = (state) => {
     const params = new URLSearchParams(window.location.search);

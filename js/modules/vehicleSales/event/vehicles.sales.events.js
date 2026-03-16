@@ -60,10 +60,10 @@ export const initVehicleSaleEvents = ({ Refs, onSubmitVehicleSale, onSearchVehic
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 onSearchVehicle({
-                    search: Refs.txtSearchData?.value.trim() || '',
+                    search: Refs.txtSearchData?.value.trim() || ''
                 });
             }, 1000);
         });
     }
 
-}
+};

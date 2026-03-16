@@ -23,7 +23,7 @@ const pagination = createPagination({
     }
 });
 
-const loadWorkOrderHistoryStatus = async () => {
+const loadWorkOrderHistoryStatus = async() => {
     try {
         const states = await getWOStatus();
         workOrderHistoryState.stateList = states;
@@ -34,18 +34,18 @@ const loadWorkOrderHistoryStatus = async () => {
     }
 };
 
-const loadDashboard = async () => {
+const loadDashboard = async() => {
     try {
         const data = await getDashboardWorkorder(workOrderHistoryState.context.idVehicle);
         loadStats(data, DOMRefs.refs);
         loadVehicleInfo(data, DOMRefs.refs);
     } catch (error) {
         showMessage("Error", "No se pudieron cargar las estadisticas de ordenes del vehiculo.", "error");
-        console.error(error)
+        console.error(error);
     }
-}
+};
 
-async function loadWorkOrderHistory() {
+const loadWorkOrderHistory = async() => {
     try {
         showElement(DOMRefs.refs.loaderWorkOrders);
         const { page, size } = workOrderHistoryState.pagination;
@@ -71,7 +71,7 @@ async function loadWorkOrderHistory() {
     } finally {
         hideElement(DOMRefs.refs.loaderWorkOrders);
     }
-}
+};
 
 const handleOrdersActions = (e, order) => {
     e.stopPropagation();
@@ -90,21 +90,21 @@ const handleOrdersActions = (e, order) => {
             onClick: () => editWorkOrder(order.idWorkOrder, order.idVehicle)
         }
     ]);
-}
+};
 
 const viewWorkOrder = (idWorkOrder, idVehicle) => {
     window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}&isView=true`;
-}
+};
 
 const editWorkOrder = (idWorkOrder, idVehicle) => {
     window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}`;
-}
+};
 
 /* ===============================
    FILTROS
 ================================ */
 
-function onSearchWorkOrderHistory(filters) {
+const onSearchWorkOrderHistory = (filters) => {
     workOrderHistoryState.filters = {
         ...workOrderHistoryState.filters,
         ...filters
@@ -112,13 +112,13 @@ function onSearchWorkOrderHistory(filters) {
 
     workOrderHistoryState.pagination.page = 1;
     loadWorkOrderHistory();
-}
+};
 
 /* ===============================
    INIT
 ================================ */
 
-const hydrateContextFromURL = async () => {
+const hydrateContextFromURL = async() => {
     const params = new URLSearchParams(window.location.search);
     const idVehicle = asUUID(params.get('idVehicle'));
 
@@ -137,7 +137,7 @@ const loadBtnAdd = () => {
     DOMRefs.refs.btnAddOrder.href = `addWorkOrder.html?idVehicle=${workOrderHistoryState.context.idVehicle}&idCustomer=${workOrderHistoryState.context.idCustomer}`;
 };
 
-const setupApplication = async () => {
+const setupApplication = async() => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -153,11 +153,11 @@ const initializeUI = (Refs) => {
     initWorkOrderHistoryEvents({ Refs, onSearchWorkOrderHistory });
 };
 
-const loadDataFlow = async () => {
+const loadDataFlow = async() => {
     await Promise.all([loadWorkOrderHistory(), loadWorkOrderHistoryStatus(), loadDashboard()]);
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async() => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

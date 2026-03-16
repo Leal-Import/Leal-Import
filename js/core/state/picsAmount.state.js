@@ -1,4 +1,4 @@
 export const picsAmountState = {
     paymentsState: null,
-    isViewingReceipt: false,
-}
+    isViewingReceipt: false
+};

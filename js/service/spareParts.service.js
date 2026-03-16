@@ -3,9 +3,9 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 const API_URL = `${API_BASE_URL}/spareParts`;
 const API_URLSTAT = `${API_BASE_URL}/PartsState`;
 
-export let getSpareParts = async (page = 0, size = 15, search = "", idState = "") => {
+export const getSpareParts = async(page = 0, size = 15, search = "", idState = "") => {
     try {
-        const params = new URLSearchParams({ page, size, search, idState })
+        const params = new URLSearchParams({ page, size, search, idState });
         const request = await fetch(`${API_URL}/getSparePartSummary?${params.toString()}`, {
             credentials: 'include'
         });
@@ -17,15 +17,15 @@ export let getSpareParts = async (page = 0, size = 15, search = "", idState = ""
 
     } catch (error) {
         console.error("Error en getSpareParts:", error);
-        throw new Error("Fallo al conectar con el servicio de repuestos.");
+        throw new Error("Fallo al conectar con el servicio de repuestos.", { cause: error });
     }
 };
 
-export let getStatus = async () => {
+export const getStatus = async() => {
     try {
         const request = await fetch(`${API_URLSTAT}/getState`, {
             method: 'GET',
-            credentials: 'include',
+            credentials: 'include'
         });
 
         if (!request.ok) {
@@ -36,7 +36,7 @@ export let getStatus = async () => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;

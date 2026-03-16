@@ -20,8 +20,7 @@ export const validateSale = (state, idVehicle, idCustomer, idSale) => {
     return null;
 };
 
-
-export const hydrateContextFromURL = async (state) => {
+export const hydrateContextFromURL = async(state) => {
     const params = new URLSearchParams(window.location.search);
 
     // 🔴 Obligatorio
@@ -57,8 +56,7 @@ export const hydrateContextFromURL = async (state) => {
     return true;
 };
 
-
-export function buildPostSalePayload(state) {
+export const buildPostSalePayload = (state) => {
     const { data, context } = state;
     const fd = new FormData();
 
@@ -79,7 +77,7 @@ export function buildPostSalePayload(state) {
 
         payments.push({
             amount: p.amount,
-            idPaymentMethod: p.idPaymentMethod,
+            idPaymentMethod: p.idPaymentMethod
         });
         paymentImages.push(p.file);
         index++;
@@ -105,9 +103,9 @@ export function buildPostSalePayload(state) {
     });
 
     return fd;
-}
+};
 
-export function buildPutSalePayload(state) {
+export const buildPutSalePayload = (state) => {
     const { data, idEmployee } = state;
 
     const fd = new FormData();
@@ -163,4 +161,4 @@ export function buildPutSalePayload(state) {
     }
 
     return fd;
-}
+};

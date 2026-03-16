@@ -1,6 +1,6 @@
 // vehicles.detail.dom.js
 
-import { $, disableElement, qs, qsa, removeDisable, toggleModal } from "../../utils/dom.js";
+import { $, disableElement, qs, qsa, removeDisable } from "../../utils/dom.js";
 import { initThumbsCarousel, verifyCarouselBtns } from "../dom/carousel.dom.js";
 
 export const UPLOAD_CONFIG = {
@@ -69,16 +69,16 @@ export const DOMRefs = {
     }
 };
 
-export function loadDomData(typeAction, btnSaveData) {
+export const loadDomData = (typeAction, btnSaveData) => {
     typeAction.textContent = "Actualizar vehiculo";
-    btnSaveData.querySelector("span").textContent = "Actualizar"
-}
+    btnSaveData.querySelector("span").textContent = "Actualizar";
+};
 
 export const verifyBtnsCarousel = (btnsCarousel, mainSwiperWrapper) => {
     verifyCarouselBtns(btnsCarousel, mainSwiperWrapper);
-}
+};
 
-export function renderExternalMode(config, txtCosts, btnImgs, groupCustomer, txtCustomer, txtTotal) {
+export const renderExternalMode = (config, txtCosts, btnImgs, groupCustomer, txtCustomer, txtTotal) => {
     txtCosts.push(DOMRefs.refs.txtSuggestedPrice);
     txtCosts.forEach(txt => {
         if (config.clearCosts) txt.value = '';
@@ -106,9 +106,9 @@ export function renderExternalMode(config, txtCosts, btnImgs, groupCustomer, txt
         txtCustomer.removeAttribute('data-id');
         txtCustomer.value = '';
     }
-}
+};
 
-export function renderCustomersSuggestions(boxCustomer, customers, onSelect) {
+export const renderCustomersSuggestions = (boxCustomer, customers, onSelect) => {
     if (!boxCustomer) return;
     boxCustomer.innerHTML = '';
     const fragment = document.createDocumentFragment();
@@ -118,7 +118,7 @@ export function renderCustomersSuggestions(boxCustomer, customers, onSelect) {
         const name = document.createElement('span');
         const dui = document.createElement('span');
         name.textContent = customer.fullName;
-        dui.textContent = `Dui: ${customer.dui}`
+        dui.textContent = `Dui: ${customer.dui}`;
         div.append(name, dui);
         div.addEventListener('click', () => onSelect(customer));
         fragment.appendChild(div);
@@ -126,9 +126,9 @@ export function renderCustomersSuggestions(boxCustomer, customers, onSelect) {
     boxCustomer.appendChild(fragment);
     boxCustomer.classList.add("show");
     boxCustomer.classList.remove("hide");
-}
+};
 
-export function renderImages(images, mainWrapper, thumbsWrapper, onDelete, onAddClick) {
+export const renderImages = (images, mainWrapper, thumbsWrapper, onDelete, onAddClick) => {
     mainWrapper.innerHTML = '';
     thumbsWrapper.innerHTML = '';
 
@@ -166,17 +166,17 @@ export function renderImages(images, mainWrapper, thumbsWrapper, onDelete, onAdd
 
     _createPlusButton(thumbsWrapper, onAddClick);
     initThumbsCarousel("#mainSwiper", "#thumbsSwiper", { lazy: true }, { slidesPerView: 4 });
-}
+};
 
-function _createPlusButton(wrapper, onAddClick) {
+const _createPlusButton = (wrapper, onAddClick) => {
     const addThumb = document.createElement("div");
     addThumb.classList.add("swiper-slide", "thumb-add");
     addThumb.textContent = "+";
     addThumb.addEventListener("click", onAddClick);
     wrapper.appendChild(addThumb);
-}
+};
 
-export function renderUploadPreview(source, dropArea) {
+export const renderUploadPreview = (source, dropArea) => {
     if (!source || !dropArea) return null;
     dropArea.innerHTML = '';
 
@@ -201,12 +201,11 @@ export function renderUploadPreview(source, dropArea) {
     preview.appendChild(img);
     dropArea.appendChild(preview);
     return src;
-}
+};
 
-export function closeAndCleanUpdateModal(Refs) {
+export const closeAndCleanUpdateModal = (Refs) => {
     const dropArea = Refs.uploadDropArea;
     const inputFile = Refs.uploadFileInput;
-
 
     if (inputFile) inputFile.value = '';
 
@@ -219,4 +218,4 @@ export function closeAndCleanUpdateModal(Refs) {
             </div>
         `;
     }
-}
+};

@@ -21,7 +21,7 @@ export const formatPhoneNumber = (inputElement) => {
     inputElement.value = value;
 };
 
-export let formatDUIInput = (inputElement) => {
+export const formatDUIInput = (inputElement) => {
     inputElement.addEventListener("input", (e) => {
         let valor = e.target.value;
 
@@ -40,9 +40,9 @@ export let formatDUIInput = (inputElement) => {
 
         e.target.value = valor;
     });
-}
+};
 
-export function formatWithCommas(number) {
+export const formatWithCommas = (number) => {
     if (number === null || number === undefined || number === "") return "";
 
     const num = parseFloat(number);
@@ -52,12 +52,12 @@ export function formatWithCommas(number) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
-}
+};
 
 /* Utilidad para cuando se quita el focus de un input o elemento editable */
-export function formatOnBlur(event, isInput) {
+export const formatOnBlur = (event, isInput) => {
     const element = event.target;
-    let value = isInput ? element.value : element.textContent;
+    const value = isInput ? element.value : element.textContent;
 
     // Si está vacío al salir → 0
     if (!value || value.trim() === '') {
@@ -79,20 +79,19 @@ export function formatOnBlur(event, isInput) {
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        maximumFractionDigits: 2
     });
 
     const formatted = formatter.format(number);
 
     if (isInput) element.value = formatted;
     else element.textContent = formatted;
-}
-
+};
 
 /* Utilidad para cuando se hace focus de un input o elemento editable */
-export function formatOnFocus(event, isInput) {
+export const formatOnFocus = (event, isInput) => {
     const element = event.target;
-    let value = isInput ? element.value : element.innerText;
+    const value = isInput ? element.value : element.innerText;
 
     if (!value) return;
 
@@ -116,9 +115,9 @@ export function formatOnFocus(event, isInput) {
     } else {
         element.textContent = clean;
     }
-}
+};
 
-export function formatYearInput(input) {
+export const formatYearInput = (input) => {
     const currentYear = new Date().getFullYear();
     const maxYear = currentYear + 1;
     const minYear = currentYear - 40;
@@ -136,7 +135,7 @@ export function formatYearInput(input) {
 
         // Validar rango SOLO cuando llegue a 4 dígitos
         if (value.length === 4) {
-            let num = parseInt(value);
+            let num = parseInt(value, 10);
 
             if (num > maxYear) num = maxYear;
             if (num < minYear) num = minYear;
@@ -155,16 +154,16 @@ export function formatYearInput(input) {
             return;
         }
 
-        const num = parseInt(text);
+        const num = parseInt(text, 10);
         if (num > maxYear || num < minYear) e.preventDefault();
     });
-}
+};
 
-export function formatDecimalInput(el) {
+export const formatDecimalInput = (el) => {
     const isInput = 'value' in el;
 
     const getValue = () => isInput ? el.value : el.textContent;
-    const setValue = v => isInput ? el.value = v : el.textContent = v;
+    const setValue = v => { isInput ? el.value = v : el.textContent = v; };
 
     el.addEventListener('input', () => {
         let value = getValue();
@@ -204,9 +203,9 @@ export function formatDecimalInput(el) {
             .replace(/[^0-9.]/g, '');
         setValue(text);
     });
-}
+};
 
-function getCaretPosition(el) {
+const getCaretPosition = (el) => {
     const selection = window.getSelection();
     if (!selection.rangeCount) return 0;
 
@@ -215,14 +214,14 @@ function getCaretPosition(el) {
     preRange.selectNodeContents(el);
     preRange.setEnd(range.endContainer, range.endOffset);
     return preRange.toString().length;
-}
+};
 
-function setCaretPosition(el, pos) {
+const setCaretPosition = (el, pos) => {
     const selection = window.getSelection();
     const range = document.createRange();
     let currentPos = 0;
 
-    function traverse(node) {
+    const traverse = (node) => {
         if (node.nodeType === Node.TEXT_NODE) {
             const nextPos = currentPos + node.length;
             if (pos <= nextPos) {
@@ -239,8 +238,8 @@ function setCaretPosition(el, pos) {
             }
         }
         return false;
-    }
+    };
 
     traverse(el);
-}
+};
 

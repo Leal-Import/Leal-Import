@@ -3,7 +3,7 @@ import { existsById } from "../../utils/dom.js";
 import { safeParseFloat } from "../../utils/validators.js";
 import { paymentsState } from "../state/payments.state.js";
 
-export function addPayment(
+export const addPayment = (
     state, {
         id = null,
         idPayment = null,
@@ -11,7 +11,7 @@ export function addPayment(
         idPaymentMethod = null,
         paymentURL = null
     }
-) {
+) => {
     if (!state?.payments) return null;
     const resolvedId = id ?? idPayment ?? crypto.randomUUID();
     if (existsById(state.payments, resolvedId, 'id')) return null;
@@ -26,13 +26,13 @@ export function addPayment(
 
     state.payments.push(payment);
     return payment;
-}
+};
 
-export function getMethodNameById(idPaymentMethod) {
+export const getMethodNameById = (idPaymentMethod) => {
     if (!idPaymentMethod) return 'Desconocido';
 
     const method = paymentsState.paymentMethods
         .find(m => m.idPaymentMethod === idPaymentMethod);
 
     return method?.methodName || 'Desconocido';
-}
+};

@@ -34,12 +34,12 @@ export const DOMRefs = {
     }
 };
 
-export function loadUpdateInfo(Refs) {
+export const loadUpdateInfo = (Refs) => {
     Refs.typeAction.textContent = "Actualizar repuesto";
     Refs.btnSaveSparePart.querySelector("span").textContent = "Actualizar";
     Refs.btnDeleteImg.classList.add("hide");
     Refs.btnAddImg.textContent = "Actualizar foto";
-}
+};
 
 const LINK_CONFIG = {
     bill: {
@@ -52,7 +52,7 @@ const LINK_CONFIG = {
     }
 };
 
-export function openLinkModal(type, state, Refs, onValidateUrl) {
+export const openLinkModal = (type, state, Refs, onValidateUrl) => {
     const config = LINK_CONFIG[type];
     if (!config) return;
 
@@ -63,15 +63,15 @@ export function openLinkModal(type, state, Refs, onValidateUrl) {
     Refs.txtLink.value = state.links?.[config.stateKey] || '';
 
     toggleModal(Refs.modalLink, true);
-}
+};
 
-export function closeLinkModal(state, Refs) {
+export const closeLinkModal = (state, Refs) => {
     toggleModal(Refs.modalLink, false);
     Refs.txtLink.value = '';
     state.currentLinkType = null;
-}
+};
 
-export function saveLinkModal(state, Refs) {
+export const saveLinkModal = (state, Refs) => {
     if (!state.currentLinkType) return;
 
     const value = Refs.txtLink.value.trim();
@@ -80,9 +80,9 @@ export function saveLinkModal(state, Refs) {
     state.links[stateKey] = value;
 
     closeLinkModal(state, Refs);
-}
+};
 
-export function loadImage(source, Refs) {
+export const loadImage = (source, Refs) => {
     if (!source) return;
 
     // 🔹 Caso 1: viene una URL (string)
@@ -117,4 +117,4 @@ export function loadImage(source, Refs) {
     }
 
     console.warn("loadImage: tipo de fuente no soportado", source);
-}
+};

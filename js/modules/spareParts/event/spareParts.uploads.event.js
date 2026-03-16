@@ -1,17 +1,12 @@
-import { $ } from "../../../utils/dom.js";
+export const initImageEvents = ({ Refs, onChangeUpload, onDropModal, onAddImage, onDeleteImage, onDragOver, onDragLeave }) => {
+    const { dropArea, fileInput, btnAddImg, btnDeleteImg } = Refs;
 
-export function initImageEvents({ onChangeUpload, onDropModal, onAddImage, onDeleteImage, onDragOver, onDragLeave }) {
-    const dropArea = $("dropZone");
-    const inputFile = $("fileInput");
-    const btnSelect = $("btnAddImg");
-    const btnDeleteImg = $("btnDeleteImg");
-
-    if (!dropArea || !inputFile || !btnSelect) return;
+    if (!dropArea || !fileInput || !btnAddImg) return;
 
     dropArea.addEventListener("click", onAddImage);
-    btnSelect.addEventListener("click", onAddImage);
+    btnAddImg.addEventListener("click", onAddImage);
 
-    inputFile.addEventListener("change", onChangeUpload);
+    fileInput.addEventListener("change", onChangeUpload);
 
     dropArea.addEventListener("dragover", onDragOver);
 
@@ -20,4 +15,4 @@ export function initImageEvents({ onChangeUpload, onDropModal, onAddImage, onDel
     dropArea.addEventListener("drop", onDropModal);
 
     btnDeleteImg.addEventListener("click", onDeleteImage);
-}
+};

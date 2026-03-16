@@ -1,14 +1,14 @@
-export function createPagination({
+export const createPagination = ({
     initialSize = 10,
     onChange
-}) {
+}) => {
 
     const container = document.querySelector('.paginationContainer');
     const infoEl = container.querySelector('.paginationInfo');
     const sizeSelect = container.querySelector('.pageSize select');
     const pagesContainer = container.querySelector('.paginationRight');
 
-    let state = {
+    const state = {
         page: 1,
         size: initialSize,
         totalElements: 0,
@@ -155,4 +155,4 @@ export function createPagination({
         update,
         setTotal
     };
-}
+};

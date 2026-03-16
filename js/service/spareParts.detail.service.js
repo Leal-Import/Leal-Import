@@ -2,7 +2,7 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 
 const API_URL = `${API_BASE_URL}/spareParts`;
 
-export let postSparePart = async (sparePart) => {
+export const postSparePart = async(sparePart) => {
     try {
         const request = await fetch(`${API_URL}/postSparepart`, {
             method: 'POST',
@@ -17,17 +17,18 @@ export let postSparePart = async (sparePart) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -37,14 +38,14 @@ export let postSparePart = async (sparePart) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
     }
 };
 
-export let putSparePart = async (sparePart, id) => {
+export const putSparePart = async(sparePart, id) => {
     try {
         const request = await fetch(`${API_URL}/putSparepart/${id}`, {
             method: 'PUT',
@@ -59,17 +60,18 @@ export let putSparePart = async (sparePart, id) => {
                 const errorData = await request.json();
                 if (errorData.errors) {
                     const errores = Object.entries(errorData.errors)
-                        .map(([camp, message]) => `${message}`)
+                        .map(([message]) => `${message}`)
                         .join("\n");
                     errorMessage = `Errores de validación:\n${errores}`;
                 } else if (errorData.message) {
                     errorMessage = errorData.message;
                 }
-            } catch (e) {
+            } catch (error) {
                 const errorText = await request.text();
                 if (errorText.length > 0) {
                     errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
                 }
+                throw new Error(errorMessage, { cause: error });
             }
 
             // Lanza el error capturable por el controlador
@@ -79,18 +81,18 @@ export let putSparePart = async (sparePart, id) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
     }
 };
 
-export let getSparePart = async (id) => {
+export const getSparePart = async(id) => {
     try {
         const request = await fetch(`${API_URL}/getSparePartById/${id}`, {
             method: 'GET',
-            credentials: 'include',
+            credentials: 'include'
         });
 
         if (!request.ok) {
@@ -101,7 +103,7 @@ export let getSparePart = async (id) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.");
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;

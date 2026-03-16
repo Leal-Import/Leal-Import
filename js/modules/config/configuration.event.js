@@ -1,6 +1,6 @@
 import { formatPhoneNumber } from "../../utils/formatters.js";
 
-export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditProfile, onOpenEditProfile, onOpenVerifyPassword, onCloseVerifyPassword, onOpenToggleUsername, onCloseToggleUsername, onTogglePassword, onVerifyPassword, onCloseNewPassword, onVerifyNewPassword, onVerifyConfirmPassword, onChangePassword, onVerifyButtonUsername, onChangeUsername, onLogout, onEditProfile }) {
+export const initConfigurationEvents = ({ Refs, onChangeDarkMode, onCloseEditProfile, onOpenEditProfile, onOpenVerifyPassword, onCloseVerifyPassword, onOpenToggleUsername, onCloseToggleUsername, onTogglePassword, onVerifyPassword, onCloseNewPassword, onVerifyNewPassword, onVerifyConfirmPassword, onChangePassword, onVerifyButtonUsername, onChangeUsername, onLogout, onEditProfile }) => {
 
     Refs.frmEditProfile.addEventListener("submit", onEditProfile);
     Refs.darkModeToggle.addEventListener("change", onChangeDarkMode);
@@ -46,4 +46,4 @@ export function initConfigurationEvents({ Refs, onChangeDarkMode, onCloseEditPro
     Refs.txtEmployeePhone.addEventListener("input", () => {
         formatPhoneNumber(Refs.txtEmployeePhone);
     });
-}
+};

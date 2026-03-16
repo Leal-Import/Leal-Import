@@ -1,20 +1,19 @@
 import { formatPhoneNumber } from '../../utils/formatters.js';
 
-
 export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal }) => {
-    const { txtEmployeePhone, cmbSearchByStatus, cmbSearchByRole, txtSearchData, frmEmployees, btnCloseModalEmployee, modalEmployees, btnOpenModalEmployees } = Refs
+    const { txtEmployeePhone, cmbSearchByStatus, cmbSearchByRole, txtSearchData, frmEmployees, btnCloseModalEmployee, modalEmployees, btnOpenModalEmployees } = Refs;
 
     let pointerDownOnOverlay = false;
     let searchTimeout = null;
     const emitFilters = () => {
-        clearTimeout(searchTimeout)
+        clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             onSearchEmployee({
                 search: txtSearchData?.value.trim() || '',
                 idRole: cmbSearchByRole?.value || '',
                 status: cmbSearchByStatus?.value || ''
             });
-        }, 1000)
+        }, 1000);
     };
 
     txtEmployeePhone.addEventListener('input', (e) => {
@@ -40,4 +39,4 @@ export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, o
     txtSearchData.addEventListener('input', emitFilters);
 
     frmEmployees.addEventListener('submit', onSubmitEmployee);
-}
+};

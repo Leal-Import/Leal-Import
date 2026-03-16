@@ -2,24 +2,21 @@ export const $ = id => document.getElementById(id);
 export const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 export const qs = (sel, root = document) => root.querySelector(sel);
 
-export function showElement(el) { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); }
-export function hideElement(el) { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); }
-export function disableElement(el) { if (!el) return; el.setAttribute("disabled", true) }
-export function removeDisable(el) { if (!el) return; el.removeAttribute("disabled") }
-
-
+export const showElement = (el) => { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); };
+export const hideElement = (el) => { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); };
+export const disableElement = (el) => { if (!el) return; el.setAttribute("disabled", true); };
+export const removeDisable = (el) => { if (!el) return; el.removeAttribute("disabled"); };
 
 export const existsById = (list, id, key) => {
     return list.some(item => String(item[key]) === String(id));
 };
-
 
 /**
  * Muestra u oculta un modal
  * @param {HTMLElement|string} modal - Elemento o selector del modal
  * @param {boolean} show
  */
-export function toggleModal(modal, show) {
+export const toggleModal = (modal, show) => {
     const el = typeof modal === 'string'
         ? qs(modal)
         : modal;
@@ -28,7 +25,7 @@ export function toggleModal(modal, show) {
 
     el.classList.toggle('show', show);
     el.classList.toggle('hide', !show);
-}
+};
 
 /**
  * Llena un formulario usando un objeto
@@ -36,7 +33,7 @@ export function toggleModal(modal, show) {
  * @param {string} formSelector
  * @param {Object} data
  */
-export function fillForm(formSelector, data) {
+export const fillForm = (formSelector, data) => {
     const form = qs(formSelector);
     if (!form) return;
 
@@ -52,14 +49,14 @@ export function fillForm(formSelector, data) {
             field.value = value ?? '';
         }
     });
-}
+};
 
 /**
  * Habilita o deshabilita todos los campos del formulario
  * @param {string} formSelector
  * @param {boolean} readOnly
  */
-export function setFormReadOnly(formSelector, readOnly = true) {
+export const setFormReadOnly = (formSelector, readOnly = true) => {
     const form = qs(formSelector);
     if (!form) return;
 
@@ -74,7 +71,7 @@ export function setFormReadOnly(formSelector, readOnly = true) {
             ctrl.disabled = readOnly;
         }
     });
-}
+};
 
 /* Menu flotante para tablas */
 export const showFloatingMenu = (event, actions) => {
@@ -150,11 +147,11 @@ export const showFloatingMenu = (event, actions) => {
 
     const onResize = () => positionMenu();
 
-    function cleanup() {
+    const cleanup = () => {
         document.removeEventListener('click', onDocClick);
         document.removeEventListener('keydown', onEsc);
         window.removeEventListener('resize', onResize);
-    }
+    };
 
     setTimeout(() => {
         document.addEventListener('click', onDocClick);
@@ -165,7 +162,7 @@ export const showFloatingMenu = (event, actions) => {
 
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 /* Mensajes globales (SweetAlert2) */
-export const showMessage = async (
+export const showMessage = async(
     title,
     message,
     type = 'info',
@@ -181,7 +178,7 @@ export const showMessage = async (
         text: message,
         showCancelButton: cancelButton,
         cancelButtonColor: dangerColor || '#F44336',
-        confirmButtonColor: helperStatColor || '#007bff',
+        confirmButtonColor: helperStatColor || '#007bff'
     };
 
     if (isToast) {
@@ -211,9 +208,9 @@ export const showMessage = async (
     return await Swal.fire(config);
 };
 
-export function enableFormUI(frm) {
+export const enableFormUI = (frm) => {
     setFormReadOnly(frm, false);
-}
+};
 
 export const setupModal = (
     openBtnSelector,
@@ -275,7 +272,7 @@ export const fillSelect = (selectOrId, data, valueKey, textKey, selectedValue = 
     defaultOption.textContent = defaultText;
 
     // si NO hay valor seleccionado, dejamos la opción por defecto
-    if (selectedValue == null || selectedValue === '') {
+    if (selectedValue === null || selectedValue === '') {
         defaultOption.selected = true;
     }
 
@@ -295,8 +292,6 @@ export const fillSelect = (selectOrId, data, valueKey, textKey, selectedValue = 
         select.appendChild(option);
     });
 };
-
-
 
 export const highlightAndFocus = (elementOrId) => {
     const element = typeof elementOrId === 'string'
