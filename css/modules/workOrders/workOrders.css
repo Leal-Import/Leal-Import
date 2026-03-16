@@ -16,7 +16,7 @@
     flex-basis: 225px;
     border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
     transition: all 0.3s ease;
     border-left: 4px solid transparent;
     position: relative;
@@ -37,7 +37,7 @@
 
 .statItem:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
 }
 
 /* Estilos específicos para cada estadística */
@@ -67,6 +67,7 @@
 
 .totalSales {
     border-left-color: var(--helper-stat-color);
+    flex-grow: 2;
 }
 
 .totalSales::before {
@@ -77,7 +78,7 @@
     font-size: var(--font-size-base);
         font-weight: var(--font-weight-regular);
     color: var(--text-color-secondary);
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -88,9 +89,6 @@
     line-height: 1.2;
     font-weight: var(--font-weight-regular);
     font-size: var(--font-size-title);
-}
-.totalSales {
-    flex-grow: 2;
 }
 
 .cardContainer {
@@ -175,6 +173,7 @@
 .colorDelay {
     background-color: var(--danger-color);
 }
+
 .delayOrder {
     color: var(--danger-color);
     font-weight: var(--font-weight-medium);

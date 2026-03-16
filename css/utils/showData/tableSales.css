@@ -16,13 +16,13 @@
     object-fit: cover;
     border-radius: 8px;
     border: 2px solid var(--bg-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
     transition: all 0.3s ease;
 }
 
 .imgTable:hover {
     transform: scale(1.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.15);
 }
 
 .tableContainer {
@@ -31,7 +31,7 @@
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--bg-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
 }
 
 .leftColumn .table {
@@ -73,7 +73,7 @@
 .table tbody tr:hover {
     background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     transform: scale(1.005);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.06);
 }
 
 .table tbody td {
@@ -93,17 +93,17 @@
     padding: 8px 16px !important;
     font-size: var(--font-size-lg) !important;
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
-    color: #FFF;
+    color: var(--text-color-light);
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    box-shadow: 0 4px 12px rgb(211 47 47 / 0.3);
 }
 
 .btnAddItem:hover {
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
     transform: translateY(-50%) rotate(90deg) scale(1.15);
-    box-shadow: 0 6px 16px rgba(211, 47, 47, 0.5);
+    box-shadow: 0 6px 16px rgb(211 47 47 / 0.5);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -162,14 +162,14 @@
         padding: 16px;
         margin: 0;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
         border: 1px solid #e9ecef !important;
         transition: all 0.3s ease;
         align-items: start;
     }
 
     .leftColumn .table tbody tr:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 16px rgb(0 0 0 / 0.1);
         transform: translateY(-2px) scale(1);
         background-color: var(--bg-color-white);
     }
@@ -200,13 +200,7 @@
         border-radius: 10px;
         border: 2px solid #e9ecef;
     }
-
-    /* VIN - Segunda columna, primera fila */
-    .leftColumn .table tbody td:nth-child(2) {
-        grid-column: 2 / 4;
-        grid-row: 1;
-    }
-
+    
     .leftColumn .table tbody td:nth-child(2)::before {
         content: "VIN";
         font-size: var(--font-size-sm);
@@ -215,8 +209,10 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-
+    
     .leftColumn .table tbody td:nth-child(2) {
+        grid-column: 2 / 4;
+        grid-row: 1;
         font-size: var(--font-size-sm);
         font-weight: var(--font-weight-semibold);
         color: var(--text-color-dark);
@@ -227,8 +223,7 @@
     .leftColumn .table tbody td:nth-child(5) {
         grid-column: 3;
         grid-row: 1;
-        align-self: start;
-        justify-self: end;
+        place-self: start end;
     }
 
     .btnAddItem {
@@ -237,14 +232,7 @@
         padding: 0 !important;
         font-size: var(--font-size-base) !important;
     }
-
-    /* COSTO - Segunda columna, segunda fila (izquierda) */
-    .leftColumn .table tbody td:nth-child(3) {
-        grid-column: 2 / 4;
-        grid-row: 2;
-        justify-self: start;
-    }
-
+    
     .leftColumn .table tbody td:nth-child(3)::before {
         content: "💵 Costo";
         font-size: var(--font-size-sh);
@@ -253,19 +241,16 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-
+    
     .leftColumn .table tbody td:nth-child(3) {
         font-size: var(--font-size-default);
         font-weight: var(--font-weight-bold);
         color: var(--text-color);
+        grid-column: 2 / 4;
+        grid-row: 2;
+        justify-self: start;
     }
 
-    /* P. SUGERIDO - Tercera columna, segunda fila (derecha) */
-    .leftColumn .table tbody td:nth-child(4) {
-        grid-column: 3 / 4;
-        grid-row: 2;
-        justify-self: end;
-    }
 
     .leftColumn .table tbody td:nth-child(4)::before {
         content: "💰 P. Sugerido";
@@ -276,9 +261,13 @@
     }
 
     .leftColumn .table tbody td:nth-child(4) {
+        text-align: left;
         font-size: var(--font-size-default);
         font-weight: var(--font-weight-bold);
         color: var(--danger-color);
+        grid-column: 3 / 4;
+        grid-row: 2;
+        justify-self: end;
     }
 
     /* Mensaje de "No hay datos" */
@@ -296,7 +285,7 @@
 }
 
 /* Móviles pequeños (< 500px) */
-@media screen and (max-width: 499px) {
+@media screen and (width <= 499px) {
     .leftColumn .table tbody tr {
         padding: 12px;
         gap: 10px 12px;
@@ -326,7 +315,7 @@
 }
 
 /* Móviles muy pequeños (< 380px) */
-@media screen and (max-width: 379px) {
+@media screen and (width <= 379px) {
     .leftColumn .table tbody tr {
         grid-template-columns: auto 1fr;
         grid-template-rows: auto auto auto;
@@ -347,18 +336,6 @@
         grid-column: 2;
         grid-row: 1;
         justify-self: end;
-    }
-
-    .leftColumn .table tbody td:nth-child(3) {
-        grid-column: 2;
-        grid-row: 2;
-    }
-
-    .leftColumn .table tbody td:nth-child(4) {
-        grid-column: 2;
-        grid-row: 3;
-        justify-self: start;
-        text-align: left;
     }
 
     .leftColumn .table tbody td:nth-child(4)::before {

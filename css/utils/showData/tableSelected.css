@@ -1,10 +1,11 @@
 /* Contenedor de la tabla */
 .tableContainerSelected {
     background-color: var(--bg-color-white);
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
     border-radius: 12px;
     border: var(--border);
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 /* Tabla base */
@@ -48,12 +49,13 @@
 .tableSelected tbody tr.tableRow {
     transition: all 0.2s ease;
     border-bottom: 1px solid var(--bg-color);
+    animation: slideInRow 0.3s ease;
 }
 
 .tableSelected tbody tr.tableRow:hover {
     background-color: var(--bg-color);
     transform: translateX(2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
 }
 
 .tableSelected tbody tr.tableRow:last-child {
@@ -91,13 +93,13 @@
 
 .tableSelected tbody td.finalPrice:hover {
     background-color: var(--bg-color);
-    box-shadow: inset 0 0 0 2px rgba(220, 53, 69, 0.1);
+    box-shadow: inset 0 0 0 2px rgb(220 53 69 / 0.1);
 }
 
 .tableSelected tbody td.finalPrice:focus {
     outline: none;
     background-color: var(--bg-color);
-    box-shadow: inset 0 0 0 2px rgba(220, 53, 69, 0.2);
+    box-shadow: inset 0 0 0 2px rgb(220 53 69 / 0.2);
     color: var(--dark-danger-color);
 }
 
@@ -229,10 +231,6 @@
     }
 }
 
-.tableSelected tbody tr.tableRow {
-    animation: slideInRow 0.3s ease;
-}
-
 /* Animación de salida para filas eliminadas */
 @keyframes slideOutRow {
     from {
@@ -251,12 +249,10 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-
+@media (width <= 768px) {
     .tableSelected thead th,
     .tableSelected tbody td {
         padding: 12px 10px;
-        font-size: 13px;
     }
 
     .tableSelected tbody td.sparePartName {
@@ -276,16 +272,10 @@
     }
 }
 
-@media (max-width: 480px) {
-
+@media (width <= 480px) {
     .tableSelected thead th,
     .tableSelected tbody td {
         padding: 10px 8px;
-        font-size: 12px;
-    }
-
-    .tableSelected thead th {
-        font-size: 11px;
     }
 
     .tableSelected tbody td.finalPrice {
@@ -319,12 +309,6 @@
     background-color: var(--bg-color);
 }
 
-/* Scrollbar personalizado para el contenedor */
-.tableContainerSelected {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
 .tableContainerSelected::-webkit-scrollbar {
     width: 8px;
 }
@@ -342,12 +326,4 @@
 
 .tableContainerSelected::-webkit-scrollbar-thumb:hover {
     background-color: var(--text-color-secondary);
-}
-
-/* Header sticky (opcional) */
-.tableContainerSelected.sticky-header .tableSelected thead th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

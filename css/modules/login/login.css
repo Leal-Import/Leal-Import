@@ -27,6 +27,7 @@
 
 .modalAdd {
   --width-modal: clamp(200px, 90%, 420px);
+
   padding: 20px !important;
 }
 
@@ -47,7 +48,7 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 1px 5px 25px 0px rgba(202, 94, 94, 0.5);
+  box-shadow: 1px 5px 25px 0 rgb(202 94 94 / 0.5);
 }
 
 .loginContainer form {
@@ -58,7 +59,7 @@ section {
 }
 
 .loginContainer h2 {
-  font-size: 2em;
+  font-size: var(--font-size-breadcrumb);
   color: var(--text-color-dark);
   text-align: center;
 }
@@ -70,7 +71,7 @@ section {
   margin: 25px 0;
   background-color: var(--bg-color);
   border-radius: 5px;
-  box-shadow: 1px 1px 4px 0px rgba(40, 58, 141, 0.15);
+  box-shadow: 1px 1px 4px 0 rgb(40 58 141 / 0.15);
   backdrop-filter: blur(5px);
 }
 
@@ -96,7 +97,7 @@ section {
   background: transparent;
   border: none;
   outline: none;
-  font-size: 1em;
+  font-size: var(--font-size-default);
   color: var(--text-color-dark);
   padding: 0 45px 0 15px;
   border-radius: 5px;
@@ -106,13 +107,22 @@ section {
   position: absolute;
   right: 8px;
   color: var(--text-color-dark);
-  font-size: 1.2em;
+  font-size: var(--font-size-lg);
   line-height: 57px;
   margin-right: 10px;
 }
 
-@keyframes blink {
+.inputBox .icon svg{
+  height: 20px;
+  width: 20px;
+}
 
+.businessLogo{
+  width: 150px;
+  margin-bottom: 20px;
+}
+
+@keyframes blink {
   0%,
   100% {
     opacity: 1;
@@ -166,8 +176,8 @@ section {
   padding: 14px 0;
   margin-bottom: 18px;
   font-size: var(--font-size-default);
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(31, 38, 135, 0.07);
+  font-weight: var(--font-weight-medium);
+  box-shadow: 0 2px 8px rgb(31 38 135 / 0.07);
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   box-sizing: border-box;
@@ -207,23 +217,23 @@ section {
 .swal2PopupCustom {
   border-radius: 20px !important;
   text-align: justify !important;
-  padding: 5px 5px !important;
-  font-size: 0.8rem !important;
+  padding: 5px !important;
+  font-size: var(--font-size-sm) !important;
 }
 
 .swal2TitleCustom {
-  font-size: 1.3rem !important;
+  font-size: var(--font-size-lg) !important;
   color: var(--danger-color) !important;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .swal2BtnCustom {
-  font-size: 1.2rem !important;
+  font-size: var(--font-size-lg) !important;
   border-radius: 8px !important;
   padding: 10px 12px !important;
   background: var(--danger-color) !important;
   color: var(--text-color-light) !important;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Modal de autenticación */
@@ -275,7 +285,7 @@ section {
   color: var(--text-color-dark);
   text-align: center;
   margin-bottom: 10px;
-  font-size: 16px;
+  font-size: var(--font-size-default);
   width: clamp(200px, 75%, 325px);
 }
 
@@ -293,7 +303,7 @@ section {
   line-height: 2px;
   padding: 0;
   text-align: center;
-  font-size: 20px;
+  font-size: var(--font-size-lg);
   border: 1.5px solid var(--text-color-dark);
   border-radius: 10px;
   outline: none;
@@ -307,7 +317,7 @@ section {
 
 #modalCode .btnPrimary,
 #modalCode .btnPrimary.outline {
-  font-size: 16px;
+  font-size: var(--font-size-default);
   border-radius: 12px;
   width: 100%;
   padding: 14px 0;
@@ -324,12 +334,14 @@ section {
 /* Safari con password oculto */
   {
   -webkit-text-fill-color: #474A53;
+
   /* color de texto */
   caret-color: #474A53;
-  box-shadow: 0 0 0 1000px #F2F9FE inset !important;
+
   /* mismo fondo que tu .inputBox */
-  -webkit-box-shadow: 0 0 0 1000px #F2F9FE inset !important;
+  box-shadow: 0 0 0 1000px #F2F9FE inset !important;
   border-radius: 5px;
+
   /* respeta tu borde redondeado */
 }
 
@@ -343,16 +355,19 @@ section {
   width: 80%;
   border: none;
   border-top: 1px solid var(--bg-color);
-  margin: 15px 0 10px 0;
+  margin: 15px 0 10px;
   opacity: 0.6;
 }
 
 .loginButton:disabled {
   opacity: 0.7;
+
   /* Make it slightly transparent */
   cursor: not-allowed;
+
   /* Change the cursor to indicate it's blocked */
   transform: none;
+
   /* Override hover effect */
   box-shadow: none;
 }
@@ -369,7 +384,7 @@ section {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 22px 0px rgba(69, 79, 170, 0.5);
+  box-shadow: 0 6px 22px 0 rgb(69 79 170 / 0.5);
   cursor: pointer;
   color: var(--danger-color);
   transition: transform .2s ease, box-shadow .2s ease;
@@ -383,10 +398,10 @@ section {
 
 .backHomeCorner:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(97, 111, 239, 0.2);
+  box-shadow: 0 10px 24px rgb(97 111 239 / 0.2);
 }
 
-@media (max-width:420px) {
+@media (width <=420px) {
   .backHomeCorner {
     top: 12px;
     right: 12px;
@@ -395,7 +410,7 @@ section {
   }
 
 
-  @-webkit-keyframes slideIn {
+  @keyframes slideIn {
     from {
       bottom: -300px;
       opacity: 0
@@ -419,7 +434,7 @@ section {
     }
   }
 
-  @-webkit-keyframes fadeIn {
+  @keyframes fadeIn {
     from {
       opacity: 0
     }

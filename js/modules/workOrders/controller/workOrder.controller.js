@@ -27,7 +27,7 @@ const loadStateWorkOrders = async() => {
         const states = await getWOStatus();
         workOrdersState.stateList = states;
 
-        fillSelect('cmbSearchByStatus', workOrdersState.stateList, 'idOrdersStatus', 'ordersStatus');
+        fillSelect('cmbSearchByStatus', workOrdersState.stateList, 'idOrdersStatus', 'ordersStatus', null, "Todas");
     } catch (error) {
         showMessage('Error', 'No se pudieron cargar los estados de las órdenes', 'error');
         console.error(error);

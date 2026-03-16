@@ -14,7 +14,7 @@
     border: 2px solid #E5E7EB;
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
     max-width: 60%;
     min-width: 300px;
     flex: 10;
@@ -29,7 +29,7 @@
     background-color:var(--bg-color-white);
     border-radius: 12px;
     border: 1px solid var(--bg-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
     margin-top: 6px;
     padding-right: 24px;
 }
@@ -37,7 +37,7 @@
 .txtSearchData:focus {
     outline: none;
     border-color: var(--danger-color);
-    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.15);
+    box-shadow: 0 4px 12px rgb(211 24 19 / 0.15);
     transform: translateY(-1px);
 }
 
@@ -56,18 +56,18 @@
 
 .cmbFilterData:hover {
     border-color: var(--helper-color);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 10px rgb(0 0 0 / 0.08);
 }
 
 .cmbFilterData:focus {
     outline: none;
     border-color: var(--danger-color);
-    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.15);
+    box-shadow: 0 4px 12px rgb(211 24 19 / 0.15);
 }
 
 .btnPrimary {
     background-color: var(--danger-color);
-    color: #FFF;
+    color: var(--text-color-light);
     border: none;
     border-radius: var(--border-radius-btn);
     font-weight: var(--font-weight-medium);
@@ -99,7 +99,7 @@
 }
 
 .btnSecondary:hover {
-    background-color: rgba(211, 24, 19, 0.05);
+    background-color: var(--bg-danger-badge);
     transform: translateY(-2px);
 }
 
@@ -112,13 +112,13 @@
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(211, 24, 19, 0.25);
+    box-shadow: 0 6px 20px rgb(211 24 19 / 0.25);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     white-space: nowrap;
     position: relative;
     overflow: hidden;
-    color: #FFF;
+    color: var(--text-color-light);
 }
 
 .btnOpenModal::before {
@@ -129,7 +129,7 @@
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgb(255 255 255 / 0.3);
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
 }
@@ -141,7 +141,7 @@
 
 .btnOpenModal:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(211, 24, 19, 0.35);
+    box-shadow: 0 10px 30px rgb(211 24 19 / 0.35);
 }
 
 .btnIcon {
@@ -156,14 +156,14 @@
     padding: 7px 25px;
     font-size: var(--font-size-base);
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(211, 24, 19, 0.25);
+    box-shadow: 0 6px 20px rgb(211 24 19 / 0.25);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     align-self: end;
 }
 
 .btnSubmitData:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(211, 24, 19, 0.35);
+    box-shadow: 0 10px 30px rgb(211 24 19 / 0.35);
 }
 
 .formGroup {
@@ -200,7 +200,7 @@
     outline: none;
     border-color: var(--danger-color);
     background-color: var(--bg-color-white);
-    box-shadow: 0 0 0 4px rgba(211, 24, 19, 0.08);
+    box-shadow: 0 0 0 4px rgb(211 24 19 / 0.08);
 }
 
 .txtInputs:disabled {
@@ -229,26 +229,18 @@ textarea {
     }
 }
 
-@media screen and (max-width: 600px) {
-
+@media screen and (width <= 600px) {
     .txtSearchData {
         font-size: var(--font-size-sm);
         min-width: 200px;
+        flex: 1;
     }
 
     .filterSection .btnPrimary {
         flex: 1;
     }
 
-    .cmbFilterData {
-        font-size: 13px;
-    }
-
     .filterSection {
         padding: 15px 10px;
-    }
-
-    .txtSearchData {
-        flex: 1;
     }
 }

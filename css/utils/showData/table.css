@@ -3,7 +3,7 @@
     position: relative;
     flex: 1;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 20px rgb(0 0 0 / 0.06);
     border: 1px solid #F0F0F0;
     height: fit-content;
     padding-bottom: 10px;
@@ -17,7 +17,7 @@
 
 
 .table thead tr {
-    background-color: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
 }
 
 .table th {
@@ -40,9 +40,9 @@
 }
 
 .table tbody tr:hover {
-    background: linear-gradient(90deg, rgba(211, 24, 19, 0.03) 0%, rgba(205, 144, 143, 0.05) 100%);
+    background: linear-gradient(90deg, rgb(211 24 19 / 0.03) 0%, rgb(205 144 143 / 0.05) 100%);
     transform: scale(1.002);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
 }
 
 .table td {

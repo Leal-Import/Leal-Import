@@ -1,6 +1,4 @@
-/* ============================================
-   SALES INVENTORY - IMPROVED DESIGN
-   ============================================ */
+/* stylelint-disable selector-class-pattern */
 
 .content {
     flex-direction: row !important;
@@ -44,6 +42,7 @@
     height: fit-content;
     display: flex;
     flex-direction: column;
+    scroll-behavior: smooth;
     gap: 20px;
 }
 
@@ -65,11 +64,11 @@
     flex-direction: column;
     gap: 10px;
     border: var(--border);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 60px rgb(0 0 0 / 0.15);
     animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/*Estilos especificos del carrucel*/
+/* Estilos especificos del carrucel */
 
 .containerCarousel{
     flex-direction: row-reverse !important;
@@ -83,12 +82,14 @@
 
 .swiper-slide {
     width: 100% !important;
+
     /* Antes estaba "auto" → CAUSABA EL BUG */
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 #mainSwiper img {
     border: var(--border);
     width: 100%;
@@ -246,24 +247,18 @@
     border-radius: 8px;
     font-weight: var(--font-weight-semibold);
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    box-shadow: 0 4px 12px rgb(108 117 125 / 0.3);
 }
 
 .btnCreateWO:hover {
     background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
+    box-shadow: 0 6px 16px rgb(108 117 125 / 0.4);
 }
 
 /* ============================================
    UTILITY CLASSES
    ============================================ */
-
-
-/* Smooth scrolling for the whole section */
-.bodyLeftPart {
-    scroll-behavior: smooth;
-}
 
 /* Focus styles for accessibility */
 *:focus-visible {
@@ -310,9 +305,8 @@
 }
 
 @container content (max-width: 450px) {
-
     .imagesSection,
     .vehicleInfo {
-        padding: 0px;
+        padding: 0;
     }
 }

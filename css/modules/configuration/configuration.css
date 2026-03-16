@@ -48,6 +48,7 @@
 
 .modalNewPasswordCard {
     --width-modal: clamp(200px, 90%, 450px);
+    
     padding: 20px !important;
 }
 
@@ -109,8 +110,8 @@
 }
 
 .configItemIconDanger {
-    background-color: rgba(220, 38, 38, 0.1);
-    border-color: rgba(220, 38, 38, 0.2);
+    background-color: var(--bg-color);
+    border: var(--border);
     color: var(--danger-color);
 }
 
@@ -133,7 +134,7 @@
 .configItemSub {
     font-size: var(--font-size-sh, 0.72rem);
     color: var(--text-color-secondary);
-    font-weight: 400;
+    font-weight: var(--font-weight-regular);
 }
 
 .configChevron {

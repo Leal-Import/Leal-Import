@@ -12,25 +12,26 @@ html[data-sidebar="collapsed"] .userInfo {
     pointer-events: none !important;
 }
 
-html:not(.ui-ready) #sidebar,
-html:not(.ui-ready) .navbarContainer,
-html:not(.ui-ready) .navbarItem,
-html:not(.ui-ready) .navbarText,
-html:not(.ui-ready) #btnNavbar {
+body:not(.sidebarReady) {
+    visibility: hidden;
+}
+
+html:not(.uiReady) #sidebar,
+html:not(.uiReady) .navbarContainer,
+html:not(.uiReady) .navbarItem,
+html:not(.uiReady) .navbarText,
+html:not(.uiReady) #btnNavbar {
     transition: none !important;
     animation: none !important;
 }
 
-body:not(.sidebar-ready) {
-    visibility: hidden;
-}
 
 /* ═══════════════════════════════════════
    VARIABLES
 ═══════════════════════════════════════ */
 #sidebar {
-    --nav-bg: var(--bg-color, #FCFCFC);
-    --nav-bg2: var(--bg-color-white, #FFFFFF);
+    --nav-bg: var(--bg-color);
+    --nav-bg2: var(--bg-color-white);
     --nav-border: #CD908F55;
     --nav-border-soft: #CD908F33;
     --nav-text: var(--text-color, #0D0503);
@@ -44,7 +45,6 @@ body:not(.sidebar-ready) {
     --nav-section-txt: var(--helper-color, #CD908F);
     --nav-divider: #CD908F33;
     --nav-shadow: var(--bx-shadow-primary, 5px 2px 6px #CD908F44);
-
     --nav-open-w: 270px;
     --nav-close-w: 75px;
     --nav-icon-left: 15px;
@@ -163,14 +163,14 @@ body:not(.sidebar-ready) {
 #btnNavbar:hover {
     background-color: var(--nav-accent);
     border-color: var(--nav-accent);
-    color: #fff;
+    color: var(--text-color-light);
     box-shadow: var(--bx-shadow-btn-primary);
 }
 
 #btnNavbar svg {
     width: 14px;
     height: 14px;
-    stroke: currentColor;
+    stroke: currentcolor;
     fill: none;
     stroke-width: 2.5;
     stroke-linecap: round;
@@ -188,12 +188,13 @@ body:not(.sidebar-ready) {
 .navBody {
     flex: 1;
     overflow-y: auto;
-    overflow-x: hidden;
     scrollbar-gutter: stable;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     padding: 6px 8px 16px;
     box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: #CD908F55 transparent;
 }
 
 /* ═══════════════════════════════════════
@@ -395,7 +396,7 @@ body:not(.sidebar-ready) {
 .sidebarUserAvatar svg {
     width: 18px;
     height: 18px;
-    stroke: #ffffff;
+    stroke: #fff;
 }
 
 .userInfo {
@@ -496,7 +497,7 @@ body:not(.sidebar-ready) {
 /* ═══════════════════════════════════════
    RESPONSIVE — MÓVIL < 1225px
 ═══════════════════════════════════════ */
-@media screen and (max-width: 1224px) {
+@media screen and (width <= 1224px) {
     .containerMobileHeader {
         height: 50px;
         width: 100%;
@@ -552,7 +553,7 @@ body:not(.sidebar-ready) {
         position: fixed;
         inset: 0;
         left: var(--nav-open-w);
-        background: rgba(13, 5, 3, 0.3);
+        background: rgb(13 5 3 / 0.3);
         opacity: 1;
         transition: opacity var(--nav-t);
         z-index: 99;
@@ -566,7 +567,7 @@ body:not(.sidebar-ready) {
     }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (width <= 500px) {
     #sidebar {
         --nav-open-w: 250px;
     }
@@ -575,12 +576,8 @@ body:not(.sidebar-ready) {
 /* ═══════════════════════════════════════
    SCROLLBAR
 ═══════════════════════════════════════ */
-.navBody {
-    scrollbar-width: thin;
-    scrollbar-color: #CD908F55 transparent;
-}
 
-.navBody.sb-idle {
+.navBody.sbIdle {
     scrollbar-color: transparent transparent;
 }
 

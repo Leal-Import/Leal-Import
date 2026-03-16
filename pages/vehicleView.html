@@ -21,7 +21,7 @@
         <form class="content " id="frmVehicles">
             <div class="headerContent">
                 <div class="breadcrumbSection">
-                    <a href="vehicle.html" class="breadcrumb">Vehiculos ></a>
+                    <a href="vehicle.html" class="breadcrumb">Vehiculos &#62; </a>
                     <a class="breadcrumb" id="typeAction">Ver vehiculo</a>
                 </div>
             </div>
@@ -58,7 +58,7 @@
                             </div>
                             <div class="data">
                                 <span class="lblData">Lote:</span>
-                                <a id="lote" style="color: var(--danger-color);"></a>
+                                <a id="lote" style="color: var(--danger-color);" aria-label="Numero de lote"></a>
                             </div>
                         </div>
                         <div class="infoRow">
@@ -101,7 +101,7 @@
                         <div class="infoRow">
                             <div class="data">
                                 <span class="lblData">Factura:</span>
-                                <a id="bill" class="values" target="_blank"></a>
+                                <a id="bill" class="values" target="_blank" aria-label="Ver comprobante de factura"></a>
                             </div>
                             <div class="data">
                                 <span class="lblData">Transferencia:</span>
@@ -115,17 +115,19 @@
                             </div>
                             <div class="data">
                                 <span class="lblData">Transporte:</span>
-                                <a id="transport" class="values" target="_blank"></a>
+                                <a id="transport" class="values" target="_blank"
+                                    aria-label="Ver comprobante de transporte"></a>
                             </div>
                         </div>
                         <div class="infoRow">
                             <div class="data">
                                 <span class="lblData">Barco:</span>
-                                <a id="ship" class="values" target="_blank"></a>
+                                <a id="ship" class="values" target="_blank" aria-label="Ver comprobante de barco"></a>
                             </div>
                             <div class="data">
                                 <span class="lblData">Impuestos:</span>
-                                <a id="taxes" class="values" target="_blank"></a>
+                                <a id="taxes" class="values" target="_blank"
+                                    aria-label="Ver comprobante de impuestos"></a>
                             </div>
                         </div>
                         <div class="infoRow">
@@ -156,35 +158,67 @@
             <div class="actionsBar">
                 <div class="statusBadge" id="vehicleStatus">
                     <span class="statusDot"></span>
-                    <span class="statusText">Disponible</span>
+                    <span class="statusText"></span>
                 </div>
                 <div class="btnGroup">
                     <button type="button" class="btnPrimary btnAction" id="btnGeneratePdf">
-                        <span class="btnIcon">📄</span>
+                        <span class="btnIcon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <polyline points="10 9 9 9 8 9" />
+                            </svg>
+                        </span>
                         <span>Reporte del vehiculo</span>
                     </button>
                     <a type="button" class="btnAction btnSecondary" id="btnEdit">
-                        <span class="btnIcon">✏️</span>
+                        <span class="btnIcon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                        </span>
                         <span>Editar</span>
                     </a>
                     <a type="button" class="btnAction btnSuccess" id="btnSell">
-                        <span class="btnIcon">💰</span>
+                        <span class="btnIcon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23" />
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                            </svg>
+                        </span>
                         <span>Vender</span>
                     </a>
                     <a type="button" class="btnAction btnPrimary" id="btnHistorial">
-                        <span class="btnIcon">📄</span>
+                        <span class="btnIcon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                        </span>
                         <span>Ver Historial</span>
                     </a>
                 </div>
             </div>
 
         </form>
-        <script src="../js/components/sidebar.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script type="module" src="../js/modules/vehicles/controller/vehicles.view.controller.js"></script>
+    </div>
+    <script src="../js/components/sidebar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/modules/vehicles/controller/vehicles.view.controller.js"></script>
 </body>
 
 </html>

@@ -60,7 +60,7 @@ export const rewriteModalElements = (button, title, text) => {
 
 export const renderRolesSelects = (roles) => {
     fillSelect('cmbUserRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
-    fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Buscar por rol');
+    fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Todos');
 };
 
 export const insertEmployees = (container, employees, onActions) => {

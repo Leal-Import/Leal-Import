@@ -54,7 +54,7 @@
     justify-content: center;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
     transition: all 0.3s ease;
     flex: 1;
     flex-basis: 250px;
@@ -62,18 +62,18 @@
 
 .seccionCard:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
 }
 
-#Stock {
+#stock {
     border-left: 4px solid var(--danger-color);
 }
 
-#Requested {
+#requested {
     border-left: 4px solid var(--success-color);
 }
 
-#TotalCost {
+#totalCost {
     border-left: 4px solid var(--helper-stat-color);
 }
 
@@ -85,7 +85,7 @@
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
     border-color: var(--danger-color);
 }
 
@@ -145,7 +145,7 @@
 .partPrice {
     font-size: var(--font-size-title);
     font-weight: var(--font-weight-bold);
-    color: #e53e3e;
+    color: var(--danger-color);
     margin: 0;
 }
 
@@ -178,7 +178,7 @@
 
 .footerCard .btnPrimary {
     background-color: var(--danger-color);
-    color: #FFFFFF;
+    color: var(--text-color-light);
     border: none;
 }
 

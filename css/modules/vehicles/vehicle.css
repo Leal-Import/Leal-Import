@@ -24,7 +24,7 @@
     justify-content: center;
     align-items: flex-start;
     gap: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.04);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -49,7 +49,7 @@
 
 .statItem:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(211, 24, 19, 0.12);
+    box-shadow: 0 8px 24px rgb(211 24 19 / 0.12);
     border-color: var(--danger-color);
 }
 
@@ -100,11 +100,11 @@
 }
 
 .totalSales .statTitle {
-    color: #FFF;
+    color: var(--text-color-light);
 }
 
 .totalSales .statValue {
-    color: #FFF;
+    color: var(--text-color-light);
     font-size: var(--font-size-title);
 }
 
@@ -153,7 +153,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.2);
 }
 
 .filtersGroup {
@@ -174,12 +174,12 @@
     justify-content: space-between;
     background: var(--bg-color-white);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.06);
 }
 
 .card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
     border-color: var(--danger-color);
 }
 
@@ -235,7 +235,7 @@
     font-weight: var(--font-weight-medium);
     color: var(--text-color);
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);
 }
 
 .footerCard {
@@ -281,12 +281,12 @@
     border-radius: 10px;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(211, 24, 19, 0.2);
+    box-shadow: 0 2px 8px rgb(211 24 19 / 0.2);
 }
 
 .containerButtons .btnPrimary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(211, 24, 19, 0.3);
+    box-shadow: 0 4px 12px rgb(211 24 19 / 0.3);
 }
 
 @container content (max-width: 950px){

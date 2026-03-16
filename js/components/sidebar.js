@@ -310,9 +310,9 @@ window.addEventListener('DOMContentLoaded', () => {
     * Activar transiciones DESPUES de que el estado ya esta aplicado
     */
     requestAnimationFrame(() => {
-        document.body.classList.add('sidebar-ready');
+        document.body.classList.add('sidebarReady');
         requestAnimationFrame(() => {
-            document.documentElement.classList.add('ui-ready');
+            document.documentElement.classList.add('uiReady');
         });
     });
 
@@ -325,18 +325,18 @@ window.addEventListener('DOMContentLoaded', () => {
         const el = document.querySelector('.navBody');
         if (!el) return;
 
-        el.classList.add('sb-idle');
+        el.classList.add('sbIdle');
         el.style.setProperty('--sb-op', '0');
 
         let t;
         const HIDE_MS = 800;
 
         const show = () => {
-            el.classList.remove('sb-idle');
+            el.classList.remove('sbIdle');
             el.style.setProperty('--sb-op', '1');
             clearTimeout(t);
             t = setTimeout(() => {
-                el.classList.add('sb-idle');
+                el.classList.add('sbIdle');
                 el.style.setProperty('--sb-op', '0');
             }, HIDE_MS);
         };

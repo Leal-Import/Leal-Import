@@ -19,7 +19,7 @@
         <div class="content">
             <div class="headerContent">
                 <div class="breadcrumbSection">
-                    <a href="spareParts.html" class="breadcrumb">Repuestos ></a>
+                    <a href="spareParts.html" class="breadcrumb">Repuestos &#62; </a>
                     <a class="breadcrumb" id="typeAction">Ver repuesto</a>
                 </div>
             </div>
@@ -36,28 +36,27 @@
                             <div class="sparePartDataBody">
                                 <div class="dataInfo">
                                     <span class="label">Nombre:</span>
-                                    <a id="name" class="value redColor" target="_blank"></a>
+                                    <a id="name" class="value redColor" target="_blank" aria-label="Nombre del repuesto"></a>
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Marca:</span>
-                                    <span id="brand" class="value"></span>
+                                    <span id="brand" class="value" aria-label="Marca del repuesto"></span>
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Modelo:</span>
-                                    <span id="model" class="value"></span>
+                                    <span id="model" class="value" aria-label="Modelo del repuesto"></span>
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Año:</span>
-                                    <span id="year" class="value"></span>
+                                    <span id="year" class="value" aria-label="Año del repuesto"></span>
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Estado:</span>
-                                    <span id="status" class="value"></span>
+                                    <span id="status" class="value" aria-label="Estado del repuesto"></span>
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Precio sugerido:</span>
-                                    <span id="suggestedPrice" class="value redColor"
-                                        style="font-weight: var(--font-weight-medium);"></span>
+                                    <span id="suggestedPrice" class="value redColor" aria-label="Precio sugerido del repuesto"></span>
                                 </div>
                             </div>
                         </div>
@@ -66,19 +65,19 @@
                             <div class="sparePartCostBody">
                                 <div class="dataInfo">
                                     <span class="label">Tracking:</span>
-                                    <a id="tracking" class="value redColor" target="_blank"></a>
+                                    <a id="tracking" class="value redColor" target="_blank" aria-label="Numero de tracking"></a>
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Precio de compra:</span>
-                                    <span id="purchasePrice" class="value"></span>
+                                    <span id="purchasePrice" class="value" aria-label="Precio de compra del repuesto"></span>
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Impuestos:</span>
-                                    <span id="taxes" class="value"></span>
+                                    <span id="taxes" class="value" aria-label="Impuestos del repuesto"></span>
                                 </div>
                                 <div class="dataInfo">
                                     <span class="label">Costo total:</span>
-                                    <span id="totalCost" class="value redColor"></span>
+                                    <span id="totalCost" class="value redColor" aria-label="Costo total del repuesto"></span>
                                 </div>
                             </div>
                         </div>
@@ -88,20 +87,45 @@
 
             <!-- BARRA DE ACCIONES -->
             <div class="actionsBarSparePart">
-                <div class="statusBadgeSparePart disponible">
+                <div class="statusBadgeSparePart aviable">
                     <span class="statusDotSparePart"></span>
                     <span class="statusTextSparePart">Disponible</span>
                 </div>
                 <div class="btnGroupSparePart">
                     <button type="button" class="btnActionSparePart btnDangerSparePart" id="btnGeneratePdf">
-                        <span>📄</span>
+                        <span class="btnIconSparePart">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <polyline points="10 9 9 9 8 9" />
+                            </svg>
+                        </span>
                         <span>Reporte del repuesto</span>
                     </button>
                     <a type="button" class="btnActionSparePart btnSecondarySparePart" id="btnEditSparePart">
-                        <span class="btnIconSparePart">✏️</span>
+                        <span class="btnIconSparePart">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                        </span>
                         <span>Editar</span>
                     </a>
                     <a type="button" class="btnActionSparePart btnDangerSparePart" id="btnSellSparePart">
+                        <span class="btnIconSparePart">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23" />
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                            </svg>
+                        </span>
                         <span>Vender</span>
                     </a>
                 </div>

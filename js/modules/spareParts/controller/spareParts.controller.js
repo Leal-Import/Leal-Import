@@ -19,7 +19,7 @@ const loadStatusSelect = async() => {
     try {
         const status = await getStatus();
         sparePartsState.statusList = status;
-        fillSelect("cmbSearchByStatus", status, 'idPartsState', 'state');
+        fillSelect("cmbSearchByStatus", status, 'idPartsState', 'state', null, "Todos");
     } catch (error) {
         showMessage(
             'Error',

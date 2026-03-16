@@ -46,7 +46,6 @@
 
 .actionButton:hover {
     color: var(--danger-color);
-    background-color: rgba(211, 24, 19, 0.05);
 }
 
 @keyframes fadeInScale {

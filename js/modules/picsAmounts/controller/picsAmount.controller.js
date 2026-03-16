@@ -10,7 +10,6 @@ export const clearCurrentFile = () => {
     // 🔑 Buscar el payment real en el estado
     const payment = picsAmountState.paymentsState.payments
         .find(p => String(p.id) === String(paymentId));
-
     if (!payment) return;
 
     // 🔥 LIMPIEZA REAL

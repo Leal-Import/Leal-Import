@@ -45,7 +45,7 @@ const loadDownButtons = (sparePart, Refs) => {
 };
 
 const loadSparePartInfo = (sparePart, Refs) => {
-    Refs.pictureSparePart.src = sparePart.photoUrl;
+    Refs.pictureSparePart.src = sparePart.photoUrl || '../media/appMedia/defaultImg.svg';
     Refs.name.textContent = sparePart.nameSpareParts;
     sparePart.billUrl ? Refs.name.href = sparePart.billUrl : null;
     Refs.brand.textContent = sparePart.brand;

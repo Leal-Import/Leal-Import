@@ -57,9 +57,9 @@ export const DOMRefs = {
 
 export const toggleDarkMode = (isDark) => {
     if (isDark) {
-        document.documentElement.classList.add('dark-mode');
+        document.documentElement.classList.add('darkMode');
     } else {
-        document.documentElement.classList.remove('dark-mode');
+        document.documentElement.classList.remove('darkMode');
     }
 };
 

@@ -35,7 +35,7 @@
 ======================= */
 .mainContainer {
     display: flex;
-    border: 2px solid rgba(129, 133, 158, 0.2);
+    border: 2px solid rgb(129 133 158 / 0.2);
     border-radius: 12px;
     background: var(--bg-color-white);
     box-shadow: var(--bx-shadow-primary);
@@ -43,7 +43,7 @@
 }
 
 .mainContainer:hover {
-    box-shadow: 0 6px 20px rgba(205, 144, 143, 0.3);
+    box-shadow: 0 6px 20px rgb(205 144 143 / 0.3);
 }
 
 /* =======================
@@ -62,12 +62,12 @@
     gap: 15px;
     padding: 30px;
     background: var(--bg-color);
-    border-right: 2px solid rgba(129, 133, 158, 0.2);
+    border-right: 2px solid rgb(129 133 158 / 0.2);
 }
 
 .containerImgSparePart {
     width: 100%;
-    max-height: 70dvh;
+    height: 70dvh;
     border-radius: 12px;
     overflow: hidden;
     background: var(--bg-color-white);
@@ -80,7 +80,7 @@
 
 .containerImgSparePart:hover {
     border-color: var(--danger-color);
-    box-shadow: 0 0 0 3px rgba(211, 24, 19, 0.1);
+    box-shadow: 0 0 0 3px rgb(211 24 19 / 0.1);
     transform: scale(1.02);
 }
 
@@ -126,7 +126,7 @@
     flex-direction: column;
     flex: 2;
     padding: 30px;
-    border-bottom: 2px solid rgba(129, 133, 158, 0.1);
+    border-bottom: 2px solid rgb(129 133 158 / 0.1);
     transition: all 0.3s ease;
 }
 
@@ -140,7 +140,7 @@
 
 .sparePartData:hover,
 .sparePartCost:hover {
-    background: rgba(211, 24, 19, 0.02);
+    background: rgb(211 24 19 / 0.02);
 }
 
 /* =======================
@@ -156,16 +156,6 @@
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.sparePartData .titleData::before {
-    content: '🔩';
-    font-size: var(--font-size-title);
-}
-
-.sparePartCost .titleData::before {
-    content: '💰';
-    font-size: var(--font-size-title);
 }
 
 /* =======================
@@ -193,7 +183,7 @@
 }
 
 .dataInfo:hover {
-    background: rgba(211, 24, 19, 0.05);
+    background: rgb(211 24 19 / 0.05);
     transform: translateX(5px);
     box-shadow: var(--bx-shadow-primary);
 }
@@ -246,6 +236,7 @@
 /* Precio sugerido destacado */
 #suggestedPrice {
     font-size: var(--font-size-title) !important;
+    font-weight: var(--font-weight-medium);
 }
 
 /* Costo total super destacado */
@@ -272,6 +263,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -282,10 +274,6 @@
 .sparePartData,
 .sparePartCost {
     animation: fadeIn 0.5s ease-out;
-}
-
-.sparePartCost {
-    animation-delay: 0.1s;
 }
 
 /* =======================
@@ -312,7 +300,7 @@
 /* =======================
    Responsive Design
 ======================= */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
     .mainContainer {
         flex-direction: column;
         max-height: none;
@@ -320,7 +308,7 @@
 
     .pictureSection {
         border-right: none;
-        border-bottom: 2px solid rgba(129, 133, 158, 0.2);
+        border-bottom: 2px solid rgb(129 133 158 / 0.2);
         max-height: 400px;
     }
 
@@ -329,13 +317,9 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .breadcrumbSection {
         padding: 15px 20px;
-    }
-
-    .breadcrumb {
-        font-size: 1.5em;
     }
 
     .mainContainer {
@@ -351,10 +335,6 @@
         padding: 20px;
     }
 
-    .titleData {
-        font-size: 1.3em;
-    }
-
     .dataInfo {
         flex-direction: column;
         align-items: flex-start;
@@ -364,19 +344,6 @@
 
     .label {
         min-width: auto;
-        font-size: var(--font-size-sm);
-    }
-
-    .value {
-        font-size: var(--font-size-base);
-    }
-
-    #suggestedPrice {
-        font-size: 1.25rem !important;
-    }
-
-    .sparePartCost .dataInfo:last-child .value {
-        font-size: 1.5rem !important;
     }
 }
 
@@ -387,7 +354,7 @@
     background: linear-gradient(
         90deg,
         var(--bg-color) 0%,
-        rgba(129, 133, 158, 0.1) 50%,
+        rgb(129 133 158 / 0.1) 50%,
         var(--bg-color) 100%
     );
     background-size: 200% 100%;
@@ -398,6 +365,7 @@
     0% {
         background-position: 200% 0;
     }
+
     100% {
         background-position: -200% 0;
     }
@@ -415,12 +383,13 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 25px;
-    border: 2px solid rgba(129, 133, 158, 0.2);
+    border: 2px solid rgb(129 133 158 / 0.2);
     transition: all 0.3s ease;
+    animation: slideUp 0.5s ease-out 0.2s both;
 }
 
 .actionsBarSparePart:hover {
-    box-shadow: 0 6px 20px rgba(205, 144, 143, 0.3);
+    box-shadow: 0 6px 20px rgb(205 144 143 / 0.3);
 }
 
 /* =======================
@@ -438,20 +407,20 @@
     letter-spacing: 0.8px;
 }
 
-.statusBadgeSparePart.disponible {
-    background-color: rgba(109, 190, 69, 0.1);
+.statusBadgeSparePart.aviable {
+    background-color: var(--bg-success-badge);
     color: var(--success-color);
     border: 2px solid var(--success-color);
 }
 
-.statusBadgeSparePart.agotado {
-    background-color: rgba(211, 24, 19, 0.1);
+.statusBadgeSparePart.sold {
+    background-color:var(--bg-danger-badge);
     color: var(--danger-color);
     border: 2px solid var(--danger-color);
 }
 
-.statusBadgeSparePart.reservado {
-    background: rgba(255, 178, 53, 0.1);
+.statusBadgeSparePart.reserved {
+    background-color: var(--bg-warning-badge);
     color: var(--warning-color);
     border: 2px solid var(--warning-color);
 }
@@ -460,7 +429,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: currentColor;
+    background: currentcolor;
     animation: pulseSparePart 2s ease-in-out infinite;
 }
 
@@ -469,6 +438,7 @@
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.6;
         transform: scale(1.2);
@@ -503,7 +473,7 @@
 }
 
 .btnIconSparePart {
-    font-size: 18px;
+    font-size: var(--font-size-base);
     display: inline-block;
 }
 
@@ -511,13 +481,13 @@
 .btnActionSparePart.btnSecondarySparePart {
     background: transparent;
     color: var(--text-color);
-    border: 2px solid rgba(129, 133, 158, 0.3);
+    border: 2px solid rgb(129 133 158 / 0.3);
 }
 
 .btnActionSparePart.btnSecondarySparePart:hover {
     border-color: var(--danger-color);
     color: var(--danger-color);
-    background-color: rgba(211, 24, 19, 0.05);
+    background-color: var(--bg-color);
     transform: translateY(-3px);
     box-shadow: var(--bx-shadow-primary);
 }
@@ -536,7 +506,7 @@
 .btnActionSparePart.btnDangerSparePart:hover {
     background: var(--dark-danger-color);
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(211, 24, 19, 0.4);
+    box-shadow: 0 8px 20px rgb(211 24 19 / 0.4);
 }
 
 .btnActionSparePart.btnDangerSparePart:active {
@@ -546,7 +516,7 @@
 /* =======================
    RESPONSIVE - BARRA DE ACCIONES
 ======================= */
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .actionsBarSparePart {
         flex-direction: column;
         gap: 20px;
@@ -578,12 +548,9 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-.actionsBarSparePart {
-    animation: slideUp 0.5s ease-out 0.2s both;
 }
