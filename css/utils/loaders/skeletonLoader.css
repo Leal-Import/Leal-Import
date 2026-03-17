@@ -1,0 +1,25 @@
+/* stylelint-disable color-function-notation */
+
+.skeleton {
+    background: var(--bg-color);
+    border-radius: 4px;
+    color: transparent !important;
+    pointer-events: none;
+    position: relative;
+    overflow: hidden;
+    min-width: 80px;
+    min-height: 16px;
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(129, 133, 158, 0.15) 50%, transparent 100%);
+    animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}

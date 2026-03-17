@@ -8,39 +8,29 @@ export const initSpareSaleEvents = ({
     onOrderClick,
     onSaveNotes
 }) => {
+    const { txtSearchData, txtAmount, txtNotes, frmSparePartSale, btnAddPayment, btnOrderPart } = Refs;
+
     let searchTimeout = null;
 
-    if (Refs.frmSparePartSale) {
-        Refs.frmSparePartSale.addEventListener("submit", onSubmitSpareSale);
-    }
+    frmSparePartSale.addEventListener("submit", onSubmitSpareSale);
 
-    if (Refs.btnAddPayment) {
-        Refs.btnAddPayment.addEventListener("click", onAddPayment);
-    }
+    btnAddPayment.addEventListener("click", onAddPayment);
 
-    if (Refs.txtNotes) {
-        Refs.txtNotes.addEventListener("input", onSaveNotes);
-    }
+    txtNotes.addEventListener("input", onSaveNotes);
 
-    if (Refs.txtAmount) {
-        Refs.txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
-        Refs.txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
-        formatDecimalInput(Refs.txtAmount);
-    }
+    txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
+    txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
+    formatDecimalInput(txtAmount);
 
-    if (Refs.txtSearchData) {
-        Refs.txtSearchData.addEventListener("input", () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                onSearchSparePart({
-                    search: Refs.txtSearchData?.value.trim() || ''
-                });
-            }, 1000);
-        });
-    }
+    txtSearchData.addEventListener("input", () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            onSearchSparePart({
+                search: txtSearchData?.value.trim() || ''
+            });
+        }, 1000);
+    });
 
-    if (Refs.btnOrderPart) {
-        Refs.btnOrderPart.addEventListener("click", onOrderClick);
-    }
+    btnOrderPart.addEventListener("click", onOrderClick);
 
 };

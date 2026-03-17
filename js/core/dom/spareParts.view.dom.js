@@ -1,5 +1,5 @@
 import { formatWithCommas } from "../../utils/formatters.js";
-import { $, qs } from "../../utils/dom.js";
+import { $, qs, qsa } from "../../utils/dom.js";
 
 export const DOMRefs = {
     refs: {},
@@ -20,7 +20,8 @@ export const DOMRefs = {
             btnEditSparePart: $('btnEditSparePart'),
             btnSellSparePart: $('btnSellSparePart'),
             statusPart: qs('.statusBadgeSparePart'),
-            btnGeneratePdf: $("btnGeneratePdf")
+            btnGeneratePdf: $("btnGeneratePdf"),
+            skeleton: qsa('.skeleton')
         };
 
         return this.refs;
@@ -30,6 +31,11 @@ export const DOMRefs = {
 export const loadSparePart = (sparePart, Refs) => {
     loadSparePartInfo(sparePart, Refs);
     loadDownButtons(sparePart, Refs);
+    removeSkeletonLoad(Refs.skeleton);
+};
+
+const removeSkeletonLoad = (skeletonElements) => {
+    skeletonElements.forEach(el => el.classList.remove("skeleton"));
 };
 
 const loadDownButtons = (sparePart, Refs) => {

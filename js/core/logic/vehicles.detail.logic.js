@@ -79,24 +79,45 @@ export const validateBaseVehicle = ({
     txtYear,
     txtMileage,
     txtLote,
-    txtLink
+    txtLink,
+    txtDescription
 }) => {
-    if (!txtVin) {
+    if (txtVin.trim() === "") {
         highlightAndFocus('txtVin');
         return 'El VIN es obligatorio.';
     }
 
-    if (!txtBrand) {
+    if (txtVin.length < 5) {
+        highlightAndFocus('txtVin');
+        return 'El VIN debe tener al menos 5 caracteres.';
+    }
+
+    if (txtVin.length > 50) {
+        highlightAndFocus('txtVin');
+        return 'El VIN no puede tener más de 50 caracteres.';
+    }
+
+    if (txtBrand.trim() === "") {
         highlightAndFocus('txtBrand');
         return 'La marca es obligatoria.';
     }
 
-    if (!txtModel) {
+    if (txtBrand.length > 50 || txtBrand.length < 2) {
+        highlightAndFocus('txtBrand');
+        return 'La marca debe tener entre 2 y 50 caracteres.';
+    }
+
+    if (txtModel.trim() === "") {
         highlightAndFocus('txtModel');
         return 'El modelo es obligatorio.';
     }
 
-    if (!txtYear) {
+    if (txtModel.length > 50 || txtModel.length < 1) {
+        highlightAndFocus('txtModel');
+        return 'El modelo debe tener entre 1 y 50 caracteres.';
+    }
+
+    if (txtYear.trim() === "") {
         highlightAndFocus('txtYear');
         return 'El año es obligatorio.';
     }
@@ -106,9 +127,14 @@ export const validateBaseVehicle = ({
         return 'El año del vehículo no es válido.';
     }
 
-    if (!txtMileage) {
+    if (txtMileage.trim() === "") {
         highlightAndFocus('txtMileage');
         return 'El millaje es obligatorio.';
+    }
+
+    if (txtMileage.length > 50 || txtMileage.length < 1) {
+        highlightAndFocus('txtMileage');
+        return 'El millaje debe tener entre 1 y 50 caracteres.';
     }
 
     if (isNaN(txtMileage) || txtMileage < 0) {
@@ -116,12 +142,23 @@ export const validateBaseVehicle = ({
         return 'El millaje no es válido.';
     }
 
-    if (!txtLote) {
+    if (txtLote.trim() === "") {
         highlightAndFocus('txtLote');
         return 'El lote es obligatorio.';
     }
-    if (txtLink.trim() !== ""){
-        if (!isValidURL(txtLink)) return "Link del lote no valido";
+
+    if (txtLink.trim() !== "") {
+        if (!isValidURL(txtLink)) return "Enlace del lote no valido";
+    }
+
+    if (txtDescription.trim() === "") {
+        highlightAndFocus('txtDescription');
+        return 'La descripción es obligatoria.';
+    }
+
+    if (txtDescription.length > 500 || txtDescription.length < 1) {
+        highlightAndFocus('txtDescription');
+        return 'La descripción debe tener entre 1 y 500 caracteres.';
     }
 
     return null;
@@ -151,7 +188,8 @@ export const validateVehicle = ({
     txtIva,
     txtPa,
     txtSuggestedPrice,
-    txtLink
+    txtLink,
+    txtDescription
 }) => {
     // Validación base
     const baseError = validateBaseVehicle({
@@ -161,7 +199,8 @@ export const validateVehicle = ({
         txtYear,
         txtMileage,
         txtLote,
-        txtLink
+        txtLink,
+        txtDescription
     });
 
     if (baseError) return baseError;

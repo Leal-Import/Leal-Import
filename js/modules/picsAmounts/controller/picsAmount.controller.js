@@ -60,7 +60,7 @@ export const initializeModalListeners = (state, isViewingReceipt) => {
     picsAmountState.paymentsState = state; // 👈 inyección de estado
     picsAmountState.isViewingReceipt = isViewingReceipt;
     const refs = DOMRefs.init();
-    initModalListeners({ Refs: refs, clearCurrentFile, closeModalAndClean, onClickBtnSelect, onCloseLightbox: () => closeLightbox(refs.voucherLightbox) });
+    initModalListeners({ Refs: refs, clearCurrentFile, onCloseModalAndClean: () => closeModalAndClean(), onClickBtnSelect, onCloseLightbox: () => closeLightbox(refs.voucherLightbox) });
     if (picsAmountState.isViewingReceipt) {
         hideElement(refs.btnClearFile);
         hideElement(refs.btnSelectFile);

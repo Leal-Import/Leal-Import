@@ -162,7 +162,7 @@ export const showFloatingMenu = (event, actions) => {
 
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 /* Mensajes globales (SweetAlert2) */
-export const showMessage = async(
+export const showMessage = async (
     title,
     message,
     type = 'info',
@@ -315,4 +315,15 @@ export const asNumber = (v) => {
 
 export const getNullableParam = (value) => {
     return value === null || value === 'null' ? null : value;
+};
+
+export const addModalCloseEvents = (modal, onClose) => {
+    let pointerDownOnOverlay = false;
+    modal.addEventListener('pointerdown', (e) => {
+        pointerDownOnOverlay = e.target === modal;
+    });
+    modal.addEventListener('pointerup', (e) => {
+        if (pointerDownOnOverlay && e.target === modal) onClose();
+        pointerDownOnOverlay = false;
+    });
 };

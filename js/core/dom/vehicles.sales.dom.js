@@ -186,7 +186,6 @@ export const loadDomData = (data, Refs) => {
     Refs.btnCreateOrder.replaceWith(document.createElement("div"));
 };
 
-//A esto todavia le falta diseño
 export const renderTotals = ({ total, due, totalPaid }, Refs) => {
     //const totalText = $("total");
     const dueText = Refs.due;

@@ -12,6 +12,7 @@ export const initWorkOrdersEvents = ({
     onCompleteOrder,
     onGeneratePdf
 }) => {
+    const { txtAmount, txtSearchSparePart, txtAddService, btnAddPayment, txtNotes, frmWorkOrder, dtEstimated, btnCompleteOrder, btnGeneratePdf } = Refs;
 
     let searchTimeOut = null;
 
@@ -23,44 +24,28 @@ export const initWorkOrdersEvents = ({
         }, 1000);
     };
 
-    if (Refs.txtAmount) {
-        Refs.txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
-        Refs.txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
-        formatDecimalInput(Refs.txtAmount);
-    }
+    txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
+    txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
+    formatDecimalInput(txtAmount);
 
-    if (Refs.txtSearchSparePart) {
-        Refs.txtSearchSparePart.addEventListener("input", (e) =>
-            search(e, onSearchSpareParts)
-        );
-    }
+    txtSearchSparePart.addEventListener("input", (e) =>
+        search(e, onSearchSpareParts)
+    );
 
-    if (Refs.txtAddService) {
-        Refs.txtAddService.addEventListener("input", (e) =>
-            search(e, onSearchService)
-        );
-        Refs.txtAddService.addEventListener("keydown", onAddNewService);
-    }
+    txtAddService.addEventListener("input", (e) =>
+        search(e, onSearchService)
+    );
+    txtAddService.addEventListener("keydown", onAddNewService);
 
-    if (Refs.btnAddPayment) {
-        Refs.btnAddPayment.addEventListener("click", onAddPayment);
-    }
+    btnAddPayment.addEventListener("click", onAddPayment);
 
-    if (Refs.txtNotes) {
-        Refs.txtNotes.addEventListener("input", onSaveNotes);
-    }
+    txtNotes.addEventListener("input", onSaveNotes);
 
-    if (Refs.frmWorkOrder) {
-        Refs.frmWorkOrder.addEventListener("submit", onSubmitOrder);
-    }
+    frmWorkOrder.addEventListener("submit", onSubmitOrder);
 
-    if (Refs.dtEstimated) {
-        Refs.dtEstimated.addEventListener("change", onSaveDate);
-    }
+    dtEstimated.addEventListener("change", onSaveDate);
 
-    if (Refs.btnCompleteOrder) {
-        Refs.btnCompleteOrder.addEventListener("click", onCompleteOrder);
-    }
+    btnCompleteOrder.addEventListener("click", onCompleteOrder);
 
-    Refs.btnGeneratePdf?.addEventListener("click", onGeneratePdf);
+    btnGeneratePdf?.addEventListener("click", onGeneratePdf);
 };

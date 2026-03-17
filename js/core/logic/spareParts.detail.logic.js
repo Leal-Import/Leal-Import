@@ -48,25 +48,26 @@ export const validateBaseSparePart = ({
     cmbPartStatus,
     txtPurchasePrice,
     txtTaxes,
-    txtSuggestedPrice
+    txtSuggestedPrice,
+    txtTracking
 }, billLink, trackingLink) => {
 
-    if (!txtPartName) {
+    if (txtPartName.trim() === '') {
         highlightAndFocus('txtPartName');
         return 'El nombre del repuesto es obligatorio.';
     }
 
-    if (!txtPartBrand) {
+    if (txtPartBrand.trim() === '') {
         highlightAndFocus('txtPartBrand');
         return 'La marca del repuesto es obligatoria.';
     }
 
-    if (!txtPartModel) {
+    if (txtPartModel.trim() === '') {
         highlightAndFocus('txtPartModel');
         return 'El modelo del repuesto es obligatorio.';
     }
 
-    if (!txtPartYear) {
+    if (txtPartYear.trim() === '') {
         highlightAndFocus('txtPartYear');
         return 'El año del repuesto es obligatorio.';
     }
@@ -77,17 +78,16 @@ export const validateBaseSparePart = ({
     }
 
     if (billLink !== '') {
-        const isValid = isValidURL(billLink);
-        if (!isValid) {
-            return 'El enlace de la factura no es válido.';
-        }
+        if (!isValidURL(billLink)) return 'El enlace de la factura no es válido.';
     }
 
     if (trackingLink !== '') {
-        const isValid = isValidURL(trackingLink);
-        if (!isValid) {
-            return 'El enlace del tracking no es válido.';
-        }
+        if (!isValidURL(trackingLink)) return 'El enlace del tracking no es válido.';
+    }
+
+    if (txtTracking.length > 50 || txtTracking.length < 1) {
+        highlightAndFocus('txtTracking');
+        return 'El número de tracking debe tener entre 1 y 50 caracteres.';
     }
 
     // 🔢 Validación de costos

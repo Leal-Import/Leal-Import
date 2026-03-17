@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/modules/spareParts/sparePartsView.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/utils/loaders/skeletonLoader.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Repuestos</title>
@@ -25,7 +26,7 @@
             </div>
             <div class="mainContainer">
                 <div class="pictureSection">
-                    <div class="containerImgSparePart">
+                    <div class="containerImgSparePart skeleton">
                         <img src="../media/appMedia/defaultImg.svg" alt="" id="pictureSparePart">
                     </div>
                 </div>
@@ -34,27 +35,27 @@
                         <div class="sparePartData">
                             <h2 class="titleData">Datos del repuesto</h2>
                             <div class="sparePartDataBody">
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Nombre:</span>
                                     <a id="name" class="value redColor" target="_blank" aria-label="Nombre del repuesto"></a>
                                 </div>
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Marca:</span>
                                     <span id="brand" class="value" aria-label="Marca del repuesto"></span>
                                 </div>
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Modelo:</span>
                                     <span id="model" class="value" aria-label="Modelo del repuesto"></span>
                                 </div>
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Año:</span>
                                     <span id="year" class="value" aria-label="Año del repuesto"></span>
                                 </div>
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Estado:</span>
                                     <span id="status" class="value" aria-label="Estado del repuesto"></span>
                                 </div>
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Precio sugerido:</span>
                                     <span id="suggestedPrice" class="value redColor" aria-label="Precio sugerido del repuesto"></span>
                                 </div>
@@ -63,19 +64,19 @@
                         <div class="sparePartCost">
                             <h2 class="titleData">Costos</h2>
                             <div class="sparePartCostBody">
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Tracking:</span>
                                     <a id="tracking" class="value redColor" target="_blank" aria-label="Numero de tracking"></a>
                                 </div>
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Precio de compra:</span>
                                     <span id="purchasePrice" class="value" aria-label="Precio de compra del repuesto"></span>
                                 </div>
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Impuestos:</span>
                                     <span id="taxes" class="value" aria-label="Impuestos del repuesto"></span>
                                 </div>
-                                <div class="dataInfo">
+                                <div class="dataInfo skeleton">
                                     <span class="label">Costo total:</span>
                                     <span id="totalCost" class="value redColor" aria-label="Costo total del repuesto"></span>
                                 </div>

@@ -1,13 +1,14 @@
 
 export const initCustomerSaleEvents = ({ Refs,  onSearchCustomer }) => {
+    const { txtSearchData } = Refs;
 
     let searchTimeout = null;
 
-    Refs.txtSearchData.addEventListener('input', () => {
+    txtSearchData.addEventListener('input', () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             onSearchCustomer({
-                search: Refs.txtSearchData.value.trim()
+                search: txtSearchData.value.trim()
             });
         }, 1000);
     });

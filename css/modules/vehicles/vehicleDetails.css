@@ -214,9 +214,8 @@ fieldset .cardBody {
     gap: 10px;
 }
 
-.noImageIcon {
-    font-size: var(--font-size-breadcrumb);
-    color: var(--bg-color);
+.noImageIcon svg {
+    stroke: var(--text-color);
 }
 
 

@@ -1,5 +1,5 @@
 // modules/employees/employees.view.js
-import { fillForm, $, fillSelect, qs } from '../../utils/dom.js';
+import { fillForm, $, fillSelect, qs, qsa } from '../../utils/dom.js';
 
 export const DOMRefs = {
     refs: {},
@@ -17,7 +17,8 @@ export const DOMRefs = {
             cmbSearchByStatus: $("cmbSearchByStatus"),
             btnAddEmployee: $("btnAddEmployee"),
             btnAddEmployeeLoader: $("btnAddEmployeeLoader"),
-            titleModal: qs('.titleModal')
+            titleModal: qs('.titleModal'),
+            campsModal: qsa('#frmEmployees .txtInputs')
         };
         return this.refs;
     }

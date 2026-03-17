@@ -62,7 +62,8 @@ export const DOMRefs = {
             btnsTransport: qsa(".btnsTransport"),
             uploadFileInput: $("uploadFileInput"),
             btnSelectFile: $("btnSelectFile"),
-            btnCloseUpload: $("btnCloseUpload")
+            btnCloseUpload: $("btnCloseUpload"),
+            camps: qsa(".txtInputs, #isExternalOpt")
         };
 
         return this.refs;
@@ -136,7 +137,13 @@ export const renderImages = (images, mainWrapper, thumbsWrapper, onDelete, onAdd
         mainWrapper.innerHTML = `
             <div class="swiper-slide">
                 <div class="noImageContainer">
-                    <div class="noImageIcon">📷</div>
+                    <div class="noImageIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                </div>
                     <p>No hay imágenes disponibles</p>
                 </div>
             </div>
@@ -155,7 +162,7 @@ export const renderImages = (images, mainWrapper, thumbsWrapper, onDelete, onAdd
         thumb.className = 'swiper-slide thumb-box';
         thumb.innerHTML = `
             <img src="${img.url}">
-            <div class="thumb-delete">×</div>
+            <div class="thumb-delete">X</div>
         `;
         thumb.querySelector('.thumb-delete').addEventListener('click', e => {
             e.stopPropagation();

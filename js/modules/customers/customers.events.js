@@ -1,8 +1,8 @@
+import { addModalCloseEvents } from '../../utils/dom.js';
 import { formatDUIInput, formatPhoneNumber } from '../../utils/formatters.js';
 
 export const initCustomerEvents = ({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal }) => {
 
-    let pointerDownOnOverlay = false;
     let searchTimeout = null;
     const { frmCustomers, txtCustomerPhone, txtCustomerDUI, txtSearchData, cmbSearchByStatus, modalCustomers, btnCloseModalCustomer, btnOpenModalCustomer } = Refs;
 
@@ -20,13 +20,7 @@ export const initCustomerEvents = ({ Refs, onSubmitCustomer, onSearchCustomer, o
 
     btnCloseModalCustomer.addEventListener('click', onCloseModal);
 
-    modalCustomers.addEventListener('pointerdown', (e) => {
-        pointerDownOnOverlay = e.target === modalCustomers;
-    });
-    modalCustomers.addEventListener('pointerup', (e) => {
-        if (pointerDownOnOverlay && e.target === modalCustomers) onCloseModal();
-        pointerDownOnOverlay = false;
-    });
+    addModalCloseEvents(modalCustomers, onCloseModal);
 
     frmCustomers.addEventListener("submit", onSubmitCustomer);
 

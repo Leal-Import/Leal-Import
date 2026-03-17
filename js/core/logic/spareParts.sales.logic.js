@@ -123,7 +123,7 @@ export const buildPutSalePayload = (state) => {
     };
 };
 
-export const buildPostSalePayloadq  = (state) => {
+export const buildPostSalePayload  = (state) => {
     const { data, context, idEmployee } = state;
 
     return {

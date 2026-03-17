@@ -1,26 +1,19 @@
 import { asUUID, getNullableParam, showMessage } from "../../utils/dom.js";
 
 export const validateSale = (state, idVehicle, idCustomer, idSale) => {
-    if (!idVehicle) {
-        return "Ningún vehículo seleccionado";
-    }
 
-    if (!idCustomer && !idSale) {
-        return "Sin cliente seleccionado";
-    }
+    if (!idVehicle) return "Ningún vehículo seleccionado";
 
-    if (!state.payments || state.payments.length === 0) {
-        return "Debes agregar al menos un abono";
-    }
+    if (!idCustomer && !idSale) return "Sin cliente seleccionado";
 
-    if (isNaN(state.salePrice) || Number(state.salePrice) <= 0) {
-        return "El precio final del vehículo no es válido";
-    }
+    if (!state.payments || state.payments.length === 0) return "Debes agregar al menos un abono";
+
+    if (isNaN(state.salePrice) || Number(state.salePrice) <= 0) return "El precio final del vehículo no es válido";
 
     return null;
 };
 
-export const hydrateContextFromURL = async(state) => {
+export const hydrateContextFromURL = async (state) => {
     const params = new URLSearchParams(window.location.search);
 
     // 🔴 Obligatorio
@@ -160,5 +153,19 @@ export const buildPutSalePayload = (state) => {
         }
     }
 
+    const dataSaleValidate = validateDataSale(saleData);
+
+    if (dataSaleValidate) return dataSaleValidate;
+
     return fd;
+};
+
+const validateDataSale = (saleData) => {
+
+    if (saleData.salePrice <= 0) return { error: 'El precio final del vehículo no es válido' };
+
+    const totalAmounts = [...saleData.paymentsToUpdate, ...saleData.newPayments].reduce((sum, p) => sum + Number(p.amount), 0);
+    if (totalAmounts > saleData.salePrice) return { error: 'La suma de los abonos no puede superar el precio final del vehículo' };
+
+    return null;
 };

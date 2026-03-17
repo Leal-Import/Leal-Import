@@ -7,7 +7,7 @@ import {
 } from '../../../service/vehicles.sales.service.js';
 import { getVehicles as getVehicleById } from '../../../service/vehicles.detail.service.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
-import { showMessage, hideElement, showElement, disableElement, removeDisable } from '../../../utils/dom.js';
+import { showMessage, hideElement, showElement, disableElement, removeDisable, qsa } from '../../../utils/dom.js';
 import { vehicleSaleState } from '../../../core/state/vehicles.sales.state.js';
 import { initVehicleSaleEvents } from '../event/vehicles.sales.events.js';
 import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
@@ -32,7 +32,7 @@ const pagination = createPagination({
 });
 
 /* ================= INVENTORY ================= */
-export const loadInventory = async() => {
+export const loadInventory = async () => {
     try {
         showElement(DOMRefs.refs.tableVehiclesLoader);
         const { page, size } = vehicleSaleState.pagination;
@@ -78,7 +78,7 @@ const recalculateTotals = () => {
     renderTotals({ total, due, totalPaid: vehicleSaleState.totals.totalPaid }, DOMRefs.refs);
 };
 
-const onAddVehicle = async(vehicle) => {
+const onAddVehicle = async (vehicle) => {
     vehicleSaleState.idVehicle = vehicle.idVehicle;
     showElement(DOMRefs.refs.addVehicleLoader);
     const vehicleToAppend = await getVehicleById(vehicle.idVehicle);
@@ -128,7 +128,7 @@ const onAddPayment = () => {
 };
 
 /* ================= SUBMIT ================= */
-export const onSubmitVehicleSale = async(e, isWorkOrder) => {
+export const onSubmitVehicleSale = async (e, isWorkOrder) => {
     e.preventDefault();
     const response = await createNewSale(isWorkOrder);
     if (response) {
@@ -138,19 +138,21 @@ export const onSubmitVehicleSale = async(e, isWorkOrder) => {
     }
 };
 
-const createNewSale = async(isWorkOrder) => {
+const createNewSale = async (isWorkOrder) => {
     const invalidate = validateSale(vehicleSaleState.data, vehicleSaleState.idVehicle, vehicleSaleState.context.idCustomer, vehicleSaleState.context.idSale);
+    const camps = qsa(".txtInputs, .btnPrimary, .btnSecondary, .btnTrash");
     if (invalidate) {
-        showMessage('Error de validación', invalidate, 'warning');
+        await showMessage('Error de validación', invalidate, 'warning');
         return;
     }
     if (isWorkOrder) {
-        disableElement(DOMRefs.refs.btnCreateOrder);
         showElement(DOMRefs.refs.btnCreateOrderLoader);
     } else {
         showElement(DOMRefs.refs.btnSaveSaleLoader);
-        disableElement(DOMRefs.refs.btnSaveSale);
     }
+
+    camps.forEach(disableElement);
+
     let payload;
     if (vehicleSaleState.context.idSale) {
         payload = buildPutSalePayload(vehicleSaleState);
@@ -159,12 +161,11 @@ const createNewSale = async(isWorkOrder) => {
     }
 
     if (payload.error) {
-        showMessage('Error', payload.error, 'warning');
+        await showMessage('Error', payload.error, 'warning');
         return;
     }
     try {
         let response;
-
         if (vehicleSaleState.context.idSale) {
             response = await putVehicleSale(payload, vehicleSaleState.context.idSale);
             await showMessage('Venta actualizada', 'Éxito', 'success');
@@ -194,15 +195,14 @@ const createNewSale = async(isWorkOrder) => {
     } finally {
         if (isWorkOrder) {
             hideElement(DOMRefs.refs.btnCreateOrderLoader);
-            removeDisable(DOMRefs.refs.btnCreateOrder);
         } else {
             hideElement(DOMRefs.refs.btnSaveSaleLoader);
-            removeDisable(DOMRefs.refs.btnSaveSale);
         }
+        camps.forEach(removeDisable);
     }
 };
 
-const onSearchVehicle = async(filters) => {
+const onSearchVehicle = async (filters) => {
     vehicleSaleState.filters = {
         ...vehicleSaleState.filters,
         ...filters
@@ -251,7 +251,7 @@ const loadExistingSale = (sale, vehicle) => {
 };
 
 /* ================= LOAD DRAFT ================= */
-const loadDraft = async() => {
+const loadDraft = async () => {
     const storage = JSON.parse(
         localStorage.getItem(vehicleSaleState.saleKey)
     );
@@ -294,7 +294,7 @@ const onImportVehicle = () => {
     window.location.href = `vehicleDetails.html?sale=true&idCustomer=${vehicleSaleState.context.idCustomer}&customerName=${encodeURIComponent(vehicleSaleState.context.customerName)}`;
 };
 
-const initializeUI = async(Refs) => {
+const initializeUI = async (Refs) => {
     await initPaymentsController({
         totalCalculator: recalculateTotals,
         onStateChange: saveSaleState,
@@ -306,7 +306,7 @@ const initializeUI = async(Refs) => {
     initializeModalListeners(vehicleSaleState.data, vehicleSaleState.context.isView);
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -321,7 +321,7 @@ const setupApplication = async() => {
     return true;
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     if (vehicleSaleState.context.idSale) {
         const sale = await getSaleById(vehicleSaleState.context.idSale);
         const vehicle = await getVehicleById(sale.idVehicle);
@@ -336,6 +336,7 @@ const loadDataFlow = async() => {
             showElement(DOMRefs.refs.btnGeneratePdf);
             DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => generateVehicleSaleReport(sale, vehicle, vehicleSaleState.context.customerName));
         }
+        return;
     } else if (vehicleSaleState.context.idVehicle) {
         showElement(DOMRefs.refs.addVehicleLoader);
         const vehicle = await getVehicleById(vehicleSaleState.context.idVehicle);
@@ -351,7 +352,7 @@ const loadDataFlow = async() => {
     await loadInventory();
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         // 1. Configurar aplicación
         const isReady = await setupApplication();
