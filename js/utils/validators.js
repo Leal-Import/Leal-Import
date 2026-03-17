@@ -9,9 +9,17 @@ export const isValidEmail = (email) => {
     return domain.split('.').every(part => part.length <= 63);
 };
 
+export const isValidDui = (dui) => {
+    return /^[0-9]{8}-[0-9]$/.test(dui);
+};
+
+export const isValidFullName = (name) => {
+    return /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'' ]{3,75}$/.test(name);
+};
+
 export const isValidPhone = (phone) => {
     const cleanPhone = phone.replace(/[-\s]/g, '');
-    return /^\d{8}$/.test(cleanPhone);
+    return /^[267]\d{7}$/.test(cleanPhone);
 };
 
 export const safeParseFloat = (v) => {
@@ -53,7 +61,7 @@ export const validatePayment = (amount, method) => {
 };
 
 export const isValidURL = (url) => {
-    if (!url) return false;
+    if (!url || url.length < 1 || url.length > 1000) return false;
 
     try {
         const parsed = new URL(url);
