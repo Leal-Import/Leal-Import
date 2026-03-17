@@ -32,7 +32,8 @@
     --border: 1px solid #81859E66;
     --border-radius-input: 5px;
     --border-radius-btn: 8px;
-    --border-radius-table: 4px;
+    --border-radius-table: 16px;
+    --border-radius-card: 8px;
     --font-size-amount-value: 3.5em;
     --font-size-breadcrumb: 2.2em;
     --font-size-title-lg: 1.75em;

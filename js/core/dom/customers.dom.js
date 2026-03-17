@@ -1,4 +1,4 @@
-import { fillForm, $, qs } from "../../utils/dom.js";
+import { fillForm, $, qs, qsa } from "../../utils/dom.js";
 
 export const DOMRefs = {
     refs: {},
@@ -18,7 +18,8 @@ export const DOMRefs = {
             tableCustomers: qs(".table"),
             btnCloseModalCustomer: $("btnCloseModalCustomer"),
             btnOpenModalCustomer: $("btnOpenModalCustomer"),
-            titleModal: qs(".titleModal")
+            titleModal: qs(".titleModal"),
+            campsModal: qsa("#frmCustomers .txtInputs")
         };
         return this.refs;
     }

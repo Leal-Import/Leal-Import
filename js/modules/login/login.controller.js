@@ -44,14 +44,14 @@ const onCloseAuthEmail = () => {
 
 const onClosePin = () => {
     clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
-    DOMRefs.refs.codeDigits.forEach(i => {i.value = '';});
+    DOMRefs.refs.codeDigits.forEach(i => { i.value = ''; });
 
     toggleModal(DOMRefs.refs.modalCode, false);
     toggleModal(DOMRefs.refs.modalAuth, false);
     toggleModal(DOMRefs.refs.modalRecovery, true);
 };
 
-const onSubmitLogin = async(e) => {
+const onSubmitLogin = async (e) => {
     e.preventDefault();
 
     const credentials = DOMRefs.refs.txtUserOrEmail.value;
@@ -63,6 +63,8 @@ const onSubmitLogin = async(e) => {
     }
 
     disableElement(DOMRefs.refs.btnLogin);
+    disableElement(DOMRefs.refs.txtUserOrEmail);
+    disableElement(DOMRefs.refs.txtPassword);
     showElement(DOMRefs.refs.btnLoginLoader);
 
     try {
@@ -81,11 +83,13 @@ const onSubmitLogin = async(e) => {
         await showMessage(title, text, "error");
     } finally {
         removeDisable(DOMRefs.refs.btnLogin);
+        removeDisable(DOMRefs.refs.txtUserOrEmail);
+        removeDisable(DOMRefs.refs.txtPassword);
         hideElement(DOMRefs.refs.btnLoginLoader);
     }
 };
 
-const onAuthEmail = async(e) => {
+const onAuthEmail = async (e) => {
     e.preventDefault();
 
     if (loginState.flags.pendingSend) return;
@@ -97,6 +101,7 @@ const onAuthEmail = async(e) => {
 
     loginState.flags.pendingSend = true;
     disableElement(DOMRefs.refs.authPrimaryBtn);
+    disableElement(DOMRefs.refs.txtAuthEmail);
     showElement(DOMRefs.refs.btnAuthSendLoader);
     try {
         const data = await verifyEmail(email);
@@ -119,11 +124,13 @@ const onAuthEmail = async(e) => {
     } finally {
         loginState.flags.pendingSend = false;
         removeDisable(DOMRefs.refs.authPrimaryBtn);
+        removeDisable(DOMRefs.refs.txtAuthEmail);
         hideElement(DOMRefs.refs.btnAuthSendLoader);
+        cleanAuthCamps(DOMRefs.refs.authSuccess, DOMRefs.refs.txtAuthEmail);
     }
 };
 
-const onSendCode = async(e) => {
+const onSendCode = async (e) => {
     e.preventDefault();
 
     if (loginState.flags.pendingVerify) return;
@@ -141,6 +148,7 @@ const onSendCode = async(e) => {
     }
 
     loginState.flags.pendingVerify = true;
+    DOMRefs.refs.codeDigits.forEach(disableElement);
     disableElement(DOMRefs.refs.btnCodeContinue);
     showElement(DOMRefs.refs.btnCodeContinueLoader);
 
@@ -158,12 +166,13 @@ const onSendCode = async(e) => {
         focusFirstCodeInput(DOMRefs.refs.codeDigits);
     } finally {
         loginState.flags.pendingVerify = false;
+        DOMRefs.refs.codeDigits.forEach(removeDisable);
         removeDisable(DOMRefs.refs.btnCodeContinue);
         hideElement(DOMRefs.refs.btnCodeContinueLoader);
     }
 };
 
-const onUpdatePassword = async() => {
+const onUpdatePassword = async () => {
     if (loginState.flags.pendingUpdate) return;
 
     const newPass = DOMRefs.refs.txtNewPassword?.value?.trim() ?? '';

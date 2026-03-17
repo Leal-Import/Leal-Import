@@ -1,21 +1,22 @@
 'use strict';
 
 export const initLoginEvents = ({ Refs, onTogglePassword, onSubmitLogin, onBackHome, onOpenModalRecovery, onCloseModalRecovery, onOpenAuthEmail, onCloseAuthEmail, onClosePin, onCloseNewPassword, onAuthEmail, onSendCode, onUpdatePassword, onVerifyNewPassword, onVerifyConfirmPassword }) => {
+    const { togglePassword, txtPassword, toggleNewPassword, txtNewPassword, toggleConfirmPassword, txtConfirmPassword, formLogin, btnBackHome, openModalRecovery, btnClose, btnOpenAuth, closeAuth, closeCode, closeNewPassword, authPrimaryBtn, btnCodeContinue, btnUpdatePassword } = Refs;
 
-    Refs.togglePassword.addEventListener("click", (e) => onTogglePassword(e, Refs.txtPassword));
-    Refs.toggleNewPassword.addEventListener("click", (e) => onTogglePassword(e, Refs.txtNewPassword));
-    Refs.toggleConfirmPassword.addEventListener("click", (e) => onTogglePassword(e, Refs.txtConfirmPassword));
-    Refs.formLogin.addEventListener("submit", onSubmitLogin);
-    Refs.btnBackHome.addEventListener("click", onBackHome);
-    Refs.openModalRecovery.addEventListener("click", onOpenModalRecovery);
-    Refs.btnClose.addEventListener("click", onCloseModalRecovery);
-    Refs.btnOpenAuth.addEventListener("click", onOpenAuthEmail);
-    Refs.closeAuth.addEventListener("click", onCloseAuthEmail);
-    Refs.closeCode.addEventListener("click", onClosePin);
-    Refs.closeNewPassword.addEventListener("click", onCloseNewPassword);
-    Refs.authPrimaryBtn.addEventListener("click", onAuthEmail);
-    Refs.btnCodeContinue.addEventListener("click", onSendCode);
-    Refs.btnUpdatePassword.addEventListener("click", onUpdatePassword);
-    Refs.txtNewPassword.addEventListener("input", onVerifyNewPassword);
-    Refs.txtConfirmPassword.addEventListener("input", onVerifyConfirmPassword);
+    togglePassword.addEventListener("click", (e) => onTogglePassword(e,txtPassword));
+    toggleNewPassword.addEventListener("click", (e) => onTogglePassword(e,txtNewPassword));
+    toggleConfirmPassword.addEventListener("click", (e) => onTogglePassword(e,txtConfirmPassword));
+    formLogin.addEventListener("submit", onSubmitLogin);
+    btnBackHome.addEventListener("click", onBackHome);
+    openModalRecovery.addEventListener("click", onOpenModalRecovery);
+    btnClose.addEventListener("click", onCloseModalRecovery);
+    btnOpenAuth.addEventListener("click", onOpenAuthEmail);
+    closeAuth.addEventListener("click", onCloseAuthEmail);
+    closeCode.addEventListener("click", onClosePin);
+    closeNewPassword.addEventListener("click", onCloseNewPassword);
+    authPrimaryBtn.addEventListener("click", onAuthEmail);
+    btnCodeContinue.addEventListener("click", onSendCode);
+    btnUpdatePassword.addEventListener("click", onUpdatePassword);
+    txtNewPassword.addEventListener("input", onVerifyNewPassword);
+    txtConfirmPassword.addEventListener("input", onVerifyConfirmPassword);
 };

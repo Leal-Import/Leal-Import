@@ -2,7 +2,7 @@ import { appendToDom, cleanPaymentCamps, cleanRow, DOMRefs, initStaticRows, load
 import { workOrderDetailsState } from "../../../core/state/workOrder.details.state.js";
 import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "../../../service/workOrder.detail.service.js";
 import { safeParseFloat, validateDate, validatePayment } from "../../../utils/validators.js";
-import { disableElement, hideElement, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
+import { disableElement, hideElement, qsa, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
 import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
 import { initWorkOrdersEvents } from "../event/workOrder.details.event.js";
 import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validatePutOrder, validatePostOrder, buildPostWorkOrderFormData, buildPutWorkOrderFormData, cleanWindow } from "../../../core/logic/workOrder.details.logic.js";
@@ -119,8 +119,9 @@ const onAddPayment = () => {
     cleanPaymentCamps(amount, method);
 };
 
-const onSubmitOrder = async(e) => {
+const onSubmitOrder = async (e) => {
     e.preventDefault();
+    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnImport, .btnSecondary");
     let fd;
     if (workOrderDetailsState.context.idWorkOrder) {
         const errorPut = validatePutOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle);
@@ -138,8 +139,7 @@ const onSubmitOrder = async(e) => {
         fd = buildPostWorkOrderFormData(workOrderDetailsState);
     }
     showElement(DOMRefs.refs.loaderAddOrder);
-    disableElement(DOMRefs.refs.btnSaveOrder);
-
+    camps.forEach(disableElement);
     try {
         let response;
         if (workOrderDetailsState.context.idWorkOrder) {
@@ -165,7 +165,7 @@ const onSubmitOrder = async(e) => {
         showMessage('Error al procesar venta', error, 'error');
     } finally {
         hideElement(DOMRefs.refs.loaderAddOrder);
-        removeDisable(DOMRefs.refs.btnSaveOrder);
+        camps.forEach(removeDisable);
     }
 };
 
@@ -179,7 +179,7 @@ const onSaveDate = (e) => {
     workOrderDetailsState.data.estimatedDate = value;
 };
 
-const loadDataVehicle = async(Refs) => {
+const loadDataVehicle = async (Refs) => {
     try {
         const vehicle = await getDataVehicleById(workOrderDetailsState.context.idVehicle);
         if (workOrderDetailsState.context.idSale) {
@@ -298,7 +298,7 @@ const loadDraft = (Refs) => {
     }
 };
 
-const loadWorkOrder = async(Refs) => {
+const loadWorkOrder = async (Refs) => {
     const workOrder = await getWorkOrderById(workOrderDetailsState.context.idWorkOrder);
     workOrderDetailsState.workOrder = workOrder;
     workOrderDetailsState.context.idVehicle = workOrder.idVehicle;
@@ -341,10 +341,11 @@ const loadWorkOrder = async(Refs) => {
     });
 };
 
-const onCompleteOrder = async() => {
+const onCompleteOrder = async () => {
+    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnImport, .btnSecondary");
+    showElement(DOMRefs.refs.loaderCompleteOrder);
+    camps.forEach(disableElement);
     try {
-        showElement(DOMRefs.refs.loaderCompleteOrder);
-        disableElement(DOMRefs.refs.btnCompleteOrder);
         const answer = await patchWorkOrder(workOrderDetailsState.context.idWorkOrder);
         await showMessage("Exito", "Orden completada", "success", true);
         if (answer) {
@@ -355,11 +356,11 @@ const onCompleteOrder = async() => {
         showMessage("Error", "No se pudo completar la orden", "error");
     } finally {
         hideElement(DOMRefs.refs.loaderCompleteOrder);
-        removeDisable(DOMRefs.refs.btnCompleteOrder);
+        camps.forEach(removeDisable);
     }
 };
 
-const onSearch = async(e, getData, renderData, box, onAdd, selected) => {
+const onSearch = async (e, getData, renderData, box, onAdd, selected) => {
     const query = e.target.value.trim();
     if (!query) {
         hideElement(box);
@@ -381,14 +382,14 @@ const onAddNewService = (e) => {
 };
 
 // Funciones auxiliares para cada flujo
-const initNewPartFlow = async(Refs) => {
+const initNewPartFlow = async (Refs) => {
     addNewPartToTable();
     loadDraft(Refs);
     validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
     await loadDataVehicle(Refs);
 };
 
-const initEditOrderFlow = async(Refs) => {
+const initEditOrderFlow = async (Refs) => {
     await loadWorkOrder(Refs);
 
     if (workOrderDetailsState.context.isView) {
@@ -405,12 +406,12 @@ const initEditOrderFlow = async(Refs) => {
     }
 };
 
-const initNewOrderFlow = async(Refs) => {
+const initNewOrderFlow = async (Refs) => {
     await loadDataVehicle(Refs);
     validateDate(Refs.dtEstimated, new Date());
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -425,7 +426,7 @@ const setupApplication = async() => {
     return true;
 };
 
-const initializeUI = async(Refs) => {
+const initializeUI = async (Refs) => {
     // Inicialización de componentes UI
     initStaticRows();
 
@@ -452,7 +453,7 @@ const initializeUI = async(Refs) => {
     initializeModalListeners(workOrderDetailsState.data, workOrderDetailsState.context.isView);
 };
 
-const loadDataFlow = async(Refs) => {
+const loadDataFlow = async (Refs) => {
     const { context } = workOrderDetailsState;
 
     // Determinar qué flujo ejecutar
@@ -478,7 +479,7 @@ const finalizeTotals = () => {
 // ============================================
 // INICIALIZACIÓN PRINCIPAL
 // ============================================
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         // 1. Configurar aplicación
         const isReady = await setupApplication();

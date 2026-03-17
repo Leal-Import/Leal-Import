@@ -97,7 +97,7 @@ const onSubmitVehicle = async(e) => {
         }
     }
     showElement(DOMRefs.refs.loaderSaveVehicle);
-    disableElement(DOMRefs.refs.btnSaveData);
+    DOMRefs.refs.camps.forEach(disableElement);
 
     if (vehicleDetailState.context.currentId) {
         payloadVehicle.photosToDeleteIds = vehicleDetailState.photosToDeleteIds;
@@ -109,7 +109,6 @@ const onSubmitVehicle = async(e) => {
 
     mapVehicleImages(fd);
     fd.append("vehicleData", JSON.stringify(payloadVehicle));
-
     try {
         let response;
         if (vehicleDetailState.context.currentId !== null) {
@@ -136,7 +135,7 @@ const onSubmitVehicle = async(e) => {
         const errorMessage = error.message || 'Error desconocido al registrar el vehiculo.';
         showMessage(errorMessage, 'error', 'error');
     } finally {
-        removeDisable(DOMRefs.refs.btnSaveData);
+        DOMRefs.refs.camps.forEach(removeDisable);
         hideElement(DOMRefs.refs.loaderSaveVehicle);
     }
 };
@@ -292,6 +291,7 @@ const loadDataFlow = async() => {
     // Determinar qué flujo ejecutar
     if (context.currentId) {
         await loadVehicle();
+        verifyBtnsCarousel(DOMRefs.refs.btnsCarousel, DOMRefs.refs.mainSwiperWrapper);
     } else {
         renderImages(vehicleDetailState.images, DOMRefs.refs.mainSwiperWrapper, DOMRefs.refs.thumbsWrapper, deleteImage, () => DOMRefs.refs.imageInput.click());
     }

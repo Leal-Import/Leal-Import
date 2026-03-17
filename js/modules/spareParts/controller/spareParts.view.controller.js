@@ -37,8 +37,8 @@ const loadDataFlow = async(Refs) => {
     await loadData(Refs);
 };
 
-const initializeUi = (Refs) => {
-    initSparePartsViewEvents({ Refs, onGeneratePdf: () => generateSparePartReport(sparePartViewState.sparePart) });
+const initializeUi = (btnGeneratePdf) => {
+    initSparePartsViewEvents({ btnGeneratePdf, onGeneratePdf: () => generateSparePartReport(sparePartViewState.sparePart) });
 };
 
 document.addEventListener("DOMContentLoaded", async() => {
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
         await loadDataFlow(refs);
 
-        initializeUi(refs);
+        initializeUi(refs.btnGeneratePdf);
     } catch (error) {
         console.error('Error inicializando la aplicación: ', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');

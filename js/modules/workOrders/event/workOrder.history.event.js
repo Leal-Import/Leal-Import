@@ -1,21 +1,18 @@
 export const initWorkOrderHistoryEvents = ({ Refs, onSearchWorkOrderHistory }) => {
+    const { txtSearchData, cmbSearchByStatus } = Refs;
     let searchTimeout = null;
 
     const emitFilters = () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             onSearchWorkOrderHistory({
-                search: Refs.txtSearchData?.value.trim() || '',
-                idStatus: Refs.cmbSearchByStatus?.value || ''
+                search: txtSearchData?.value.trim() || '',
+                idStatus: cmbSearchByStatus?.value || ''
             });
         }, 1000);
     };
 
-    if (Refs.txtSearchData) {
-        Refs.txtSearchData.addEventListener("input", emitFilters);
-    }
+    txtSearchData.addEventListener("input", emitFilters);
 
-    if (Refs.cmbSearchByStatus) {
-        Refs.cmbSearchByStatus.addEventListener("change", emitFilters);
-    }
+    cmbSearchByStatus.addEventListener("change", emitFilters);
 };

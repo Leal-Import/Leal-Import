@@ -1,4 +1,4 @@
 
-export const initSparePartsViewEvents = ({ Refs, onGeneratePdf }) => {
-    Refs.btnGeneratePdf.addEventListener("click", onGeneratePdf);
+export const initSparePartsViewEvents = ({ btnGeneratePdf, onGeneratePdf }) => {
+    btnGeneratePdf.addEventListener("click", onGeneratePdf);
 };

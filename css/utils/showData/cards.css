@@ -9,7 +9,7 @@
 }
 
 .card {
-    border-radius: var(--border-radius-table);
+    border-radius: var(--border-radius-card);
     border: 1px solid var(--text-color-secondary);
     overflow: hidden;
 }

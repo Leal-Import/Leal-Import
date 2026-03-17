@@ -75,7 +75,6 @@ export const validateBaseSparePart = ({
         highlightAndFocus('cmbPartStatus');
         return 'Debe seleccionar el estado del repuesto.';
     }
-
     if (billLink !== '') {
         const isValid = isValidURL(billLink);
         if (!isValid) {

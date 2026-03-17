@@ -27,7 +27,8 @@ export const DOMRefs = {
             txtLink: $('txtLink'),
             defaultText: $('defaultText'),
             errorLinkLote: $('errorLinkLote'),
-            validateUrlMessage: $('validateUrlMessage')
+            validateUrlMessage: $('validateUrlMessage'),
+            camps: qsa('.txtInputs, .btnPrimary')
         };
 
         return this.refs;

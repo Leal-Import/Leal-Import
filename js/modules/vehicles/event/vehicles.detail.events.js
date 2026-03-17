@@ -1,3 +1,4 @@
+import { addModalCloseEvents } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatYearInput } from "../../../utils/formatters.js";
 
 export const initVehicleDetailEvents = ({ Refs, onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, onCloseLinkLoteModal, cleanCustomer, onValidateUrl }) => {
@@ -25,9 +26,7 @@ export const initVehicleDetailEvents = ({ Refs, onSubmit, onSearchCustomer, onAd
     }
     imageInput.addEventListener("change", onAddImage);
     btnLinkLote.addEventListener("click", openLinkLoteModal);
-    modalLinkLote.addEventListener("click", (e) => {
-        if (e.target === Refs.modalLinkLote) onCloseLinkLoteModal();
-    });
+    addModalCloseEvents(modalLinkLote, onCloseLinkLoteModal);
     btnCloseLink.addEventListener("click", onCloseLinkLoteModal);
     btnSaveLinkLote.addEventListener("click", onCloseLinkLoteModal);
 

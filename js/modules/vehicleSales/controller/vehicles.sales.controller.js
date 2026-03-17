@@ -7,7 +7,7 @@ import {
 } from '../../../service/vehicles.sales.service.js';
 import { getVehicles as getVehicleById } from '../../../service/vehicles.detail.service.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
-import { showMessage, hideElement, showElement, disableElement, removeDisable } from '../../../utils/dom.js';
+import { showMessage, hideElement, showElement, disableElement, removeDisable, qsa } from '../../../utils/dom.js';
 import { vehicleSaleState } from '../../../core/state/vehicles.sales.state.js';
 import { initVehicleSaleEvents } from '../event/vehicles.sales.events.js';
 import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
@@ -140,17 +140,19 @@ export const onSubmitVehicleSale = async(e, isWorkOrder) => {
 
 const createNewSale = async(isWorkOrder) => {
     const invalidate = validateSale(vehicleSaleState.data, vehicleSaleState.idVehicle, vehicleSaleState.context.idCustomer, vehicleSaleState.context.idSale);
+    const camps = qsa(".txtInputs, .btnPrimary, .btnSecondary, .btnTrash");
     if (invalidate) {
         showMessage('Error de validación', invalidate, 'warning');
         return;
     }
     if (isWorkOrder) {
-        disableElement(DOMRefs.refs.btnCreateOrder);
         showElement(DOMRefs.refs.btnCreateOrderLoader);
     } else {
         showElement(DOMRefs.refs.btnSaveSaleLoader);
-        disableElement(DOMRefs.refs.btnSaveSale);
     }
+
+    camps.forEach(disableElement);
+
     let payload;
     if (vehicleSaleState.context.idSale) {
         payload = buildPutSalePayload(vehicleSaleState);
@@ -164,7 +166,6 @@ const createNewSale = async(isWorkOrder) => {
     }
     try {
         let response;
-
         if (vehicleSaleState.context.idSale) {
             response = await putVehicleSale(payload, vehicleSaleState.context.idSale);
             await showMessage('Venta actualizada', 'Éxito', 'success');
@@ -194,11 +195,10 @@ const createNewSale = async(isWorkOrder) => {
     } finally {
         if (isWorkOrder) {
             hideElement(DOMRefs.refs.btnCreateOrderLoader);
-            removeDisable(DOMRefs.refs.btnCreateOrder);
         } else {
             hideElement(DOMRefs.refs.btnSaveSaleLoader);
-            removeDisable(DOMRefs.refs.btnSaveSale);
         }
+        camps.forEach(removeDisable);
     }
 };
 
@@ -336,6 +336,7 @@ const loadDataFlow = async() => {
             showElement(DOMRefs.refs.btnGeneratePdf);
             DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => generateVehicleSaleReport(sale, vehicle, vehicleSaleState.context.customerName));
         }
+        return;
     } else if (vehicleSaleState.context.idVehicle) {
         showElement(DOMRefs.refs.addVehicleLoader);
         const vehicle = await getVehicleById(vehicleSaleState.context.idVehicle);

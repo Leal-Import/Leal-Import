@@ -2,7 +2,7 @@
     background-color: var(--bg-color-white);
     position: relative;
     flex: 1;
-    border-radius: 16px;
+    border-radius: var(--border-radius-table);
     box-shadow: 0 4px 20px rgb(0 0 0 / 0.06);
     border: 1px solid #F0F0F0;
     height: fit-content;
@@ -11,6 +11,9 @@
 
 .table {
     width: 100%;
+    overflow: hidden;
+    border-top-left-radius: var(--border-radius-table);
+    border-top-right-radius: var(--border-radius-table);
     border-collapse: collapse;
     text-align: left;
 }
@@ -49,6 +52,10 @@
     padding: 16px;
     font-size: var(--font-size-base);
     color: var(--text-color);
+    max-width: clamp(150px, 20vw, 500px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .noDataMessage {

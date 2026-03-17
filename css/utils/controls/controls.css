@@ -196,6 +196,10 @@
     color: var(--text-color);
 }
 
+.darkMode input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
 .txtInputs:focus {
     outline: none;
     border-color: var(--danger-color);

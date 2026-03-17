@@ -13,7 +13,8 @@ import {
     showElement,
     hideElement,
     disableElement,
-    removeDisable
+    removeDisable,
+    qsa
 } from '../../../utils/dom.js';
 import { spareSaleState } from '../../../core/state/spareParts.sales.state.js';
 import { initSpareSaleEvents } from '../event/spareParts.sales.event.js';
@@ -116,6 +117,7 @@ const onDeleteSparePart = (container, tr, id, idSaleItem) => {
 
 const onSubmitSpareSale = async(e) => {
     e.preventDefault();
+    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .finalPrice, .btnAddItem");
     const invalidate = validateSale();
     if (invalidate) {
         await showMessage("Error de validación", invalidate, 'warning');
@@ -129,7 +131,7 @@ const onSubmitSpareSale = async(e) => {
         payload = buildPostSalePayload(spareSaleState);
     }
     showElement(DOMRefs.refs.loaderAddSale);
-    disableElement(DOMRefs.refs.btnSaveSale);
+    camps.forEach(disableElement);
     try {
         let response;
         if (spareSaleState.context.idSale) {
@@ -154,7 +156,7 @@ const onSubmitSpareSale = async(e) => {
         );
     } finally {
         hideElement(DOMRefs.refs.loaderAddSale);
-        removeDisable(DOMRefs.refs.btnSaveSale);
+        camps.forEach(removeDisable);
     }
 };
 const onAddPayment = () => {

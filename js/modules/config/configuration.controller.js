@@ -23,7 +23,7 @@ const onTogglePassword = (e, txtPassword) => {
     }
 };
 
-const onVerifyPassword = async(e) => {
+const onVerifyPassword = async (e) => {
     e.preventDefault();
 
     const password = DOMRefs.refs.txtVerifyPassword.value.trim();
@@ -33,6 +33,8 @@ const onVerifyPassword = async(e) => {
         return;
     }
     showElement(DOMRefs.refs.btnVerifyCurrentPasswordLoader);
+    disableElement(DOMRefs.refs.txtVerifyPassword);
+    disableElement(DOMRefs.refs.toggleVerifyPassword);
     disableElement(DOMRefs.refs.btnVerifyCurrentPassword);
     try {
         const response = await verifyCurrentPassword(password);
@@ -47,6 +49,8 @@ const onVerifyPassword = async(e) => {
         const icon = btn.querySelector('svg');
         hideElement(DOMRefs.refs.btnVerifyCurrentPasswordLoader);
         removeDisable(DOMRefs.refs.btnVerifyCurrentPassword);
+        removeDisable(DOMRefs.refs.toggleVerifyPassword);
+        removeDisable(DOMRefs.refs.txtVerifyPassword);
         cleanTxtVerifyPassword(DOMRefs.refs.txtVerifyPassword, icon);
     }
 };
@@ -83,7 +87,7 @@ const onVerifyNewPassword = () => {
     checkBtn(score, pw1, pw2);
 };
 
-const onChangePassword = async(e) => {
+const onChangePassword = async (e) => {
     e.preventDefault();
     const pw1 = DOMRefs.refs.txtNewPassword;
     const pw2 = DOMRefs.refs.txtConfirmPassword;
@@ -95,6 +99,10 @@ const onChangePassword = async(e) => {
     }
 
     showElement(DOMRefs.refs.btnUpdatePasswordLoader);
+    disableElement(pw1);
+    disableElement(pw2);
+    disableElement(DOMRefs.refs.toggleNewPassword);
+    disableElement(DOMRefs.refs.toggleConfirmPassword);
     disableElement(DOMRefs.refs.btnUpdatePassword);
     try {
         await changePassword(pw1.value.trim(), configurationState.ticket);
@@ -105,6 +113,10 @@ const onChangePassword = async(e) => {
         await showMessage('Error', 'Ocurrió un error al actualizar la contraseña. Inténtalo de nuevo.', 'error');
     } finally {
         hideElement(DOMRefs.refs.btnUpdatePasswordLoader);
+        removeDisable(pw1);
+        removeDisable(pw2);
+        removeDisable(DOMRefs.refs.toggleNewPassword);
+        removeDisable(DOMRefs.refs.toggleConfirmPassword);
         removeDisable(DOMRefs.refs.btnUpdatePassword);
         cleanNewPasswordForm();
     }
@@ -171,7 +183,7 @@ const onVerifyButtonUsername = () => {
     }
 };
 
-const onLogout = async() => {
+const onLogout = async () => {
     const response = await showMessage('Confirmar', '¿Estás seguro que deseas cerrar sesión?', 'question', false, true);
     if (response.isConfirmed) {
         try {
@@ -185,7 +197,7 @@ const onLogout = async() => {
     }
 };
 
-const onEditProfile = async(e) => {
+const onEditProfile = async (e) => {
     e.preventDefault();
     const txtFullName = DOMRefs.refs.txtFullName;
     const txtEmail = DOMRefs.refs.txtEmployeeEmail;
@@ -203,6 +215,9 @@ const onEditProfile = async(e) => {
     };
 
     showElement(DOMRefs.refs.btnEditProfileLoader);
+    disableElement(txtFullName);
+    disableElement(txtEmail);
+    disableElement(txtPhone);
     disableElement(DOMRefs.refs.btnEditProfile);
     try {
         await editProfile(payload);
@@ -216,11 +231,14 @@ const onEditProfile = async(e) => {
         await showMessage('Error', 'Ocurrió un error al actualizar el perfil. Inténtalo de nuevo.', 'error');
     } finally {
         hideElement(DOMRefs.refs.btnEditProfileLoader);
+        removeDisable(txtFullName);
+        removeDisable(txtEmail);
+        removeDisable(txtPhone);
         removeDisable(DOMRefs.refs.btnEditProfile);
     }
 };
 
-const onChangeUsername = async(e) => {
+const onChangeUsername = async (e) => {
     e.preventDefault();
     const txtCurrentUsername = DOMRefs.refs.txtCurrentUsername;
     const txtNewUsername = DOMRefs.refs.txtNewUsername;
@@ -233,6 +251,9 @@ const onChangeUsername = async(e) => {
     }
 
     showElement(DOMRefs.refs.btnSaveUsernameLoader);
+    disableElement(DOMRefs.refs.togglePasswordForUsername);
+    disableElement(txtNewUsername);
+    disableElement(txtPassword);
     disableElement(DOMRefs.refs.btnSaveUsername);
 
     try {
@@ -245,8 +266,11 @@ const onChangeUsername = async(e) => {
     } finally {
         hideElement(DOMRefs.refs.btnSaveUsernameLoader);
         removeDisable(DOMRefs.refs.btnSaveUsername);
-        toggleModal(DOMRefs.refs.modalChangeUsername, false);
+        removeDisable(DOMRefs.refs.togglePasswordForUsername);
+        removeDisable(txtNewUsername);
+        removeDisable(txtPassword);
         cleanCampsToggleUsername(DOMRefs.refs, DOMRefs.refs.togglePasswordForUsername.querySelector('svg'));
+        toggleModal(DOMRefs.refs.modalChangeUsername, false);
     }
 };
 
@@ -280,7 +304,7 @@ const loadDataFlow = (Refs) => {
     toggleSwitch(Refs.darkModeToggle, configurationState.isDarkMode);
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -290,7 +314,7 @@ const setupApplication = async() => {
     return true;
 };
 
-const loadState = async() => {
+const loadState = async () => {
     try {
         configurationState.isDarkMode = localStorage.getItem('app.theme.dark') === 'true' ? true : false;
         const employee = await getCurrentEmployee();
@@ -308,7 +332,7 @@ const loadState = async() => {
     }
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

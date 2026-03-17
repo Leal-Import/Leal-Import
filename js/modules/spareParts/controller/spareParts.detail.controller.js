@@ -40,8 +40,8 @@ const loadSparePart = async() => {
         loadImage(sparePart.photoUrl, DOMRefs.refs);
         sparePartDetailState.trackingId = sparePart.tracking.idTracking;
         sparePartDetailState.costsId = sparePart.sparePartsCosts.idCostSparePart;
-        sparePartDetailState.links.bill = sparePart.billUrl;
-        sparePartDetailState.links.tracking = sparePart.tracking.linkTracking;
+        sparePartDetailState.links.bill = sparePart.billUrl || '';
+        sparePartDetailState.links.tracking = sparePart.tracking.linkTracking || '';
     } catch (error) {
         console.error("No se pudo cargar el repuestp: ", error);
         showMessage("Error", "Error al cargar el repuesto", "error");
@@ -70,7 +70,7 @@ const onSubmitSparePart = async(e) => {
         return;
     }
     showElement(DOMRefs.refs.loaderAddSparePart);
-    disableElement(DOMRefs.refs.btnSaveSparePart);
+    DOMRefs.refs.camps.forEach(disableElement);
     const payloadSparePart = mapSparePart(formData);
 
     if (sparePartDetailState.trackingId && sparePartDetailState.costsId) {
@@ -131,7 +131,7 @@ const onSubmitSparePart = async(e) => {
         showMessage(errorMessage, 'error', 'error');
     } finally {
         hideElement(DOMRefs.refs.loaderAddSparePart);
-        removeDisable(DOMRefs.refs.btnSaveSparePart);
+        DOMRefs.refs.camps.forEach(removeDisable);
     }
 };
 

@@ -6,11 +6,11 @@ import { initSession } from "../../../utils/api.utils.js";
 import { initEventsVehiclesView } from "../event/vehicles.view.event.js";
 import { generateVehicleReport } from "../../../core/reports/vehicles/vehicles.report.js";
 
-const loadData = async() => {
+const loadData = async(Refs) => {
     try {
         const vehicle = await getVehicles(vehicleViewState.context.idVehicle);
         vehicleViewState.vehicle = vehicle;
-        loadVehicleData(vehicle);
+        loadVehicleData(vehicle, Refs);
     } catch (error) {
         console.error("Error loading vehicle data:", error);
         showMessage("Error", "No se pudo cargar la información del vehículo.", "error");
@@ -39,12 +39,12 @@ const setupApplication = async() => {
     return true;
 };
 
-const loadDataFlow = async() => {
-    await loadData();
+const loadDataFlow = async(Refs) => {
+    await loadData(Refs);
 };
 
-const initializeUI = (Refs) => {
-    initEventsVehiclesView({ Refs, onGeneratePdf: () => generateVehicleReport(vehicleViewState.vehicle) });
+const initializeUI = (btnGeneratePdf) => {
+    initEventsVehiclesView({ btnGeneratePdf, onGeneratePdf: () => generateVehicleReport(vehicleViewState.vehicle) });
 };
 
 document.addEventListener("DOMContentLoaded", async() => {
@@ -54,9 +54,9 @@ document.addEventListener("DOMContentLoaded", async() => {
 
         const refs = DOMRefs.init();
 
-        await loadDataFlow();
+        await loadDataFlow(refs);
 
-        initializeUI(refs);
+        initializeUI(refs.btnGeneratePdf);
     } catch (error) {
         console.error('Error inicializando la aplicación: ', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');

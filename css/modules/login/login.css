@@ -87,7 +87,8 @@ section {
 }
 
 .inputBox input:focus~label,
-.inputBox input:valid~label {
+.inputBox input:valid~label,
+.inputBox input:disabled~label {
   top: -15px;
 }
 

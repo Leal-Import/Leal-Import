@@ -65,7 +65,6 @@ export default defineConfig([
             "eol-last": ["error", "always"],
             "no-trailing-spaces": "error",
             "no-multiple-empty-lines": ["error", { max: 1 }],
-            "space-before-function-paren": ["error", "never"],
             "keyword-spacing": ["error", { before: true, after: true }],
             "space-infix-ops": "error",
             "object-curly-spacing": ["error", "always"],

@@ -1,9 +1,9 @@
+import { addModalCloseEvents } from '../../utils/dom.js';
 import { formatPhoneNumber } from '../../utils/formatters.js';
 
 export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal }) => {
     const { txtEmployeePhone, cmbSearchByStatus, cmbSearchByRole, txtSearchData, frmEmployees, btnCloseModalEmployee, modalEmployees, btnOpenModalEmployees } = Refs;
 
-    let pointerDownOnOverlay = false;
     let searchTimeout = null;
     const emitFilters = () => {
         clearTimeout(searchTimeout);
@@ -24,13 +24,7 @@ export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, o
 
     btnCloseModalEmployee.addEventListener("click", onCloseModal);
 
-    modalEmployees.addEventListener('pointerdown', (e) => {
-        pointerDownOnOverlay = e.target === modalEmployees;
-    });
-    modalEmployees.addEventListener('pointerup', (e) => {
-        if (pointerDownOnOverlay && e.target === modalEmployees) onCloseModal();
-        pointerDownOnOverlay = false;
-    });
+    addModalCloseEvents(modalEmployees, onCloseModal);
 
     cmbSearchByStatus.addEventListener('change', emitFilters);
 

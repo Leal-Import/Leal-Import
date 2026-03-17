@@ -141,6 +141,7 @@ const onSubmitCustomer = async(e) => {
         return;
     }
     showElement(DOMRefs.refs.loaderAddCustomer);
+    DOMRefs.refs.campsModal.forEach(disableElement);
     disableElement(DOMRefs.refs.btnAddNewCustomer);
     try {
         if (customersState.selectedId) {
@@ -156,11 +157,12 @@ const onSubmitCustomer = async(e) => {
         showMessage('Error', err.message || 'Error al guardar cliente', 'error');
     } finally {
         hideElement(DOMRefs.refs.loaderAddCustomer);
+        DOMRefs.refs.campsModal.forEach(removeDisable);
         customersState.selectedId = null;
         DOMRefs.refs.frmCustomers.reset();
         removeDisable(DOMRefs.refs.btnAddNewCustomer);
-        toggleModal(DOMRefs.refs.modalCustomers, false);
         pagination.update({});
+        toggleModal(DOMRefs.refs.modalCustomers, false);
     }
 };
 

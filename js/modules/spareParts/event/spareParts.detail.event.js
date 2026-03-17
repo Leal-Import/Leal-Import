@@ -1,3 +1,4 @@
+import { addModalCloseEvents } from "../../../utils/dom.js";
 import {
     formatDecimalInput,
     formatOnBlur,
@@ -12,33 +13,33 @@ export const initSparePartDetailEvents = ({
     onSaveDataModal,
     onValidateUrl
 }) => {
-    Refs.frmSpareParts.addEventListener("submit", onSubmit);
-    Refs.btnOpenLinkBill.addEventListener("click", () => onOpenModal("bill"));
-    Refs.btnOpenLinkTracking.addEventListener("click", () => onOpenModal("tracking"));
+    const { txtLink, btnSaveLink, modalLink, txtFormat, txtCosts, frmSpareParts, btnOpenLinkBill, btnOpenLinkTracking, btnCloseLink } = Refs;
 
-    Refs.btnCloseLink.addEventListener("click", () => {
+    frmSpareParts.addEventListener("submit", onSubmit);
+    btnOpenLinkBill.addEventListener("click", () => onOpenModal("bill"));
+    btnOpenLinkTracking.addEventListener("click", () => onOpenModal("tracking"));
+
+    btnCloseLink.addEventListener("click", () => {
         onSaveDataModal();
     });
 
-    Refs.txtLink.addEventListener("input", () => {
+    txtLink.addEventListener("input", () => {
         onValidateUrl(Refs.txtLink.value.trim());
     });
 
-    Refs.modalLink.addEventListener("click", (e) => {
-        if (e.target === Refs.modalLink) onSaveDataModal();
-    });
+    addModalCloseEvents(modalLink, onSaveDataModal);
 
-    Refs.btnSaveLink.addEventListener("click", () => {
+    btnSaveLink.addEventListener("click", () => {
         onSaveDataModal();
     });
 
-    Refs.txtFormat.forEach(txt => {
+    txtFormat.forEach(txt => {
         txt.addEventListener("focus", e => formatOnFocus(e, true));
         txt.addEventListener("blur", e => formatOnBlur(e, true));
         formatDecimalInput(txt);
     });
 
-    Refs.txtCosts.forEach(txt => {
+    txtCosts.forEach(txt => {
         txt.addEventListener("input", onCalculateTotal);
     });
 };

@@ -98,10 +98,11 @@ export const onSubmitEmployee = async(e) => {
     const error = validateEmployee(employee);
 
     if (error) {
-        showMessage('Error', error, 'warning');
+        showMessage('Advertencia', error, 'warning');
         return;
     }
     showElement(DOMRefs.refs.btnAddEmployeeLoader);
+    DOMRefs.refs.campsModal.forEach(disableElement);
     disableElement(DOMRefs.refs.btnAddEmployee);
     try {
         if (employeesState.selectedId) {
@@ -116,12 +117,13 @@ export const onSubmitEmployee = async(e) => {
         console.error(err);
         showMessage('Error', err.message || 'Error al guardar empleado', 'error');
     } finally {
-        toggleModal(DOMRefs.refs.modalEmployees, false);
         DOMRefs.refs.frmEmployees.reset();
+        DOMRefs.refs.campsModal.forEach(removeDisable);
         employeesState.selectedId = null;
         hideElement(DOMRefs.refs.btnAddEmployeeLoader);
         removeDisable(DOMRefs.refs.btnAddEmployee);
         pagination.update({});
+        toggleModal(DOMRefs.refs.modalEmployees, false);
     }
 };
 
