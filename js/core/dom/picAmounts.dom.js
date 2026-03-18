@@ -51,7 +51,7 @@ export const createBtnUrl = (index, receiptUrl, payment) => {
 
     receiptContainer.append(receiptInput, receiptButton);
 
-    if (receiptUrl && receiptUrl.startsWith('http')) {
+    if (receiptUrl && receiptUrl.startsWith('http') || (payment?.file && payment.file instanceof File)) {
         receiptButton.classList.add("receiptLoaded");
         receiptButton.innerHTML = `<span class="icon">Ver comprobante</span>`;
     }

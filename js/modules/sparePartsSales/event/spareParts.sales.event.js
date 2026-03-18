@@ -3,18 +3,15 @@ import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/
 export const initSpareSaleEvents = ({
     Refs,
     onSubmitSpareSale,
-    onAddPayment,
     onSearchSparePart,
     onOrderClick,
     onSaveNotes
 }) => {
-    const { txtSearchData, txtAmount, txtNotes, frmSparePartSale, btnAddPayment, btnOrderPart } = Refs;
+    const { txtSearchData, txtAmount, txtNotes, frmSparePartSale, btnOrderPart } = Refs;
 
     let searchTimeout = null;
 
     frmSparePartSale.addEventListener("submit", onSubmitSpareSale);
-
-    btnAddPayment.addEventListener("click", onAddPayment);
 
     txtNotes.addEventListener("input", onSaveNotes);
 

@@ -16,14 +16,14 @@ import {
     removeDisable,
     qsa
 } from '../../../utils/dom.js';
-import { spareSaleState } from '../../../core/state/spareParts.sales.state.js';
+import { resetSpareSaleState, spareSaleState } from '../../../core/state/spareParts.sales.state.js';
 import { initSpareSaleEvents } from '../event/spareParts.sales.event.js';
-import { cleanPaymentCamps, createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
+import { createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals } from '../../../core/dom/spareParts.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale, verifyIds } from '../../../core/logic/spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { getCurrentEmployeeId, initSession } from '../../../utils/api.utils.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments } from '../../payments/payments.controller.js';
-import { safeParseFloat, validatePayment } from '../../../utils/validators.js';
+import { safeParseFloat } from '../../../utils/validators.js';
 
 const pagination = createPagination({
     initialSize: spareSaleState.pagination.size,
@@ -34,7 +34,7 @@ const pagination = createPagination({
     }
 });
 
-export const loadInventory = async() => {
+export const loadInventory = async () => {
     try {
         showElement(DOMRefs.refs.loaderSpareParts);
         const { page, size } = spareSaleState.pagination;
@@ -50,7 +50,7 @@ export const loadInventory = async() => {
         spareSaleState.pagination.total = data.page.totalElements;
         spareSaleState.pagination.totalPages = data.page.totalPages;
 
-        insertSpareParts(spareSaleState.list, DOMRefs.refs.tableBody,DOMRefs.refs.tableInventory, verifyIds, onAddSparePart);
+        insertSpareParts(spareSaleState.list, DOMRefs.refs.tableBody, DOMRefs.refs.tableInventory, verifyIds, onAddSparePart);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -115,9 +115,9 @@ const onDeleteSparePart = (container, tr, id, idSaleItem) => {
     pagination.update({});
 };
 
-const onSubmitSpareSale = async(e) => {
+const onSubmitSpareSale = async (e) => {
     e.preventDefault();
-    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .finalPrice, .btnAddItem");
+    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .finalPrice, .btnAddItem, .btnEdit");
     const invalidate = validateSale();
     if (invalidate) {
         await showMessage("Error de validación", invalidate, 'warning');
@@ -130,8 +130,10 @@ const onSubmitSpareSale = async(e) => {
     } else {
         payload = buildPostSalePayload(spareSaleState);
     }
+
     showElement(DOMRefs.refs.loaderAddSale);
     camps.forEach(disableElement);
+
     try {
         let response;
         if (spareSaleState.context.idSale) {
@@ -158,25 +160,6 @@ const onSubmitSpareSale = async(e) => {
         hideElement(DOMRefs.refs.loaderAddSale);
         camps.forEach(removeDisable);
     }
-};
-const onAddPayment = () => {
-    const amount = DOMRefs.refs.txtAmount;
-    const method = DOMRefs.refs.paymentMethod;
-    const errorMsg = validatePayment(safeParseFloat(amount.value.trim()), method.value);
-    if (errorMsg) {
-        showMessage('Error de validación', errorMsg, 'warning');
-        return;
-    }
-    const payment = {
-        amount: safeParseFloat(amount.value.trim()) || 0,
-        idPaymentMethod: method.value || null
-    };
-    addNewPayment({
-        state: spareSaleState.data,
-        totals: spareSaleState.totals,
-        payment
-    });
-    cleanPaymentCamps(amount, method);
 };
 
 const onWritePrice = (price, id) => {
@@ -238,7 +221,7 @@ const existSavedData = () => {
     return localStorage.getItem(spareSaleState.saleKey) !== null;
 };
 
-const loadExistingSale = async(txtNotes, btnSaveSale) => {
+const loadExistingSale = async (txtNotes, btnSaveSale) => {
     const sale = await getSparePartById(spareSaleState.context.idSale);
 
     spareSaleState.data.notes = sale.notes || '';
@@ -295,7 +278,8 @@ const cleanOneShotParams = () => {
     window.history.replaceState({}, document.title, url.toString());
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
+    resetSpareSaleState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -306,13 +290,13 @@ const setupApplication = async() => {
     return true;
 };
 
-const initializeUI = async(Refs) => {
+const initializeUI = async (Refs) => {
     loadCustomerName(Refs.customerName, spareSaleState.context.customerName);
-    initSpareSaleEvents({ Refs, onSubmitSpareSale, onAddPayment, onSearchSparePart, onOrderClick, onSaveNotes });
-    await initPaymentsController({ totalCalculator: recalculateTotals, onStateChange: saveSaleState });
+    initSpareSaleEvents({ Refs, onSubmitSpareSale, onSearchSparePart, onOrderClick, onSaveNotes });
+    await initPaymentsController({ totalCalculator: recalculateTotals, onStateChange: saveSaleState, state: spareSaleState });
 };
 
-const loadDataFlow = async(Refs) => {
+const loadDataFlow = async (Refs) => {
     if (spareSaleState.context.idSale) {
         await loadExistingSale(Refs.txtNotes, Refs.btnSaveSale);
     } else if (existSavedData()) {
@@ -327,7 +311,7 @@ const loadDataFlow = async(Refs) => {
     await loadInventory();
 };
 
-document.addEventListener("DOMContentLoaded", async() => {
+document.addEventListener("DOMContentLoaded", async () => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

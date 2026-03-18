@@ -1,7 +1,7 @@
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
-export const initVehicleSaleEvents = ({ Refs, onSubmitVehicleSale, onSearchVehicle, onAddPayment, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle }) => {
-    const { txtSearchData, btnCreateOrder, btnSaveSale, frmVehicleSale, btnAddPart, btnAddPayment, txtAmount, btnCancelVehicle, txtNotes, txtCommission, txtTotal } = Refs;
+export const initVehicleSaleEvents = ({ Refs, onSubmitVehicleSale, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle }) => {
+    const { txtSearchData, btnCreateOrder, btnSaveSale, frmVehicleSale, btnAddPart, txtAmount, btnCancelVehicle, txtNotes, txtCommission, txtTotal } = Refs;
     let searchTimeout = null;
     let pendingWorkOrder = false;
 
@@ -17,8 +17,6 @@ export const initVehicleSaleEvents = ({ Refs, onSubmitVehicleSale, onSearchVehic
         onSubmitVehicleSale(e, pendingWorkOrder);
     });
     btnAddPart.addEventListener("click", onImportVehicle);
-
-    btnAddPayment.addEventListener("click", onAddPayment);
 
     txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
     txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));

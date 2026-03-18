@@ -28,7 +28,7 @@ export const loadStats = (data, Refs) => {
     Refs.finalized.textContent = data.statistics.finalized;
     Refs.pending.textContent = data.statistics.pending;
     Refs.delayed.textContent = data.statistics.delayed;
-    Refs.totalOrdersQuantity.textContent = `$${formatWithCommas(data.statistics.totalBilled)}`;
+    Refs.totalOrdersQuantity.textContent = formatWithCommas(data.statistics.totalBilled);
 };
 
 export const loadVehicleInfo = (data, Refs) => {
@@ -94,10 +94,10 @@ export const insertWorkOrderHistory = (container, workOrders, onActions, tableHi
         }
 
         const tdCost = document.createElement("td");
-        tdCost.textContent = `$${formatWithCommas(wo.repairCost)}`;
+        tdCost.textContent = formatWithCommas(wo.repairCost);
 
         const tdDue = document.createElement("td");
-        tdDue.textContent = `$${formatWithCommas(wo.amountDue)}`;
+        tdDue.textContent = formatWithCommas(wo.amountDue);
         if (wo.amountDue > 0) tdDue.classList.add("textDanger");
 
         /* ACCIONES (MENÚ FLOTANTE) */

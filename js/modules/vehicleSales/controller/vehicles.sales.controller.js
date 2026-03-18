@@ -8,16 +8,16 @@ import {
 import { getVehicles as getVehicleById } from '../../../service/vehicles.detail.service.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
 import { showMessage, hideElement, showElement, disableElement, removeDisable, qsa } from '../../../utils/dom.js';
-import { vehicleSaleState } from '../../../core/state/vehicles.sales.state.js';
+import { resetVehicleSaleState, vehicleSaleState } from '../../../core/state/vehicles.sales.state.js';
 import { initVehicleSaleEvents } from '../event/vehicles.sales.events.js';
 import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
-import { cleanPaymentCamps, DOMRefs, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals } from '../../../core/dom/vehicles.sales.dom.js';
+import { DOMRefs, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals } from '../../../core/dom/vehicles.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from '../../../core/logic/vehicles.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { getCurrentEmployeeId, initSession } from '../../../utils/api.utils.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments, onResetPayments } from '../../payments/payments.controller.js';
 import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
-import { safeParseFloat, validatePayment } from '../../../utils/validators.js';
+import { safeParseFloat } from '../../../utils/validators.js';
 import { workOrderDetailsState } from '../../../core/state/workOrder.details.state.js';
 import { generateVehicleSaleReport } from '../../../core/reports/workorders/vehicles.sales.report.js';
 
@@ -106,52 +106,24 @@ const onCancelVehicle = () => {
     recalculateTotals();
 };
 
-/* ================= PAYMENTS ================= */
-const onAddPayment = () => {
-    const amount = DOMRefs.refs.txtAmount.value.trim();
-    const method = DOMRefs.refs.cmbPaymentMethod.value;
-    const errorMsg = validatePayment(safeParseFloat(amount), method);
-    if (errorMsg) {
-        showMessage('Error de validación', errorMsg, 'warning');
-        return;
-    }
-    const payment = {
-        amount: safeParseFloat(amount) || 0,
-        idPaymentMethod: method || null
-    };
-    addNewPayment({
-        state: vehicleSaleState.data,
-        totals: vehicleSaleState.totals,
-        payment
-    });
-    cleanPaymentCamps(DOMRefs.refs.txtAmount, DOMRefs.refs.cmbPaymentMethod);
-};
-
 /* ================= SUBMIT ================= */
 export const onSubmitVehicleSale = async (e, isWorkOrder) => {
     e.preventDefault();
     const response = await createNewSale(isWorkOrder);
-    if (response) {
+    if (response && typeof response === 'object' && response.idSale) {
         window.location.href = `addWorkOrder.html?idSale=${response.idSale}&customerName=${encodeURIComponent(response.customerName)}&idVehicle=${response.idVehicle}&idCustomer=${vehicleSaleState.context.idCustomer}&totalPrice=${response.price}`;
-    } else {
+    } else if (response === "sale") {
         window.location.href = 'sales.html';
     }
 };
 
 const createNewSale = async (isWorkOrder) => {
     const invalidate = validateSale(vehicleSaleState.data, vehicleSaleState.idVehicle, vehicleSaleState.context.idCustomer, vehicleSaleState.context.idSale);
-    const camps = qsa(".txtInputs, .btnPrimary, .btnSecondary, .btnTrash");
+    const camps = qsa(".txtInputs, .btnPrimary, .btnSecondary, .btnTrash, .btnEdit");
     if (invalidate) {
         await showMessage('Error de validación', invalidate, 'warning');
         return;
     }
-    if (isWorkOrder) {
-        showElement(DOMRefs.refs.btnCreateOrderLoader);
-    } else {
-        showElement(DOMRefs.refs.btnSaveSaleLoader);
-    }
-
-    camps.forEach(disableElement);
 
     let payload;
     if (vehicleSaleState.context.idSale) {
@@ -162,8 +134,16 @@ const createNewSale = async (isWorkOrder) => {
 
     if (payload.error) {
         await showMessage('Error', payload.error, 'warning');
-        return;
+        return false;
     }
+
+    if (isWorkOrder) {
+        showElement(DOMRefs.refs.btnCreateOrderLoader);
+    } else {
+        showElement(DOMRefs.refs.btnSaveSaleLoader);
+    }
+
+    camps.forEach(disableElement);
     try {
         let response;
         if (vehicleSaleState.context.idSale) {
@@ -185,7 +165,7 @@ const createNewSale = async (isWorkOrder) => {
                     idSale: response.data.idSale
                 };
             } else {
-                return false;
+                return "sale";
             }
         };
 
@@ -299,14 +279,16 @@ const initializeUI = async (Refs) => {
         totalCalculator: recalculateTotals,
         onStateChange: saveSaleState,
         createReceiptBtn: createBtnUrl,
-        isView: vehicleSaleState.context.isView
+        isView: vehicleSaleState.context.isView,
+        state: vehicleSaleState
     });
     loadCustomerName(DOMRefs.refs.customerName, vehicleSaleState.context.customerName);
-    initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onAddPayment, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
+    initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
     initializeModalListeners(vehicleSaleState.data, vehicleSaleState.context.isView);
 };
 
 const setupApplication = async () => {
+    resetVehicleSaleState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;

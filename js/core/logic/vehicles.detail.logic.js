@@ -25,31 +25,6 @@ const validateDuplicateImages = (currentImages = [], newFiles = []) => {
     return null;
 };
 
-export const resetState = () => {
-    vehicleDetailState.context.currentId = null;
-    vehicleDetailState.context.hasSale = null;
-    vehicleDetailState.context.hasWorkOrder = null;
-    vehicleDetailState.context.idCustomer = null;
-    vehicleDetailState.context.customerName = null;
-
-    vehicleDetailState.customerId = null;
-    vehicleDetailState.isExternal = false;
-    vehicleDetailState.images = [];
-    vehicleDetailState.photosToDeleteIds = [];
-    vehicleDetailState.currentUploadType = null;
-
-    vehicleDetailState.uploads.bill = null;
-    vehicleDetailState.uploads.taxes = null;
-    vehicleDetailState.uploads.ship = null;
-
-    vehicleDetailState.urls.bill = null;
-    vehicleDetailState.urls.taxes = null;
-    vehicleDetailState.urls.ship = null;
-
-    vehicleDetailState.costsId = null;
-    vehicleDetailState.loteId = null;
-};
-
 export const calculateTotal = (txtCosts, txtTotal) => {
     let total = 0;
     txtCosts.forEach(input => {

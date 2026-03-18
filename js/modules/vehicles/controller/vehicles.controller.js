@@ -1,4 +1,4 @@
-import { vehiclesState } from '../../../core/state/vehicles.state.js';
+import { resetVehiclesState, vehiclesState } from '../../../core/state/vehicles.state.js';
 import { DOMRefs, insertVehicles } from '../../../core/dom/vehicles.dom.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
 import { getVehicles, getStatus } from '../../../service/vehicles.service.js';
@@ -15,7 +15,7 @@ const pagination = createPagination({
     }
 });
 
-const loadStatusSelect = async() => {
+const loadStatusSelect = async () => {
     try {
         const status = await getStatus();
         vehiclesState.statusList = status;
@@ -30,7 +30,7 @@ const loadStatusSelect = async() => {
     }
 };
 
-const loadVehicles = async() => {
+const loadVehicles = async () => {
     try {
         showElement(DOMRefs.refs.loaderVehicles);
         const { page, size } = vehiclesState.pagination;
@@ -81,7 +81,8 @@ const hydrateContextFromURL = () => {
     vehiclesState.context.hasWorkOrder = !!params.get("workOrder");
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
+    resetVehiclesState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -99,11 +100,11 @@ const initializeUI = (Refs) => {
     }
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     await Promise.all([loadStatusSelect(), loadVehicles()]);
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         // 1. Configurar aplicación
         const isReady = await setupApplication();

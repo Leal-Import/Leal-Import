@@ -1,7 +1,7 @@
 // modules/workOrderHistory/workOrderHistory.controller.js
 
 import { DOMRefs, insertWorkOrderHistory, loadStats, loadVehicleInfo } from "../../../core/dom/workOrder.history.dom.js";
-import { workOrderHistoryState } from "../../../core/state/workOrder.history.state.js";
+import { resetWorkOrderHistoryState, workOrderHistoryState } from "../../../core/state/workOrder.history.state.js";
 import { createPagination } from "../../../pagination/pagination.controller.js";
 import { getDetailsOrders, getDashboardWorkorder } from "../../../service/workOrder.history.service.js";
 import { getWOStatus } from "../../../service/workOrders.service.js";
@@ -138,6 +138,7 @@ const loadBtnAdd = () => {
 };
 
 const setupApplication = async() => {
+    resetWorkOrderHistoryState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;

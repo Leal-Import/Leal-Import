@@ -1,6 +1,6 @@
 import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, resetInputType, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "../../core/dom/configuration.dom.js";
 import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword, validateProfile, validateUsernameChange } from "../../core/logic/configuration.logic.js";
-import { configurationState } from "../../core/state/configuration.state.js";
+import { configurationState, resetConfigurationState } from "../../core/state/configuration.state.js";
 import { getCurrentEmployee, initSession } from "../../utils/api.utils.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { initConfigurationEvents } from "./configuration.event.js";
@@ -305,6 +305,7 @@ const loadDataFlow = (Refs) => {
 };
 
 const setupApplication = async () => {
+    resetConfigurationState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;

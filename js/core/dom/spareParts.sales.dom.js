@@ -75,8 +75,8 @@ export const insertSpareParts = (
         console.log(sparePart);
         image.src = sparePart.photoUrl || "";
         name.textContent = sparePart.nameSpareParts || sparePart.sparePartName;
-        cost.textContent = `$${formatWithCommas(sparePart.total || sparePart.totalCost || 0)}`;
-        suggestedPriceTd.textContent = `$${formatWithCommas(sparePart.suggestedPrice || sparePart.priceApplied || 0)}`;
+        cost.textContent = formatWithCommas(sparePart.total || sparePart.totalCost || 0);
+        suggestedPriceTd.textContent = formatWithCommas(sparePart.suggestedPrice || sparePart.priceApplied || 0);
 
         tr.classList.add("tableRow");
         image.classList.add("imgTable");
@@ -118,7 +118,7 @@ export const createRowTable = (container, sparePart, onDeleteSparePart, onWriteP
     const tdTrash = document.createElement("td");
 
     partName.textContent = name;
-    tdPrice.textContent = "$" + formatWithCommas(priceApplied);
+    tdPrice.textContent = formatWithCommas(priceApplied);
 
     partName.classList.add("sparePartName");
     tdPrice.classList.add("finalPrice");
@@ -203,17 +203,12 @@ export const loadNotes = (txtNotes, notes) => {
 //A esto todavia le falta diseño
 export const renderTotals = ({ total, due, totalPaid }, Refs) => {
     if (Refs.totalPaid) {
-        Refs.totalPaid.textContent = `$${formatWithCommas(totalPaid)}`;
+        Refs.totalPaid.textContent = formatWithCommas(totalPaid);
     }
     if (Refs.due) {
-        Refs.due.textContent = `$${formatWithCommas(due)}`;
+        Refs.due.textContent = formatWithCommas(due);
     }
     if (Refs.totalSale) {
-        Refs.totalSale.textContent = `$${formatWithCommas(total)}`;
+        Refs.totalSale.textContent = formatWithCommas(total);
     }
-};
-
-export const cleanPaymentCamps = (txtAmount, paymentMethod) => {
-    if (txtAmount) txtAmount.value = '';
-    if (paymentMethod) paymentMethod.value = '';
 };

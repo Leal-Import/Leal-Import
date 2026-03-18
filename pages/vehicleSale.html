@@ -293,7 +293,11 @@
                                 <option value="">Cargando...</option>
                             </select>
                         </div>
-                        <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
+                        <div class="containerActionsPayments">
+                            <button id="btnCancelEdit" class="btnSecondary hide" type="button">Cancelar edición</button>
+                            <div class="separatorDiv"></div>
+                            <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button> 
+                        </div>
                     </div>
 
                     <!-- Payments List -->
@@ -331,7 +335,7 @@
                     <!-- Final Price -->
                     <div class="formGroup">
                         <label class="lblInputs" for="txtTotal">Precio final del vehículo</label>
-                        <input type="text" class="txtInputs" id="txtTotal" placeholder="$0.00">
+                        <input type="text" class="txtInputs" required id="txtTotal" placeholder="$0.00">
                     </div>
 
                     <!-- Action Buttons -->
@@ -352,12 +356,12 @@
             </div>
         </div>
     </div>
-    <script src="../js/components/sidebar.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/vehicleSales/controller/vehicles.sales.controller.js"></script>
+    <script src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

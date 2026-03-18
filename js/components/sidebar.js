@@ -1,8 +1,4 @@
-'use strict';
-
-const loadSidebar = () => {
-    const nav = document.getElementById('sidebar');
-    nav.innerHTML = `
+const getSidebarTemplate = () => `
     <div class="navbarContainer">
         <div class="navbar">
 
@@ -11,7 +7,7 @@ const loadSidebar = () => {
                     <img src="" alt="Logo" class="logo" id="logo">
                     <span class="logoWordmark" id="logoWordmark">Ris<span>kor</span></span>
                 </div>
-                <button id="btnNavbar" title="Toggle sidebar">
+                <button id="btnNavbar" title="Toggle sidebar" type="button">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="15 18 9 12 15 6"/>
@@ -156,159 +152,211 @@ const loadSidebar = () => {
 
         </div>
     </div>`;
-};
 
-const loadMobileHeader = () => {
-    const mobileHeader = document.querySelector(".containerMobileHeader");
-    mobileHeader.innerHTML = `                
-                <div class="mobileHeader">
-                    <button class="menuToggle" id="menuToggle" aria-label="Toggle menu" type="button">☰</button>
-                    <div class="mobileHeaderLogo">Ris<span>kor</span></div>
-                    <div style="width: 40px;"></div>
-                </div>`;
-};
+const getMobileHeaderTemplate = () => `
+    <div class="mobileHeader">
+        <button class="menuToggle" id="menuToggle" aria-label="Toggle menu" type="button">☰</button>
+        <div class="mobileHeaderLogo">Ris<span>kor</span></div>
+        <div style="width: 40px;"></div>
+    </div>`;
 
-const REFS = {
-    sidebar: null,
-    btnNavbar: null,
-    logo: null,
-    menuItems: null,
-    itemsNav: null,
-    menuToggle: null,
-    STORAGE_KEY: null
-};
+// ═══════════════════════════════════════
+// STORAGE KEYS
+// ═══════════════════════════════════════
+
+const STORAGE_KEY     = 'app.sidebar.collapsed';
+const STORAGE_NAV     = 'navItem';
+const STORAGE_NAME    = 'app.user.name';
+const STORAGE_ROLE    = 'app.user.role';
+
+// ═══════════════════════════════════════
+// REFERENCIAS (encapsuladas — no globales)
+// ═══════════════════════════════════════
+
+let refs = {};
 
 const initReferences = () => {
-    REFS.sidebar = document.getElementById('sidebar');
-    REFS.btnNavbar = document.getElementById('btnNavbar');
-    REFS.logo = document.getElementById('logo');
-    REFS.menuItems = document.querySelectorAll('.navbarItem');
-    REFS.itemsNav = document.querySelectorAll('.itemNav');
-    REFS.menuToggle = document.getElementById('menuToggle');
-    REFS.STORAGE_KEY = 'riskor.sidebar.collapsed';
+    refs = {
+        sidebar:     document.getElementById('sidebar'),
+        btnNavbar:   document.getElementById('btnNavbar'),
+        logo:        document.getElementById('logo'),
+        menuItems:   document.querySelectorAll('.navbarItem'),
+        itemsNav:    document.querySelectorAll('.itemNav'),
+        menuToggle:  document.getElementById('menuToggle'),
+        userName:    document.getElementById('userName'),
+        userRole:    document.getElementById('userRole')
+    };
 };
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
 
 const isMobile = () => window.innerWidth < 1225;
 
-/*
- * APLICA EL ESTADO COLAPSADO SINCRÓNICAMENTE
- */
-const applyInitialState = () => {
-    const collapsed = localStorage.getItem(REFS.STORAGE_KEY);
+const isCollapsed = () => localStorage.getItem(STORAGE_KEY) === '1';
 
-    if (isMobile()) {
-        // En móvil: cerrar por defecto si es primera carga
-        if (collapsed === null) {
-            REFS.sidebar.classList.add('navMobileHidden');
-            localStorage.setItem(REFS.STORAGE_KEY, '1');
-        } else if (collapsed === '1') {
-            REFS.sidebar.classList.add('navMobileHidden');
-        }
-    } else {
-        // En desktop: aplicar estado colapsado si existe
-        if (collapsed === '1') {
-            REFS.sidebar.classList.add('navbarCollapsed');
-            REFS.btnNavbar.classList.add('rotate180');
-            REFS.btnNavbar.classList.add('btnNavClose');
-        }
-    }
-};
+const saveCollapsed = (value) => localStorage.setItem(STORAGE_KEY, value ? '1' : '0');
 
-/* --- Helper general applyState (para toggle y resize) --- */
+// ═══════════════════════════════════════
+// ESTADO DEL SIDEBAR
+// ═══════════════════════════════════════
+
 const applyState = (collapsed) => {
     if (isMobile()) {
-        REFS.sidebar.classList.remove('navbarCollapsed');
-        REFS.sidebar.classList.toggle('navMobileHidden', collapsed);
+        refs.sidebar.classList.remove('navbarCollapsed');
+        refs.sidebar.classList.toggle('navMobileHidden', collapsed);
     } else {
-        REFS.sidebar.classList.remove('navMobileHidden');
-        REFS.sidebar.classList.toggle('navbarCollapsed', collapsed);
+        refs.sidebar.classList.remove('navMobileHidden');
+        refs.sidebar.classList.toggle('navbarCollapsed', collapsed);
     }
-    REFS.btnNavbar.classList.toggle('rotate180', collapsed);
-    REFS.btnNavbar.classList.toggle('btnNavClose', collapsed);
+    refs.btnNavbar.classList.toggle('rotate180', collapsed);
+    refs.btnNavbar.classList.toggle('btnNavClose', collapsed);
 };
 
-/* --- Restaura el item activo --- */
-const restoreActiveItem = () => {
-    const savedId = localStorage.getItem('navItem');
-    REFS.menuItems.forEach(el => el.classList.remove('activeNavbarItem'));
-    if (savedId) {
-        const active = document.getElementById(savedId);
-        if (active) active.classList.add('activeNavbarItem');
+const applyInitialState = () => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (isMobile()) {
+        const collapsed = saved === null ? true : saved === '1';
+        if (collapsed) refs.sidebar.classList.add('navMobileHidden');
+        if (saved === null) saveCollapsed(true);
+    } else {
+        if (saved === '1') {
+            refs.sidebar.classList.add('navbarCollapsed');
+            refs.btnNavbar.classList.add('rotate180', 'btnNavClose');
+        }
     }
 };
+
+// ═══════════════════════════════════════
+// ITEM ACTIVO
+// ═══════════════════════════════════════
+
+const restoreActiveItem = () => {
+    const savedId = localStorage.getItem(STORAGE_NAV);
+    refs.menuItems.forEach(el => el.classList.remove('activeNavbarItem'));
+    if (!savedId) return;
+    const active = document.getElementById(savedId);
+    if (active) active.classList.add('activeNavbarItem');
+};
+
+// ═══════════════════════════════════════
+// USUARIO
+// ═══════════════════════════════════════
+
+const loadUserInfo = () => {
+    if (refs.userName) refs.userName.textContent = localStorage.getItem(STORAGE_NAME) || 'Usuario';
+    if (refs.userRole) refs.userRole.textContent  = localStorage.getItem(STORAGE_ROLE)  || 'Rol';
+};
+
+// ═══════════════════════════════════════
+// EVENTOS
+// ═══════════════════════════════════════
 
 const initEvents = () => {
-    /* --- Click en item: marca activo --- */
-    REFS.menuItems.forEach(item => {
+
+    // Marcar item activo al hacer click
+    refs.menuItems.forEach(item => {
         item.addEventListener('click', () => {
-            REFS.menuItems.forEach(el => el.classList.remove('activeNavbarItem'));
+            refs.menuItems.forEach(el => el.classList.remove('activeNavbarItem'));
             item.classList.add('activeNavbarItem');
         });
     });
 
-    /* --- Navegacion --- */
-    REFS.itemsNav.forEach(item => {
+    // Navegación con localStorage
+    refs.itemsNav.forEach(item => {
         item.addEventListener('click', e => {
             e.preventDefault();
-            localStorage.setItem('navItem', item.id);
+            localStorage.setItem(STORAGE_NAV, item.id);
             window.location.href = item.href;
         });
     });
 
-    /* --- Boton toggle DESKTOP (dentro del sidebar) --- */
-    REFS.btnNavbar.addEventListener('click', () => {
-        if (isMobile()) {
-            return; // No hacer nada en móvil
-        } else {
-            const isCollapsed = REFS.sidebar.classList.toggle('navbarCollapsed');
-            REFS.btnNavbar.classList.toggle('rotate180', isCollapsed);
-            REFS.btnNavbar.classList.toggle('btnNavClose', isCollapsed);
-            localStorage.setItem(REFS.STORAGE_KEY, isCollapsed ? '1' : '0');
-        }
+    // Toggle desktop
+    refs.btnNavbar.addEventListener('click', () => {
+        if (isMobile()) return;
+        const collapsed = refs.sidebar.classList.toggle('navbarCollapsed');
+        refs.btnNavbar.classList.toggle('rotate180', collapsed);
+        refs.btnNavbar.classList.toggle('btnNavClose', collapsed);
+        saveCollapsed(collapsed);
     });
 
-    /* --- Boton hamburguesa MÓVIL (en el header) --- */
-    if (REFS.menuToggle) {
-        REFS.menuToggle.addEventListener('click', () => {
-            const isHidden = REFS.sidebar.classList.toggle('navMobileHidden');
-            localStorage.setItem(REFS.STORAGE_KEY, isHidden ? '1' : '0');
+    // Toggle móvil (hamburguesa)
+    if (refs.menuToggle) {
+        refs.menuToggle.addEventListener('click', () => {
+            const hidden = refs.sidebar.classList.toggle('navMobileHidden');
+            saveCollapsed(hidden);
         });
     }
 
-    /* --- Clic en overlay movil: cierra sidebar --- */
-    REFS.sidebar.addEventListener('click', e => {
+    // Cerrar sidebar al click en overlay móvil
+    refs.sidebar.addEventListener('click', e => {
         if (!isMobile()) return;
-        if (e.target === REFS.sidebar) {
-            REFS.sidebar.classList.add('navMobileHidden');
-            localStorage.setItem(REFS.STORAGE_KEY, '1');
+        if (e.target === refs.sidebar) {
+            refs.sidebar.classList.add('navMobileHidden');
+            saveCollapsed(true);
         }
     });
 
-    /* --- Resize: re-aplica el estado guardado para el nuevo breakpoint --- */
-    window.addEventListener('resize', () => {
-        const collapsed = localStorage.getItem(REFS.STORAGE_KEY) === '1';
-        applyState(collapsed);
-    });
+    // Resize — re-aplica estado al cambiar breakpoint
+    window.addEventListener('resize', () => applyState(isCollapsed()));
 
-    /* --- Logo click --- */
-    REFS.logo.addEventListener('click', () => {
-        window.location.href = '../pages/dashboard.html';
-    });
+    // Logo — navegar al dashboard
+    if (refs.logo) {
+        refs.logo.addEventListener('click', () => {
+            window.location.href = '../pages/dashboard.html';
+        });
+    }
 };
 
-/* --- DOMContentLoaded --- */
+// ═══════════════════════════════════════
+// SCROLLBAR FADE
+// ═══════════════════════════════════════
+
+const initScrollbarFade = () => {
+    const el = document.querySelector('.navBody');
+    if (!el) return;
+
+    el.classList.add('sbIdle');
+    el.style.setProperty('--sb-op', '0');
+
+    let timer;
+    const HIDE_MS = 800;
+
+    const show = () => {
+        el.classList.remove('sbIdle');
+        el.style.setProperty('--sb-op', '1');
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            el.classList.add('sbIdle');
+            el.style.setProperty('--sb-op', '0');
+        }, HIDE_MS);
+    };
+
+    ['scroll', 'wheel', 'mouseenter', 'touchmove', 'pointerdown'].forEach(evt =>
+        el.addEventListener(evt, show, { passive: true })
+    );
+};
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+
 window.addEventListener('DOMContentLoaded', () => {
-    loadSidebar();
-    loadMobileHeader();
+    // 1. Inyectar HTML
+    document.getElementById('sidebar').innerHTML = getSidebarTemplate();
+    document.querySelector('.containerMobileHeader').innerHTML = getMobileHeaderTemplate();
+
+    // 2. Inicializar referencias
     initReferences();
+
+    // 3. Restaurar estado visual antes de mostrar UI
     restoreActiveItem();
-
-    // Aplicar estado inicial ANTES de mostrar la UI
     applyInitialState();
+    loadUserInfo();
 
-    /*
-    * Activar transiciones DESPUES de que el estado ya esta aplicado
-    */
+    // 4. Activar transiciones después de aplicar estado inicial
     requestAnimationFrame(() => {
         document.body.classList.add('sidebarReady');
         requestAnimationFrame(() => {
@@ -316,33 +364,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 5. Inicializar eventos
     initEvents();
+    initScrollbarFade();
 });
-
-/* --- Scrollbar navBody: fade in/out --- */
-(function initScrollbarFade() {
-    setTimeout(() => {
-        const el = document.querySelector('.navBody');
-        if (!el) return;
-
-        el.classList.add('sbIdle');
-        el.style.setProperty('--sb-op', '0');
-
-        let t;
-        const HIDE_MS = 800;
-
-        const show = () => {
-            el.classList.remove('sbIdle');
-            el.style.setProperty('--sb-op', '1');
-            clearTimeout(t);
-            t = setTimeout(() => {
-                el.classList.add('sbIdle');
-                el.style.setProperty('--sb-op', '0');
-            }, HIDE_MS);
-        };
-
-        ['scroll', 'wheel', 'mouseenter', 'touchmove', 'pointerdown'].forEach(evt =>
-            el.addEventListener(evt, show, { passive: true })
-        );
-    }, 100);
-})();

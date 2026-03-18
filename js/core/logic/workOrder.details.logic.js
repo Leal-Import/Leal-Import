@@ -6,7 +6,7 @@ export const verifyIds = (state, idSparePart) => {
     return state.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
 };
 
-export const hydrateContextFromURL = async(state) => {
+export const hydrateContextFromURL = async (state) => {
     const params = new URLSearchParams(window.location.search);
 
     const idCustomer = asUUID(getNullableParam(params.get('idCustomer')));
@@ -96,14 +96,7 @@ export const cleanWindow = () => {
     $("frmWorkOrder").reset();
 };
 
-export const validatePostOrder = (data, idVehicle) => {
-    const {
-        selectedServices,
-        selectedSpareParts,
-        payments,
-        estimatedDate
-    } = data;
-
+const validateBaseOrder = (estimatedDate, selectedServices, selectedSpareParts, payments, total, idVehicle) => {
     if (!idVehicle) {
         return 'Debe seleccionar un vehículo.';
     }
@@ -115,6 +108,23 @@ export const validatePostOrder = (data, idVehicle) => {
     if (!selectedServices.length && !selectedSpareParts.length) {
         return 'Debe agregar al menos un servicio o un repuesto.';
     }
+
+    const totalAmounts = payments.reduce((acc, p) => acc + safeParseFloat(p.amount), 0);
+    if (totalAmounts > total) return 'El total de los abonos no puede superar el total de la orden.';
+
+    return null;
+};
+
+export const validatePostOrder = (data, idVehicle, total) => {
+    const {
+        selectedServices,
+        selectedSpareParts,
+        payments,
+        estimatedDate
+    } = data;
+
+    const baseOrderError = validateBaseOrder(estimatedDate, selectedServices, selectedSpareParts, payments, total, idVehicle);
+    if (baseOrderError) return baseOrderError;
 
     if (!payments.length) {
         return 'Debe registrar al menos un abono.';
@@ -139,7 +149,7 @@ export const validatePostOrder = (data, idVehicle) => {
     return null;
 };
 
-export const validatePutOrder = (data, idVehicle) => {
+export const validatePutOrder = (data, idVehicle, total) => {
     const {
         selectedServices,
         selectedSpareParts,
@@ -147,17 +157,8 @@ export const validatePutOrder = (data, idVehicle) => {
         estimatedDate
     } = data;
 
-    if (!idVehicle) {
-        return 'Datos de cliente o vehículo inválidos.';
-    }
-
-    if (!estimatedDate) {
-        return 'Debe ingresar la fecha estimada.';
-    }
-
-    if (!selectedServices.length && !selectedSpareParts.length) {
-        return 'Debe mantener al menos un servicio o repuesto.';
-    }
+    const baseOrderError = validateBaseOrder(estimatedDate, selectedServices, selectedSpareParts, payments, total, idVehicle);
+    if (baseOrderError) return baseOrderError;
 
     for (let i = 0; i < payments.length; i++) {
         const p = payments[i];

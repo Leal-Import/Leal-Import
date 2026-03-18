@@ -70,7 +70,7 @@ const createHeader = (vehicle) => {
 
     const price = document.createElement('span');
     price.classList.add('vehiclePrice');
-    price.textContent = `$${formatWithCommas(vehicle.total || 0)}`;
+    price.textContent = formatWithCommas(vehicle.total || 0);
 
     header.appendChild(brand);
     header.appendChild(price);

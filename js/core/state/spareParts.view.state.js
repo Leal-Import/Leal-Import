@@ -4,3 +4,10 @@ export const sparePartViewState = {
     },
     sparePart: null
 };
+
+export const resetSparePartViewState = () => {
+    sparePartViewState.context = {
+        idSparePart: null
+    };
+    sparePartViewState.sparePart = null;
+};

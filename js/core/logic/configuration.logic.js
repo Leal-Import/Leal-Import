@@ -76,3 +76,4 @@ export const validateProfile = (fullName, email, phone) => {
     }
     return null;
 };
+

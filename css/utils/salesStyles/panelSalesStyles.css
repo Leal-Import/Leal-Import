@@ -13,6 +13,22 @@
     flex: 1;
 }
 
+.paymentUpActions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.containerActionsPayments{
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.containerActionsPayments .btnAddPayment {
+    align-self: end;
+}
+
 .rightColumn .formGroup {
     flex: 0;
 }

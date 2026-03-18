@@ -1,5 +1,5 @@
 import { postCustomer, putCustomer, getCustomers, patchCustomer } from '../../service/customers.service.js';
-import { customersState } from '../../core/state/customers.state.js';
+import { customersState, resetCustomersState } from '../../core/state/customers.state.js';
 import { toggleModal, showMessage, showFloatingMenu, setFormReadOnly, showElement, hideElement, disableElement, removeDisable } from '../../utils/dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateCustomer, mapCustomerForm } from '../../core/logic/customers.logic.js';
@@ -18,7 +18,7 @@ const pagination = createPagination({
     }
 });
 
-export const loadCustomers = async() => {
+export const loadCustomers = async () => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customersState.pagination;
@@ -85,7 +85,7 @@ const handleCustomerActions = (event, customer) => {
     ]);
 };
 
-const toggleCustomerStatus = async(id, status) => {
+const toggleCustomerStatus = async (id, status) => {
     try {
         await patchCustomer(id, status);
         showMessage('Cliente', status === STATUS.ACTIVE ? 'Cliente activado' : 'Cliente desactivado', 'success');
@@ -130,7 +130,7 @@ const onCloseModal = () => {
     toggleModal(DOMRefs.refs.modalCustomers, false);
 };
 
-const onSubmitCustomer = async(e) => {
+const onSubmitCustomer = async (e) => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmCustomers));
@@ -175,7 +175,8 @@ const onSearchCustomer = (filters) => {
     loadCustomers();
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
+    resetCustomersState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -187,11 +188,11 @@ const initializeUI = (Refs) => {
     initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal });
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     await loadCustomers();
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         // 1. Configurar aplicación
         const isReady = await setupApplication();

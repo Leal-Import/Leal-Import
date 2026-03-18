@@ -1,4 +1,4 @@
-import { sparePartDetailState } from "../../../core/state/spareParts.detail.state.js";
+import { resetSparePartDetailState, sparePartDetailState } from "../../../core/state/spareParts.detail.state.js";
 import {
     fillSparePartsBaseForm,
     hydrateContextFromURL,
@@ -205,6 +205,7 @@ const onDragLeave = () => {
 };
 
 const setupApplication = async() => {
+    resetSparePartDetailState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;

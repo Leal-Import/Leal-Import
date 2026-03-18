@@ -1,7 +1,7 @@
-import { appendToDom, cleanPaymentCamps, cleanRow, DOMRefs, initStaticRows, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "../../../core/dom/workOrder.details.dom.js";
-import { workOrderDetailsState } from "../../../core/state/workOrder.details.state.js";
+import { appendToDom, cleanRow, DOMRefs, initStaticRows, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "../../../core/dom/workOrder.details.dom.js";
+import { resetWorkOrderDetailsState, workOrderDetailsState } from "../../../core/state/workOrder.details.state.js";
 import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "../../../service/workOrder.detail.service.js";
-import { safeParseFloat, validateDate, validatePayment } from "../../../utils/validators.js";
+import { safeParseFloat, validateDate } from "../../../utils/validators.js";
 import { disableElement, hideElement, qsa, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
 import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
 import { initWorkOrdersEvents } from "../event/workOrder.details.event.js";
@@ -99,47 +99,29 @@ const onSearchSpareParts = (e) => {
     onSearch(e, getSpareParts, renderSparePartSuggestions, DOMRefs.refs.boxSparePart, onAddSparePart, workOrderDetailsState.data.selectedSpareParts);
 };
 
-const onAddPayment = () => {
-    const amount = DOMRefs.refs.txtAmount;
-    const method = DOMRefs.refs.cmbPaymentMethod;
-    const errorMsg = validatePayment(safeParseFloat(amount.value.trim()), method.value);
-    if (errorMsg) {
-        showMessage('Error de validación', errorMsg, 'warning');
-        return;
-    }
-    const payment = {
-        amount: safeParseFloat(amount.value.trim()) || 0,
-        idPaymentMethod: method.value || null
-    };
-    addNewPayment({
-        state: workOrderDetailsState.data,
-        totals: workOrderDetailsState.totals,
-        payment
-    });
-    cleanPaymentCamps(amount, method);
-};
-
 const onSubmitOrder = async (e) => {
     e.preventDefault();
     const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnImport, .btnSecondary");
     let fd;
     if (workOrderDetailsState.context.idWorkOrder) {
-        const errorPut = validatePutOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle);
+        const errorPut = validatePutOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle, workOrderDetailsState.totals.total);
         if (errorPut) {
             showMessage('Error de validación', errorPut, 'warning');
             return;
         }
         fd = buildPutWorkOrderFormData(workOrderDetailsState);
     } else {
-        const errorPost = validatePostOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle);
+        const errorPost = validatePostOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle, workOrderDetailsState.totals.total);
         if (errorPost) {
             showMessage('Error de validación', errorPost, 'warning');
             return;
         }
         fd = buildPostWorkOrderFormData(workOrderDetailsState);
     }
+
     showElement(DOMRefs.refs.loaderAddOrder);
     camps.forEach(disableElement);
+
     try {
         let response;
         if (workOrderDetailsState.context.idWorkOrder) {
@@ -342,7 +324,7 @@ const loadWorkOrder = async (Refs) => {
 };
 
 const onCompleteOrder = async () => {
-    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnImport, .btnSecondary");
+    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnEdit, .btnImport, .btnSecondary");
     showElement(DOMRefs.refs.loaderCompleteOrder);
     camps.forEach(disableElement);
     try {
@@ -412,6 +394,7 @@ const initNewOrderFlow = async (Refs) => {
 };
 
 const setupApplication = async () => {
+    resetWorkOrderDetailsState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -434,14 +417,14 @@ const initializeUI = async (Refs) => {
         totalCalculator: recalculateTotalsPanel,
         onStateChange: null,
         createReceiptBtn: createBtnUrl,
-        isView: workOrderDetailsState.context.isView
+        isView: workOrderDetailsState.context.isView,
+        state: workOrderDetailsState
     });
 
     initWorkOrdersEvents({
         Refs,
         onSearchSpareParts,
         onSearchService,
-        onAddPayment,
         onSubmitOrder,
         onSaveNotes,
         onAddNewService,

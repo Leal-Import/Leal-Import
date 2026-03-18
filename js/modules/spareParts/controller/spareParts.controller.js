@@ -1,4 +1,4 @@
-import { sparePartsState } from '../../../core/state/spareParts.state.js';
+import { resetSparePartsState, sparePartsState } from '../../../core/state/spareParts.state.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
 import { showMessage, fillSelect, showElement, hideElement } from '../../../utils/dom.js';
 import { initSparePartsEvents } from '../event/spareParts.events.js';
@@ -73,6 +73,7 @@ export const onSearchSpareParts = (filters) => {
 };
 
 const setupApplication = async() => {
+    resetSparePartsState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;

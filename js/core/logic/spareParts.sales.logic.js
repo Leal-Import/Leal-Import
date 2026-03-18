@@ -5,7 +5,7 @@ export const verifyIds = (idSparePart) => {
     return spareSaleState.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
 };
 
-export const hydrateContextFromURL = async(state) => {
+export const hydrateContextFromURL = async (state) => {
     const params = new URLSearchParams(window.location.search);
 
     // 🔴 Obligatorio
@@ -52,21 +52,17 @@ export const hydrateContextFromURL = async(state) => {
 };
 
 export const validateSale = () => {
-    const { data: { selectedItems, payments }, context, idEmployee } = spareSaleState;
+    const { data: { selectedItems, payments, notes }, context, idEmployee } = spareSaleState;
 
     // Validar cliente
-    if (!context.idCustomer) {
-        return 'No se ha seleccionado ningún cliente.';
-    }
+    if (!context.idCustomer) return 'No se ha seleccionado ningún cliente.';
 
-    if (!idEmployee) {
-        return 'Empleado no identificado. Inicie sesión nuevamente.';
-    }
+    if (!idEmployee) return 'Empleado no identificado. Inicie sesión nuevamente.';
 
     // Validar abonos
-    if (!payments || payments.length === 0) {
-        return 'Por favor, ingrese al menos un abono.';
-    }
+    if (!payments || payments.length === 0) return 'Por favor, ingrese al menos un abono.';
+
+    if (notes.trim() !== "" && notes.length > 500) return 'Las notas no pueden exceder los 500 caracteres.';
 
     for (let i = 0; i < payments.length; i++) {
         const item = payments[i];
@@ -80,15 +76,13 @@ export const validateSale = () => {
     }
 
     // Validar repuestos
-    if (!selectedItems || selectedItems.length === 0) {
-        return 'Por favor, seleccione al menos un repuesto.';
-    }
+    if (!selectedItems || selectedItems.length === 0) return 'Por favor, seleccione al menos un repuesto.';
 
     for (let i = 0; i < selectedItems.length; i++) {
         const item = selectedItems[i];
         const price = parseFloat(item.priceApplied) || 0;
         if (price <= 0) {
-            return `Total inválido para el repuesto ${i + 1}.`;
+            return `Precio final no válido para el repuesto ${i + 1}.`;
         }
     }
 
@@ -123,7 +117,7 @@ export const buildPutSalePayload = (state) => {
     };
 };
 
-export const buildPostSalePayload  = (state) => {
+export const buildPostSalePayload = (state) => {
     const { data, context, idEmployee } = state;
 
     return {

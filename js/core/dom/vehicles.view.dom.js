@@ -90,19 +90,19 @@ const loadVehicleInfo = (vehicle, Refs) => {
 
     if (vehicle.costs) {
         const { bill, transfer, storage, transport, ship, taxes, iva, pa, suggestedPrice, total } = Refs;
-        bill.textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
+        bill.textContent = formatWithCommas(vehicle.costs.bill);
         vehicle.costs.costPhoto.billPhoto !== null ? bill.href = vehicle.costs.costPhoto.billPhoto : null;
-        transfer.textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
-        storage.textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
-        transport.textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
+        transfer.textContent = formatWithCommas(vehicle.costs.transfer);
+        storage.textContent = formatWithCommas(vehicle.costs.storage);
+        transport.textContent = formatWithCommas(vehicle.costs.towTruck);
         vehicle.costs.costPhoto.shipPhoto !== null ? transport.href = vehicle.costs.costPhoto.shipPhoto : transport;
-        ship.textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
+        ship.textContent = formatWithCommas(vehicle.costs.ship);
         vehicle.costs.costPhoto.shipPhoto !== null ? ship.href = vehicle.costs.costPhoto.shipPhoto : null;
-        taxes.textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
+        taxes.textContent = formatWithCommas(vehicle.costs.taxes);
         vehicle.costs.costPhoto.taxesPhoto !== null ? taxes.href = vehicle.costs.costPhoto.taxesPhoto : null;
-        iva.textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
-        pa.textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
-        vehicle.costs.suggestedPrice !== null ? suggestedPrice.textContent = `$${vehicle.costs.suggestedPrice}` : suggestedPrice.style.display = "none";
-        total.textContent = `$${formatWithCommas(vehicle.costs.total)}`;
+        iva.textContent = formatWithCommas(vehicle.costs.iva);
+        pa.textContent = formatWithCommas(vehicle.costs.pa);
+        vehicle.costs.suggestedPrice !== null ? suggestedPrice.textContent = formatWithCommas(vehicle.costs.suggestedPrice) : suggestedPrice.style.display = "none";
+        total.textContent = formatWithCommas(vehicle.costs.total);
     }
 };

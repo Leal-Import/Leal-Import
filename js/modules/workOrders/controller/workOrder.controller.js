@@ -1,7 +1,7 @@
 // modules/workOrders/workOrders.controller.js
 
 import { DOMRefs, insertWorkOrders } from "../../../core/dom/workOrder.dom.js";
-import { workOrdersState } from "../../../core/state/workOrders.state.js";
+import { resetWorkOrdersState, workOrdersState } from "../../../core/state/workOrders.state.js";
 import { createPagination } from "../../../pagination/pagination.controller.js";
 import { getVehiclesWOrders, getWOStatus } from "../../../service/workOrders.service.js";
 import { initSession } from "../../../utils/api.utils.js";
@@ -77,6 +77,7 @@ const onSearchWorkOrder = (filters) => {
 };
 
 const setupApplication = async() => {
+    resetWorkOrdersState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;

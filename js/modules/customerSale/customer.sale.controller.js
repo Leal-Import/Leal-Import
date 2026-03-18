@@ -1,10 +1,11 @@
 import { getCustomers } from "../../service/customers.service.js";
 import { DOMRefs, insertCustomers } from "../../core/dom/customers.sale.dom.js";
-import { customerSaleState } from "../../core/state/customers.sale.state.js";
+import { customerSaleState, resetCustomerSaleState } from "../../core/state/customers.sale.state.js";
 import { hideElement, showElement, showMessage } from "../../utils/dom.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { initCustomerSaleEvents } from "./customer.sale.event.js";
 import { initSession } from "../../utils/api.utils.js";
+import { hydrateContextFromURL } from "../../core/logic/customer.sale.logic.js";
 
 const pagination = createPagination({
     initialSize: customerSaleState.pagination.size,
@@ -15,7 +16,7 @@ const pagination = createPagination({
     }
 });
 
-const loadCustomers = async() => {
+const loadCustomers = async () => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
         const { page, size } = customerSaleState.pagination;
@@ -45,34 +46,6 @@ const loadCustomers = async() => {
     }
 };
 
-const hydrateContextFromURL = async() => {
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get("type");
-    const newSparePartId = params.get("newSparePartId");
-    const newSparePartName = params.get("newSparePartName");
-    const newSuggestedPrice = params.get("newSuggestedPrice");
-    const isNewPart = newSparePartId && newSparePartName && newSuggestedPrice ? true : false;
-    if (!type) {
-        await showMessage('Error', 'Tipo de venta no especificado', 'error');
-        // opcional: redirigir
-        window.location.href = 'sales.html';
-        return false;
-    }
-
-    if (newSparePartId && newSparePartName && newSuggestedPrice) {
-        customerSaleState.sparePart = {
-            id: newSparePartId,
-            name: newSparePartName,
-            suggestedPrice: parseFloat(newSuggestedPrice),
-            isNewPart
-        };
-    }
-
-    customerSaleState.type = type;
-    customerSaleState.context.id = params.get("id");
-    return true;
-};
-
 export const onSearchCustomer = (filters) => {
     customerSaleState.filters = {
         ...customerSaleState.filters,
@@ -82,13 +55,14 @@ export const onSearchCustomer = (filters) => {
     loadCustomers();
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
+    resetCustomerSaleState();
     // Validar sesión
     const user = await initSession();
     if (!user) return false;
 
     // Hidratar contexto desde URL
-    const contextReady = await hydrateContextFromURL();
+    const contextReady = await hydrateContextFromURL(customerSaleState);
     if (!contextReady) return false;
 
     return true;
@@ -98,11 +72,11 @@ const initializeUI = (Refs) => {
     initCustomerSaleEvents({ Refs, onSearchCustomer });
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     await loadCustomers();
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Validar sesión y preparar contexto
         const isReady = await setupApplication();
