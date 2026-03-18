@@ -2,7 +2,8 @@
 
 export const paymentsState = {
     context: {
-        isView: null
+        isView: null,
+        editingIndex: -1
     },
     payments: [],
     paymentMethods: [],

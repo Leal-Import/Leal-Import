@@ -5,11 +5,13 @@ export const API_BASE_URL = 'https://leal-import-api-jsol.onrender.com/api';
 
 let currentUser = null;
 
-export const initSession = async() => {
+export const initSession = async () => {
     try {
         const response = await getAuthMe();
         if (response?.authenticated) {
             currentUser = response.user;
+            localStorage.setItem("app.user.name", currentUser.fullName || 'Usuario');
+            localStorage.setItem("app.user.role", currentUser.role || 'Rol');
             return currentUser;
         } else {
             await forceLogout("Sesión no válida");
@@ -25,9 +27,10 @@ export const initSession = async() => {
 };
 
 // Función auxiliar para sacar al usuario
-const forceLogout = async() => {
+const forceLogout = async () => {
     currentUser = null;
-
+    localStorage.removeItem('app.user.name');
+    localStorage.removeItem('app.user.role');
     if (!window.location.pathname.includes("login.html")) {
         await showMessage(
             "Sesión finalizada",

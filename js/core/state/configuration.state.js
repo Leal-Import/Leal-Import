@@ -10,3 +10,16 @@ export const configurationState = {
         username: ''
     }
 };
+
+export const resetConfigurationState = () => {
+    configurationState.currentEmployeeId = null;
+    configurationState.isAdmin = false;
+    configurationState.isDarkMode = false;
+    configurationState.ticket = '';
+    configurationState.profile = {
+        fullName: '',
+        email: '',
+        phone: '',
+        username: ''
+    };
+};

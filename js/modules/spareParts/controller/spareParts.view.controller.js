@@ -1,6 +1,6 @@
 import { DOMRefs, loadSparePart } from "../../../core/dom/spareParts.view.dom.js";
 import { generateSparePartReport } from "../../../core/reports/spareParts/spareParts.report.js";
-import { sparePartViewState } from "../../../core/state/spareParts.view.state.js";
+import { resetSparePartViewState, sparePartViewState } from "../../../core/state/spareParts.view.state.js";
 import { getSparePart } from "../../../service/spareParts.detail.service.js";
 import { initSession } from "../../../utils/api.utils.js";
 import { asUUID, showMessage } from "../../../utils/dom.js";
@@ -23,6 +23,7 @@ const hydrateContextFromURL = () => {
 };
 
 const setupApplication = async() => {
+    resetSparePartViewState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;

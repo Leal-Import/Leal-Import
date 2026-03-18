@@ -60,10 +60,6 @@ export const DOMRefs = {
         return this.refs;
     }
 };
-export const cleanPaymentCamps = (txtAmount, cmbPaymentMethod) => {
-    if (txtAmount) txtAmount.value = '';
-    if (cmbPaymentMethod) cmbPaymentMethod.value = '';
-};
 
 export const insertVehicles = (container, vehicles, onAddVehicle, tableVehicles) => {
     container.innerHTML = "";
@@ -137,27 +133,27 @@ export const loadVehicle = (vehicle, idSale, Refs) => {
     Refs.status.textContent = vehicle.status;
 
     if (vehicle.costs) {
-        Refs.suggestedPrice.textContent = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`;
+        Refs.suggestedPrice.textContent = formatWithCommas(vehicle.costs.suggestedPrice);
 
-        Refs.bill.textContent = `$${formatWithCommas(vehicle.costs.bill)}`;
+        Refs.bill.textContent = formatWithCommas(vehicle.costs.bill);
         if (vehicle.costs.costPhoto.billPhoto) Refs.bill.href = vehicle.costs.costPhoto.billPhoto;
-        Refs.ship.textContent = `$${formatWithCommas(vehicle.costs.ship)}`;
+        Refs.ship.textContent = formatWithCommas(vehicle.costs.ship);
         if (vehicle.costs.costPhoto.shipPhoto) Refs.ship.href = vehicle.costs.costPhoto.shipPhoto;
-        Refs.towTruck.textContent = `$${formatWithCommas(vehicle.costs.towTruck)}`;
+        Refs.towTruck.textContent = formatWithCommas(vehicle.costs.towTruck);
         if (vehicle.costs.costPhoto.towTruckPhoto) Refs.towTruck.href = vehicle.costs.costPhoto.towTruckPhoto;
-        Refs.iva.textContent = `$${formatWithCommas(vehicle.costs.iva)}`;
-        Refs.taxes.textContent = `$${formatWithCommas(vehicle.costs.taxes)}`;
+        Refs.iva.textContent = formatWithCommas(vehicle.costs.iva);
+        Refs.taxes.textContent = formatWithCommas(vehicle.costs.taxes);
         if (vehicle.costs.costPhoto.taxesPhoto) Refs.taxes.href = vehicle.costs.costPhoto.taxesPhoto;
-        Refs.transfer.textContent = `$${formatWithCommas(vehicle.costs.transfer)}`;
-        Refs.pa.textContent = `$${formatWithCommas(vehicle.costs.pa)}`;
-        Refs.storage.textContent = `$${formatWithCommas(vehicle.costs.storage)}`;
+        Refs.transfer.textContent = formatWithCommas(vehicle.costs.transfer);
+        Refs.pa.textContent = formatWithCommas(vehicle.costs.pa);
+        Refs.storage.textContent = formatWithCommas(vehicle.costs.storage);
         if (!idSale && Refs.txtTotal) {
-            Refs.txtTotal.value = `$${formatWithCommas(vehicle.costs.suggestedPrice)}`;
+            Refs.txtTotal.value = formatWithCommas(vehicle.costs.suggestedPrice);
         }
         if (Refs.totalCostV) {
-            Refs.totalCostV.textContent = `$${formatWithCommas(vehicle.costs.total)}`;
+            Refs.totalCostV.textContent = formatWithCommas(vehicle.costs.total);
         } else if (Refs.total) {
-            Refs.total.textContent = `$${formatWithCommas(vehicle.costs.total)}`;
+            Refs.total.textContent = formatWithCommas(vehicle.costs.total);
         }
 
         showElement(Refs.columnCosts);
@@ -180,8 +176,8 @@ export const loadCustomerName = (spancustomerName, customerName) => {
 
 export const loadDomData = (data, Refs) => {
     Refs.txtNotes.value = data.notes;
-    Refs.txtTotal.value = `$${formatWithCommas(data.salePrice)}`;
-    Refs.txtCommission.value = `$${formatWithCommas(data.commission)}`;
+    Refs.txtTotal.value = formatWithCommas(data.salePrice);
+    Refs.txtCommission.value = formatWithCommas(data.commission);
     Refs.btnSaveSale.querySelector("span").textContent = "Actualizar venta";
     Refs.btnCreateOrder.replaceWith(document.createElement("div"));
 };
@@ -192,12 +188,12 @@ export const renderTotals = ({ total, due, totalPaid }, Refs) => {
     const paidText = Refs.totalPaid;
     const totalText = Refs.totalVehicle;
     if (paidText) {
-        paidText.textContent = `$${formatWithCommas(totalPaid)}`;
+        paidText.textContent = formatWithCommas(totalPaid);
     }
     if (dueText) {
-        dueText.textContent = `$${formatWithCommas(due)}`;
+        dueText.textContent = formatWithCommas(due);
     }
     if (totalText) {
-        totalText.textContent = `$${formatWithCommas(total)}`;
+        totalText.textContent = formatWithCommas(total);
     }
 };

@@ -4,7 +4,6 @@ export const initWorkOrdersEvents = ({
     Refs,
     onSearchSpareParts,
     onSearchService,
-    onAddPayment,
     onSubmitOrder,
     onSaveNotes,
     onSaveDate,
@@ -12,7 +11,7 @@ export const initWorkOrdersEvents = ({
     onCompleteOrder,
     onGeneratePdf
 }) => {
-    const { txtAmount, txtSearchSparePart, txtAddService, btnAddPayment, txtNotes, frmWorkOrder, dtEstimated, btnCompleteOrder, btnGeneratePdf } = Refs;
+    const { txtAmount, txtSearchSparePart, txtAddService, txtNotes, frmWorkOrder, dtEstimated, btnCompleteOrder, btnGeneratePdf } = Refs;
 
     let searchTimeOut = null;
 
@@ -36,8 +35,6 @@ export const initWorkOrdersEvents = ({
         search(e, onSearchService)
     );
     txtAddService.addEventListener("keydown", onAddNewService);
-
-    btnAddPayment.addEventListener("click", onAddPayment);
 
     txtNotes.addEventListener("input", onSaveNotes);
 

@@ -16,3 +16,22 @@ export const workOrderHistoryState = {
         idStatus: ''
     }
 };
+
+export const resetWorkOrderHistoryState = () => {
+    workOrderHistoryState.list = [];
+    workOrderHistoryState.context = {
+        idVehicle: null,
+        idCustomer: null
+    };
+    workOrderHistoryState.stateList = [];
+    workOrderHistoryState.pagination = {
+        page: 1,
+        size: 10,
+        total: 0,
+        totalPages: 0
+    };
+    workOrderHistoryState.filters = {
+        search: '',
+        idStatus: ''
+    };
+};

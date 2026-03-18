@@ -1,6 +1,6 @@
 // modules/employees/employees.controller.js
 
-import { employeesState } from '../../core/state/employees.state.js';
+import { employeesState, resetEmployeesState } from '../../core/state/employees.state.js';
 import { insertEmployees, renderRolesSelects, fillEmployeesForm, DOMRefs, rewriteModalElements } from '../../core/dom/employees.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import {
@@ -33,7 +33,7 @@ const pagination = createPagination({
     }
 });
 
-export const loadRoles = async() => {
+export const loadRoles = async () => {
     try {
         const roles = await getRoles();
         employeesState.roles = roles;
@@ -48,7 +48,7 @@ export const loadRoles = async() => {
     }
 };
 
-export const loadEmployees = async() => {
+export const loadEmployees = async () => {
     try {
         showElement(DOMRefs.refs.loaderEmployees);
         const { page, size } = employeesState.pagination;
@@ -89,7 +89,7 @@ export const loadEmployees = async() => {
     }
 };
 
-export const onSubmitEmployee = async(e) => {
+export const onSubmitEmployee = async (e) => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmEmployees));
@@ -191,7 +191,7 @@ const onOpenModal = () => {
    ACTIVAR / DESACTIVAR
 ================================ */
 
-const toggleEmployeeStatus = async(username, status) => {
+const toggleEmployeeStatus = async (username, status) => {
     try {
         await patchEmployee(username, status);
         showMessage('Empleado', status === STATUS.ACTIVE ? 'Empleado activado' : 'Empleado desactivado', 'success');
@@ -211,7 +211,7 @@ const toggleEmployeeStatus = async(username, status) => {
    FILTROS
 ================================ */
 
-const onSearchEmployee = async(filters) => {
+const onSearchEmployee = async (filters) => {
     employeesState.filters = {
         ...employeesState.filters,
         ...filters
@@ -224,7 +224,8 @@ const onSearchEmployee = async(filters) => {
    INIT
 ================================ */
 
-const setupApplication = async() => {
+const setupApplication = async () => {
+    resetEmployeesState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -236,11 +237,11 @@ const initializeUI = (Refs) => {
     initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal });
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     await Promise.all([loadRoles(), loadEmployees()]);
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

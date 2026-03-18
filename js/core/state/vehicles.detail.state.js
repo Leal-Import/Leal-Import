@@ -26,3 +26,30 @@ export const vehicleDetailState = {
     costsId: null,
     loteId: null
 };
+
+export const resetVehicleDetailState = () => {
+    vehicleDetailState.context = {
+        currentId: null,
+        hasSale: null,
+        hasWorkOrder: null,
+        idCustomer: null,
+        customerName: null
+    };
+    vehicleDetailState.customerId = null;
+    vehicleDetailState.isExternal = false;
+    vehicleDetailState.images = [];
+    vehicleDetailState.photosToDeleteIds = [];
+    vehicleDetailState.currentUploadType = null;
+    vehicleDetailState.uploads = {
+        bill: null,
+        taxes: null,
+        ship: null
+    };
+    vehicleDetailState.urls = {
+        bill: null,
+        taxes: null,
+        ship: null
+    };
+    vehicleDetailState.costsId = null;
+    vehicleDetailState.loteId = null;
+};

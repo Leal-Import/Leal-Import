@@ -83,11 +83,6 @@ export const loadViewDom = (Refs) => {
     Refs.firstBread.textContent = "Ver orden >";
 };
 
-export const cleanPaymentCamps = (txtAmount, paymentMethod) => {
-    if (txtAmount) txtAmount.value = '';
-    if (paymentMethod) paymentMethod.value = '';
-};
-
 const MIN_STATIC_ROWS = 7;
 export const initStaticRows = () => {
     const tBodys = qsa(SELECTORS.TBODY_DATA);
@@ -118,7 +113,7 @@ export const renderSparePartSuggestions = (selectedSpareParts, boxSparePart, lis
         const suggestedPrice = document.createElement('span');
         img.src = p.imageUrl;
         name.textContent = p.nameSpareParts;
-        suggestedPrice.textContent = `$${formatWithCommas(p.suggestedPrice)}`;
+        suggestedPrice.textContent = formatWithCommas(p.suggestedPrice);
         containerImg.appendChild(img);
         containerImgName.append(containerImg, name);
         div.append(containerImgName, suggestedPrice);
@@ -155,7 +150,7 @@ const findOrCreateEmptyRow = (tBody) => {
 };
 
 const setupPriceCell = (priceCell, data, onWritePrice, isView) => {
-    priceCell.textContent = `$${formatWithCommas(data.priceApplied)}`;
+    priceCell.textContent = formatWithCommas(data.priceApplied);
     priceCell.classList.add('finalPrice');
 
     if (!isView) {
@@ -287,13 +282,13 @@ export const renderImportButton = (tBody, onImport, tBodyServices, tBodySparePar
 
 export const renderTotalsPanel = ({ total, due, totalPaid }, Refs) => {
     if (Refs.totalPaid) {
-        Refs.totalPaid.textContent = `$${formatWithCommas(totalPaid)}`;
+        Refs.totalPaid.textContent = formatWithCommas(totalPaid);
     }
     if (Refs.due) {
-        Refs.due.textContent = `$${formatWithCommas(due)}`;
+        Refs.due.textContent = formatWithCommas(due);
     }
     if (Refs.totalOrder) {
-        Refs.totalOrder.textContent = `$${formatWithCommas(total)}`;
+        Refs.totalOrder.textContent = formatWithCommas(total);
     }
 };
 
@@ -326,16 +321,16 @@ export const renderTotals = ({
 };
 
 export const renderTotalServices = (servicesTotal, spanTotal) => {
-    if (spanTotal) spanTotal.textContent = `$${formatWithCommas(servicesTotal)}`;
+    if (spanTotal) spanTotal.textContent = formatWithCommas(servicesTotal);
 };
 
 export const renderTotalSpareParts = (sparePartsTotal, spanTotal) => {
-    if (spanTotal) spanTotal.textContent = `$${formatWithCommas(sparePartsTotal)}`;
+    if (spanTotal) spanTotal.textContent = formatWithCommas(sparePartsTotal);
 };
 
 export const renderTotalRepairCost = (total, spanTotal, txtTotal) => {
-    if (spanTotal) spanTotal.textContent = `$${formatWithCommas(total)}`;
-    if (txtTotal) txtTotal.value = `$${formatWithCommas(total)}`;
+    if (spanTotal) spanTotal.textContent = formatWithCommas(total);
+    if (txtTotal) txtTotal.value = formatWithCommas(total);
 };
 
 export const loadExtraInputs = (notes, date, Refs) => {
@@ -344,11 +339,11 @@ export const loadExtraInputs = (notes, date, Refs) => {
 };
 
 export const renderOrderTotal = (orderTotal, spanTotal) => {
-    if (spanTotal) spanTotal.textContent = `$${formatWithCommas(orderTotal)}`;
+    if (spanTotal) spanTotal.textContent = formatWithCommas(orderTotal);
 };
 
 export const renderVehiclePrice = (vehiclePrice, spanVehiclePrice) => {
-    if (spanVehiclePrice) spanVehiclePrice.textContent = `$${formatWithCommas(vehiclePrice) || 0.00}`;
+    if (spanVehiclePrice) spanVehiclePrice.textContent = formatWithCommas(vehiclePrice) || 0.00;
 };
 
 const createEmptyRow = () => {

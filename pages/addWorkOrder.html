@@ -210,7 +210,6 @@
                             <p class="subtitlePanel">Gestiona los abonos y métodos de pago</p>
                         </div>
 
-                        <!-- Payment Form -->
                         <div class="paymentForm">
                             <div class="formGroup">
                                 <label class="lblInputs" for="txtAmount">Abono</label>
@@ -222,14 +221,15 @@
                                     <option value="">Cargando...</option>
                                 </select>
                             </div>
-                            <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir
-                                abono</button>
+                            <div class="containerActionsPayments">
+                                <button id="btnCancelEdit" class="btnSecondary hide" type="button">Cancelar edición</button>
+                                <div class="separatorDiv"></div>
+                                <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
+                            </div>
                         </div>
 
-                        <!-- Payments List -->
                         <div class="paymentsList" id="paymentsList"></div>
 
-                        <!-- Summary -->
                         <div class="summarySection">
                             <div class="summaryRow">
                                 <span class="summaryLabel">Total:</span>
@@ -245,25 +245,22 @@
                             </div>
                         </div>
 
-                        <!-- Additional Notes -->
                         <div class="formGroup">
                             <label class="lblInputs" for="txtNotes">Notas adicionales</label>
-                            <textarea class="txtInputs" id="txtNotes" placeholder="Agrega notas sobre la orden..."
-                                rows="4"></textarea>
+                            <textarea class="txtInputs" id="txtNotes" maxlength="500"
+                                placeholder="Agrega notas sobre la orden..." rows="4"></textarea>
                         </div>
 
                         <div class="formGroup">
                             <label for="dtEstimated" class="lblInputs">Fecha estimada</label>
-                            <input type="date" id="dtEstimated" class="txtInputs">
+                            <input type="date" id="dtEstimated" required class="txtInputs">
                         </div>
 
-                        <!-- Final Price -->
                         <div class="formGroup">
                             <label class="lblInputs" for="txtTotal">Total:</label>
                             <input type="text" class="txtInputs" id="txtTotal" placeholder="$0.00" disabled>
                         </div>
 
-                        <!-- Action Buttons -->
                         <div class="actionButtons">
                             <div id="separator"></div>
                             <button class="btnPrimary" id="btnSaveOrder">
@@ -283,11 +280,11 @@
             </div>
         </div>
     </div>
-    <script src="../js/components/sidebar.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/workOrders/controller/workOrder.details.controller.js"></script>
+    <script src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

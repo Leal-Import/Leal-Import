@@ -1,7 +1,7 @@
 // modules/sales/sales.controller.js
 
 import { insertSales, selectLineButton, DOMRefs } from "../../core/dom/sales.dom.js";
-import { salesState } from "../../core/state/sales.state.js";
+import { resetSalesState, salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
 import { fillSelect, hideElement, showElement, showMessage, toggleModal } from "../../utils/dom.js";
@@ -81,6 +81,7 @@ const onSearchSale = (filters) => {
 ================================ */
 
 const setupApplication = async() => {
+    resetSalesState();
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;

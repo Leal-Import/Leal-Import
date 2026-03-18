@@ -117,7 +117,11 @@
                                 <option value="">Cargando...</option>
                             </select>
                         </div>
-                        <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
+                        <div class="containerActionsPayments">
+                            <button id="btnCancelEdit" class="btnSecondary hide" type="button">Cancelar edición</button>
+                            <div class="separatorDiv"></div>
+                            <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
+                        </div>
                     </div>
 
                     <!-- Payments List -->
@@ -142,8 +146,8 @@
                     <!-- Additional Notes -->
                     <div class="formGroup">
                         <label class="lblInputs" for="txtNotes">Notas adicionales</label>
-                        <textarea class="txtInputs" id="txtNotes" placeholder="Agrega notas sobre la venta..."
-                            rows="4"></textarea>
+                        <textarea class="txtInputs" id="txtNotes" maxlength="500"
+                            placeholder="Agrega notas sobre la venta..." rows="4"></textarea>
                     </div>
 
                     <!-- Action Buttons -->
@@ -158,9 +162,9 @@
             </div>
         </div>
     </div>
-    <script src="../js/components/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/sparePartsSales/controller/spareParts.sales.controller.js"></script>
+    <script src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

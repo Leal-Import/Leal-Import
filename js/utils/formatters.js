@@ -48,10 +48,10 @@ export const formatWithCommas = (number) => {
     const num = parseFloat(number);
     if (isNaN(num)) return number;
 
-    return num.toLocaleString("en-US", {
+    return `$${num.toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-    });
+    })}`;
 };
 
 /* Utilidad para cuando se quita el focus de un input o elemento editable */

@@ -4,3 +4,10 @@ export const vehicleViewState = {
     },
     vehicle: null
 };
+
+export const resetVehicleViewState = () => {
+    vehicleViewState.context = {
+        idVehicle: null
+    };
+    vehicleViewState.vehicle = null;
+};

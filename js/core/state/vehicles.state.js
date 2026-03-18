@@ -17,3 +17,22 @@ export const vehiclesState = {
     },
     statusList: []
 };
+
+export const resetVehiclesState = () => {
+    vehiclesState.list = [];
+    vehiclesState.context = {
+        hasWorkOrder: null
+    };
+    vehiclesState.filters = {
+        search: '',
+        year: '',
+        statusId: ''
+    };
+    vehiclesState.pagination = {
+        page: 1,
+        size: 10,
+        total: 0,
+        totalPages: 0
+    };
+    vehiclesState.statusList = [];
+};

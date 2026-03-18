@@ -58,10 +58,10 @@ const loadSparePartInfo = (sparePart, Refs) => {
     Refs.model.textContent = sparePart.model;
     Refs.year.textContent = sparePart.yearPart;
     Refs.status.textContent = sparePart.state;
-    Refs.suggestedPrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.suggestedPrice)}`;
+    Refs.suggestedPrice.textContent = formatWithCommas(sparePart.sparePartsCosts.suggestedPrice);
     Refs.tracking.textContent = sparePart.tracking.numTracking;
     sparePart.tracking.linkTracking ? Refs.tracking.href = sparePart.tracking.linkTracking : null;
-    Refs.purchasePrice.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.purchasePrice)}`;
-    Refs.taxes.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.taxes)}`;
-    Refs.totalCost.textContent = `$${formatWithCommas(sparePart.sparePartsCosts.totalCost)}`;
+    Refs.purchasePrice.textContent = formatWithCommas(sparePart.sparePartsCosts.purchasePrice);
+    Refs.taxes.textContent = formatWithCommas(sparePart.sparePartsCosts.taxes);
+    Refs.totalCost.textContent = formatWithCommas(sparePart.sparePartsCosts.totalCost);
 };

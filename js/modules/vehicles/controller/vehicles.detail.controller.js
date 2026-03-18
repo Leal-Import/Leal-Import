@@ -1,15 +1,15 @@
-import { vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
+import { resetVehicleDetailState, vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
 import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage } from "../../../utils/dom.js";
 import { closeAndCleanUpdateModal, DOMRefs, loadDomData, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, UPLOAD_CONFIG, verifyBtnsCarousel } from "../../../core/dom/vehicles.detail.dom.js";
-import { applyExternalMode, calculateTotal, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, resetState, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
+import { applyExternalMode, calculateTotal, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js";
 import { initSession } from "../../../utils/api.utils.js";
 import { isValidURL } from "../../../utils/validators.js";
 import { initUploadModalEvents } from "../event/vehicles.uploads.events.js";
 import { getVehicles, postVehicle, putVehicle } from "../../../service/vehicles.detail.service.js";
 
-const loadVehicle = async() => {
+const loadVehicle = async () => {
     const vehicle = await getVehicles(vehicleDetailState.context.currentId);
     loadDomData(DOMRefs.refs.typeAction, DOMRefs.refs.btnSaveData);
     DOMRefs.refs.externalElements.forEach(el => {
@@ -57,7 +57,7 @@ const onExternalChange = (isExternal) => {
 
 };
 
-const onSubmitVehicle = async(e) => {
+const onSubmitVehicle = async (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmVehicles));
     const fd = new FormData();
@@ -140,7 +140,7 @@ const onSubmitVehicle = async(e) => {
     }
 };
 
-const onSearchCustomer = async(q) => {
+const onSearchCustomer = async (q) => {
     const query = q.trim();
     if (!query) { DOMRefs.refs.boxCustomer.classList.add("hide"); return; }
     try {
@@ -259,9 +259,9 @@ const deleteImage = (index) => {
     verifyBtnsCarousel(DOMRefs.refs.btnsCarousel, DOMRefs.refs.mainSwiperWrapper);
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
+    resetVehicleDetailState();
     // 1. Validar sesión
-    resetState();
     const user = await initSession();
     if (!user) return false;
 
@@ -286,7 +286,7 @@ const initializeUI = (Refs) => {
     });
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     const { context } = vehicleDetailState;
     // Determinar qué flujo ejecutar
     if (context.currentId) {
@@ -297,7 +297,7 @@ const loadDataFlow = async() => {
     }
 };
 
-document.addEventListener("DOMContentLoaded", async() => {
+document.addEventListener("DOMContentLoaded", async () => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;
