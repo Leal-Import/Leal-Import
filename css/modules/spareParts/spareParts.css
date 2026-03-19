@@ -24,18 +24,9 @@
     margin: 0;
 }
 
-.priceRange {
-    width: 100%;
-    margin-top: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1em;
-}
-
-.range {
-    width: 80%;
-    gap: 5px;
+.filterSection{
+    align-items: end !important;
+    padding: 10px 24px 15px !important;
 }
 
 /* Section Cards - Stats */
@@ -188,12 +179,21 @@
     border: 2px solid var(--danger-color);
 }
 
-.noDataMessage {
-    font-size: var(--font-size-lg);
-    color: var(--text-color-secondary);
-    width: 100%;
-    height: 100%;
-    grid-column: 1 / -1;
-    display: grid;
-    place-content: center;
+@container content (max-width: 1075px) {
+    .filterSection {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .formGroup {
+        flex-basis: auto !important;
+    }
+
+    .txtSearchData {
+        max-width: 100% !important;
+    }
+
+    .filterSection .btnPrimary{
+        flex: auto !important;
+    }
 }

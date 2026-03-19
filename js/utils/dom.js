@@ -327,3 +327,13 @@ export const addModalCloseEvents = (modal, onClose) => {
         pointerDownOnOverlay = false;
     });
 };
+
+export const buildParams = (obj) => {
+    const params = new URLSearchParams();
+    Object.entries(obj).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+            params.append(key, value);
+        }
+    });
+    return params;
+};

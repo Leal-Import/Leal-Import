@@ -10,6 +10,11 @@
     flex: 1;
 }
 
+.filterSection{
+    align-items: end !important;
+    padding: 10px 24px 15px !important;
+}
+
 .statItem {
     background-color: var(--bg-color-white);
     flex: 1;
@@ -190,4 +195,23 @@
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);
     border-radius: var(--border-radius-input);
+}
+
+@container content (max-width: 1075px) {
+    .filterSection {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .formGroup {
+        flex-basis: auto !important;
+    }
+
+    .txtSearchData {
+        max-width: 100% !important;
+    }
+
+    .filterSection .btnPrimary{
+        flex: auto !important;
+    }
 }

@@ -236,7 +236,7 @@ textarea {
 @media screen and (width <= 600px) {
     .txtSearchData {
         font-size: var(--font-size-sm);
-        min-width: 200px;
+        min-width: 225px;
         flex: 1;
     }
 

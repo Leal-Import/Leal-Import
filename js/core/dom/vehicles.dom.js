@@ -12,7 +12,8 @@ export const DOMRefs = {
             btnAddVehicle: $('btnAddVehicle'),
             txtSearchData:  $('txtSearchData'),
             txtSearchYear:  $('txtSearchYear'),
-            cmbSearchByStatus:  $('cmbSearchByStatus')
+            cmbSearchByStatus:  $('cmbSearchByStatus'),
+            cmbSearchByIsExternal:  $('cmbSearchByIsExternal')
         };
         return this.refs;
     }
@@ -45,7 +46,6 @@ const  createNoDataMessage = () => {
     const div = document.createElement('div');
     div.textContent = 'No hay vehículos disponibles.';
     div.classList.add('noDataMessage');
-    div.style.gridColumn = '1 / -1';
     return div;
 };
 

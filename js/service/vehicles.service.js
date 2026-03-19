@@ -3,9 +3,9 @@ import { API_BASE_URL } from "../utils/api.utils.js";
 const API_URL = `${API_BASE_URL}/Vehicle`;
 const API_URLS = `${API_BASE_URL}/Sales`;
 
-export const getVehicles = async(page = 0, size = 15, search = "", statusId = "", year = "") => {
+export const getVehicles = async(page = 0, size = 15, search = "", statusId = "", year = "", statusExist = "") => {
     try {
-        const params = new URLSearchParams({ page, size, search, statusId, year });
+        const params = new URLSearchParams({ page, size, search, statusId, year, statusExist });
         const request = await fetch(`${API_URL}/getVehicleSummary?${params.toString()}`, {
             credentials: 'include'
         });

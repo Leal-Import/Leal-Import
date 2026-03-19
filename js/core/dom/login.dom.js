@@ -22,7 +22,7 @@ export const DOMRefs = {
             closeCode: $("closeCode"),
             closeNewPassword: $("closeNewPassword"),
             btnOpenAuth: $("btnOpenAuth"),
-            openModalRecovery: $("openModalRecovery"),
+            btnOpenModalRecovery: $("btnOpenModalRecovery"),
             txtAuthEmail: $("txtAuthEmail"),
             authSuccess: qs(".authSuccess"),
             authPrimaryBtn: $("btnAuthSend"),

@@ -19,7 +19,7 @@ const loadStatusSelect = async () => {
     try {
         const status = await getStatus();
         vehiclesState.statusList = status;
-        fillSelect('cmbSearchByStatus', vehiclesState.statusList, 'idStatus', 'statusName', null, 'Todos');
+        fillSelect('cmbSearchByStatus', vehiclesState.statusList, 'idStatus', 'statusName', null, 'Buscar por estado');
     } catch (error) {
         showMessage(
             'Error',
@@ -34,13 +34,14 @@ const loadVehicles = async () => {
     try {
         showElement(DOMRefs.refs.loaderVehicles);
         const { page, size } = vehiclesState.pagination;
-        const { search, year, statusId } = vehiclesState.filters;
+        const { search, year, statusId, statusExist } = vehiclesState.filters;
         const data = await getVehicles(
             page - 1,
             size,
             search || '',
             statusId || '',
-            year || ''
+            year || '',
+            statusExist || ''
         );
 
         vehiclesState.list = data.content;

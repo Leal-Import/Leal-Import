@@ -245,13 +245,13 @@
                     <label for="txtUserOrEmail">Usuario o correo electrónico</label>
                 </div>
                 <div class="inputBox">
-                    <span type="button" class="icon togglePassword" id="togglePassword">
+                    <button type="button" class="icon togglePassword" id="togglePassword">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                             <circle cx="12" cy="12" r="3" />
                         </svg>
-                    </span>
+                    </button>
                     <input type="password" id="txtPassword" required>
                     <label for="txtPassword">Contraseña</label>
                 </div>
@@ -260,7 +260,7 @@
                     <div class="loader hide" id="btnLoginLoader"></div>
                 </button>
                 <div class="forgotPassword">
-                    <p><a href="#" id="openModalRecovery">Olvidé mi contraseña</a></p>
+                    <button id="btnOpenModalRecovery">Olvidé mi contraseña</button>
                 </div>
             </form>
         </div>

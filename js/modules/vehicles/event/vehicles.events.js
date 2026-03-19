@@ -1,6 +1,6 @@
 
 export const initVehicleEvents = ({ Refs, onSearchVehicles }) => {
-    const { txtSearchData, txtSearchYear, cmbSearchByStatus } = Refs;
+    const { txtSearchData, txtSearchYear, cmbSearchByStatus, cmbSearchByIsExternal } = Refs;
 
     let searchTimeout = null;
     const emitFilters = () => {
@@ -9,7 +9,8 @@ export const initVehicleEvents = ({ Refs, onSearchVehicles }) => {
             onSearchVehicles({
                 search: txtSearchData?.value.trim() || '',
                 year: txtSearchYear?.value.trim() || '',
-                statusId: cmbSearchByStatus?.value || ''
+                statusId: cmbSearchByStatus?.value || '',
+                statusExist: cmbSearchByIsExternal?.value || ''
             });
         }, 1000);
     };
@@ -19,4 +20,7 @@ export const initVehicleEvents = ({ Refs, onSearchVehicles }) => {
     txtSearchYear.addEventListener('input', emitFilters);
 
     cmbSearchByStatus.addEventListener('change', emitFilters);
+
+    cmbSearchByIsExternal.addEventListener('change', emitFilters);
+
 };

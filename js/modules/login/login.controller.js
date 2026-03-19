@@ -65,6 +65,8 @@ const onSubmitLogin = async (e) => {
     disableElement(DOMRefs.refs.btnLogin);
     disableElement(DOMRefs.refs.txtUserOrEmail);
     disableElement(DOMRefs.refs.txtPassword);
+    disableElement(DOMRefs.refs.togglePassword);
+    disableElement(DOMRefs.refs.btnOpenModalRecovery);
     showElement(DOMRefs.refs.btnLoginLoader);
 
     try {
@@ -85,6 +87,8 @@ const onSubmitLogin = async (e) => {
         removeDisable(DOMRefs.refs.btnLogin);
         removeDisable(DOMRefs.refs.txtUserOrEmail);
         removeDisable(DOMRefs.refs.txtPassword);
+        removeDisable(DOMRefs.refs.togglePassword);
+        removeDisable(DOMRefs.refs.btnOpenModalRecovery);
         hideElement(DOMRefs.refs.btnLoginLoader);
     }
 };

@@ -1,5 +1,6 @@
 .cardContainer {
     display: grid;
+    border: var(--border);
     position: relative;
     flex: 1;
     gap: 15px;
@@ -12,4 +13,13 @@
     border-radius: var(--border-radius-card);
     border: 1px solid var(--text-color-secondary);
     overflow: hidden;
+}
+
+.noDataMessage{
+    text-align: center;
+    color: var(--text-color);
+    font-size: var(--font-size-title);
+    grid-column: 1 / -1;
+    display: grid;
+    place-content: center;
 }

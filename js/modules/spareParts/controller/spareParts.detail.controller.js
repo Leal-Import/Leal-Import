@@ -16,7 +16,7 @@ import { getSparePart, postSparePart, putSparePart } from "../../../service/spar
 import { getStatus } from "../../../service/spareParts.service.js";
 import { initSession } from "../../../utils/api.utils.js";
 
-const loadStatusSelect = async() => {
+const loadStatusSelect = async () => {
     try {
         const status = await getStatus();
         sparePartDetailState.statusList = status;
@@ -31,7 +31,7 @@ const loadStatusSelect = async() => {
     }
 };
 
-const loadSparePart = async() => {
+const loadSparePart = async () => {
     try {
         const sparePart = await getSparePart(sparePartDetailState.context.currentId);
         loadUpdateInfo(DOMRefs.refs);
@@ -48,7 +48,7 @@ const loadSparePart = async() => {
     }
 };
 
-const onSubmitSparePart = async(e) => {
+const onSubmitSparePart = async (e) => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmSpareParts));
@@ -92,19 +92,20 @@ const onSubmitSparePart = async(e) => {
             await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
         if (sparePartDetailState.context.hasSale) {
-            let url = `sparePartSale.html?isNewPart=true` +
-                `&idCustomer=${sparePartDetailState.context.idCustomer}` +
-                `&customerName=${encodeURIComponent(sparePartDetailState.context.customerName)}` +
-                `&sparePartId=${response.data.idSparePart}` +
-                `&sparePartName=${encodeURIComponent(response.data.nameSpareParts)}` +
-                `&suggestedPrice=${response.data.sparePartsCosts.suggestedPrice}`;
+            const paramsSale = new URLSearchParams({
+                isNewPart: true,
+                idCustomer: sparePartDetailState.context.idCustomer,
+                customerName: sparePartDetailState.context.customerName,
+                sparePartId: response.data.idSparePart,
+                sparePartName: response.data.nameSpareParts,
+                suggestedPrice: response.data.sparePartsCosts.suggestedPrice
+            });
 
-            if (sparePartDetailState.context.idSale !== null && sparePartDetailState.context.idSale !== '') {
-                url += `&idSale=${sparePartDetailState.context.idSale}`;
+            if (sparePartDetailState.context.idSale) {
+                paramsSale.append('idSale', sparePartDetailState.context.idSale);
             }
 
-            window.location.href = url;
-
+            window.location.href = `sparePartSale.html?${paramsSale.toString()}`;
             return;
         }
         if (sparePartDetailState.context.hasWorkOrder) {
@@ -204,7 +205,7 @@ const onDragLeave = () => {
     DOMRefs.refs.dropArea.classList.remove("dragover");
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
     resetSparePartDetailState();
     // 1. Validar sesión
     const user = await initSession();
@@ -221,14 +222,14 @@ const initializeUI = (Refs) => {
     initImageEvents({ Refs, onChangeUpload, onDropModal, onAddImage, onDeleteImage, onDragOver, onDragLeave });
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     await loadStatusSelect();
     if (sparePartDetailState.context.currentId) {
         await loadSparePart();
     }
 };
 
-document.addEventListener("DOMContentLoaded", async() => {
+document.addEventListener("DOMContentLoaded", async () => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

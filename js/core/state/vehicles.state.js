@@ -7,7 +7,8 @@ export const vehiclesState = {
     filters: {
         search: '',
         year: '',
-        statusId: ''
+        statusId: '',
+        statusExist: ''
     },
     pagination: {
         page: 1,
@@ -26,7 +27,8 @@ export const resetVehiclesState = () => {
     vehiclesState.filters = {
         search: '',
         year: '',
-        statusId: ''
+        statusId: '',
+        statusExist: ''
     };
     vehiclesState.pagination = {
         page: 1,
