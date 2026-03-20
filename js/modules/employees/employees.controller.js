@@ -1,7 +1,7 @@
 // modules/employees/employees.controller.js
 
 import { employeesState, resetEmployeesState } from '../../core/state/employees.state.js';
-import { insertEmployees, renderRolesSelects, fillEmployeesForm, DOMRefs, rewriteModalElements } from '../../core/dom/employees.dom.js';
+import { insertEmployees, renderRolesSelects, fillEmployeesForm, DOMRefs, rewriteModalElements, resetEmployeesFilters } from '../../core/dom/employees.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import {
     validateEmployee,
@@ -234,6 +234,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
+    resetEmployeesFilters(Refs);
     initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal });
 };
 

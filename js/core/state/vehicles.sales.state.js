@@ -6,8 +6,6 @@ export const vehicleSaleState = {
         idVehicle: null,
         isView: null
     },
-    saleKey: null,
-    idEmployee: null,
     idVehicle: null,
     data: {
         payments: [],
@@ -41,7 +39,6 @@ export const resetVehicleSaleState = () => {
         idVehicle: null,
         isView: null
     };
-    vehicleSaleState.saleKey = null;
     vehicleSaleState.idEmployee = null;
     vehicleSaleState.idVehicle = null;
     vehicleSaleState.data = {

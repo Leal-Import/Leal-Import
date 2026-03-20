@@ -2,14 +2,14 @@ import { appendToDom, cleanRow, DOMRefs, initStaticRows, loadExtraInputs, loadVi
 import { resetWorkOrderDetailsState, workOrderDetailsState } from "../../../core/state/workOrder.details.state.js";
 import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "../../../service/workOrder.detail.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
-import { disableElement, hideElement, qsa, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
+import { buildParams, cleanOneShotParams, disableElement, hideElement, qsa, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
 import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
 import { initWorkOrdersEvents } from "../event/workOrder.details.event.js";
 import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validatePutOrder, validatePostOrder, buildPostWorkOrderFormData, buildPutWorkOrderFormData, cleanWindow } from "../../../core/logic/workOrder.details.logic.js";
 import { addNewPayment, initPaymentsController } from "../../payments/payments.controller.js";
 import { createBtnUrl } from "../../../core/dom/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
-import { getCurrentEmployeeId, initSession } from "../../../utils/api.utils.js";
+import { initSession } from "../../../utils/api.utils.js";
 import { generateWorkOrderReport } from "../../../core/reports/workorders/workorders.report.js";
 
 const addNewPartToTable = () => {
@@ -134,13 +134,11 @@ const onSubmitOrder = async (e) => {
 
         if (response) {
             cleanWindow();
-            const cleanUrl = window.location.pathname;
-            history.replaceState({}, "", cleanUrl);
         }
         if (workOrderDetailsState.context.idSale) {
-            window.location.href = 'sales.html';
+            window.location.replace('sales.html');
         } else {
-            window.location.href = 'workOrders.html';
+            window.location.replace('workOrders.html');
         }
     } catch (error) {
         console.error(error);
@@ -179,7 +177,7 @@ const loadDataVehicle = async (Refs) => {
 
 const onImportSparePart = () => {
     saveWorkOrderState();
-    const params = new URLSearchParams({
+    const params = buildParams({
         workOrder: true,
         idWorkOrder: workOrderDetailsState.context.idWorkOrder,
         idSale: workOrderDetailsState.context.idSale,
@@ -188,7 +186,7 @@ const onImportSparePart = () => {
         idCustomer: workOrderDetailsState.context.idCustomer,
         totalPrice: workOrderDetailsState.context.vehiclePrice
     });
-    window.location.href = `../../pages/sparePartsDetails.html?${params.toString()}`;
+    window.location.href = `sparePartsDetails.html?${params.toString()}`;
 };
 
 const saveWorkOrderState = () => {
@@ -331,7 +329,11 @@ const onCompleteOrder = async () => {
         const answer = await patchWorkOrder(workOrderDetailsState.context.idWorkOrder);
         await showMessage("Exito", "Orden completada", "success", true);
         if (answer) {
-            window.location.href = `workOrderDetails.html?idVehicle=${workOrderDetailsState.context.idVehicle}&idCustomer=${workOrderDetailsState.context.idCustomer}`;
+            const params = buildParams({
+                idVehicle: workOrderDetailsState.context.idVehicle,
+                idCustomer: workOrderDetailsState.context.idCustomer
+            });
+            window.location.replace(`workOrderDetails.html?${params.toString()}`);
         }
     } catch (error) {
         console.error(error);
@@ -365,10 +367,11 @@ const onAddNewService = (e) => {
 
 // Funciones auxiliares para cada flujo
 const initNewPartFlow = async (Refs) => {
-    addNewPartToTable();
     loadDraft(Refs);
+    addNewPartToTable();
     validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
     await loadDataVehicle(Refs);
+    localStorage.removeItem(workOrderDetailsState.saleKey);
 };
 
 const initEditOrderFlow = async (Refs) => {
@@ -398,9 +401,6 @@ const setupApplication = async () => {
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
-
-    // 2. Configurar estado global
-    workOrderDetailsState.idEmployee = getCurrentEmployeeId();
 
     // 3. Hidratar contexto desde URL
     const hydrated = await hydrateContextFromURL(workOrderDetailsState);
@@ -442,6 +442,8 @@ const loadDataFlow = async (Refs) => {
     // Determinar qué flujo ejecutar
     if (context.isNewPart) {
         await initNewPartFlow(Refs);
+        const paramsToClean = ["isNewPart", "idNewPart", "newPartName", "newPartSuggestedPrice"];
+        cleanOneShotParams(paramsToClean);
     } else if (context.idWorkOrder !== null) {
         await initEditOrderFlow(Refs);
     } else {

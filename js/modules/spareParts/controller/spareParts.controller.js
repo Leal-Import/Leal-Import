@@ -3,7 +3,7 @@ import { createPagination } from '../../../pagination/pagination.controller.js';
 import { showMessage, fillSelect, showElement, hideElement } from '../../../utils/dom.js';
 import { initSparePartsEvents } from '../event/spareParts.events.js';
 import { getSpareParts, getStatus } from '../../../service/spareParts.service.js';
-import { DOMRefs, insertSpareParts } from '../../../core/dom/spareParts.dom.js';
+import { DOMRefs, insertSpareParts, resetSparePartsFilters } from '../../../core/dom/spareParts.dom.js';
 import { initSession } from '../../../utils/api.utils.js';
 
 const pagination = createPagination({
@@ -15,7 +15,7 @@ const pagination = createPagination({
     }
 });
 
-const loadStatusSelect = async() => {
+const loadStatusSelect = async () => {
     try {
         const status = await getStatus();
         sparePartsState.statusList = status;
@@ -30,7 +30,7 @@ const loadStatusSelect = async() => {
     }
 };
 
-export const loadSpareParts = async() => {
+export const loadSpareParts = async () => {
     try {
         showElement(DOMRefs.refs.loaderSpareParts);
         const { page, size } = sparePartsState.pagination;
@@ -72,8 +72,9 @@ export const onSearchSpareParts = (filters) => {
     loadSpareParts();
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
     resetSparePartsState();
+
     // 1. Validar sesión
     const user = await initSession();
     if (!user) return false;
@@ -82,15 +83,15 @@ const setupApplication = async() => {
 };
 
 const initializeUI = (Refs) => {
+    resetSparePartsFilters(Refs);
     initSparePartsEvents({ Refs, onSearchSpareParts });
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     await Promise.all([loadStatusSelect(), loadSpareParts()]);
-
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

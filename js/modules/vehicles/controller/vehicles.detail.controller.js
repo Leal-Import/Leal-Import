@@ -1,6 +1,6 @@
 import { resetVehicleDetailState, vehicleDetailState } from "../../../core/state/vehicles.detail.state.js";
 import { initVehicleDetailEvents } from "../event/vehicles.detail.events.js";
-import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage } from "../../../utils/dom.js";
+import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage, buildParams } from "../../../utils/dom.js";
 import { closeAndCleanUpdateModal, DOMRefs, loadDomData, renderCustomersSuggestions, renderExternalMode, renderImages, renderUploadPreview, UPLOAD_CONFIG, verifyBtnsCarousel } from "../../../core/dom/vehicles.detail.dom.js";
 import { applyExternalMode, calculateTotal, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, loadBackendImages, mapExternalVehicle, mapVehicleData, mapVehicleImages, mapVouchers, validateBaseVehicle, validateCustomer, validateEditImages, validateImages, validateSizeTypeImage, validateVehicle, validateVehicleImages } from "../../../core/logic/vehicles.detail.logic.js";
 import { getCustomers } from "../../../service/customers.service.js";
@@ -120,16 +120,22 @@ const onSubmitVehicle = async (e) => {
         }
 
         if (vehicleDetailState.context.hasSale) {
-            window.location.href = `vehicleSale.html?idCustomer=${vehicleDetailState.context.idCustomer}&customerName=${vehicleDetailState.context.customerName}&idVehicle=${response.data.idVehicle}`;
+            const paramsSale = buildParams({
+                idCustomer: vehicleDetailState.context.idCustomer,
+                customerName: vehicleDetailState.context.customerName,
+                idVehicle: response.data.idVehicle,
+                suggestedPrice: response.data.suggestedPrice
+            });
+            window.location.replace(`vehicleSale.html?${paramsSale.toString()}`);
             return;
         }
 
         if (vehicleDetailState.context.hasWorkOrder) {
-            window.location.href = `addWorkOrder.html?idVehicle=${response.data.idVehicle}`;
+            window.location.replace(`addWorkOrder.html?idVehicle=${response.data.idVehicle}`);
             return;
         }
 
-        window.location.href = "vehicle.html";
+        window.location.replace("vehicle.html");
     } catch (error) {
         console.error("Error al realizar la operación:", error);
         const errorMessage = error.message || 'Error desconocido al registrar el vehiculo.';

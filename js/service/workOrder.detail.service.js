@@ -1,10 +1,11 @@
 import { API_BASE_URL } from "../utils/api.utils.js";
+import { buildParams } from "../utils/dom.js";
 
 const API_URL = `${API_BASE_URL}/WorkOrder`;
 const API_URLVE = `${API_BASE_URL}/Vehicle`;
 const API_URLSPA = `${API_BASE_URL}/spareParts`;
 
-export const getServices = async(search) => {
+export const getServices = async (search) => {
     try {
         const request = await fetch(`${API_URL}/getService?search=${search}`, {
             credentials: 'include'
@@ -21,7 +22,7 @@ export const getServices = async(search) => {
     }
 };
 
-export const patchWorkOrder = async(idWorkOrder) => {
+export const patchWorkOrder = async (idWorkOrder) => {
     try {
         const response = await fetch(
             `${API_URL}/patchWorkOrder/${idWorkOrder}/complete`,
@@ -62,7 +63,7 @@ export const patchWorkOrder = async(idWorkOrder) => {
     }
 };
 
-export const getDataVehicleById = async(id) => {
+export const getDataVehicleById = async (id) => {
     try {
         const request = await fetch(`${API_URLVE}/getWorkOrderVehicle/${id}`, {
             credentials: 'include'
@@ -79,7 +80,7 @@ export const getDataVehicleById = async(id) => {
     }
 };
 
-export const getWorkOrderById = async(id) => {
+export const getWorkOrderById = async (id) => {
     try {
         const request = await fetch(`${API_URL}/getWorkOrderById/${id}`, {
             credentials: 'include'
@@ -96,7 +97,7 @@ export const getWorkOrderById = async(id) => {
     }
 };
 
-export const getSpareParts = async() => {
+export const getSpareParts = async () => {
     try {
         const request = await fetch(`${API_URLSPA}/getWorkOrderSpareParts`, {
             credentials: 'include'
@@ -113,9 +114,10 @@ export const getSpareParts = async() => {
     }
 };
 
-export const postWorkOrder = async(workOrderData, idVehicle, idSale) => {
+export const postWorkOrder = async (workOrderData, idVehicle, idSale) => {
     try {
-        const request = await fetch(`${API_URL}/postWorkOrder/${idVehicle}?idSale=${idSale}`, {
+        const params = buildParams({ idSale });
+        const request = await fetch(`${API_URL}/postWorkOrder/${idVehicle}?${params.toString()}`, {
             method: 'POST',
             body: workOrderData,
             credentials: 'include'
@@ -148,14 +150,14 @@ export const postWorkOrder = async(workOrderData, idVehicle, idSale) => {
 
     } catch (error) {
         if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.",{ cause: error });
+            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
         }
 
         throw error;
     }
 };
 
-export const putWorkOrder = async(workOrderData, idWorkOrder) => {
+export const putWorkOrder = async (workOrderData, idWorkOrder) => {
     try {
 
         const request = await fetch(`${API_URL}/putWorkOrder/${idWorkOrder}`, {

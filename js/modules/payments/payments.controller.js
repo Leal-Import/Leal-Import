@@ -27,14 +27,13 @@ export const loadPayMethods = async (Refs) => {
     }
 };
 
-export const initPaymentsController = async ({ totalCalculator, onStateChange, createReceiptBtn, isView, state }) => {
+export const initPaymentsController = async ({ totalCalculator, createReceiptBtn, isView, state }) => {
     try {
         const refs = DOMRefs.init();
 
         initPaymentsEvents({ btnCancelEdit: refs.btnCancelEdit, onCancelEdit: () => onCancelEdit(), btnAddPayment: refs.btnAddPayment, onAddPayment: () => onAddPayment(state) });
 
         await loadPayMethods(refs);
-        paymentsState.onSaveState = onStateChange;
         paymentsState.onCalculateTotal = totalCalculator;
         paymentsState.onCreateButton = createReceiptBtn;
         paymentsState.context.isView = isView;
@@ -95,7 +94,6 @@ export const addNewPayment = ({ state, totals, payment }) => {
 
     totals.totalPaid = state.payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
     renderPaymentsController(state.payments, totals, state.paymentsToDelete);
-    paymentsState.onSaveState?.();
     paymentsState.onCalculateTotal();
 };
 
@@ -119,7 +117,6 @@ const onDeletePayment = (payments, index, totals, paymentsToDelete) => {
     payments.splice(index, 1);
     totals.totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
     renderPaymentsController(payments, totals, paymentsToDelete);
-    paymentsState.onSaveState?.();
     paymentsState.onCalculateTotal();
 };
 

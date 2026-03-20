@@ -13,6 +13,10 @@ export const DOMRefs = {
     }
 };
 
+export const resetCustomerSaleFilters = (txtSearchData) => {
+    txtSearchData.value = '';
+};
+
 const createSVG = (pathD, options = {}) => {
     const { strokeWidth = "2", className = "" } = options;
 

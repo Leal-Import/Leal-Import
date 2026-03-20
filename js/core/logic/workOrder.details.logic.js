@@ -20,16 +20,16 @@ export const hydrateContextFromURL = async (state) => {
     }
 
     state.context.idVehicle = idVehicle;
-    state.context.idCustomer = getNullableParam(idCustomer);
-    state.context.idSale = asUUID(getNullableParam(params.get('idSale')));
+    state.context.idCustomer = idCustomer;
+    state.context.idSale = asUUID(params.get('idSale'));
     state.context.idWorkOrder = idWorkOrder;
     state.context.customerName = params.get('customerName')?.trim() || '';
     state.context.vehiclePrice = asNumber(params.get("totalPrice"));
     state.context.isView = params.get('isView') === 'true';
     state.context.isNewPart = params.get("isNewPart") === "true";
-    state.context.idNewPart = asUUID(params.get("newSparePartId"));
-    state.context.newPartName = params.get("newSparePartName");
-    state.context.newPartSuggestedPrice = asNumber(params.get("newSuggestedPrice"));
+    state.context.idNewPart = asUUID(params.get("idNewPart"));
+    state.context.newPartName = params.get("newPartName");
+    state.context.newPartSuggestedPrice = asNumber(params.get("newPartSuggestedPrice"));
 
     // 🔑 key para drafts (UUID-safe)
     state.saleKey = "pendingOrder";
@@ -203,27 +203,23 @@ export const buildPutWorkOrderFormData = (state) => {
 };
 
 const buildPutWorkOrderPayload = (state) => {
-    const { data, context, idEmployee } = state;
+    const { data, context } = state;
 
     return {
         idCustomer: context.idCustomer,
         notes: data.notes || '',
         estimatedDate: data.estimatedDate,
-
         saveOrUpdateService: normalizeServices(data.selectedServices),
         saveOrUpdateItems: normalizeSpareParts(data.selectedSpareParts),
-        saveOrUpdatePayments: normalizePayments(data.payments, idEmployee),
-
+        saveOrUpdatePayments: normalizePayments(data.payments),
         serviceToDelete: data.servicesToDelete,
         itemsToDelete: data.sparePartsToDelete,
-        paymentsToDelete: data.paymentsToDelete,
-
-        idEmployee
+        paymentsToDelete: data.paymentsToDelete
     };
 };
 
 const buildPostWorkOrderPayload = (state) => {
-    const { data, context, idEmployee } = state;
+    const { data, context } = state;
 
     return {
         idCustomer: context.idCustomer,
@@ -231,8 +227,7 @@ const buildPostWorkOrderPayload = (state) => {
         estimatedDate: data.estimatedDate,
         services: normalizeServices(data.selectedServices),
         spareParts: normalizeSpareParts(data.selectedSpareParts),
-        payments: normalizePayments(data.payments, idEmployee),
-        idEmployee //el idEmployee esta de momento pero despues se quitara
+        payments: normalizePayments(data.payments)
     };
 };
 
@@ -256,13 +251,17 @@ const appendPaymentFiles = (fd, payments, isEdit) => {
     });
 };
 
-const normalizePayments = (payments, idEmployee) => {
-    return payments.map(p => ({
-        amount: Number(p.amount),
-        idPaymentMethod: p.idPaymentMethod,
-        idPayment: p.idPayment ?? null,
-        idEmployee
-    }));
+const normalizePayments = (payments) => {
+    return payments.map(p => {
+        const payment = {
+            amount: Number(p.amount),
+            idPaymentMethod: p.idPaymentMethod
+        };
+        if (p.idPayment) {
+            payment.idPayment = p.idPayment;
+        }
+        return payment;
+    });
 };
 
 const normalizeServices = (services) => {

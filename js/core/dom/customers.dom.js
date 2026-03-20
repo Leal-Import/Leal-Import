@@ -25,6 +25,12 @@ export const DOMRefs = {
     }
 };
 
+export const resetCustomersFilters = (Refs) => {
+    const { txtSearchData, cmbSearchByStatus } = Refs;
+    txtSearchData.value = '';
+    cmbSearchByStatus.value = '';
+};
+
 export const insertCustomers = (container, customers, onActions, tableCustomers) => {
     const fragment = document.createDocumentFragment();
     if (!container) return;

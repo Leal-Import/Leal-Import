@@ -24,6 +24,13 @@ export const DOMRefs = {
     }
 };
 
+export const resetEmployeesFilters = (refs) => {
+    const { txtSearchData, cmbSearchByRole, cmbSearchByStatus } = refs;
+    txtSearchData.value = '';
+    cmbSearchByRole.value = '';
+    cmbSearchByStatus.value = '';
+};
+
 const createCell = (text) => {
     const td = document.createElement('td');
     td.textContent = text ?? '';

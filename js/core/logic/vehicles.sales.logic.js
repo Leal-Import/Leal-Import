@@ -1,15 +1,10 @@
 import { asUUID, getNullableParam, showMessage } from "../../utils/dom.js";
 
 export const validateSale = (state, idVehicle, idCustomer, idSale) => {
-
     if (!idVehicle) return "Ningún vehículo seleccionado";
-
     if (!idCustomer && !idSale) return "Sin cliente seleccionado";
-
     if (!state.payments || state.payments.length === 0) return "Debes agregar al menos un abono";
-
     if (isNaN(state.salePrice) || Number(state.salePrice) <= 0) return "El precio final del vehículo no es válido";
-
     return null;
 };
 
@@ -31,7 +26,7 @@ export const hydrateContextFromURL = async (state) => {
     state.context.idCustomer = idCustomer;
 
     // 🟡 Opcional
-    state.context.idSale = asUUID(getNullableParam(params.get('idSale')));
+    state.context.idSale = asUUID(params.get('idSale'));
 
     // UX
     state.context.customerName = params.get('customerName')?.trim() || '';
@@ -42,9 +37,6 @@ export const hydrateContextFromURL = async (state) => {
     const idVehicle = asUUID(getNullableParam(params.get('idVehicle')));
     state.context.idVehicle = idVehicle;
     state.idVehicle = idVehicle; // si lo usás fuera del context
-
-    // 🔑 key para drafts (UUID-safe)
-    state.saleKey = `vehicleSaleState_customer_${idCustomer}_${state.context.idSale ?? "NewSale"}`;
 
     return true;
 };
@@ -99,7 +91,7 @@ export const buildPostSalePayload = (state) => {
 };
 
 export const buildPutSalePayload = (state) => {
-    const { data, idEmployee } = state;
+    const { data } = state;
 
     const fd = new FormData();
 
@@ -117,7 +109,6 @@ export const buildPutSalePayload = (state) => {
         const paymentData = {
             amount: p.amount,
             idPaymentMethod: p.idPaymentMethod,
-            idEmployee,
             idPayment: p.idPayment || null
         };
 

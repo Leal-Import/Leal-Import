@@ -1,6 +1,6 @@
 // modules/workOrders/workOrders.controller.js
 
-import { DOMRefs, insertWorkOrders } from "../../../core/dom/workOrder.dom.js";
+import { DOMRefs, insertWorkOrders, resetWorkOrdersFilters } from "../../../core/dom/workOrder.dom.js";
 import { resetWorkOrdersState, workOrdersState } from "../../../core/state/workOrders.state.js";
 import { createPagination } from "../../../pagination/pagination.controller.js";
 import { getVehiclesWOrders, getWOStatus } from "../../../service/workOrders.service.js";
@@ -86,6 +86,7 @@ const setupApplication = async() => {
 };
 
 const initializeUI = (Refs) => {
+    resetWorkOrdersFilters(Refs);
     initWorkOrdersEvents({ Refs, onSearchWorkOrder });
 };
 

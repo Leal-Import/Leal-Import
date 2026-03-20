@@ -4,7 +4,7 @@ import { toggleModal, showMessage, showFloatingMenu, setFormReadOnly, showElemen
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateCustomer, mapCustomerForm } from '../../core/logic/customers.logic.js';
 import { initCustomerEvents } from './customers.events.js';
-import { DOMRefs, fillCustomerForm, insertCustomers, rewriteModalText } from '../../core/dom/customers.dom.js';
+import { DOMRefs, fillCustomerForm, insertCustomers, resetCustomersFilters, rewriteModalText } from '../../core/dom/customers.dom.js';
 import { initSession } from '../../utils/api.utils.js';
 
 const STATUS = { ACTIVE: 'T', INACTIVE: 'F' };
@@ -185,6 +185,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
+    resetCustomersFilters(Refs);
     initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal });
 };
 

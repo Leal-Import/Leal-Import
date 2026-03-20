@@ -1,13 +1,13 @@
 // modules/workOrderHistory/workOrderHistory.controller.js
 
-import { DOMRefs, insertWorkOrderHistory, loadStats, loadVehicleInfo } from "../../../core/dom/workOrder.history.dom.js";
+import { DOMRefs, insertWorkOrderHistory, loadStats, loadVehicleInfo, resetWorkOrderHistoryFilters } from "../../../core/dom/workOrder.history.dom.js";
 import { resetWorkOrderHistoryState, workOrderHistoryState } from "../../../core/state/workOrder.history.state.js";
 import { createPagination } from "../../../pagination/pagination.controller.js";
 import { getDetailsOrders, getDashboardWorkorder } from "../../../service/workOrder.history.service.js";
 import { getWOStatus } from "../../../service/workOrders.service.js";
 import { initSession } from "../../../utils/api.utils.js";
 
-import { asUUID, fillSelect, hideElement, showElement, showFloatingMenu, showMessage } from "../../../utils/dom.js";
+import { asUUID, buildParams, fillSelect, hideElement, showElement, showFloatingMenu, showMessage } from "../../../utils/dom.js";
 import { initWorkOrderHistoryEvents } from "../event/workOrder.history.event.js";
 
 /* ===============================
@@ -23,7 +23,7 @@ const pagination = createPagination({
     }
 });
 
-const loadWorkOrderHistoryStatus = async() => {
+const loadWorkOrderHistoryStatus = async () => {
     try {
         const states = await getWOStatus();
         workOrderHistoryState.stateList = states;
@@ -34,7 +34,7 @@ const loadWorkOrderHistoryStatus = async() => {
     }
 };
 
-const loadDashboard = async() => {
+const loadDashboard = async () => {
     try {
         const data = await getDashboardWorkorder(workOrderHistoryState.context.idVehicle);
         loadStats(data, DOMRefs.refs);
@@ -45,7 +45,7 @@ const loadDashboard = async() => {
     }
 };
 
-const loadWorkOrderHistory = async() => {
+const loadWorkOrderHistory = async () => {
     try {
         showElement(DOMRefs.refs.loaderWorkOrders);
         const { page, size } = workOrderHistoryState.pagination;
@@ -93,11 +93,22 @@ const handleOrdersActions = (e, order) => {
 };
 
 const viewWorkOrder = (idWorkOrder, idVehicle) => {
-    window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}&isView=true`;
+    const params = buildParams({
+        idWorkOrder,
+        idVehicle,
+        idCustomer: workOrderHistoryState.context.idCustomer,
+        isView: true
+    });
+    window.location.href = `addWorkOrder.html?${params.toString()}`;
 };
 
 const editWorkOrder = (idWorkOrder, idVehicle) => {
-    window.location.href = `addWorkOrder.html?idWorkOrder=${idWorkOrder}&idVehicle=${idVehicle}`;
+    const params = buildParams({
+        idWorkOrder,
+        idVehicle,
+        idCustomer: workOrderHistoryState.context.idCustomer
+    });
+    window.location.href = `addWorkOrder.html?${params.toString()}`;
 };
 
 /* ===============================
@@ -118,7 +129,7 @@ const onSearchWorkOrderHistory = (filters) => {
    INIT
 ================================ */
 
-const hydrateContextFromURL = async() => {
+const hydrateContextFromURL = async () => {
     const params = new URLSearchParams(window.location.search);
     const idVehicle = asUUID(params.get('idVehicle'));
 
@@ -134,10 +145,14 @@ const hydrateContextFromURL = async() => {
 };
 
 const loadBtnAdd = () => {
-    DOMRefs.refs.btnAddOrder.href = `addWorkOrder.html?idVehicle=${workOrderHistoryState.context.idVehicle}&idCustomer=${workOrderHistoryState.context.idCustomer}`;
+    const params = buildParams({
+        idVehicle: workOrderHistoryState.context.idVehicle,
+        idCustomer: workOrderHistoryState.context.idCustomer
+    });
+    DOMRefs.refs.btnAddOrder.href = `addWorkOrder.html?${params.toString()}`;
 };
 
-const setupApplication = async() => {
+const setupApplication = async () => {
     resetWorkOrderHistoryState();
     // 1. Validar sesión
     const user = await initSession();
@@ -150,15 +165,16 @@ const setupApplication = async() => {
 };
 
 const initializeUI = (Refs) => {
+    resetWorkOrderHistoryFilters(Refs);
     loadBtnAdd();
     initWorkOrderHistoryEvents({ Refs, onSearchWorkOrderHistory });
 };
 
-const loadDataFlow = async() => {
+const loadDataFlow = async () => {
     await Promise.all([loadWorkOrderHistory(), loadWorkOrderHistoryStatus(), loadDashboard()]);
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         const isReady = await setupApplication();
         if (!isReady) return;

@@ -24,16 +24,26 @@ export const DOMRefs = {
     }
 };
 
+export const resetWorkOrderHistoryFilters = (refs) => {
+    const { txtSearchData, cmbSearchByStatus } = refs;
+    txtSearchData.value = "";
+    cmbSearchByStatus.value = "";
+};
+
 export const loadStats = (data, Refs) => {
-    Refs.finalized.textContent = data.statistics.finalized;
-    Refs.pending.textContent = data.statistics.pending;
-    Refs.delayed.textContent = data.statistics.delayed;
-    Refs.totalOrdersQuantity.textContent = formatWithCommas(data.statistics.totalBilled);
+    const { finalized, pending, delayed, totalBilled } = data.statistics;
+    const { finalized: finalizedRef, pending: pendingRef, delayed: delayedRef, totalOrdersQuantity: totalOrdersQuantityRef } = Refs;
+    finalizedRef.textContent = finalized;
+    pendingRef.textContent = pending;
+    delayedRef.textContent = delayed;
+    totalOrdersQuantityRef.textContent = formatWithCommas(totalBilled);
 };
 
 export const loadVehicleInfo = (data, Refs) => {
-    Refs.infoItem.textContent = `${data.vehicleInfo.brand} ${data.vehicleInfo.model} ${data.vehicleInfo.year}`;
-    Refs.vin.textContent = data.vehicleInfo.vin;
+    const { brand, model, year, vin } = data.vehicleInfo;
+    const { infoItem, vin: vinRef } = Refs;
+    infoItem.textContent = `${brand} ${model} ${year}`;
+    vinRef.textContent = vin;
 };
 
 export const insertWorkOrderHistory = (container, workOrders, onActions, tableHistory) => {

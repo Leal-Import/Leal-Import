@@ -1,5 +1,5 @@
 import { resetVehiclesState, vehiclesState } from '../../../core/state/vehicles.state.js';
-import { DOMRefs, insertVehicles } from '../../../core/dom/vehicles.dom.js';
+import { DOMRefs, insertVehicles, resetVehiclesFilters } from '../../../core/dom/vehicles.dom.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
 import { getVehicles, getStatus } from '../../../service/vehicles.service.js';
 import { showMessage, fillSelect, showElement, hideElement } from '../../../utils/dom.js';
@@ -95,6 +95,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
+    resetVehiclesFilters(Refs);
     initVehicleEvents({ Refs, onSearchVehicles });
     if (vehiclesState.context.hasWorkOrder) {
         workOrderBtn();

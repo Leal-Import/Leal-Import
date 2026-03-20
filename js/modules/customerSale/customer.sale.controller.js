@@ -1,5 +1,5 @@
 import { getCustomers } from "../../service/customers.service.js";
-import { DOMRefs, insertCustomers } from "../../core/dom/customers.sale.dom.js";
+import { DOMRefs, insertCustomers, resetCustomerSaleFilters } from "../../core/dom/customers.sale.dom.js";
 import { customerSaleState, resetCustomerSaleState } from "../../core/state/customers.sale.state.js";
 import { hideElement, showElement, showMessage } from "../../utils/dom.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
@@ -69,6 +69,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
+    resetCustomerSaleFilters(Refs.txtSearchData);
     initCustomerSaleEvents({ Refs, onSearchCustomer });
 };
 

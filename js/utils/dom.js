@@ -337,3 +337,10 @@ export const buildParams = (obj) => {
     });
     return params;
 };
+
+// utils/url.js
+export const cleanOneShotParams = (params = []) => {
+    const url = new URL(window.location.href);
+    params.forEach(p => url.searchParams.delete(p));
+    window.history.replaceState({}, document.title, url.toString());
+};

@@ -13,10 +13,22 @@ export const DOMRefs = {
             txtSearchData:  $('txtSearchData'),
             txtSearchYear:  $('txtSearchYear'),
             cmbSearchByStatus:  $('cmbSearchByStatus'),
-            cmbSearchByIsExternal:  $('cmbSearchByIsExternal')
+            cmbSearchByIsExternal:  $('cmbSearchByIsExternal'),
+            fromDt: $('fromDt'),
+            toDt: $('toDt')
         };
         return this.refs;
     }
+};
+
+export const resetVehiclesFilters = (Refs) => {
+    const { txtSearchData, txtSearchYear, cmbSearchByStatus, cmbSearchByIsExternal, fromDt, toDt } = Refs;
+    txtSearchData.value = '';
+    txtSearchYear.value = '';
+    cmbSearchByStatus.value = '';
+    cmbSearchByIsExternal.value = '';
+    fromDt.value = '';
+    toDt.value = '';
 };
 
 export const insertVehicles = (container, vehicles, hasWorkOrder) => {

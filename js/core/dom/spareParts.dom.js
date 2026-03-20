@@ -9,10 +9,20 @@ export const DOMRefs = {
             cardContainer: qs('.cardContainer'),
             loaderSpareParts: $('loaderSpareParts'),
             txtSearchData: $('txtSearchData'),
-            cmbSearchByStatus: $('cmbSearchByStatus')
+            cmbSearchByStatus: $('cmbSearchByStatus'),
+            fromDt: $('fromDt'),
+            toDt: $('toDt')
         };
         return this.refs;
     }
+};
+
+export const resetSparePartsFilters = (Refs) => {
+    const { txtSearchData, cmbSearchByStatus, fromDt, toDt } = Refs;
+    txtSearchData.value = '';
+    cmbSearchByStatus.value = '';
+    fromDt.value = '';
+    toDt.value = '';
 };
 
 export const insertSpareParts = (container, spareParts) => {

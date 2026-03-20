@@ -1,6 +1,6 @@
 // modules/sales/sales.controller.js
 
-import { insertSales, selectLineButton, DOMRefs } from "../../core/dom/sales.dom.js";
+import { insertSales, selectLineButton, DOMRefs, resetSalesFilters } from "../../core/dom/sales.dom.js";
 import { resetSalesState, salesState } from "../../core/state/sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "../../service/sales.service.js";
@@ -90,6 +90,7 @@ const setupApplication = async() => {
 };
 
 const initializeUI = (Refs) => {
+    resetSalesFilters(Refs);
     initSalesEvents({ Refs, onSearchSale, onClickBtnFilter, onOpenModal: () => toggleModal(Refs.modalAskSale, true), onCloseModal: () => toggleModal(Refs.modalAskSale, false) });
 };
 

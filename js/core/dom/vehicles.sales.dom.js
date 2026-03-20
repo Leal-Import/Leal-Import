@@ -61,6 +61,10 @@ export const DOMRefs = {
     }
 };
 
+export const resetVehicleSaleFilters = (txtSearchData) => {
+    txtSearchData.value = "";
+};
+
 export const insertVehicles = (container, vehicles, onAddVehicle, tableVehicles) => {
     container.innerHTML = "";
     const fragment = document.createDocumentFragment();
@@ -92,8 +96,8 @@ export const insertVehicles = (container, vehicles, onAddVehicle, tableVehicles)
             image.src = vehicle.photoUrl;
             vin.textContent = vehicle.vin;
             if (vehicle.total && vehicle.suggestedPrice) {
-                cost.textContent = `$${formatWithCommas(vehicle.total)}`;
-                suggesredPrice.textContent = `$${formatWithCommas(vehicle.suggestedPrice)}`; /* Por el momento es costo total */
+                cost.textContent = formatWithCommas(vehicle.total);
+                suggesredPrice.textContent = formatWithCommas(vehicle.suggestedPrice); /* Por el momento es costo total */
             } else {
                 cost.textContent = `Externo`;
                 suggesredPrice.textContent = `Externo`; /* Por el momento es costo total */

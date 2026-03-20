@@ -8,11 +8,21 @@ export const DOMRefs = {
             cardContainer: qs('.cardContainer'),
             loaderWorkOrders: $('loaderWorkOrders'),
             txtSearchData: $('txtSearchData'),
-            cmbSearchByStatus: $('cmbSearchByStatus')
+            cmbSearchByStatus: $('cmbSearchByStatus'),
+            fromDt: $('fromDt'),
+            toDt: $('toDt')
         };
 
         return this.refs;
     }
+};
+
+export const resetWorkOrdersFilters = (refs) => {
+    const { txtSearchData, cmbSearchByStatus, fromDt, toDt } = refs;
+    txtSearchData.value = '';
+    cmbSearchByStatus.value = '';
+    fromDt.value = '';
+    toDt.value = '';
 };
 
 export const insertWorkOrders = (container, workOrders) => {

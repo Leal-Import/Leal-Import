@@ -7,18 +7,17 @@ import {
 } from '../../../service/vehicles.sales.service.js';
 import { getVehicles as getVehicleById } from '../../../service/vehicles.detail.service.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
-import { showMessage, hideElement, showElement, disableElement, removeDisable, qsa } from '../../../utils/dom.js';
+import { showMessage, hideElement, showElement, disableElement, removeDisable, qsa, buildParams } from '../../../utils/dom.js';
 import { resetVehicleSaleState, vehicleSaleState } from '../../../core/state/vehicles.sales.state.js';
 import { initVehicleSaleEvents } from '../event/vehicles.sales.events.js';
 import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
-import { DOMRefs, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals } from '../../../core/dom/vehicles.sales.dom.js';
+import { DOMRefs, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals, resetVehicleSaleFilters } from '../../../core/dom/vehicles.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from '../../../core/logic/vehicles.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
-import { getCurrentEmployeeId, initSession } from '../../../utils/api.utils.js';
+import { initSession } from '../../../utils/api.utils.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments, onResetPayments } from '../../payments/payments.controller.js';
 import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
 import { safeParseFloat } from '../../../utils/validators.js';
-import { workOrderDetailsState } from '../../../core/state/workOrder.details.state.js';
 import { generateVehicleSaleReport } from '../../../core/reports/workorders/vehicles.sales.report.js';
 
 /* ================= PAGINATION ================= */
@@ -87,7 +86,6 @@ const onAddVehicle = async (vehicle) => {
     vehicleSaleState.totals.total = vehicleToAppend.costs ? vehicleToAppend.costs.suggestedPrice : 0;
     loadVehicle(vehicleToAppend, vehicleSaleState.context.idSale, DOMRefs.refs);
     recalculateTotals();
-    saveSaleState();
 };
 
 const onCancelVehicle = () => {
@@ -97,7 +95,6 @@ const onCancelVehicle = () => {
     vehicleSaleState.idVehicle = null;
     vehicleSaleState.data.salePrice = 0;
     vehicleSaleState.totals.total = 0;
-    localStorage.removeItem(vehicleSaleState.saleKey);
 
     DOMRefs.refs.frmVehicleSale.reset();
 
@@ -111,9 +108,16 @@ export const onSubmitVehicleSale = async (e, isWorkOrder) => {
     e.preventDefault();
     const response = await createNewSale(isWorkOrder);
     if (response && typeof response === 'object' && response.idSale) {
-        window.location.href = `addWorkOrder.html?idSale=${response.idSale}&customerName=${encodeURIComponent(response.customerName)}&idVehicle=${response.idVehicle}&idCustomer=${vehicleSaleState.context.idCustomer}&totalPrice=${response.price}`;
+        const params = buildParams({
+            idVehicle: response.idVehicle,
+            totalPrice: response.price,
+            customerName: vehicleSaleState.context.customerName,
+            idCustomer: vehicleSaleState.context.idCustomer,
+            idSale: response.idSale
+        });
+        window.location.replace(`addWorkOrder.html?${params.toString()}`);
     } else if (response === "sale") {
-        window.location.href = 'sales.html';
+        window.location.replace('sales.html');
     }
 };
 
@@ -155,7 +159,7 @@ const createNewSale = async (isWorkOrder) => {
         }
 
         if (response) {
-            cleanWindow();
+            DOMRefs.refs.frmVehicleSale.reset();
             const cleanUrl = window.location.pathname;
             history.replaceState({}, "", cleanUrl);
             if (isWorkOrder) {
@@ -193,21 +197,6 @@ const onSearchVehicle = async (filters) => {
     hideElement(DOMRefs.refs.tableVehiclesLoader);
 };
 
-const saveSaleState = () => {
-    localStorage.setItem(vehicleSaleState.saleKey, JSON.stringify({
-        idVehicle: vehicleSaleState.idVehicle,
-        data: vehicleSaleState.data,
-        totals: vehicleSaleState.totals
-    }));
-};
-
-const existSavedData = () => localStorage.getItem(vehicleSaleState.saleKey) !== null;
-
-const cleanWindow = () => {
-    localStorage.removeItem(vehicleSaleState.saleKey);
-    DOMRefs.refs.frmVehicleSale.reset();
-};
-
 /* ================= LOAD EXISTING ================= */
 const loadExistingSale = (sale, vehicle) => {
     showElement(DOMRefs.refs.addVehicleLoader);
@@ -227,57 +216,36 @@ const loadExistingSale = (sale, vehicle) => {
         });
     });
     recalculateTotals();
-    saveSaleState();
-};
-
-/* ================= LOAD DRAFT ================= */
-const loadDraft = async () => {
-    const storage = JSON.parse(
-        localStorage.getItem(vehicleSaleState.saleKey)
-    );
-    vehicleSaleState.idVehicle = storage.idVehicle;
-    vehicleSaleState.data = storage.data;
-    vehicleSaleState.totals = storage.totals;
-    if (vehicleSaleState.idVehicle) {
-        const vehicle = await getVehicleById(vehicleSaleState.idVehicle);
-        loadVehicle(vehicle, vehicleSaleState.context.idSale, DOMRefs.refs);
-    }
-    vehicleSaleState.data.payments.forEach(p => {
-        addNewPayment({
-            state: vehicleSaleState.data,
-            totals: vehicleSaleState.totals,
-            payment: p
-        });
-    });
-    recalculateTotals();
 };
 
 const onSaveFinalPrice = (e) => {
     const total = safeParseFloat(e.target.value) || 0;
     vehicleSaleState.data.salePrice = total;
     vehicleSaleState.totals.total = total;
-    saveSaleState();
     recalculateTotals();
 };
 
 const onSaveNotes = (e) => {
     vehicleSaleState.data.notes = e.target.value.trim() || '';
-    saveSaleState();
 };
 
 const onSaveComission = (e) => {
     vehicleSaleState.data.commission = e.target.value.trim() || '';
-    saveSaleState();
 };
 
 const onImportVehicle = () => {
-    window.location.href = `vehicleDetails.html?sale=true&idCustomer=${vehicleSaleState.context.idCustomer}&customerName=${encodeURIComponent(vehicleSaleState.context.customerName)}`;
+    const params = buildParams({
+        sale: true,
+        idCustomer: vehicleSaleState.context.idCustomer,
+        customerName: vehicleSaleState.context.customerName
+    });
+    window.location.href = `vehicleDetails.html?${params.toString()}`;
 };
 
 const initializeUI = async (Refs) => {
+    resetVehicleSaleFilters(Refs.txtSearchData);
     await initPaymentsController({
         totalCalculator: recalculateTotals,
-        onStateChange: saveSaleState,
         createReceiptBtn: createBtnUrl,
         isView: vehicleSaleState.context.isView,
         state: vehicleSaleState
@@ -293,10 +261,7 @@ const setupApplication = async () => {
     const user = await initSession();
     if (!user) return false;
 
-    // 2. Configurar estado global
-    workOrderDetailsState.idEmployee = getCurrentEmployeeId();
-
-    // 3. Hidratar contexto desde URL
+    // 2. Hidratar contexto desde URL
     const hydrated = await hydrateContextFromURL(vehicleSaleState);
     if (!hydrated) return false;
 
@@ -328,8 +293,6 @@ const loadDataFlow = async () => {
         }
         hideElement(DOMRefs.refs.addVehicleLoader);
         recalculateTotals();
-    } else if (existSavedData()) {
-        await loadDraft();
     }
     await loadInventory();
 };

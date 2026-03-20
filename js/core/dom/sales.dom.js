@@ -13,10 +13,21 @@ export const DOMRefs = {
             containerFilterType: qs('.containerFilterType'),
             btnAskSale: $("btnAskSale"),
             btnCloseModalAsk: $("btnCloseModalAsk"),
+            fromDt: $("fromDt"),
+            toDt: $("toDt"),
             selectedLines: qsa(".filterType .lineSelected")
         };
         return this.refs;
     }
+};
+
+export const resetSalesFilters = (refs) => {
+    const { txtSearchData, cmbSearchByStatus, btnAskSale, selectedLines, fromDt, toDt } = refs;
+    txtSearchData.value = "";
+    cmbSearchByStatus.value = "";
+    fromDt.value = "";
+    toDt.value = "";
+    selectLineButton(btnAskSale, selectedLines);
 };
 
 export const insertSales = (container, sales) => {

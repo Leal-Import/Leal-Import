@@ -29,6 +29,10 @@ export const DOMRefs = {
     }
 };
 
+export const resetSparePartsFilters = (txtSearchData) => {
+    txtSearchData.value = "";
+};
+
 export const insertSpareParts = (
     spareParts,
     container,
@@ -72,7 +76,6 @@ export const insertSpareParts = (
         const cost = document.createElement("td");
         const suggestedPriceTd = document.createElement("td");
 
-        console.log(sparePart);
         image.src = sparePart.photoUrl || "";
         name.textContent = sparePart.nameSpareParts || sparePart.sparePartName;
         cost.textContent = formatWithCommas(sparePart.total || sparePart.totalCost || 0);

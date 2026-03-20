@@ -6,7 +6,7 @@ import {
     validateBaseSparePart,
     validateImage
 } from "../../../core/logic/spareParts.detail.logic.js";
-import { disableElement, fillSelect, hideElement, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
+import { buildParams, disableElement, fillSelect, hideElement, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
 import { isValidURL, safeParseFloat } from "../../../utils/validators.js";
 import { initSparePartDetailEvents } from "../event/spareParts.detail.event.js";
@@ -92,38 +92,34 @@ const onSubmitSparePart = async (e) => {
             await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
         if (sparePartDetailState.context.hasSale) {
-            const paramsSale = new URLSearchParams({
+            const paramsSale = buildParams({
                 isNewPart: true,
                 idCustomer: sparePartDetailState.context.idCustomer,
                 customerName: sparePartDetailState.context.customerName,
                 sparePartId: response.data.idSparePart,
                 sparePartName: response.data.nameSpareParts,
-                suggestedPrice: response.data.sparePartsCosts.suggestedPrice
+                suggestedPrice: response.data.sparePartsCosts.suggestedPrice,
+                idSale: sparePartDetailState.context.idSale
             });
-
-            if (sparePartDetailState.context.idSale) {
-                paramsSale.append('idSale', sparePartDetailState.context.idSale);
-            }
-
             window.location.href = `sparePartSale.html?${paramsSale.toString()}`;
             return;
         }
         if (sparePartDetailState.context.hasWorkOrder) {
-            const paramsOrder = new URLSearchParams({
+            const paramsOrder = buildParams({
                 isNewPart: true,
-                idSale: sparePartDetailState.context.idSale || null,
+                idSale: sparePartDetailState.context.idSale,
                 customerName: sparePartDetailState.context.customerName,
                 idVehicle: sparePartDetailState.context.idVehicle,
                 idCustomer: sparePartDetailState.context.idCustomer,
                 totalPrice: sparePartDetailState.context.totalPrice,
-                newSparePartId: response.data.idSparePart,
-                newSparePartName: response.data.nameSpareParts,
-                newSuggestedPrice: response.data.sparePartsCosts.suggestedPrice,
-                idWorkOrder: sparePartDetailState.context.idWorkOrder || null
+                idNewPart: response.data.idSparePart,
+                newPartName: response.data.nameSpareParts,
+                newPartSuggestedPrice: response.data.sparePartsCosts.suggestedPrice,
+                idWorkOrder: sparePartDetailState.context.idWorkOrder
             });
-            window.location.href = `addWorkOrder.html?${paramsOrder.toString()}`;
+            window.location.replace(`addWorkOrder.html?${paramsOrder.toString()}`);
         } else {
-            window.location.href = "spareParts.html";
+            window.location.replace("spareParts.html");
         }
 
     } catch (error) {
