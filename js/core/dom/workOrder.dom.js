@@ -53,7 +53,7 @@ export const insertWorkOrders = (container, workOrders) => {
             footerCard.classList.add("footerCard");
 
             const vehicleName = document.createElement("span");
-            vehicleName.classList.add("vehicleName");
+            vehicleName.classList.add("vehicleName", "truncate");
             vehicleName.textContent = `${workOrder.brand || 'Vehículo'} ${workOrder.model || ''}`.trim();
 
             const containerInfoVehicle = document.createElement("div");
@@ -89,12 +89,12 @@ export const insertWorkOrders = (container, workOrders) => {
             if (!workOrder.customerName) {
                 clientItem.innerHTML = `<div>Sin cliente asociado</div>`;
             } else {
-                clientItem.innerHTML = `<div>Cliente:</div> <span>${workOrder.customerName}</span>`;
+                clientItem.innerHTML = `<div>Cliente:</div> <span class="truncate">${workOrder.customerName}</span>`;
             }
 
             const vinItem = document.createElement("div");
             vinItem.classList.add("infoVehicleItem");
-            vinItem.innerHTML = `<div>Vin:</div> <span>${workOrder.vin}</span>`;
+            vinItem.innerHTML = `<div>Vin:</div> <span class="truncate">${workOrder.vin}</span>`;
 
             const dateItem = document.createElement("div");
             dateItem.classList.add("infoVehicleItem");

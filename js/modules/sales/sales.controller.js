@@ -25,7 +25,7 @@ const loadStateSales = async() => {
     try {
         const status = await getStateSales();
         salesState.stateList = status;
-        fillSelect('cmbSearchByStatus', salesState.stateList, 'idStateSale', 'stateName', null, "Todas");
+        fillSelect('cmbSearchByStatus', salesState.stateList, 'idStateSale', 'stateName', null, "Buscar por estado");
     } catch (error) {
         showMessage('Error al cargar los estados', error, 'error');
         console.error('Error al cargar estados:', error);

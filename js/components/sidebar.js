@@ -5,7 +5,7 @@ const getSidebarTemplate = () => `
             <div class="navHeader">
                 <div class="logoContainer">
                     <img src="" alt="Logo" class="logo" id="logo">
-                    <span class="logoWordmark" id="logoWordmark">Ris<span>kor</span></span>
+                    <span class="logoWordmark" id="logoWordmark">Leal <span>import</span></span>
                 </div>
                 <button id="btnNavbar" title="Toggle sidebar" type="button">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"

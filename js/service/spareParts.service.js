@@ -1,11 +1,12 @@
 import { API_BASE_URL } from "../utils/api.utils.js";
+import { buildParams } from "../utils/dom.js";
 
 const API_URL = `${API_BASE_URL}/spareParts`;
 const API_URLSTAT = `${API_BASE_URL}/PartsState`;
 
 export const getSpareParts = async(page = 0, size = 15, search = "", idState = "") => {
     try {
-        const params = new URLSearchParams({ page, size, search, idState });
+        const params = buildParams({ page, size, search, idState });
         const request = await fetch(`${API_URL}/getSparePartSummary?${params.toString()}`, {
             credentials: 'include'
         });

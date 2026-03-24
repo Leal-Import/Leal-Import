@@ -29,6 +29,10 @@
     align-self: end;
 }
 
+.paymentItem.isEditing {
+    background: color-mix(in srgb, var(--danger-color) 10%, transparent);
+}
+
 .rightColumn .formGroup {
     flex: 0;
 }
@@ -105,7 +109,6 @@
 }
 
 .paymentItem:hover {
-    background-color: var(--bg-color);
     border-color: var(--danger-color);
 }
 

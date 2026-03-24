@@ -64,7 +64,7 @@
     }
 }
 
-@container content (max-width: 850px) {
+@container content (max-width: 950px) {
     /* Contenedor de tabla - sin overflow */
     .containerTable {
         overflow: visible;
@@ -88,6 +88,10 @@
         flex-direction: column;
         gap: 25px;
         width: 100%;
+    }
+
+    .table td {
+        max-width: 100% !important;
     }
 
     /* ═══════════════════════════════════════
@@ -123,13 +127,14 @@
 
     .table tbody tr td:nth-child(1) {
         padding-top: 20px;
+        max-width: 95% !important;
         padding-bottom: 4px;
         font-weight: var(--font-weight-semibold);
         color: var(--text-color);
     }
 
     .table tbody tr td:nth-child(1)::before {
-        content: "👤 ";
+        content: "Empleado: ";
         margin-right: 4px;
     }
 
@@ -159,8 +164,6 @@
         color: var(--text-color);
         padding: 12px 20px;
         border: none;
-        display: flex;
-        flex-direction: column;
         gap: 6px;
     }
 
@@ -171,20 +174,20 @@
 
     /* Labels mejorados */
     .table tbody tr td:nth-child(3)::before {
-        content: "📅 Fecha estimada";
+        content: "Fecha estimada:";
     }
 
     .table tbody tr td:nth-child(4)::before {
         flex-shrink: 0;
-        content: "🏷️ Estado";
+        content: "Estado";
     }
 
     .table tbody tr td:nth-child(5)::before {
-        content: "💵 Costo total";
+        content: "Costo total";
     }
 
     .table tbody tr td:nth-child(6)::before {
-        content: "⚠️ Deuda";
+        content: "Deuda";
     }
 
     .table tbody tr td::before {

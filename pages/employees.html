@@ -19,48 +19,48 @@
 </head>
 
 <body>
-    <div class="containerModal hide" id="modalEmployees">
-        <form class="modalAdd" id="frmEmployees">
-            <button id="btnCloseModalEmployee" class="btnClose" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
-                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
-                </svg>
-            </button>
-            <h2 class="titleModal">Agregar empleado</h2>
-            <div class="modalEmployeeBody">
-                <div class="formGroup">
-                    <label for="txtFullName" class="lblInputs">Nombre completo</label>
-                    <input type="text" class="txtInputs" name="txtFullName" id="txtFullName" required maxlength="75">
-                </div>
-                <div class="formGroup">
-                    <label for="txtEmployeeEmail" class="lblInputs">Correo electronico</label>
-                    <input type="text" class="txtInputs" name="txtEmployeeEmail" id="txtEmployeeEmail" required
-                        maxlength="125">
-                </div>
-                <div class="formGroup">
-                    <label for="txtEmployeePhone" class="lblInputs">Teléfono</label>
-                    <input type="text" class="txtInputs" name="txtEmployeePhone" id="txtEmployeePhone" required
-                        maxlength="9">
-                </div>
-                <div class="formGroup">
-                    <label for="cmbUserRole" class="lblInputs">Rol de usuario</label>
-                    <select id="cmbUserRole" name="cmbUserRole" class="txtInputs" required>
-                    </select>
-                </div>
-                <div class="formGroup">
-                    <label for="txtUsername" class="lblInputs">Usuario</label>
-                    <input type="text" class="txtInputs" name="txtUsername" id="txtUsername" required maxlength="30">
-                </div>
-            </div>
-            <button class="btnPrimary btnSubmitData btnAddData" id="btnAddEmployee">
-                <span>Agregar</span>
-                <div class="loader hide" id="btnAddEmployeeLoader"></div>
-            </button>
-        </form>
-    </div>
     <div class="containerMobileHeader"></div>
     <div class="bodyContent">
+        <div class="containerModal hide" id="modalEmployees">
+            <form class="modalAdd" id="frmEmployees">
+                <button id="btnCloseModalEmployee" class="btnClose" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <h2 class="titleModal">Agregar empleado</h2>
+                <div class="modalEmployeeBody">
+                    <div class="formGroup">
+                        <label for="txtFullName" class="lblInputs">Nombre completo</label>
+                        <input type="text" class="txtInputs" name="txtFullName" id="txtFullName" required maxlength="75">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtEmployeeEmail" class="lblInputs">Correo electronico</label>
+                        <input type="text" class="txtInputs" name="txtEmployeeEmail" id="txtEmployeeEmail" required
+                            maxlength="125">
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtEmployeePhone" class="lblInputs">Teléfono</label>
+                        <input type="text" class="txtInputs" name="txtEmployeePhone" id="txtEmployeePhone" required
+                            maxlength="9">
+                    </div>
+                    <div class="formGroup">
+                        <label for="cmbUserRole" class="lblInputs">Rol de usuario</label>
+                        <select id="cmbUserRole" name="cmbUserRole" class="txtInputs" required>
+                        </select>
+                    </div>
+                    <div class="formGroup">
+                        <label for="txtUsername" class="lblInputs">Usuario</label>
+                        <input type="text" class="txtInputs" name="txtUsername" id="txtUsername" required maxlength="30">
+                    </div>
+                </div>
+                <button class="btnPrimary btnSubmitData btnAddData" id="btnAddEmployee">
+                    <span>Agregar</span>
+                    <div class="loader hide" id="btnAddEmployeeLoader"></div>
+                </button>
+            </form>
+        </div>
         <div id="sidebar"></div>
         <div class="content">
             <div class="headerContent">
@@ -69,14 +69,14 @@
                 </div>
                 <div class="filterSection">
                     <input type="text" id="txtSearchData" class="txtSearchData"
-                        placeholder="Buscar por: nombre, correo o teléfono">
+                        placeholder="Buscar empleado">
                     <select id="cmbSearchByRole" class="cmbFilterData">
                         <option value="">Cargando...</option>
                     </select>
                     <select id="cmbSearchByStatus" class="cmbFilterData">
                         <option value="T">Activo</option>
                         <option value="F">Inactivo</option>
-                        <option value="">Todos</option>
+                        <option value="">Buscar por estado</option>
                     </select>
                     <button id="btnOpenModalEmployees" class="btnPrimary btnOpenModal">Añadir</button>
                 </div>

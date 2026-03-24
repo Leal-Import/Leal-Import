@@ -2,12 +2,20 @@
 
 .content {
     flex-direction: row !important;
-    flex-wrap: wrap;
+}
+
+.mainContent{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    height: fit-content
 }
 
 .leftColumn {
     display: flex;
     flex-direction: column;
+    max-width: 65%;
     flex: 3;
     gap: 20px;
     flex-basis: 900px;
@@ -25,11 +33,6 @@
 
 .breadCrumbSection {
     margin-bottom: 1.5em;
-}
-
-#customerName {
-    color: var(--danger-color);
-    font-weight: var(--font-weight-semibold);
 }
 
 /* ============================================
@@ -142,7 +145,8 @@
 
 .mainInfoContainer>div {
     flex-grow: 1;
-    flex-basis: 300px;
+    flex-basis: 275px;
+    width: 50%;
 }
 
 .columnInfo h2 {
@@ -188,6 +192,10 @@
     font-weight: var(--font-weight-semibold);
     text-decoration: none;
     transition: color 0.2s ease;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 80%;
 }
 
 .infoValue:hover {
@@ -290,6 +298,16 @@
 
 .tableContainer::-webkit-scrollbar-thumb:hover {
     background-color: var(--danger-color);
+}
+
+@container content (max-width: 1270px) {
+    .mainContent {
+        flex-direction: column;
+    }
+
+    .leftColumn, .rightColumn {
+        max-width: 100%;
+    }
 }
 
 @keyframes slideDown {

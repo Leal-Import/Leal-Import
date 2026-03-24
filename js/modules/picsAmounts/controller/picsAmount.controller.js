@@ -1,4 +1,4 @@
-import { updateModalContent, DOMRefs, closeLightbox } from "../../../core/dom/picAmounts.dom.js";
+import { updateModalContent, DOMRefs, closeLightbox, setReceiptBtnState } from "../../../core/dom/picAmounts.dom.js";
 import { picsAmountState } from "../../../core/state/picsAmount.state.js";
 import { $, hideElement } from "../../../utils/dom.js";
 import { initModalListeners } from "../event/picsAmount.event.js";
@@ -7,21 +7,18 @@ export const clearCurrentFile = () => {
     const paymentId = DOMRefs.refs.modalContainer.dataset.paymentId;
     if (!paymentId) return;
 
-    // 🔑 Buscar el payment real en el estado
     const payment = picsAmountState.paymentsState.payments
         .find(p => String(p.id) === String(paymentId));
     if (!payment) return;
 
-    // 🔥 LIMPIEZA REAL
     payment.file = null;
 
-    // Limpieza visual
     const inputElement = $(DOMRefs.refs.currentReceiptInputId.value);
     if (inputElement) inputElement.value = '';
 
     const btn = inputElement?.nextElementSibling;
-    btn?.classList.remove("receipt-loaded");
-    btn.innerHTML = `<span class="icon">Añadir comprobante</span>`;
+    if (btn) setReceiptBtnState(btn, btn.querySelector('.icon'), false); // ← guard + helper
+
     updateModalContent(null, payment, DOMRefs.refs);
 };
 
@@ -57,12 +54,33 @@ export const onClickBtnSelect = () => {
 };
 
 export const initializeModalListeners = (state, isViewingReceipt) => {
-    picsAmountState.paymentsState = state; // 👈 inyección de estado
-    picsAmountState.isViewingReceipt = isViewingReceipt;
-    const refs = DOMRefs.init();
-    initModalListeners({ Refs: refs, clearCurrentFile, onCloseModalAndClean: () => closeModalAndClean(), onClickBtnSelect, onCloseLightbox: () => closeLightbox(refs.voucherLightbox) });
-    if (picsAmountState.isViewingReceipt) {
-        hideElement(refs.btnClearFile);
-        hideElement(refs.btnSelectFile);
+    try {
+        injectState(state, isViewingReceipt);
+        const refs = DOMRefs.init();
+        initializeUi(refs);
+        applyViewMode(refs, isViewingReceipt);
+    } catch (error) {
+        throw new Error(`Error initializing modal listeners: ${error}`, { cause: error });
     }
+};
+
+const injectState = (state, isViewingReceipt) => {
+    picsAmountState.paymentsState = state;
+    picsAmountState.isViewingReceipt = isViewingReceipt;
+};
+
+const initializeUi = (refs) => {
+    initModalListeners({
+        Refs: refs,
+        clearCurrentFile,
+        onCloseModalAndClean: closeModalAndClean,
+        onClickBtnSelect,
+        onCloseLightbox: () => closeLightbox(refs.voucherLightbox)
+    });
+};
+
+const applyViewMode = (refs, isViewingReceipt) => {
+    if (!isViewingReceipt) return;
+    hideElement(refs.btnClearFile);
+    hideElement(refs.btnSelectFile);
 };

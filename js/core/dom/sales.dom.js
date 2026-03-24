@@ -27,7 +27,10 @@ export const resetSalesFilters = (refs) => {
     cmbSearchByStatus.value = "";
     fromDt.value = "";
     toDt.value = "";
-    selectLineButton(btnAskSale, selectedLines);
+    const hasNonDefaultSelected = selectedLines.some(line =>
+        line.id !== "all" && line.querySelector(".lineSelected")?.classList.contains("selected")
+    );
+    if (hasNonDefaultSelected) selectLineButton(btnAskSale, selectedLines);
 };
 
 export const insertSales = (container, sales) => {
@@ -110,6 +113,7 @@ export const insertSales = (container, sales) => {
                 lblVin.textContent = "Vin:";
                 const vinSpan = document.createElement("span");
                 vinSpan.textContent = sale.vin || "N/A"; // VIN
+                vinSpan.classList.add("truncate");
                 vinDataSale.append(lblVin, vinSpan);
                 downLeft.appendChild(vinDataSale);
                 typeSale.textContent = "V";
@@ -127,6 +131,7 @@ export const insertSales = (container, sales) => {
             lblSeller.textContent = "Vendedor:";
             const sellerSpan = document.createElement("span");
             sellerSpan.textContent = sale.employeeName || "N/A"; // Vendedor
+            sellerSpan.classList.add("truncate");
             sellerDataSale.append(lblSeller, sellerSpan);
 
             // Cliente
@@ -137,6 +142,7 @@ export const insertSales = (container, sales) => {
             lblCustomer.textContent = "Cliente:";
             const customerSpan = document.createElement("span");
             customerSpan.textContent = sale.customerName || "N/A"; // Cliente
+            customerSpan.classList.add("truncate");
             customerDataSale.append(lblCustomer, customerSpan);
 
             downLeft.append(sellerDataSale, customerDataSale);

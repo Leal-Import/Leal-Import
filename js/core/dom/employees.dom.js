@@ -1,5 +1,5 @@
 // modules/employees/employees.view.js
-import { fillForm, $, fillSelect, qs, qsa } from '../../utils/dom.js';
+import { fillForm, $, qs, qsa } from '../../utils/dom.js';
 
 export const DOMRefs = {
     refs: {},
@@ -64,11 +64,6 @@ export const fillEmployeesForm = (employee) => {
 export const rewriteModalElements = (button, title, text) => {
     title.textContent = `${text} Empleado`;
     button.querySelector("span").textContent = text;
-};
-
-export const renderRolesSelects = (roles) => {
-    fillSelect('cmbUserRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
-    fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Todos');
 };
 
 export const insertEmployees = (container, employees, onActions) => {

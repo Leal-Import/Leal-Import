@@ -8,5 +8,6 @@ export const paymentsState = {
     payments: [],
     paymentMethods: [],
     onCalculateTotal: null,
-    onCreateButton: null
+    onCreateButton: null,
+    editingPaymentId: null
 };

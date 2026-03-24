@@ -18,7 +18,7 @@ import { initSession } from '../../../utils/api.utils.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments, onResetPayments } from '../../payments/payments.controller.js';
 import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
 import { safeParseFloat } from '../../../utils/validators.js';
-import { generateVehicleSaleReport } from '../../../core/reports/workorders/vehicles.sales.report.js';
+import { generateVehicleSaleReport } from '../../../core/reports/vehicleSale/vehicles.sales.report.js';
 
 /* ================= PAGINATION ================= */
 const pagination = createPagination({
@@ -281,6 +281,7 @@ const loadDataFlow = async () => {
             disableElement(DOMRefs.refs.txtCommission);
             hideElement(DOMRefs.refs.paymentForm);
             showElement(DOMRefs.refs.btnGeneratePdf);
+            sale.totalPaid = vehicleSaleState.totals.totalPaid;
             DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => generateVehicleSaleReport(sale, vehicle, vehicleSaleState.context.customerName));
         }
         return;

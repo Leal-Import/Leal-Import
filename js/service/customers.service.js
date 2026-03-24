@@ -1,10 +1,11 @@
 import { API_BASE_URL } from "../utils/api.utils.js";
+import { buildParams } from "../utils/dom.js";
 
 const API_URL = `${API_BASE_URL}/customer`;
 
 export const getCustomers = async(page = 0, size = 15, search = "", status = 'T') => {
     try {
-        const params = new URLSearchParams({ page, size, search, status });
+        const params = buildParams({ page, size, search, status });
         const request = await fetch(`${API_URL}/getCustomers?${params.toString()}`, {
             credentials: 'include'
         });

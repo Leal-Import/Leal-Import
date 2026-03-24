@@ -3,36 +3,38 @@ import { existsById } from "../../utils/dom.js";
 import { safeParseFloat } from "../../utils/validators.js";
 import { paymentsState } from "../state/payments.state.js";
 
-export const addPayment = (
-    state, {
-        id = null,
-        idPayment = null,
-        amount = 0,
-        idPaymentMethod = null,
-        paymentURL = null
-    }
-) => {
-    if (!state?.payments) return null;
-    const resolvedId = id ?? idPayment ?? crypto.randomUUID();
-    if (existsById(state.payments, resolvedId, 'id')) return null;
-
-    const payment = {
-        id: resolvedId,
-        idPayment,
-        amount: safeParseFloat(amount),
-        idPaymentMethod,
-        paymentURL
+const normalizePayment = (payment) => {
+    const resolvedId = payment.id ?? payment.idPayment ?? crypto.randomUUID();
+    return {
+        id:              resolvedId,
+        idPayment:       payment.idPayment       ?? null,
+        amount:          safeParseFloat(payment.amount),
+        idPaymentMethod: payment.idPaymentMethod ?? null,
+        paymentURL:      payment.paymentURL      ?? null,
+        paymentMethod:   payment.paymentMethod   ?? null,
+        employeeName:    payment.employeeName    ?? null,
+        paymentDate:     payment.paymentDate     ?? null,
+        paymentNumber:   payment.paymentNumber   ?? null,
+        file:            null
     };
-
-    state.payments.push(payment);
-    return payment;
 };
 
-export const getMethodNameById = (idPaymentMethod) => {
-    if (!idPaymentMethod) return 'Desconocido';
+export const addPayment = (state, payment) => {
+    if (!state?.payments) return null;
+
+    const normalized = normalizePayment(payment);
+
+    if (existsById(state.payments, normalized.id, 'id')) return null;
+
+    state.payments.push(normalized);
+    return normalized;
+};
+
+export const getMethodNameById = (payment) => {
+    if (payment?.paymentMethod) return payment.paymentMethod;
+    if (!payment?.idPaymentMethod) return 'Desconocido';
 
     const method = paymentsState.paymentMethods
-        .find(m => m.idPaymentMethod === idPaymentMethod);
-
-    return method?.methodName || 'Desconocido';
+        .find(m => m.idPaymentMethod === payment.idPaymentMethod);
+    return method?.methodName ?? 'Desconocido';
 };

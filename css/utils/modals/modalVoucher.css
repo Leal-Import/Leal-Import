@@ -134,6 +134,34 @@
     padding: 32px 40px 40px;
 }
 
+.viewAmountContainer{
+    flex-direction: column;
+}
+
+.dataValue{
+    font-size: var(--font-size-base);
+    color: var(--text-color);
+    font-weight: var(--font-weight-semibold);
+}
+
+.viewAmountContainer h2{
+    font-size: var(--font-size-base);
+    color: var(--text-color-secondary);
+}
+
+.dataItem{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: var(--border);
+    padding: 10px 0;
+}
+
+.dataLabel {
+    font-size: var(--font-size-sm);
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
 /* Preview Area Base */
 .previewArea {
     min-height: 220px;

@@ -77,6 +77,27 @@
                         <span>Eliminar Comprobante</span>
                     </button>
                 </div>
+                <div class="viewAmountContainer hide" id="viewAmountContainer">
+                    <h2>Detalles del abono</h2>
+                    <div class="dataView">
+                        <div class="dataItem">
+                            <span class="dataLabel">Monto del abono:</span>
+                            <span class="dataValue" id="amountToPay"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Método de pago:</span>
+                            <span class="dataValue" id="paymentMethodToPay"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Registrado por:</span>
+                            <span class="dataValue" id="registeredBy"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Fecha de registro:</span>
+                            <span class="dataValue" id="registrationDate"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <input type="hidden" id="currentReceiptInputId">
@@ -222,9 +243,11 @@
                                 </select>
                             </div>
                             <div class="containerActionsPayments">
-                                <button id="btnCancelEdit" class="btnSecondary hide" type="button">Cancelar edición</button>
+                                <button id="btnCancelEdit" class="btnSecondary hide" type="button">Cancelar
+                                    edición</button>
                                 <div class="separatorDiv"></div>
-                                <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
+                                <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir
+                                    abono</button>
                             </div>
                         </div>
 

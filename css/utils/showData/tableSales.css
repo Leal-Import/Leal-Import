@@ -211,7 +211,7 @@
     }
     
     .leftColumn .table tbody td:nth-child(2) {
-        grid-column: 2 / 4;
+        grid-column: 2 / 5;
         grid-row: 1;
         font-size: var(--font-size-sm);
         font-weight: var(--font-weight-semibold);
@@ -234,7 +234,7 @@
     }
     
     .leftColumn .table tbody td:nth-child(3)::before {
-        content: "💵 Costo";
+        content: "Costo";
         font-size: var(--font-size-sh);
         font-weight: var(--font-weight-semibold);
         color: var(--text-color-secondary);
@@ -246,14 +246,14 @@
         font-size: var(--font-size-default);
         font-weight: var(--font-weight-bold);
         color: var(--text-color);
-        grid-column: 2 / 4;
+        grid-column: 2 / 5;
         grid-row: 2;
         justify-self: start;
     }
 
 
     .leftColumn .table tbody td:nth-child(4)::before {
-        content: "💰 P. Sugerido";
+        content: "P. Sugerido";
         font-size: var(--font-size-sh);
         font-weight: var(--font-weight-semibold);
         color: var(--text-color-secondary);
@@ -265,7 +265,7 @@
         font-size: var(--font-size-default);
         font-weight: var(--font-weight-bold);
         color: var(--danger-color);
-        grid-column: 3 / 4;
+        grid-column: 3 / 5;
         grid-row: 2;
         justify-self: end;
     }
@@ -297,53 +297,17 @@
         height: 60px;
         border-radius: 8px;
     }
-
-    .leftColumn .table tbody td:nth-child(2),
-    .leftColumn .table tbody td:nth-child(3),
-    .leftColumn .table tbody td:nth-child(4) {
-        font-size: var(--font-size-sh);
-    }
-
-    .leftColumn .table tbody td:nth-child(3),
-    .leftColumn .table tbody td:nth-child(4) {
-        font-size: var(--font-size-sm);
-    }
-
-    .leftColumn .table tbody td::before {
-        font-size: var(--font-size-very-sh);
-    }
 }
 
 /* Móviles muy pequeños (< 380px) */
 @media screen and (width <= 379px) {
-    .leftColumn .table tbody tr {
-        grid-template-columns: auto 1fr;
-        grid-template-rows: auto auto auto;
-    }
-
-    /* Reorganizar para pantallas muy pequeñas */
-    .leftColumn .table tbody td:nth-child(1) {
-        grid-column: 1;
-        grid-row: 1 / 4;
-    }
-
-    .leftColumn .table tbody td:nth-child(2) {
-        grid-column: 2;
-        grid-row: 1;
-    }
-
-    .leftColumn .table tbody td:nth-child(5) {
-        grid-column: 2;
-        grid-row: 1;
-        justify-self: end;
-    }
-
-    .leftColumn .table tbody td:nth-child(4)::before {
-        text-align: left;
-    }
-
     .imgTable {
         width: 55px;
         height: 55px;
+    }
+
+    .leftColumn .table tbody td:nth-child(4) {
+        grid-column: 2;
+        grid-row: 3;
     }
 }

@@ -1,7 +1,7 @@
 // modules/employees/employees.controller.js
 
 import { employeesState, resetEmployeesState } from '../../core/state/employees.state.js';
-import { insertEmployees, renderRolesSelects, fillEmployeesForm, DOMRefs, rewriteModalElements, resetEmployeesFilters } from '../../core/dom/employees.dom.js';
+import { insertEmployees, fillEmployeesForm, DOMRefs, rewriteModalElements, resetEmployeesFilters } from '../../core/dom/employees.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import {
     validateEmployee,
@@ -15,7 +15,7 @@ import {
     patchEmployee
 } from '../../service/employees.service.js';
 import { initEmployeeEvents } from './employees.events.js';
-import { showFloatingMenu, showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable } from '../../utils/dom.js';
+import { showFloatingMenu, showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable, fillSelect } from '../../utils/dom.js';
 import { initSession } from '../../utils/api.utils.js';
 
 /* ===============================
@@ -37,7 +37,8 @@ export const loadRoles = async () => {
     try {
         const roles = await getRoles();
         employeesState.roles = roles;
-        renderRolesSelects(roles);
+        fillSelect('cmbUserRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
+        fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Buscar por rol');
     } catch (error) {
         showMessage(
             'Error',

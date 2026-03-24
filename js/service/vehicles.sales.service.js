@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../utils/api.utils.js";
+import { buildParams } from "../utils/dom.js";
 
 const API_URL = `${API_BASE_URL}/VehicleSale`;
 const API_URLVeh = `${API_BASE_URL}/Vehicle`;
@@ -111,7 +112,8 @@ export const getSaleById = async(id) => {
 
 export const getVehiclesAviable = async(page = 0, size = 15, search = '') => {
     try {
-        const request = await fetch(`${API_URLVeh}/getSaleSummary?page=${page}&size=${size}&search=${search}`, {
+        const params = buildParams({ page, size, search });
+        const request = await fetch(`${API_URLVeh}/getSaleSummary?${params.toString()}`, {
             credentials: 'include'
         });
         if (!request.ok) {

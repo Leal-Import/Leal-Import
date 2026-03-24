@@ -97,10 +97,10 @@ export const insertVehicles = (container, vehicles, onAddVehicle, tableVehicles)
             vin.textContent = vehicle.vin;
             if (vehicle.total && vehicle.suggestedPrice) {
                 cost.textContent = formatWithCommas(vehicle.total);
-                suggesredPrice.textContent = formatWithCommas(vehicle.suggestedPrice); /* Por el momento es costo total */
+                suggesredPrice.textContent = formatWithCommas(vehicle.suggestedPrice);
             } else {
                 cost.textContent = `Externo`;
-                suggesredPrice.textContent = `Externo`; /* Por el momento es costo total */
+                suggesredPrice.textContent = `Externo`;
             }
 
             tr.classList.add("tableRow");

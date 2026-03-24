@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../utils/api.utils.js";
+import { buildParams } from "../utils/dom.js";
 
 const API_URL = `${API_BASE_URL}/employees`;
 const API_URLR = `${API_BASE_URL}/roles`;
@@ -7,7 +8,7 @@ const API_URLUS = `${API_BASE_URL}/users`;
 export const getActiveEmployees = async(page = 0, size = 15, search = "", idRole = "", status = "") => {
 
     try {
-        const params = new URLSearchParams({ page, size, search, idRole, status });
+        const params = buildParams({ page, size, search, idRole, status });
         const request = await fetch(`${API_URL}/getEmployees?${params.toString()}`, {
             credentials: 'include'
         });

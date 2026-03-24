@@ -6,7 +6,7 @@ import {
 import { cleanPaymentCamps, DOMRefs, renderPayments, resetDomPayments } from '../../core/dom/payments.dom.js';
 import { getPaymentMethods } from '../../service/configuration.service.js';
 import { paymentsState } from '../../core/state/payments.state.js';
-import { fillSelect, hideElement, showElement, showMessage } from '../../utils/dom.js';
+import { $, fillSelect, hideElement, showElement, showMessage } from '../../utils/dom.js';
 import { initPaymentsEvents } from './payments.event.js';
 import { safeParseFloat, validatePayment } from '../../utils/validators.js';
 import { formatWithCommas } from '../../utils/formatters.js';
@@ -68,14 +68,15 @@ const onAddPayment = (state) => {
 
 export const addNewPayment = ({ state, totals, payment }) => {
     const editingIndex = paymentsState.context.editingIndex ?? -1;
-
+    console.log("Editing index:", payment);
     if (editingIndex !== -1) {
         // Modo edición: reemplazar el pago existente
         const existing = state.payments[editingIndex];
         state.payments[editingIndex] = {
             ...existing,          // conserva idPayment, paymentURL, etc.
-            amount: payment.amount,
-            idPaymentMethod: payment.idPaymentMethod
+            amount: safeParseFloat(payment.amount) || 0,
+            idPaymentMethod: payment.idPaymentMethod ?? existing.idPaymentMethod,
+            paymentMethod: paymentsState.paymentMethods.find(m => m.idPaymentMethod === (payment.idPaymentMethod ?? existing.idPaymentMethod))?.methodName || existing.paymentMethod
         };
         paymentsState.context.editingIndex = -1;
 
@@ -99,7 +100,6 @@ export const addNewPayment = ({ state, totals, payment }) => {
 
 const onDeletePayment = (payments, index, totals, paymentsToDelete) => {
     if (index === -1) return;
-
     // 👇 Protección contra edición activa
     const editingIndex = paymentsState.context.editingIndex;
     if (editingIndex !== -1) {
@@ -109,6 +109,7 @@ const onDeletePayment = (payments, index, totals, paymentsToDelete) => {
             paymentsState.context.editingIndex = editingIndex - 1;
         }
     }
+    if (paymentsState.editingPaymentId) paymentsState.editingPaymentId = null;
 
     const payment = payments[index];
     if (payment.idPayment) {
@@ -120,10 +121,16 @@ const onDeletePayment = (payments, index, totals, paymentsToDelete) => {
     paymentsState.onCalculateTotal();
 };
 
-const onEditPayment = (payments, index) => {
+const onEditPayment = (payments, index, item) => {
     if (index === -1) return;
     const payment = payments[index];
 
+    if (paymentsState.editingPaymentId !== null) {
+        const prevItem = $(paymentsState.editingPaymentId);
+        if (prevItem) prevItem.classList.remove('isEditing');
+    }
+    paymentsState.editingPaymentId = item.id || null;
+    item.classList.add('isEditing');
     // Llenar los campos del formulario con los datos del pago
     const refs = DOMRefs.refs;
     refs.txtAmount.value = formatWithCommas(payment.amount);
@@ -145,6 +152,12 @@ const onEditPayment = (payments, index) => {
 const onCancelEdit = () => {
     paymentsState.context.editingIndex = -1;
 
+    const editingId = paymentsState.editingPaymentId;
+    if (editingId) {
+        const item = $(editingId);
+        if (item) item.classList.remove('isEditing');
+        paymentsState.editingPaymentId = null;
+    }
     // Limpiar campos
     const refs = DOMRefs.refs;
     refs.txtAmount.value = '';

@@ -138,6 +138,18 @@
     transform: scale(1.08);
 }
 
+.vehicleExternal{
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    color: var(--text-color-light);
+}
+
 .headerCard {
     padding: 16px;
     display: flex;

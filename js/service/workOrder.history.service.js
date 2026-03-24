@@ -1,10 +1,11 @@
 import { API_BASE_URL } from "../utils/api.utils.js";
+import { buildParams } from "../utils/dom.js";
 
 const API_URL = `${API_BASE_URL}/ViewWorkOrderHistory`;
 
 export const getDetailsOrders = async(idVehicle, page = 0, size = 15, search = "", idStatus = "") => {
     try {
-        const params = new URLSearchParams({ page, size, search, idStatus });
+        const params = buildParams({ page, size, search, idStatus });
         const request = await fetch(`${API_URL}/getHistoryOrder/${idVehicle}?${params.toString()}`, {
             credentials: 'include'
         });

@@ -124,6 +124,7 @@
     /* Rol - Badge en la primera fila junto al nombre */
     .table tbody tr td:nth-child(4) {
         display: inline-flex;
+        border: var(--border);
         align-self: center;
         padding: 4px 12px;
         background-color: var(--bg-color);

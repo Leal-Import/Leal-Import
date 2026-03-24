@@ -10,10 +10,10 @@ export const DOMRefs = {
             cardContainer: qs('.cardContainer'),
             loaderVehicles: $('loaderVehicles'),
             btnAddVehicle: $('btnAddVehicle'),
-            txtSearchData:  $('txtSearchData'),
-            txtSearchYear:  $('txtSearchYear'),
-            cmbSearchByStatus:  $('cmbSearchByStatus'),
-            cmbSearchByIsExternal:  $('cmbSearchByIsExternal'),
+            txtSearchData: $('txtSearchData'),
+            txtSearchYear: $('txtSearchYear'),
+            cmbSearchByStatus: $('cmbSearchByStatus'),
+            cmbSearchByIsExternal: $('cmbSearchByIsExternal'),
             fromDt: $('fromDt'),
             toDt: $('toDt')
         };
@@ -54,7 +54,7 @@ export const insertVehicles = (container, vehicles, hasWorkOrder) => {
    COMPONENTES
 ================================ */
 
-const  createNoDataMessage = () => {
+const createNoDataMessage = () => {
     const div = document.createElement('div');
     div.textContent = 'No hay vehículos disponibles.';
     div.classList.add('noDataMessage');
@@ -81,8 +81,13 @@ const createHeader = (vehicle) => {
     brand.textContent = vehicle.brand;
 
     const price = document.createElement('span');
-    price.classList.add('vehiclePrice');
-    price.textContent = formatWithCommas(vehicle.total || 0);
+    if (vehicle.total) {
+        price.textContent = formatWithCommas(vehicle.total || 0);
+        price.classList.add('vehiclePrice');
+    } else {
+        price.textContent = 'E';
+        price.classList.add('vehicleExternal');
+    }
 
     header.appendChild(brand);
     header.appendChild(price);
@@ -136,6 +141,7 @@ const createInfoItem = (label, value) => {
     title.textContent = `${label}:`;
 
     const span = document.createElement('span');
+    span.classList.add('truncate');
     span.textContent = value || '-';
 
     item.appendChild(title);

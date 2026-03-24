@@ -70,6 +70,8 @@
 
 .card {
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
     border: 2px solid transparent;
     border: var(--border);
 }
@@ -78,6 +80,10 @@
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
     border-color: var(--danger-color);
+}
+
+.bodyCard{
+    flex: 1;
 }
 
 .containerImgSpare {
@@ -108,11 +114,19 @@
     font-weight: var(--font-weight-medium);
     color: var(--text-color);
     margin: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .brandModel {
     font-size: var(--font-size-base);
     color: var(--text-color-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .moreInfoContainer {
