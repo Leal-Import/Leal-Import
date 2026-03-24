@@ -122,15 +122,12 @@
     .table tbody tr td:nth-child(2) {
         padding: 16px 20px 0;
         border: none;
-        display: block;
     }
 
     .table tbody tr td:nth-child(1) {
         padding-top: 20px;
         max-width: 95% !important;
         padding-bottom: 4px;
-        font-weight: var(--font-weight-semibold);
-        color: var(--text-color);
     }
 
     .table tbody tr td:nth-child(1)::before {
@@ -160,6 +157,8 @@
     .table tbody tr td:nth-child(4),
     .table tbody tr td:nth-child(5),
     .table tbody tr td:nth-child(6) {
+        display: flex;
+        flex-wrap: wrap;
         font-weight: var(--font-weight-regular);
         color: var(--text-color);
         padding: 12px 20px;
@@ -174,7 +173,7 @@
 
     /* Labels mejorados */
     .table tbody tr td:nth-child(3)::before {
-        content: "Fecha estimada:";
+        content: "Fecha estimada: ";
     }
 
     .table tbody tr td:nth-child(4)::before {
@@ -183,11 +182,11 @@
     }
 
     .table tbody tr td:nth-child(5)::before {
-        content: "Costo total";
+        content: "Costo total: ";
     }
 
     .table tbody tr td:nth-child(6)::before {
-        content: "Deuda";
+        content: "Deuda: ";
     }
 
     .table tbody tr td::before {

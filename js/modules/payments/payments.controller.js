@@ -68,7 +68,6 @@ const onAddPayment = (state) => {
 
 export const addNewPayment = ({ state, totals, payment }) => {
     const editingIndex = paymentsState.context.editingIndex ?? -1;
-    console.log("Editing index:", payment);
     if (editingIndex !== -1) {
         // Modo edición: reemplazar el pago existente
         const existing = state.payments[editingIndex];
@@ -76,7 +75,7 @@ export const addNewPayment = ({ state, totals, payment }) => {
             ...existing,          // conserva idPayment, paymentURL, etc.
             amount: safeParseFloat(payment.amount) || 0,
             idPaymentMethod: payment.idPaymentMethod ?? existing.idPaymentMethod,
-            paymentMethod: paymentsState.paymentMethods.find(m => m.idPaymentMethod === (payment.idPaymentMethod ?? existing.idPaymentMethod))?.methodName || existing.paymentMethod
+            paymentMethod: getPaymentMethods(payment.idPaymentMethod)
         };
         paymentsState.context.editingIndex = -1;
 

@@ -14,6 +14,7 @@
 
 .leftColumn {
     flex: 3;
+    min-width: 0;
     flex-basis: 600px;
 }
 

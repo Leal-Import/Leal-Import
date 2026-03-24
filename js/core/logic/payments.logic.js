@@ -11,7 +11,7 @@ const normalizePayment = (payment) => {
         amount:          safeParseFloat(payment.amount),
         idPaymentMethod: payment.idPaymentMethod ?? null,
         paymentURL:      payment.paymentURL      ?? null,
-        paymentMethod:   payment.paymentMethod   ?? null,
+        paymentMethod:   payment.paymentMethod   ?? getMethodNameById(payment) ?? null,
         employeeName:    payment.employeeName    ?? null,
         paymentDate:     payment.paymentDate     ?? null,
         paymentNumber:   payment.paymentNumber   ?? null,
