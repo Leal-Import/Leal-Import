@@ -52,19 +52,19 @@ export const validateBaseSparePart = ({
     txtTracking
 }, billLink, trackingLink) => {
 
-    if (txtPartName.trim() === '') {
+    if (txtPartName.length > 250 || txtPartName.length < 1) {
         highlightAndFocus('txtPartName');
-        return 'El nombre del repuesto es obligatorio.';
+        return 'El nombre del repuesto debe tener entre 1 y 250 caracteres.';
     }
 
-    if (txtPartBrand.trim() === '') {
+    if (txtPartBrand.length > 50 || txtPartBrand.length < 1) {
         highlightAndFocus('txtPartBrand');
-        return 'La marca del repuesto es obligatoria.';
+        return 'La marca del repuesto debe tener entre 1 y 50 caracteres.';
     }
 
-    if (txtPartModel.trim() === '') {
+    if (txtPartModel.length > 50 || txtPartModel.length < 1) {
         highlightAndFocus('txtPartModel');
-        return 'El modelo del repuesto es obligatorio.';
+        return 'El modelo del repuesto debe tener entre 1 y 50 caracteres.';
     }
 
     if (txtPartYear.trim() === '') {
