@@ -1,7 +1,7 @@
 import { asUUID, fillForm, highlightAndFocus } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
 import { validateImageSize, validateImageType, validateImagesGeneral } from "../../utils/images.validators.js";
-import { isValidURL, safeParseFloat } from "../../utils/validators.js";
+import { isValidDecimal, isValidURL, safeParseFloat } from "../../utils/validators.js";
 import { vehicleDetailState } from "../state/vehicles.detail.state.js";
 
 const validateMaxImages = (currentImages = [], newFiles = [], max = 12) => {
@@ -57,10 +57,6 @@ export const validateBaseVehicle = ({
     txtLink,
     txtDescription
 }) => {
-    if (txtVin.trim() === "") {
-        highlightAndFocus('txtVin');
-        return 'El VIN es obligatorio.';
-    }
 
     if (txtVin.length < 5) {
         highlightAndFocus('txtVin');
@@ -72,19 +68,9 @@ export const validateBaseVehicle = ({
         return 'El VIN no puede tener más de 50 caracteres.';
     }
 
-    if (txtBrand.trim() === "") {
-        highlightAndFocus('txtBrand');
-        return 'La marca es obligatoria.';
-    }
-
     if (txtBrand.length > 50 || txtBrand.length < 2) {
         highlightAndFocus('txtBrand');
         return 'La marca debe tener entre 2 y 50 caracteres.';
-    }
-
-    if (txtModel.trim() === "") {
-        highlightAndFocus('txtModel');
-        return 'El modelo es obligatorio.';
     }
 
     if (txtModel.length > 50 || txtModel.length < 1) {
@@ -92,19 +78,9 @@ export const validateBaseVehicle = ({
         return 'El modelo debe tener entre 1 y 50 caracteres.';
     }
 
-    if (txtYear.trim() === "") {
-        highlightAndFocus('txtYear');
-        return 'El año es obligatorio.';
-    }
-
     if (isNaN(txtYear) || txtYear < 1900) {
         highlightAndFocus('txtYear');
         return 'El año del vehículo no es válido.';
-    }
-
-    if (txtMileage.trim() === "") {
-        highlightAndFocus('txtMileage');
-        return 'El millaje es obligatorio.';
     }
 
     if (txtMileage.length > 50 || txtMileage.length < 1) {
@@ -117,9 +93,9 @@ export const validateBaseVehicle = ({
         return 'El millaje no es válido.';
     }
 
-    if (txtLote.trim() === "") {
+    if (txtLote.length > 50 || txtLote.length < 1) {
         highlightAndFocus('txtLote');
-        return 'El lote es obligatorio.';
+        return 'El número de lote debe tener entre 1 y 50 caracteres.';
     }
 
     if (txtLink.trim() !== "") {
@@ -200,7 +176,7 @@ export const validateVehicle = ({
             return 'Debe completar todos los costos del vehículo.';
         }
 
-        if (isNaN(value) || value < 0) {
+        if (!isValidDecimal(value)) {
             highlightAndFocus(key);
             return `El valor de ${key.replace('txt', '')} no es válido.`;
         }

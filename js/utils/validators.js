@@ -70,3 +70,22 @@ export const isValidURL = (url) => {
         throw new Error("URL inválida: " + error.message, { cause: error });
     }
 };
+
+// utils/validators.js
+
+export const isValidDecimal = (value, precision = 10, scale = 2) => {
+    const maxDecimals  = scale;
+    const maxIntegers  = precision - scale;          // 8 dígitos enteros
+    const maxValue     = Number('9'.repeat(maxIntegers) + '.' + '9'.repeat(maxDecimals)); // 99999999.99
+
+    const parsed = safeParseFloat(value);
+    if (isNaN(parsed) || parsed < 0) return false;
+    if (parsed > maxValue)           return false;
+
+    // Verificar que no tenga más decimales de los permitidos
+    const str      = parsed.toString();
+    const dotIndex = str.indexOf('.');
+    if (dotIndex !== -1 && str.length - dotIndex - 1 > maxDecimals) return false;
+
+    return true;
+};

@@ -7,6 +7,16 @@
     position: relative;
 }
 
+.filterSection {
+    flex-wrap: wrap;
+}
+
+.containerTexts{
+    display: flex;
+    gap: 16px;
+    flex: 1;
+    flex-basis: 600px;
+}
 
 /* Stats Section - Dashboard Premium */
 .statsSection {
@@ -77,30 +87,9 @@
     line-height: 1.2;
 }
 
-.filterSection {
-    flex-direction: column !important;
-    gap: 5px !important;
-}
-
-.containersDownFilters {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    flex-grow: 1;
-    flex-basis: 550px;
-}
-
-.upFilters, .downFilters {
-    width: 100%;
-    display: flex;
-    gap: 12px;
-    flex: 1;
-    flex-wrap: wrap;
-    align-items: end;
-}
-
 #txtSearchYear {
     flex: 1;
+    min-width: 200px;
 }
 
 .card {
@@ -234,4 +223,11 @@
 .containerButtons .btnPrimary:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgb(211 24 19 / 0.3);
+}
+
+@container content (max-width: 1000px) {
+    .containerTexts{
+        flex-basis:auto !important;
+        flex-wrap: wrap;
+    }
 }

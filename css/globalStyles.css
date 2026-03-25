@@ -34,16 +34,16 @@
     --border-radius-btn: 8px;
     --border-radius-table: 16px;
     --border-radius-card: 8px;
-    --font-size-amount-value: 3.5em;
-    --font-size-breadcrumb: 2.2em;
-    --font-size-title-lg: 1.75em;
-    --font-size-title: 1.5em;
-    --font-size-lg: 1.3em;
-    --font-size-base: 1.1em;
-    --font-size-default: 1em;
-    --font-size-sm: .9em;
-    --font-size-sh: .7em;
-    --font-size-very-sh: .6em;
+    --font-size-amount-value: clamp(2rem,     3.5vw + 0.5rem, 3.5rem);
+    --font-size-breadcrumb:   clamp(1.3rem,   2vw   + 0.5rem, 2.2rem);
+    --font-size-title-lg:     clamp(1.2rem,   1.5vw + 0.3rem, 1.75rem);
+    --font-size-title:        clamp(1rem,     1.3vw + 0.3rem, 1.5rem);
+    --font-size-lg:           clamp(0.95rem,  1vw   + 0.2rem, 1.3rem);
+    --font-size-base:         clamp(0.9rem,   0.8vw + 0.2rem, 1.1rem);
+    --font-size-default:      clamp(0.85rem,  0.7vw + 0.2rem, 1rem);
+    --font-size-sm:           clamp(0.78rem,  0.6vw + 0.15rem, 0.9rem);
+    --font-size-sh:           clamp(0.62rem,  0.5vw + 0.1rem,  0.7rem);
+    --font-size-very-sh:      clamp(0.52rem,  0.4vw + 0.1rem,  0.6rem);
     --width-modal: clamp(400px, 70%, 650px);
 }
 
@@ -117,9 +117,5 @@
 
     .breadcrumb{
         flex-wrap: wrap;
-    }
-
-    body{
-        --font-size-breadcrumb: 1.5em;
     }
 }

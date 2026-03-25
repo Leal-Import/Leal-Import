@@ -81,7 +81,6 @@
         align-items: flex-start;
         padding: 0;
         border: none;
-        font-size: var(--font-size-base);
         overflow-wrap: break-word;
     }
 
@@ -116,7 +115,6 @@
     /* Nombre completo - ocupa toda la primera fila */
     .table tbody tr td:nth-child(1) {
         grid-column: 1 / -1;
-        font-size: var(--font-size-lg);
         font-weight: var(--font-weight-semibold);
         color: var(--text-color);
     }
@@ -130,7 +128,6 @@
         background-color: var(--bg-color);
         color: var(--danger-color);
         border-radius: 12px;
-        font-size: var(--font-size-sh);
         font-weight: var(--font-weight-medium);
         width: fit-content;
         grid-column: 1 / -1;
@@ -180,16 +177,4 @@
         padding: 15px;
     }
 
-    .table tbody tr td:nth-child(1) {
-        font-size: var(--font-size-sm);
-    }
-
-    .table tbody tr td {
-        font-size: var(--font-size-sm);
-    }
-
-    .table tbody tr td::before {
-        min-width: 65px;
-        font-size: var(--font-size-sm);
-    }
 }

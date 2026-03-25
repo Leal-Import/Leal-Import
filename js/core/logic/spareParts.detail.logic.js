@@ -1,7 +1,7 @@
 import { formatWithCommas } from "../../utils/formatters.js";
 import { asUUID, fillForm, highlightAndFocus } from "../../utils/dom.js";
 import { validateImageSize, validateImageType } from "../../utils/images.validators.js";
-import { isValidURL, safeParseFloat } from "../../utils/validators.js";
+import { isValidDecimal, isValidURL, safeParseFloat } from "../../utils/validators.js";
 import { sparePartDetailState } from "../state/spareParts.detail.state.js";
 
 export const validateImage = (file) => {
@@ -99,13 +99,12 @@ export const validateBaseSparePart = ({
 
     for (const [key, rawValue] of Object.entries(costs)) {
         const value = safeParseFloat(rawValue);
-
         if (rawValue === '' || rawValue === null || rawValue === undefined) {
             highlightAndFocus(key);
             return 'Debe completar todos los costos del repuesto.';
         }
 
-        if (isNaN(value) || value < 0) {
+        if (!isValidDecimal(value)) {
             highlightAndFocus(key);
             return `El valor de ${key.replace('txt', '')} no es válido.`;
         }

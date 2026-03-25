@@ -92,7 +92,6 @@
         gap: 8px;
         padding: 0;
         border: none;
-        font-size: var(--font-size-sm);
         overflow-wrap: break-word;
     }
 
@@ -123,7 +122,6 @@
     .table tbody tr td:nth-child(1) {
         grid-column: 1 / -1;
         grid-row: 1;
-        font-size: var(--font-size-base);
         font-weight: var(--font-weight-semibold);
         color: var(--text-color);
     }
