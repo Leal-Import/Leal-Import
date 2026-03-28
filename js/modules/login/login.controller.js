@@ -1,7 +1,8 @@
 'use strict';
 
 import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswordCamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType, setReq, updateLabel } from "../../core/dom/login.dom.js";
-import { clearCountdown, clearCurrentFlow, getPasswordStrengthOptions, getScore, maskEmailSimple, renderMaskedEmail, startCountdown, validateMatch, validatePassword } from "../../core/logic/login.logic.js";
+import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown } from "../../core/logic/login.logic.js";
+import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword } from "../../core/logic/new.password.logic.js";
 import { loginState } from "../../core/state/login.state.js";
 import { login, resetPassword, verifyEmail, verifyPIN } from "../../service/login.service.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
@@ -192,7 +193,7 @@ const onUpdatePassword = async () => {
         return;
     }
 
-    const invalidate = validatePassword(newPass);
+    const invalidate = validatePassword(newPass, confirmPass);
     if (invalidate) {
         await showMessage("Advertencia", invalidate, "warning");
         return;

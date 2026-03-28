@@ -63,7 +63,7 @@ export const DOMRefs = {
             uploadFileInput: $("uploadFileInput"),
             btnSelectFile: $("btnSelectFile"),
             btnCloseUpload: $("btnCloseUpload"),
-            camps: qsa(".txtInputs, #isExternalOpt")
+            camps: qsa(".txtInputs, #isExternalOpt, .btnPrimary")
         };
 
         return this.refs;

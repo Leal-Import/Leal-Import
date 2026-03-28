@@ -75,7 +75,7 @@ export const validateBaseSparePart = ({
     if (!cmbPartStatus) {
         highlightAndFocus('cmbPartStatus');
         return 'Debe seleccionar el estado del repuesto.';
-    }
+    } // Esto se debera de quitar despues
 
     if (billLink !== '') {
         if (!isValidURL(billLink)) return 'El enlace de la factura no es válido.';

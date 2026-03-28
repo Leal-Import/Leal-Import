@@ -91,6 +91,7 @@ export const insertVehicles = (container, vehicles, onAddVehicle, tableVehicles)
             const vin = document.createElement("td");
             const cost = document.createElement("td");
             const suggesredPrice = document.createElement("td");
+            const tdAction = document.createElement("td");
             const btnAddVehicle = document.createElement("button");
 
             image.src = vehicle.photoUrl;
@@ -108,10 +109,11 @@ export const insertVehicles = (container, vehicles, onAddVehicle, tableVehicles)
             image.classList.add("imgTable");
 
             btnAddVehicle.textContent = "+";
+            tdAction.appendChild(btnAddVehicle);
 
             tdImage.appendChild(image);
 
-            tr.append(tdImage, vin, cost, suggesredPrice, btnAddVehicle);
+            tr.append(tdImage, vin, cost, suggesredPrice, tdAction);
             fragment.appendChild(tr);
 
             btnAddVehicle.addEventListener("click", () => onAddVehicle(vehicle));

@@ -1,5 +1,7 @@
-import { asBoolean, asNumber, asUUID, showMessage } from "../../utils/dom.js";
+import { asBoolean, asNumber, asUUID, highlightAndFocus, showMessage } from "../../utils/dom.js";
+import { isValidDecimal } from "../../utils/validators.js";
 import { spareSaleState } from "../state/spareParts.sales.state.js";
+import { normalizePayments, validatePayments } from "./payments.logic.js";
 
 export const verifyIds = (idSparePart) => {
     return spareSaleState.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
@@ -46,94 +48,69 @@ export const hydrateContextFromURL = async (state) => {
     }
 
     // 🔑 key para drafts (UUID-safe)
-    state.saleKey = `spareSaleState_customer_${idCustomer}_${state.context.idSale ?? "NewSale"}`;
+    state.saleKey = "pendingSpareSale";
 
     return true;
 };
 
 export const validateSale = () => {
-    const { data: { selectedItems, payments, notes }, context, idEmployee } = spareSaleState;
+    const { data: { selectedItems, payments, notes }, context } = spareSaleState;
 
     // Validar cliente
     if (!context.idCustomer) return 'No se ha seleccionado ningún cliente.';
-
-    if (!idEmployee) return 'Empleado no identificado. Inicie sesión nuevamente.';
-
-    // Validar abonos
-    if (!payments || payments.length === 0) return 'Por favor, ingrese al menos un abono.';
-
-    if (notes.trim() !== "" && notes.length > 500) return 'Las notas no pueden exceder los 500 caracteres.';
-
-    for (let i = 0; i < payments.length; i++) {
-        const item = payments[i];
-        const amount = parseFloat(item.amount) || 0;
-        if (amount <= 0) {
-            return `Monto no válido para el abono ${i + 1}.`;
-        }
-        if (!item.idPaymentMethod) {
-            return `Falta seleccionar un método de pago para el abono ${i + 1}.`;
-        }
-    }
-
-    // Validar repuestos
     if (!selectedItems || selectedItems.length === 0) return 'Por favor, seleccione al menos un repuesto.';
+    if (!payments || payments.length === 0) return 'Por favor, ingrese al menos un abono.';
+    if (notes.trim() !== "" && notes.length > 500) {
+        highlightAndFocus("txtNotes");
+        return 'Las notas no pueden exceder los 500 caracteres.';
+    };
+
+    const validatePayment = validatePayments(payments);
+    if (validatePayment) return validatePayment;
 
     for (let i = 0; i < selectedItems.length; i++) {
         const item = selectedItems[i];
         const price = parseFloat(item.priceApplied) || 0;
-        if (price <= 0) {
+        if (!isValidDecimal(price) || price < 0) {
             return `Precio final no válido para el repuesto ${i + 1}.`;
         }
     }
+
+    const totalAmount = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const totalItemsPrice = selectedItems.reduce((sum, item) => sum + (Number(item.priceApplied) || 0), 0);
+    if (totalAmount > totalItemsPrice) return 'El total de los abonos no puede ser mayor al total de los repuestos.';
 
     // Si pasa todas las validaciones
     return null;
 };
 
 export const buildPutSalePayload = (state) => {
-    const { data, context, idEmployee } = state;
-
-    const payments = data.payments.map(p => ({
-        amount: Number(p.amount) || 0,
-        idPaymentMethod: p.idPaymentMethod,
-        idPayment: p.idPayment ?? null,
-        idEmployee
-    }));
-
-    const items = data.selectedItems.map(i => ({
-        idSparePart: i.idSparePart,
-        priceApplied: Number(i.priceApplied) || 0,
-        idSaleItem: i.idSaleItem ?? null
-    }));
-
+    const { data, context } = state;
     return {
         idCustomer: context.idCustomer,
         notes: data.notes || "",
-        idEmployee,
-        saveOrUpdatePayments: payments,
-        saveOrUpdateItems: items,
+        saveOrUpdatePayments: normalizePayments(data.payments),
+        saveOrUpdateItems: normalizedItems(data.selectedItems),
         paymentsToDelete: data.paymentsToDelete,
         itemsToDelete: data.itemsToDelete
     };
 };
 
 export const buildPostSalePayload = (state) => {
-    const { data, context, idEmployee } = state;
+    const { data, context } = state;
 
     return {
         idCustomer: context.idCustomer,
         notes: data.notes || "",
-        idEmployee,
-        payments: data.payments.map(p => ({
-            amount: Number(p.amount) || 0,
-            idPaymentMethod: p.idPaymentMethod,
-            idPayment: null,
-            idEmployee
-        })),
-        sparePartItems: data.selectedItems.map(i => ({
-            idSparePart: i.idSparePart,
-            priceApplied: Number(i.priceApplied) || 0,
-            idSaleItem: null
-        }))
+        payments: normalizePayments(data.payments),
+        sparePartItems: normalizedItems(data.selectedItems)
     };
+};
+
+const normalizedItems = (items) => {
+    return items.map(i => ({
+        idSparePart: i.idSparePart,
+        priceApplied: Number(i.priceApplied) || 0,
+        idSaleItem: null
+    }));
 };

@@ -9,6 +9,8 @@
 
 .filterSection {
     flex-wrap: wrap;
+    container-name: filterSection;
+    container-type: inline-size;
 }
 
 .containerTexts{
@@ -132,8 +134,8 @@
     place-items: center;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
-    width: 40px;
-    height: 40px;
+    min-width: 35px;
+    min-height: 35px;
     border-radius: 50%;
     background-color: var(--danger-color);
     color: var(--text-color-light);
@@ -172,6 +174,7 @@
     color: var(--text-color);
     text-align: center;
     box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);
+    border: var(--border);
 }
 
 .footerCard {
@@ -223,6 +226,16 @@
 .containerButtons .btnPrimary:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgb(211 24 19 / 0.3);
+}
+
+@container filterSection (max-width: 1600px) {
+    .containerTexts {
+        flex-basis: 1200px !important;
+    }
+
+    #txtSearchData {
+        max-width: 100%;
+    }
 }
 
 @container content (max-width: 1000px) {

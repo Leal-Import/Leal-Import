@@ -1,14 +1,12 @@
 // payments.controller.js
 
-import {
-    addPayment
-} from '../../core/logic/payments.logic.js';
+import { addPayment, getMethodNameById, validatePayment } from '../../core/logic/payments.logic.js';
 import { cleanPaymentCamps, DOMRefs, renderPayments, resetDomPayments } from '../../core/dom/payments.dom.js';
 import { getPaymentMethods } from '../../service/configuration.service.js';
 import { paymentsState } from '../../core/state/payments.state.js';
 import { $, fillSelect, hideElement, showElement, showMessage } from '../../utils/dom.js';
 import { initPaymentsEvents } from './payments.event.js';
-import { safeParseFloat, validatePayment } from '../../utils/validators.js';
+import { safeParseFloat } from '../../utils/validators.js';
 import { formatWithCommas } from '../../utils/formatters.js';
 
 /* Aca se cargan todos los metodos de pago */
@@ -75,7 +73,7 @@ export const addNewPayment = ({ state, totals, payment }) => {
             ...existing,          // conserva idPayment, paymentURL, etc.
             amount: safeParseFloat(payment.amount) || 0,
             idPaymentMethod: payment.idPaymentMethod ?? existing.idPaymentMethod,
-            paymentMethod: getPaymentMethods(payment.idPaymentMethod)
+            paymentMethod: getMethodNameById(payment)
         };
         paymentsState.context.editingIndex = -1;
 

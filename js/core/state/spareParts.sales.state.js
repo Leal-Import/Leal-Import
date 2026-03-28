@@ -9,7 +9,6 @@ export const spareSaleState = {
         suggestedPrice: null
     },
     saleKey: null,
-    idEmployee: null,
     data: {
         selectedItems: [],
         payments: [],
@@ -45,7 +44,6 @@ export const resetSpareSaleState = () => {
         suggestedPrice: null
     };
     spareSaleState.saleKey = null;
-    spareSaleState.idEmployee = null;
     spareSaleState.data = {
         selectedItems: [],
         payments: [],

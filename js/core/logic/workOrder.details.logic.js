@@ -1,6 +1,6 @@
-import { $, asNumber, asUUID, existsById, getNullableParam, showMessage } from "../../utils/dom.js";
-import { safeParseFloat } from "../../utils/validators.js";
-import { workOrderDetailsState } from "../state/workOrder.details.state.js";
+import { asNumber, asUUID, existsById, getNullableParam, highlightAndFocus, showMessage } from "../../utils/dom.js";
+import { isValidDecimal, safeParseFloat } from "../../utils/validators.js";
+import { normalizePayments, validatePayments } from "./payments.logic.js";
 
 export const verifyIds = (state, idSparePart) => {
     return state.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
@@ -91,22 +91,28 @@ export const calculateWorkOrderTotals = ({
     };
 };
 
-export const cleanWindow = () => {
-    localStorage.removeItem(workOrderDetailsState.saleKey);
-    $("frmWorkOrder").reset();
-};
-
-const validateBaseOrder = (estimatedDate, selectedServices, selectedSpareParts, payments, total, idVehicle) => {
-    if (!idVehicle) {
-        return 'Debe seleccionar un vehículo.';
-    }
-
+const validateBaseOrder = (estimatedDate, notes, selectedServices, selectedSpareParts, payments, total, idVehicle) => {
+    if (!idVehicle) return 'Debe seleccionar un vehículo.';
     if (!estimatedDate) {
+        highlightAndFocus('dtEstimated');
         return 'Debe ingresar la fecha estimada.';
+    };
+    if (notes.trim().length === 0 && notes.trim().length > 500) {
+        highlightAndFocus('txtNotes');
+        return 'Las notas deben de tener un maximo de 500 caracteres.';
+    }
+    if (selectedServices.length === 0 && selectedSpareParts.length === 0) return 'Debe agregar al menos un servicio o un repuesto.';
+
+    // Validar precios de servicios
+    for (let i = 0; i < selectedServices.length; i++) {
+        const s = selectedServices[i];
+        if (!isValidDecimal(s.priceApplied) || Number(s.priceApplied) < 0) return `Precio inválido en el servicio ${i + 1}.`;
     }
 
-    if (!selectedServices.length && !selectedSpareParts.length) {
-        return 'Debe agregar al menos un servicio o un repuesto.';
+    // Validar precios de repuestos
+    for (let i = 0; i < selectedSpareParts.length; i++) {
+        const p = selectedSpareParts[i];
+        if (!isValidDecimal(p.priceApplied) || Number(p.priceApplied) < 0) return `Precio inválido en el repuesto ${i + 1}.`;
     }
 
     const totalAmounts = payments.reduce((acc, p) => acc + safeParseFloat(p.amount), 0);
@@ -115,89 +121,38 @@ const validateBaseOrder = (estimatedDate, selectedServices, selectedSpareParts, 
     return null;
 };
 
-export const validatePostOrder = (data, idVehicle, total) => {
+export const validateOrder = (data, idVehicle, total, requirePayment = false) => {
     const {
         selectedServices,
         selectedSpareParts,
         payments,
-        estimatedDate
+        estimatedDate,
+        notes
     } = data;
-
-    const baseOrderError = validateBaseOrder(estimatedDate, selectedServices, selectedSpareParts, payments, total, idVehicle);
+    const baseOrderError = validateBaseOrder(estimatedDate, notes, selectedServices, selectedSpareParts, payments, total, idVehicle);
     if (baseOrderError) return baseOrderError;
 
-    if (!payments.length) {
-        return 'Debe registrar al menos un abono.';
-    }
+    if (requirePayment && payments.length === 0) return 'Debe registrar al menos un abono.';
 
-    for (let i = 0; i < payments.length; i++) {
-        const p = payments[i];
-
-        if (!p.amount || p.amount <= 0) {
-            return `Monto inválido en el abono ${i + 1}.`;
-        }
-
-        if (!p.idPaymentMethod) {
-            return `Seleccione método de pago en el abono ${i + 1}.`;
-        }
-
-        if (!p.file) {
-            return `Debe adjuntar comprobante en el abono ${i + 1}.`;
-        }
-    }
+    const validatePaymentsError = validatePayments(payments);
+    if (validatePaymentsError) return validatePaymentsError;
 
     return null;
 };
 
-export const validatePutOrder = (data, idVehicle, total) => {
-    const {
-        selectedServices,
-        selectedSpareParts,
-        payments,
-        estimatedDate
-    } = data;
+export const buildOrderFormData = (state, isEditing) => {
+    const fd = new FormData();
 
-    const baseOrderError = validateBaseOrder(estimatedDate, selectedServices, selectedSpareParts, payments, total, idVehicle);
-    if (baseOrderError) return baseOrderError;
-
-    for (let i = 0; i < payments.length; i++) {
-        const p = payments[i];
-
-        if (!p.amount || p.amount <= 0) {
-            return `Monto inválido en el abono ${i + 1}.`;
-        }
-
-        if (!p.idPaymentMethod) {
-            return `Seleccione método de pago en el abono ${i + 1}.`;
-        }
-
-        // Pago nuevo sin comprobante
-        if (!p.idPayment && !p.file) {
-            return `Debe adjuntar comprobante en el abono ${i + 1}.`;
-        }
+    let payload;
+    if (isEditing) {
+        payload = buildPutWorkOrderPayload(state);
+    } else {
+        payload = buildPostWorkOrderPayload(state);
     }
 
-    return null;
-};
-
-export const buildPostWorkOrderFormData = (state) => {
-    const fd = new FormData();
-
-    const payload = buildPostWorkOrderPayload(state);
     fd.append('workOrderData', JSON.stringify(payload));
 
-    appendPaymentFiles(fd, state.data.payments, false);
-
-    return fd;
-};
-
-export const buildPutWorkOrderFormData = (state) => {
-    const fd = new FormData();
-
-    const payload = buildPutWorkOrderPayload(state);
-    fd.append('workOrderData', JSON.stringify(payload));
-
-    appendPaymentFiles(fd, state.data.payments, true);
+    appendPaymentFiles(fd, state.data.payments, isEditing);
 
     return fd;
 };
@@ -220,7 +175,6 @@ const buildPutWorkOrderPayload = (state) => {
 
 const buildPostWorkOrderPayload = (state) => {
     const { data, context } = state;
-
     return {
         idCustomer: context.idCustomer,
         notes: data.notes || '',
@@ -231,11 +185,11 @@ const buildPostWorkOrderPayload = (state) => {
     };
 };
 
-const appendPaymentFiles = (fd, payments, isEdit) => {
+const appendPaymentFiles = (fd, payments, isEditing) => {
     payments.forEach(p => {
         if (!p.file) return;
 
-        if (isEdit) {
+        if (isEditing) {
             // PUT
             if (p.paymentURL) {
                 // Reemplazo de comprobante existente
@@ -248,19 +202,6 @@ const appendPaymentFiles = (fd, payments, isEdit) => {
             // POST
             fd.append('paymentImages', p.file);
         }
-    });
-};
-
-const normalizePayments = (payments) => {
-    return payments.map(p => {
-        const payment = {
-            amount: Number(p.amount),
-            idPaymentMethod: p.idPaymentMethod
-        };
-        if (p.idPayment) {
-            payment.idPayment = p.idPayment;
-        }
-        return payment;
     });
 };
 

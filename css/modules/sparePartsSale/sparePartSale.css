@@ -12,6 +12,10 @@
     gap: 30px;
 }
 
+.tableSelected{
+    table-layout: fixed;
+}
+
 .filterSection{
     justify-content: space-between;
 }
@@ -35,4 +39,10 @@
 
 .headerRightColumn .table:has(.noDataMessage) {
     height: 100%;
+}
+
+@container content (max-width: 767px) {
+    .leftColumn .table tbody td:nth-child(2)::before {
+        content: "Repuesto" !important;
+    }
 }

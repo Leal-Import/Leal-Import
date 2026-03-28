@@ -175,22 +175,26 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="formGroup fullWidth">
-                                <label for="txtDescription" class="lblInputs">Descripción</label>
-                                <textarea type="text" class="txtInputs" id="txtDescription" required name="txtDescription"
-                                    rows="5" maxlength="500"
-                                    placeholder="Describe las características del vehículo..."></textarea>
+                            <div class="rowFields">
+                                <div class="formGroup fullWidth">
+                                    <label for="txtDescription" class="lblInputs">Descripción</label>
+                                    <textarea type="text" class="txtInputs" id="txtDescription" required name="txtDescription"
+                                        rows="5" maxlength="500"
+                                        placeholder="Describe las características del vehículo..."></textarea>
+                                </div>
                             </div>
-                            <div class="formGroup groupCustomer hide fullWidth">
-                                <label for="txtCustomer" class="lblInputs">Cliente</label>
-                                <input type="text" class="txtInputs" id="txtCustomer" name="txtCustomer" maxlength="50">
-                                <div class="suggestions hide" id="suggestionsCustomer"></div>
-                                <p class="hide statusSuccess" id="selectedCustomerText">
-                                    <svg viewBox="0 0 24 24">
-                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                    </svg>
-                                    Cliente seleccionado
-                                </p>
+                            <div class="rowFields hide groupCustomer">
+                                <div class="formGroup fullWidth">
+                                    <label for="txtCustomer" class="lblInputs">Cliente</label>
+                                    <input type="text" class="txtInputs" id="txtCustomer" name="txtCustomer" maxlength="50">
+                                    <div class="suggestions hide" id="suggestionsCustomer"></div>
+                                    <p class="hide statusSuccess" id="selectedCustomerText">
+                                        <svg viewBox="0 0 24 24">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Cliente seleccionado
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

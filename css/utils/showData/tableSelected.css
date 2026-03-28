@@ -5,7 +5,7 @@
     border-radius: 12px;
     border: var(--border);
     max-height: 400px;
-    overflow-y: auto;
+    overflow: hidden auto;
 }
 
 /* Tabla base */
@@ -26,7 +26,7 @@
 }
 
 .tableSelected thead th {
-    padding: 14px 16px;
+    padding: 14px 10px;
     text-align: left;
     font-size: var(--font-size-sh);
     font-weight: var(--font-weight-semibold);
@@ -36,14 +36,7 @@
     border-bottom: 2px solid var(--bg-color);
 }
 
-/* Columnas específicas del header */
-.tableSelected thead th.itemName {
-    padding-left: 20px;
-}
 
-.tableSelected thead th.finalPrice {
-    padding-right: 20px;
-}
 
 /* Filas del cuerpo */
 .tableSelected tbody tr.tableRow {

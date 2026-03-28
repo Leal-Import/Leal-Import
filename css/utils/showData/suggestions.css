@@ -9,6 +9,7 @@
     border-bottom-right-radius: var(--border-radius-btn);
     box-shadow: var(--bx-shadow-modal);
     max-height: 200px;
+    top: 100%;
     overflow: hidden auto;
     position: absolute;
     width: 100%;

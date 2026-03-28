@@ -62,16 +62,6 @@ const onSubmitVehicle = async (e) => {
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmVehicles));
     const fd = new FormData();
     let payloadVehicle;
-    let vehiclesImagesValid;
-    if (vehicleDetailState.context.currentId) {
-        vehiclesImagesValid = validateEditImages();
-    } else {
-        vehiclesImagesValid = validateVehicleImages();
-    }
-    if (vehiclesImagesValid) {
-        showMessage(vehiclesImagesValid.title, vehiclesImagesValid.message, 'warning');
-        return;
-    }
     if (vehicleDetailState.isExternal) {
         const error = validateBaseVehicle(formData);
         if (error) {
@@ -95,6 +85,16 @@ const onSubmitVehicle = async (e) => {
         if (vehicleDetailState.costsId) {
             payloadVehicle.costs.idCost = vehicleDetailState.costsId;
         }
+    }
+    let vehiclesImagesValid;
+    if (vehicleDetailState.context.currentId) {
+        vehiclesImagesValid = validateEditImages();
+    } else {
+        vehiclesImagesValid = validateVehicleImages();
+    }
+    if (vehiclesImagesValid) {
+        showMessage(vehiclesImagesValid.title, vehiclesImagesValid.message, 'warning');
+        return;
     }
     showElement(DOMRefs.refs.loaderSaveVehicle);
     DOMRefs.refs.camps.forEach(disableElement);

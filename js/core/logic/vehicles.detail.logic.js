@@ -1,7 +1,7 @@
 import { asUUID, fillForm, highlightAndFocus } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
 import { validateImageSize, validateImageType, validateImagesGeneral } from "../../utils/images.validators.js";
-import { isValidDecimal, isValidURL, safeParseFloat } from "../../utils/validators.js";
+import { isValidDecimal, isValidURL, isValidYear, safeParseFloat } from "../../utils/validators.js";
 import { vehicleDetailState } from "../state/vehicles.detail.state.js";
 
 const validateMaxImages = (currentImages = [], newFiles = [], max = 12) => {
@@ -58,14 +58,9 @@ export const validateBaseVehicle = ({
     txtDescription
 }) => {
 
-    if (txtVin.length < 5) {
+    if (txtVin.length < 5 || txtVin.length > 50) {
         highlightAndFocus('txtVin');
-        return 'El VIN debe tener al menos 5 caracteres.';
-    }
-
-    if (txtVin.length > 50) {
-        highlightAndFocus('txtVin');
-        return 'El VIN no puede tener más de 50 caracteres.';
+        return 'El VIN debe tener entre 5 y 50 caracteres.';
     }
 
     if (txtBrand.length > 50 || txtBrand.length < 2) {
@@ -78,7 +73,7 @@ export const validateBaseVehicle = ({
         return 'El modelo debe tener entre 1 y 50 caracteres.';
     }
 
-    if (isNaN(txtYear) || txtYear < 1900) {
+    if (!isValidYear(txtYear)) {
         highlightAndFocus('txtYear');
         return 'El año del vehículo no es válido.';
     }
@@ -88,11 +83,6 @@ export const validateBaseVehicle = ({
         return 'El millaje debe tener entre 1 y 50 caracteres.';
     }
 
-    if (isNaN(txtMileage) || txtMileage < 0) {
-        highlightAndFocus('txtMileage');
-        return 'El millaje no es válido.';
-    }
-
     if (txtLote.length > 50 || txtLote.length < 1) {
         highlightAndFocus('txtLote');
         return 'El número de lote debe tener entre 1 y 50 caracteres.';
@@ -100,11 +90,6 @@ export const validateBaseVehicle = ({
 
     if (txtLink.trim() !== "") {
         if (!isValidURL(txtLink)) return "Enlace del lote no valido";
-    }
-
-    if (txtDescription.trim() === "") {
-        highlightAndFocus('txtDescription');
-        return 'La descripción es obligatoria.';
     }
 
     if (txtDescription.length > 500 || txtDescription.length < 1) {

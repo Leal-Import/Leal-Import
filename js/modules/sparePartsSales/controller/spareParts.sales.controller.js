@@ -22,7 +22,7 @@ import { initSpareSaleEvents } from '../event/spareParts.sales.event.js';
 import { createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, loadBtnOrder, loadCustomerName, loadDomData, loadNotes, renderTotals, resetSparePartsFilters } from '../../../core/dom/spareParts.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale, verifyIds } from '../../../core/logic/spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
-import { getCurrentEmployeeId, initSession } from '../../../utils/api.utils.js';
+import { initSession } from '../../../utils/api.utils.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments } from '../../payments/payments.controller.js';
 import { safeParseFloat } from '../../../utils/validators.js';
 
@@ -132,7 +132,6 @@ const onSubmitSpareSale = async (e) => {
 
     showElement(DOMRefs.refs.loaderAddSale);
     camps.forEach(disableElement);
-
     try {
         let response;
         if (spareSaleState.context.idSale) {
@@ -260,7 +259,6 @@ const setupApplication = async () => {
     const user = await initSession();
     if (!user) return false;
 
-    spareSaleState.idEmployee = getCurrentEmployeeId();
     const hydrated = await hydrateContextFromURL(spareSaleState);
     if (!hydrated) return false;
     return true;

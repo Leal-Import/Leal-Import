@@ -53,20 +53,17 @@ const onSubmitSparePart = async (e) => {
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmSpareParts));
     const fd = new FormData();
-    let imagesValid;
-    if (sparePartDetailState.context.currentId && sparePartDetailState.image.file) {
-        imagesValid = validateImage(sparePartDetailState.image.file);
-    } else if (!sparePartDetailState.context.currentId) {
-        imagesValid = validateImage(sparePartDetailState.image.file);
-    }
-
-    if (imagesValid) {
-        showMessage('Imagen no valida', imagesValid, 'warning');
-        return;
-    }
     const invalidate = validateBaseSparePart(formData, sparePartDetailState.links.bill, sparePartDetailState.links.tracking);
     if (invalidate) {
         showMessage('Datos no válidos', invalidate, 'warning');
+        return;
+    }
+    let imagesValid;
+    if (!sparePartDetailState.context.currentId || sparePartDetailState.image.file) {
+        imagesValid = validateImage(sparePartDetailState.image.file);
+    }
+    if (imagesValid) {
+        showMessage('Imagen no valida', imagesValid, 'warning');
         return;
     }
     showElement(DOMRefs.refs.loaderAddSparePart);

@@ -338,14 +338,14 @@
 }
 
 .titleOption {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     color: var(--text-color);;
     margin-bottom: 8px;
 }
 
 .optionDescription {
-    font-size: var(--font-size-very-sh);
+    font-size: var(--font-size-sm);
     color: var(--text-color-secondary);
     line-height: 1.6;
 }

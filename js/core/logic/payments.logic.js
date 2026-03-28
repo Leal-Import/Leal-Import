@@ -1,6 +1,6 @@
 // payments.logic.js
-import { existsById } from "../../utils/dom.js";
-import { safeParseFloat } from "../../utils/validators.js";
+import { existsById, highlightAndFocus } from "../../utils/dom.js";
+import { isValidDecimal, safeParseFloat } from "../../utils/validators.js";
 import { paymentsState } from "../state/payments.state.js";
 
 const normalizePayment = (payment) => {
@@ -37,4 +37,44 @@ export const getMethodNameById = (payment) => {
     const method = paymentsState.paymentMethods
         .find(m => m.idPaymentMethod === payment.idPaymentMethod);
     return method?.methodName ?? 'Desconocido';
+};
+
+export const validatePayments = (payments) => {
+    for (let i = 0; i < payments.length; i++) {
+        const p = payments[i];
+        if (!isValidDecimal(p.amount) || p.amount <= 0) {
+            return `Monto inválido en el abono ${i + 1}.`;
+        }
+        if (!p.idPaymentMethod) {
+            return `Seleccione método de pago en el abono ${i + 1}.`;
+        }
+    }
+    return null;
+};
+
+export const validatePayment = (amount, method) => {
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+        highlightAndFocus("txtAmount");
+        return "El monto del abono debe ser mayor a cero.";
+    }
+
+    if (!method) {
+        highlightAndFocus("paymentMethod");
+        return "Debe seleccionar un método de pago.";
+    }
+
+    return null;
+};
+
+export const normalizePayments = (payments) => {
+    return payments.map(p => {
+        const payment = {
+            amount: Number(p.amount),
+            idPaymentMethod: p.idPaymentMethod
+        };
+        if (p.idPayment) {
+            payment.idPayment = p.idPayment;
+        }
+        return payment;
+    });
 };

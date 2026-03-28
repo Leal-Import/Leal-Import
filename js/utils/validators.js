@@ -1,12 +1,16 @@
 export const isValidEmail = (email) => {
     if (!email) return false;
-    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    if (!emailRegex.test(email.toLowerCase())) return false;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) return false;
     if (email.length > 254) return false;
-
-    const domain = email.substring(email.lastIndexOf('@') + 1);
-    return domain.split('.').every(part => part.length <= 63);
+    const [localPart, domain] = email.split('@');
+    if (localPart.startsWith('.') || localPart.endsWith('.')) return false;
+    if (localPart.includes('..')) return false;
+    const domainParts = domain.split('.');
+    if (!domainParts.every(part => part.length > 0 && part.length <= 63)) return false;
+    if (domainParts.some(part => part.startsWith('-') || part.endsWith('-'))) return false;
+    return true;
 };
 
 export const isValidDui = (dui) => {
@@ -25,6 +29,21 @@ export const isValidPhone = (phone) => {
 export const safeParseFloat = (v) => {
     const n = parseFloat(String(v || '').replace(/[$,\s]/g, ''));
     return isNaN(n) ? 0 : n;
+};
+
+export const isValidYear = (year, options = {}) => {
+    const {
+        min = 1900,
+        max = new Date().getFullYear() + 1
+    } = options;
+
+    if (!year) return false;
+
+    const parsed = Number(year);
+    if (!Number.isInteger(parsed)) return false;
+    if (parsed < min || parsed > max) return false;
+
+    return true;
 };
 
 export const validateDate = (input, minDate = null) => {
@@ -48,18 +67,6 @@ export const validateDate = (input, minDate = null) => {
     input.min = finalMinDate.toISOString().slice(0, 10);
 };
 
-export const validatePayment = (amount, method) => {
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
-        return "El monto del abono debe ser mayor a cero.";
-    }
-
-    if (!method) {
-        return "Debe seleccionar un método de pago.";
-    }
-
-    return null;
-};
-
 export const isValidURL = (url) => {
     if (!url || url.length < 1 || url.length > 1000) return false;
 
@@ -74,16 +81,16 @@ export const isValidURL = (url) => {
 // utils/validators.js
 
 export const isValidDecimal = (value, precision = 10, scale = 2) => {
-    const maxDecimals  = scale;
-    const maxIntegers  = precision - scale;          // 8 dígitos enteros
-    const maxValue     = Number('9'.repeat(maxIntegers) + '.' + '9'.repeat(maxDecimals)); // 99999999.99
+    const maxDecimals = scale;
+    const maxIntegers = precision - scale;          // 8 dígitos enteros
+    const maxValue = Number('9'.repeat(maxIntegers) + '.' + '9'.repeat(maxDecimals)); // 99999999.99
 
     const parsed = safeParseFloat(value);
-    if (isNaN(parsed) || parsed < 0) return false;
-    if (parsed > maxValue)           return false;
+    if (isNaN(parsed) || parsed <= 0) return false;
+    if (parsed > maxValue) return false;
 
     // Verificar que no tenga más decimales de los permitidos
-    const str      = parsed.toString();
+    const str = parsed.toString();
     const dotIndex = str.indexOf('.');
     if (dotIndex !== -1 && str.length - dotIndex - 1 > maxDecimals) return false;
 

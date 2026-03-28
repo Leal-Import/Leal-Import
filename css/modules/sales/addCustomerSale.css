@@ -121,6 +121,8 @@
     text-decoration: none;
     color: var(--text-color);
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin-bottom: 8px;
 }
 

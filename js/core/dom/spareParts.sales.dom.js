@@ -1,4 +1,4 @@
-import { $ } from "../../utils/dom.js";
+import { $, buildParams } from "../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } from "../../utils/formatters.js";
 
 export const DOMRefs = {
@@ -81,14 +81,19 @@ export const insertSpareParts = (
         cost.textContent = formatWithCommas(sparePart.total || sparePart.totalCost || 0);
         suggestedPriceTd.textContent = formatWithCommas(sparePart.suggestedPrice || sparePart.priceApplied || 0);
 
+        tdImage.classList.add("imageItem");
+        name.classList.add("itemName");
+        cost.classList.add("itemCost");
+        suggestedPriceTd.classList.add("itemSuggestedPrice");
         tr.classList.add("tableRow");
         image.classList.add("imgTable");
 
         tdImage.appendChild(image);
         tr.append(tdImage, name, cost, suggestedPriceTd);
         if (createBtnAdd) {
-            const btn = createBtnAdd(sparePart, tr, onAddSparePart);
-            tr.appendChild(btn);
+            const tdBtn = createBtnAdd(sparePart, tr, onAddSparePart);
+            tdBtn.classList.add("itemActions");
+            tr.appendChild(tdBtn);
         }
 
         fragment.appendChild(tr);
@@ -98,11 +103,13 @@ export const insertSpareParts = (
 };
 
 const createBtnAdd = (sparePart, tr, onAddSparePart) => {
+    const tdBtn = document.createElement("td");
     const btnAddSparePart = document.createElement("button");
     btnAddSparePart.classList.add("btnAddItem");
     btnAddSparePart.textContent = "+";
     btnAddSparePart.addEventListener("click", () => onAddSparePart(sparePart, tr));
-    return btnAddSparePart;
+    tdBtn.appendChild(btnAddSparePart);
+    return tdBtn;
 };
 
 export const createRowTable = (container, sparePart, onDeleteSparePart, onWritePrice) => {
@@ -123,7 +130,7 @@ export const createRowTable = (container, sparePart, onDeleteSparePart, onWriteP
     partName.textContent = name;
     tdPrice.textContent = formatWithCommas(priceApplied);
 
-    partName.classList.add("sparePartName");
+    partName.classList.add("sparePartName", "itemName", "truncate");
     tdPrice.classList.add("finalPrice");
     tr.classList.add("tableRow");
 
@@ -185,13 +192,12 @@ export const loadCustomerName = (spancustomerName, customerName) => {
 };
 
 export const loadBtnOrder = (customerId, customerName, idSale) => {
-    let url = `sparePartsDetails.html?sale=true&idCustomer=${customerId}&customerName=${encodeURIComponent(customerName)}`;
-
-    if (idSale !== null && idSale !== '') {
-        url += `&idSale=${idSale}`;
-    }
-
-    window.location.href = url;
+    const params = buildParams({
+        idCustomer: customerId,
+        customerName: customerName,
+        idSale: idSale
+    });
+    window.location.href = `sparePartsDetails.html?${params.toString()}`;
 };
 
 export const loadDomData = (txtNotes, btnSaveSale, notes) => {

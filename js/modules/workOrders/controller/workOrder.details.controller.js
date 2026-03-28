@@ -5,7 +5,7 @@ import { safeParseFloat, validateDate } from "../../../utils/validators.js";
 import { buildParams, cleanOneShotParams, disableElement, hideElement, qsa, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
 import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
 import { initWorkOrdersEvents } from "../event/workOrder.details.event.js";
-import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validatePutOrder, validatePostOrder, buildPostWorkOrderFormData, buildPutWorkOrderFormData, cleanWindow } from "../../../core/logic/workOrder.details.logic.js";
+import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validateOrder, buildOrderFormData } from "../../../core/logic/workOrder.details.logic.js";
 import { addNewPayment, initPaymentsController } from "../../payments/payments.controller.js";
 import { createBtnUrl } from "../../../core/dom/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
@@ -102,22 +102,20 @@ const onSearchSpareParts = (e) => {
 const onSubmitOrder = async (e) => {
     e.preventDefault();
     const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnImport, .btnSecondary");
-    let fd;
-    if (workOrderDetailsState.context.idWorkOrder) {
-        const errorPut = validatePutOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle, workOrderDetailsState.totals.total);
-        if (errorPut) {
-            showMessage('Error de validación', errorPut, 'warning');
-            return;
-        }
-        fd = buildPutWorkOrderFormData(workOrderDetailsState);
-    } else {
-        const errorPost = validatePostOrder(workOrderDetailsState.data, workOrderDetailsState.context.idVehicle, workOrderDetailsState.totals.total);
-        if (errorPost) {
-            showMessage('Error de validación', errorPost, 'warning');
-            return;
-        }
-        fd = buildPostWorkOrderFormData(workOrderDetailsState);
+    const isEditing = !!workOrderDetailsState.context.idWorkOrder;
+    const error = validateOrder(
+        workOrderDetailsState.data,
+        workOrderDetailsState.context.idVehicle,
+        workOrderDetailsState.totals.total,
+        !isEditing // requirePayment solo en POST
+    );
+
+    if (error) {
+        showMessage('Error de validación', error, 'warning');
+        return;
     }
+
+    const fd = buildOrderFormData(workOrderDetailsState, isEditing);
 
     showElement(DOMRefs.refs.loaderAddOrder);
     camps.forEach(disableElement);
@@ -133,7 +131,8 @@ const onSubmitOrder = async (e) => {
         }
 
         if (response) {
-            cleanWindow();
+            localStorage.removeItem(workOrderDetailsState.saleKey);
+            DOMRefs.refs.frmWorkOrder.reset();
         }
         if (workOrderDetailsState.context.idSale) {
             window.location.replace('sales.html');
@@ -217,6 +216,9 @@ const calculateAllTotals = () => {
         payments: workOrderDetailsState.data.payments,
         vehiclePrice: workOrderDetailsState.context.vehiclePrice
     });
+    workOrderDetailsState.totals.total = totals.total;
+    workOrderDetailsState.totals.due = totals.due;
+    workOrderDetailsState.totals.totalPaid = totals.totalPaid;
     renderTotals(totals, DOMRefs.refs);
 };
 

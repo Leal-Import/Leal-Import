@@ -50,6 +50,7 @@
 .dataSection {
     flex: 1;
     height: 100%;
+    min-width: 50%;
 }
 
 .pictureSection {
@@ -191,7 +192,6 @@
     color: var(--text-color-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    min-width: 150px;
 }
 
 .value {

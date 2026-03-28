@@ -156,7 +156,7 @@ const getSidebarTemplate = () => `
 const getMobileHeaderTemplate = () => `
     <div class="mobileHeader">
         <button class="menuToggle" id="menuToggle" aria-label="Toggle menu" type="button">☰</button>
-        <div class="mobileHeaderLogo">Ris<span>kor</span></div>
+        <div class="mobileHeaderLogo">Menu</div>
         <div style="width: 40px;"></div>
     </div>`;
 
