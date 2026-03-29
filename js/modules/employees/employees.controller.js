@@ -1,19 +1,10 @@
 // modules/employees/employees.controller.js
 
-import { employeesState, resetEmployeesState } from '../../core/state/employees.state.js';
-import { insertEmployees, fillEmployeesForm, DOMRefs, rewriteModalElements, resetEmployeesFilters } from '../../core/dom/employees.dom.js';
+import { employeesState, resetEmployeesState } from './employees.state.js';
+import { insertEmployees, fillEmployeesForm, DOMRefs, rewriteModalElements, resetEmployeesFilters } from './employees.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
-import {
-    validateEmployee,
-    mapEmployeeForm
-} from '../../core/logic/employees.logic.js';
-import {
-    getActiveEmployees,
-    postEmployee,
-    putEmployee,
-    getRoles,
-    patchEmployee
-} from '../../service/employees.service.js';
+import { validateEmployee, mapEmployeeForm } from './employees.logic.js';
+import { getActiveEmployees, postEmployee, putEmployee, getRoles, patchEmployee } from './employees.service.js';
 import { initEmployeeEvents } from './employees.events.js';
 import { showFloatingMenu, showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable, fillSelect } from '../../utils/dom.js';
 import { initSession } from '../../utils/api.utils.js';

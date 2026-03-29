@@ -1,10 +1,10 @@
-import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, resetInputType, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "../../core/dom/configuration.dom.js";
-import { validateProfile, validateUsernameChange } from "../../core/logic/configuration.logic.js";
-import { configurationState, resetConfigurationState } from "../../core/state/configuration.state.js";
+import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, resetInputType, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "./configuration.dom.js";
+import { validateProfile, validateUsernameChange } from "./configuration.logic.js";
+import { configurationState, resetConfigurationState } from "./configuration.state.js";
 import { getCurrentEmployee, initSession } from "../../utils/api.utils.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { initConfigurationEvents } from "./configuration.event.js";
-import { changePassword, editProfile, logout, verifyCurrentPassword } from "../../service/configuration.service.js";
+import { changePassword, editProfile, logout, verifyCurrentPassword } from "./configuration.service.js";
 import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword } from "../../core/logic/new.password.logic.js";
 
 const onChangeDarkMode = () => {

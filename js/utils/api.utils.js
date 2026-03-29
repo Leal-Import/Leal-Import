@@ -1,7 +1,5 @@
-import { getAuthMe } from '../service/login.service.js';
+import { getAuthMe } from '../modules/login/login.service.js';
 import { showMessage } from './dom.js';
-
-export const API_BASE_URL = 'https://leal-import-api-jsol.onrender.com/api';
 
 let currentUser = null;
 

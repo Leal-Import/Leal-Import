@@ -171,7 +171,7 @@ export const updateModalContent = (receiptUrl, payment, Refs) => {
 
         previewContent.appendChild(previewImageWrapper);
         modalPreviewArea.appendChild(previewContent);
-        if (picsAmountState.isViewingReceipt) hideElement(previewOverlay.querySelector('.fileSize'));
+        if (!payment?.file) hideElement(previewOverlay.querySelector('.fileSize'));
 
     } else {
         // si no hay archivo se muestra estado vacío

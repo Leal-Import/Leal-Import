@@ -65,15 +65,6 @@
     background-color: var(--danger-color);
 }
 
-.totalSales {
-    border-left-color: var(--helper-stat-color);
-    flex-grow: 2;
-}
-
-.totalSales::before {
-    background-color: var(--helper-stat-color);
-}
-
 .statTitle {
     font-size: var(--font-size-base);
         font-weight: var(--font-weight-regular);

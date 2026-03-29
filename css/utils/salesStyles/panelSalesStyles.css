@@ -44,7 +44,7 @@
 
 .actionButtons .btnPrimary {
     align-self: end;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     padding: 5px 20px;
 }
 

@@ -32,11 +32,15 @@
                     </div>
                     <div class="seccionCard" id="requested">
                         <h2 class="statValue">0</h2>
-                        <p class="statTitle">Solicitado</p>
+                        <p class="statTitle">Reservadas</p>
                     </div>
-                    <div class="seccionCard" id="totalCost">
+                    <div class="seccionCard" id="sold">
                         <h2 class="statValue">0</h2>
-                        <p class="statTitle">Valor de inventario</p>
+                        <p class="statTitle">Vendidas</p>
+                    </div>
+                    <div class="seccionCard" id="returned">
+                        <h2 class="statValue">0</h2>
+                        <p class="statTitle">Devueltas</p>
                     </div>
                 </div>
             </div>
@@ -56,7 +60,7 @@
                 <select id="cmbSearchByStatus" class="cmbFilterData">
                     <option value="">Cargando...</option>
                 </select>
-                <a href="sparePartsDetails.html" class="btnPrimary btnOpenModal">Añadir</a>
+                <a href="sparePartsForm.html" class="btnPrimary btnOpenModal">Añadir</a>
             </div>
 
             <div class="containerSpareParts">
@@ -89,9 +93,8 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/modules/spareParts/controller/spareParts.controller.js"></script>
+    <script type="module" src="../js/modules/spareParts/spareParts.controller.js"></script>
     <script src="../js/components/sidebar.js"></script>
 </body>
 

@@ -1,9 +1,9 @@
 // modules/sales/sales.controller.js
 
-import { insertSales, selectLineButton, DOMRefs, resetSalesFilters } from "../../core/dom/sales.dom.js";
-import { resetSalesState, salesState } from "../../core/state/sales.state.js";
+import { insertSales, selectLineButton, DOMRefs, resetSalesFilters } from "./sales.dom.js";
+import { resetSalesState, salesState } from "./sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
-import { getSales, getStateSales } from "../../service/sales.service.js";
+import { getSales, getStateSales } from "./sales.service.js";
 import { fillSelect, hideElement, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { initSession } from "../../utils/api.utils.js";
 import { initSalesEvents } from "./sales.event.js";

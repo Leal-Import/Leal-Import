@@ -16,10 +16,6 @@ export const createPagination = ({
         filters: {}
     };
 
-    /* ==============================
-       PUBLIC API
-    ============================== */
-
     const update = ({ page, size, filters } = {}) => {
         if (page !== undefined) state.page = page;
         if (size !== undefined) state.size = size;
@@ -103,10 +99,6 @@ export const createPagination = ({
         return btn;
     };
 
-    /* ==============================
-       PAGE LOGIC (1 2 3 … 10)
-    ============================== */
-
     const getVisiblePages = (current, total) => {
         if (total <= 6) {
             return Array.from({ length: total }, (_, i) => i + 1);
@@ -130,10 +122,6 @@ export const createPagination = ({
             total
         ];
     };
-
-    /* ==============================
-       PAGE SIZE
-    ============================== */
 
     const syncSizeSelect = () => {
         sizeSelect.value = state.size;

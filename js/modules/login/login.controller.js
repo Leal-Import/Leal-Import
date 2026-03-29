@@ -1,10 +1,10 @@
 'use strict';
 
-import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswordCamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType, setReq, updateLabel } from "../../core/dom/login.dom.js";
-import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown } from "../../core/logic/login.logic.js";
+import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswordCamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType, setReq, updateLabel } from "./login.dom.js";
+import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown } from "./login.logic.js";
 import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword } from "../../core/logic/new.password.logic.js";
-import { loginState } from "../../core/state/login.state.js";
-import { login, resetPassword, verifyEmail, verifyPIN } from "../../service/login.service.js";
+import { loginState } from "./login.state.js";
+import { login, resetPassword, verifyEmail, verifyPIN } from "./login.service.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { isValidEmail } from "../../utils/validators.js";
 import { initLoginEvents } from "./login.event.js";

@@ -4,7 +4,7 @@ const getSidebarTemplate = () => `
 
             <div class="navHeader">
                 <div class="logoContainer">
-                    <img src="" alt="Logo" class="logo" id="logo">
+                    <img src="../media/appMedia/Logo Lealimport.png" alt="Logo" class="logo" id="logo">
                     <span class="logoWordmark" id="logoWordmark">Leal <span>import</span></span>
                 </div>
                 <button id="btnNavbar" title="Toggle sidebar" type="button">

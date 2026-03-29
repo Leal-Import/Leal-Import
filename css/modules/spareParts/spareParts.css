@@ -64,8 +64,12 @@
     border-left: 4px solid var(--success-color);
 }
 
-#totalCost {
+#sold {
     border-left: 4px solid var(--helper-stat-color);
+}
+
+#returned{
+    border-left: 4px solid var(--warning-color);
 }
 
 .card {

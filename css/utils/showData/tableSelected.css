@@ -64,7 +64,7 @@
 }
 
 /* Columna de nombre del repuesto */
-.tableSelected tbody td.itemName {
+.tableSelected tbody td.itemNameSelected {
     font-weight: var(--font-weight-medium);
     color: var(--text-color);
     padding-left: 20px;
@@ -82,6 +82,23 @@
     padding: 12px 20px 12px 16px;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.3px;
+}
+
+.finalPrice{
+    width: 35%;
+}
+
+.itemNameSelected{
+    width: 55%;
+}
+
+.tdActionsSelected {
+    width: 10% !important;
+    padding: 0 !important;
+}
+
+.tdActionsSelected .btnTrash{
+    margin-right: 8px;
 }
 
 .tableSelected tbody td.finalPrice:hover {
