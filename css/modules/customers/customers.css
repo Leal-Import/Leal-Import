@@ -12,10 +12,6 @@
     flex-basis: 0;
 }
 
-.filterSection {
-    justify-content: space-between;
-}
-
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE CSS PARA TABLA DE CLIENTES
    Convierte las filas <tr> en cards en móvil SIN cambiar el HTML

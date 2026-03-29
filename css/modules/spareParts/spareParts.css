@@ -29,13 +29,6 @@
     padding: 10px 24px 15px !important;
 }
 
-/* Section Cards - Stats */
-#idTotalCost {
-    width: 320px !important;
-    height: 80% !important;
-    max-height: 500px !important;
-}
-
 .seccionCard {
     border-radius: 12px;
     border: none;

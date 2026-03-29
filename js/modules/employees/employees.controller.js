@@ -6,8 +6,9 @@ import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateEmployee, mapEmployeeForm } from './employees.logic.js';
 import { getActiveEmployees, postEmployee, putEmployee, getRoles, patchEmployee } from './employees.service.js';
 import { initEmployeeEvents } from './employees.events.js';
-import { showFloatingMenu, showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable, fillSelect } from '../../utils/dom.js';
+import { showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable, fillSelect } from '../../utils/dom.js';
 import { initSession } from '../../utils/api.utils.js';
+import { showFloatingMenu } from '../../utils/floatingMenu.js';
 
 /* ===============================
    CARGA DE EMPLEADOS

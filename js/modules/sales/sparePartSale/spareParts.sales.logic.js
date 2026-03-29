@@ -1,11 +1,6 @@
 import { asBoolean, asNumber, asUUID, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal } from "../../../utils/validators.js";
-import { spareSaleState } from "./spareParts.sales.state.js";
 import { normalizePayments, validatePayments } from "../../../core/logic/payments.logic.js";
-
-export const verifyIds = (idSparePart) => {
-    return spareSaleState.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
-};
 
 export const hydrateContextFromURL = async (state) => {
     const params = new URLSearchParams(window.location.search);
@@ -53,8 +48,8 @@ export const hydrateContextFromURL = async (state) => {
     return true;
 };
 
-export const validateSale = () => {
-    const { data: { selectedItems, payments, notes }, context } = spareSaleState;
+export const validateSale = (state) => {
+    const { data: { selectedItems, payments, notes }, context } = state;
 
     // Validar cliente
     if (!context.idCustomer) return 'No se ha seleccionado ningún cliente.';

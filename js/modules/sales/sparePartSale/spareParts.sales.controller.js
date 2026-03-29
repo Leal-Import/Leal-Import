@@ -1,11 +1,11 @@
 // spareSale.controller.js
 import { getSpareParts, getSparePartById, postSparePart, putSparePart } from './spareParts.sale.service.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
-import { showMessage, showElement, hideElement, disableElement, removeDisable, qsa, cleanOneShotParams, buildParams } from '../../../utils/dom.js';
+import { showMessage, showElement, hideElement, disableElement, removeDisable, qsa, cleanOneShotParams, buildParams, existsById } from '../../../utils/dom.js';
 import { resetSpareSaleState, spareSaleState } from './spareParts.sales.state.js';
 import { initSpareSaleEvents } from './spareParts.sales.event.js';
 import { createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, loadCustomerName, loadDomData, loadNotes, renderTotals, resetSparePartsFilters } from './spareParts.sales.dom.js';
-import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale, verifyIds } from './spareParts.sales.logic.js';
+import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from './spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { initSession } from '../../../utils/api.utils.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments } from '../../payments/payments.controller.js';
@@ -36,7 +36,7 @@ export const loadInventory = async () => {
         spareSaleState.pagination.total = data.page.totalElements;
         spareSaleState.pagination.totalPages = data.page.totalPages;
 
-        insertSpareParts(spareSaleState.list, DOMRefs.refs.tableBody, DOMRefs.refs.tableInventory, verifyIds, onAddSparePart);
+        insertSpareParts(spareSaleState.list, DOMRefs.refs.tableBody, DOMRefs.refs.tableInventory, existsById, onAddSparePart, spareSaleState);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -66,7 +66,7 @@ const recalculateTotals = () => {
 };
 
 const pushSparePart = (sparePart) => {
-    if (verifyIds(sparePart.idSparePart)) return null;
+    if (existsById(spareSaleState.data.selectedItems, sparePart.idSparePart, "idSparePart")) return null;
     const normalizedPart = {
         idSparePart: sparePart.idSpareParts || sparePart.idSparePart,
         name: sparePart.nameSpareParts || sparePart.sparePartName || sparePart.name,
@@ -102,7 +102,7 @@ const onDeleteSparePart = (container, tr, id, idSaleItem) => {
 const onSubmitSpareSale = async (e) => {
     e.preventDefault();
     const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .finalPrice, .btnAddItem, .btnEdit");
-    const invalidate = validateSale();
+    const invalidate = validateSale(spareSaleState);
     if (invalidate) {
         await showMessage("Error de validación", invalidate, 'warning');
         return;
@@ -299,7 +299,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         await initializeUI(refs);
 
         await loadDataFlow(refs);
-        console.log(spareSaleState);
     } catch (error) {
         console.error('Error inicializando la aplicación: ', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');

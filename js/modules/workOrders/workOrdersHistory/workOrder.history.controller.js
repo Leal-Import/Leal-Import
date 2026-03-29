@@ -7,8 +7,9 @@ import { getDetailsOrders, getDashboardWorkorder } from "./workOrder.history.ser
 import { getWOStatus } from "../workOrders.service.js";
 import { initSession } from "../../../utils/api.utils.js";
 
-import { asUUID, buildParams, fillSelect, hideElement, showElement, showFloatingMenu, showMessage } from "../../../utils/dom.js";
+import { asUUID, buildParams, fillSelect, hideElement, showElement, showMessage } from "../../../utils/dom.js";
 import { initWorkOrderHistoryEvents } from "./workOrder.history.event.js";
+import { showFloatingMenu } from "../../../utils/floatingMenu.js";
 
 /* ===============================
    CARGA DE HISTORIAL DE ÓRDENES

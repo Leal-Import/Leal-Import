@@ -7,6 +7,13 @@ export const hideElement = (el) => { if (!el) return; el.classList.remove('show'
 export const disableElement = (el) => { if (!el) return; el.setAttribute("disabled", true); };
 export const removeDisable = (el) => { if (!el) return; el.removeAttribute("disabled"); };
 
+export const asUUID = (v) => (typeof v === 'string' && v.trim() !== '' ? v : null);
+export const asBoolean = (v) => v === 'true';
+export const asNumber = (v) => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+};
+
 export const existsById = (list, id, key) => {
     return list.some(item => String(item[key]) === String(id));
 };
@@ -73,93 +80,6 @@ export const setFormReadOnly = (formSelector, readOnly = true) => {
     });
 };
 
-/* Menu flotante para tablas */
-export const showFloatingMenu = (event, actions) => {
-    const existingMenu = qs('.floatingMenu');
-    if (existingMenu) existingMenu.remove();
-
-    const menu = document.createElement('div');
-    menu.classList.add('floatingMenu');
-    menu.style.visibility = 'hidden';
-    menu.style.position = 'fixed';
-    menu.style.zIndex = '10000';
-
-    const opener = event.currentTarget;
-    const uniqueSuffix = Date.now().toString(36) + Math.random().toString(36).slice(2);
-
-    actions.forEach(action => {
-        const btn = document.createElement('button');
-        btn.textContent = action.label;
-        btn.classList.add('floatingMenuButton');
-
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            try {
-                action.onClick && action.onClick();
-            } finally {
-                menu.remove();
-                cleanup();
-            }
-        });
-
-        if (action.id) btn.id = `${action.id}-${uniqueSuffix}`;
-        menu.appendChild(btn);
-    });
-
-    document.body.appendChild(menu);
-
-    const positionMenu = () => {
-        if (!document.body.contains(menu)) return;
-
-        const menuRect = menu.getBoundingClientRect();
-        const rect = opener.getBoundingClientRect();
-
-        let top = rect.bottom + 5;
-        let left = rect.right - menuRect.width;
-
-        if (left < 5) left = rect.left;
-        if (top + menuRect.height > window.innerHeight) {
-            top = rect.top - menuRect.height - 5;
-        }
-
-        menu.style.top = `${top}px`;
-        menu.style.left = `${left}px`;
-    };
-
-    requestAnimationFrame(() => {
-        positionMenu();
-        menu.style.visibility = '';
-    });
-
-    const onDocClick = (e) => {
-        if (!menu.contains(e.target)) {
-            menu.remove();
-            cleanup();
-        }
-    };
-
-    const onEsc = (e) => {
-        if (e.key === 'Escape') {
-            menu.remove();
-            cleanup();
-        }
-    };
-
-    const onResize = () => positionMenu();
-
-    const cleanup = () => {
-        document.removeEventListener('click', onDocClick);
-        document.removeEventListener('keydown', onEsc);
-        window.removeEventListener('resize', onResize);
-    };
-
-    setTimeout(() => {
-        document.addEventListener('click', onDocClick);
-        document.addEventListener('keydown', onEsc);
-        window.addEventListener('resize', onResize);
-    }, 0);
-};
-
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 /* Mensajes globales (SweetAlert2) */
 export const showMessage = async (
@@ -212,47 +132,6 @@ export const enableFormUI = (frm) => {
     setFormReadOnly(frm, false);
 };
 
-export const setupModal = (
-    openBtnSelector,
-    modalSelector,
-    closeBtnSelector,
-    formId,
-    text,
-    onClose
-) => {
-    const openBtn = qs(openBtnSelector);
-    const closeBtn = qs(closeBtnSelector);
-    const modal = qs(modalSelector);
-    const form = qs(formId);
-
-    if (!openBtn || !closeBtn || !modal) return;
-
-    openBtn.addEventListener("click", () => {
-        if (typeof onClose === 'function') {
-            onClose(); // ← limpia selectedId
-        }
-        toggleModal(modal, true);
-        form?.reset();
-        modal.querySelector('.titleModal').textContent = text;
-        modal.querySelector(".btnAddData").querySelector("span").textContent = "Agregar";
-        enableFormUI(formId);
-    });
-
-    const closeHandler = () => {
-        toggleModal(modal, false);
-        form?.reset();
-        if (typeof onClose === 'function') {
-            onClose();
-        }
-    };
-
-    closeBtn.addEventListener("click", closeHandler);
-
-    modal.addEventListener("click", e => {
-        if (e.target === modal) closeHandler();
-    });
-};
-
 export const fillSelect = (selectOrId, data, valueKey, textKey, selectedValue = null, defaultText = 'Seleccione una opción') => {
     const select =
         typeof selectOrId === 'string'
@@ -302,15 +181,6 @@ export const highlightAndFocus = (elementOrId) => {
 
     element.classList.add('input-error');
     element.focus();
-};
-
-export const asUUID = (v) => (typeof v === 'string' && v.trim() !== '' ? v : null);
-
-export const asBoolean = (v) => v === 'true';
-
-export const asNumber = (v) => {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
 };
 
 export const getNullableParam = (value) => {

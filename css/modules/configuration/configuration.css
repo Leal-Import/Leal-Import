@@ -1,3 +1,6 @@
+.modalAdd {
+    --width-modal: clamp(250px, 90%, 550px);
+}
 
 .bodySection {
     display: flex;
@@ -32,9 +35,6 @@
     font-weight: var(--font-weight-medium);
 }
 
-.modalAdd {
-    --width-modal: clamp(250px, 90%, 550px);
-}
 
 .modalEmployeeBody {
     display: flex;

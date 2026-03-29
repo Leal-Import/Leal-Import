@@ -1,4 +1,4 @@
-import { $ } from "../../../utils/dom.js";
+import { $, existsById } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } from "../../../utils/formatters.js";
 
 export const DOMRefs = {
@@ -37,8 +37,9 @@ export const insertSpareParts = (
     spareParts,
     container,
     tableInventory,
-    verifyIds,
-    onAddSparePart
+    existById,
+    onAddSparePart,
+    state
 ) => {
     if (!container || !tableInventory) return;
 
@@ -67,7 +68,7 @@ export const insertSpareParts = (
 
     for (const sparePart of spareParts) {
         tableInventory.style.height = "fit-content";
-        if (verifyIds?.(sparePart.idSpareParts)) continue;
+        if (existsById?.(state.data.selectedItems, sparePart.idSpareParts, "idSparePart")) continue;
 
         const tr = document.createElement("tr");
         const tdImage = document.createElement("td");
