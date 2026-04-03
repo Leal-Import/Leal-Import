@@ -15,116 +15,123 @@ export const DOMRefs = {
             modalAbonoTitle: $('modalAbonoTitle'),
             voucherLightbox: $('voucherLightbox'),
             btnCloseLightbox: qs('.btnCloseLightBox'),
-            btnCloseVoucherModal: $('btnCloseVoucherModal')
+            btnCloseVoucherModal: $('btnCloseVoucherModal'),
+            viewAmountContainer: $('viewAmountContainer'),
+            amountToPay: $('amountToPay'),
+            paymentMethodToPay: $('paymentMethodToPay'),
+            registeredBy: $('registeredBy'),
+            registrationDate: $('registrationDate')
         };
         return this.refs;
     }
 };
 
-/* Esta funcion crea el boton para abrir el modal del comprobante de pago */
 export const createBtnUrl = (index, receiptUrl, payment) => {
-    // === ELEMENTOS PARA EL COMPROBANTE ===
-    const receiptContainer = document.createElement("div");
-    receiptContainer.classList.add("receiptContainer");
+    const receiptContainer = document.createElement('div');
+    receiptContainer.classList.add('receiptContainer');
 
-    // Input de archivo oculto (Se usará por el modal para seleccionar el archivo)
-    const receiptInput = document.createElement("input");
-    receiptInput.type = "file";
-    receiptInput.accept = "image/*, application/pdf";
-    receiptInput.classList.add("receiptInput");
+    const receiptInput = document.createElement('input');
+    receiptInput.type = 'file';
+    receiptInput.accept = 'image/*';
+    receiptInput.classList.add('receiptInput');
     receiptInput.id = `receiptInput${index}`;
-    receiptInput.setAttribute("hidden", "true");
-
+    receiptInput.hidden = true;
     receiptInput.addEventListener('change', (e) => selectFile(e, payment));
 
-    // Botón principal (Ahora abre el MODAL)
-    const receiptButton = document.createElement("button");
-    receiptButton.type = "button";
-    receiptButton.classList.add('btnAddPayment', 'btnSecondary');
-    receiptButton.innerHTML = `<span class="icon">Añadir comprobante</span>`;
+    const span = document.createElement('span');
+    span.classList.add('icon');
 
-    // === LISTENERS ===
-    receiptButton.addEventListener("click", (e) => {
+    const btnReceipt = document.createElement('button');
+    btnReceipt.type = 'button';
+    btnReceipt.classList.add('btnAddPayment', 'btnSecondary');
+    btnReceipt.appendChild(span);
+    btnReceipt.addEventListener('click', (e) => {
         e.preventDefault();
         openReceiptModal(receiptInput, receiptUrl, payment);
     });
 
-    receiptContainer.append(receiptInput, receiptButton);
+    const isLoaded = (receiptUrl?.startsWith('http')) || (payment?.file instanceof File);
+    setReceiptBtnState(btnReceipt, span, isLoaded);
 
-    if (receiptUrl && receiptUrl.startsWith('http') || (payment?.file && payment.file instanceof File)) {
-        receiptButton.classList.add("receiptLoaded");
-        receiptButton.innerHTML = `<span class="icon">Ver comprobante</span>`;
-    }
-
+    receiptContainer.append(receiptInput, btnReceipt);
     return receiptContainer;
+};
+
+export const setReceiptBtnState = (btn, span, isLoaded) => {
+    btn.classList.toggle('receiptLoaded', isLoaded);
+    span.textContent = isLoaded ? 'Ver comprobante' : 'Añadir comprobante';
 };
 
 // Función para abrir el modal de comprobante
 const openReceiptModal = (inputElement, receiptUrl, payment) => {
-    const Refs = DOMRefs.init();
-    const modalContainer = Refs.modalContainer;
-    const inputIdField = Refs.currentReceiptInputId;
+    const { modalContainer, currentReceiptInputId, modalAbonoTitle } = DOMRefs.refs;
     const abonoIndex = inputElement.closest('.paymentItem').getAttribute('data-index');
 
     // 1. CONEXIÓN: Guardar el ID del input dinámico
-    inputIdField.value = inputElement.id;
+    currentReceiptInputId.value = inputElement.id;
     modalContainer.dataset.paymentId = payment.id;
-    Refs.modalAbonoTitle.textContent = `${abonoIndex}`;
+    modalAbonoTitle.textContent = `${abonoIndex}`;
 
     // 2. ACTUALIZAR VISUALES del modal
-    updateModalContent(receiptUrl, payment, Refs);
+    updateModalContent(receiptUrl, payment, DOMRefs.refs);
+
+    if (picsAmountState.isViewingReceipt) showViewData(payment);
 
     // 3. Mostrar el modal
     toggleModal(modalContainer, true);
 };
 
+const showViewData = (payment) => {
+    const { viewAmountContainer, amountToPay, paymentMethodToPay, registeredBy, registrationDate } = DOMRefs.refs;
+    showElement(viewAmountContainer);
+    amountToPay.textContent = payment.amount ? `$${payment.amount.toFixed(2)}` : 'N/A';
+    paymentMethodToPay.textContent = payment.paymentMethod || 'Desconocido';
+    registeredBy.textContent = payment.employeeName || 'Desconocido';
+    registrationDate.textContent = payment.paymentDate ? new Date(payment.paymentDate).toLocaleString() : 'Desconocida';
+};
+
 // Función para actualizar el contenido del modal según el estado del input
 export const updateModalContent = (receiptUrl, payment, Refs) => {
-    const previewArea = Refs.modalPreviewArea;
-    const btnClear = Refs.btnClearFile;
+    const { modalPreviewArea, btnClearFile, voucherLightbox } = Refs;
 
     const hasLocalFile = (payment?.file && payment.file instanceof File) || false;
     const hasRemoteUrl = receiptUrl && receiptUrl.startsWith('http');
     const isLoaded = hasLocalFile || hasRemoteUrl;
 
-    // 🔑 CRÍTICO: Limpiar objetos URL anteriores
-    const oldPreview = previewArea.querySelector('img, embed');
+    //Limpiar objetos URL anteriores
+    const oldPreview = modalPreviewArea.querySelector('img, embed');
     if (oldPreview?.src?.startsWith('blob:')) {
         URL.revokeObjectURL(oldPreview.src);
     }
 
     if (isLoaded) {
-        // ✅ HAY ARCHIVO: Mostrar preview
-        if (!picsAmountState.isViewingReceipt) showElement(btnClear);
+        // si hay archivo se muestra preview
+        if (!picsAmountState.isViewingReceipt) showElement(btnClearFile);
 
         const urlToPreview = hasLocalFile
             ? URL.createObjectURL(payment.file)
             : receiptUrl;
-
-        // Determinar tipo de archivo
-        const isPdf = urlToPreview.toLowerCase().endsWith('.pdf') ||
-            (payment?.file?.type === 'application/pdf');
 
         // Obtener información del archivo
         const fileName = payment?.file?.name || receiptUrl?.split('/').pop() || 'documento.jpg';
         const fileSize = payment?.file?.size ? formatFileSize(payment.file.size) : 'Tamaño desconocido';
 
         // 🔑 IMPORTANTE: Añadir clase has-file PRIMERO
-        previewArea.classList.add('hasFile');
+        modalPreviewArea.classList.add('hasFile');
 
         // Limpiar contenido
-        previewArea.innerHTML = '';
+        modalPreviewArea.innerHTML = '';
 
         // Crear estructura de preview
         const previewContent = document.createElement('div');
-        previewContent.className = 'previewContent';
+        previewContent.classList.add('previewContent');
 
         const previewImageWrapper = document.createElement('div');
-        previewImageWrapper.className = 'previewImageWrapper';
+        previewImageWrapper.classList.add('previewImageWrapper');
 
         // Botón de zoom
         const zoomBtn = document.createElement('button');
-        zoomBtn.className = 'zoomBtn';
+        zoomBtn.classList.add('zoomBtn');
         zoomBtn.type = 'button';
         zoomBtn.setAttribute('aria-label', 'Ampliar imagen');
         zoomBtn.innerHTML = `
@@ -134,25 +141,16 @@ export const updateModalContent = (receiptUrl, payment, Refs) => {
         `;
 
         // Evento para ampliar imagen
-        zoomBtn.addEventListener('click', () => openLightbox(urlToPreview, Refs.voucherLightbox));
+        zoomBtn.addEventListener('click', () => openLightbox(urlToPreview, voucherLightbox));
 
-        // Crear elemento de preview (img o embed)
-        let previewElement;
-        if (isPdf) {
-            previewElement = document.createElement('embed');
-            previewElement.src = urlToPreview;
-            previewElement.type = 'application/pdf';
-            previewElement.className = 'previewImage';
-        } else {
-            previewElement = document.createElement('img');
-            previewElement.src = urlToPreview;
-            previewElement.alt = 'Comprobante';
-            previewElement.className = 'previewImage';
-        }
+        const previewElement = document.createElement('img');
+        previewElement.src = urlToPreview;
+        previewElement.alt = 'Comprobante';
+        previewElement.classList.add('previewImage');
 
         // Overlay con información del archivo
         const previewOverlay = document.createElement('div');
-        previewOverlay.className = 'previewOverlay';
+        previewOverlay.classList.add('previewOverlay');
 
         previewOverlay.innerHTML = `
         <div class="fileDetails">
@@ -169,23 +167,20 @@ export const updateModalContent = (receiptUrl, payment, Refs) => {
         // Ensamblar estructura
         previewImageWrapper.appendChild(zoomBtn);
         previewImageWrapper.appendChild(previewElement);
-        if (!isPdf) { // Solo mostrar overlay en imágenes
-            previewImageWrapper.appendChild(previewOverlay);
-        }
+        previewImageWrapper.appendChild(previewOverlay);
 
         previewContent.appendChild(previewImageWrapper);
-        previewArea.appendChild(previewContent);
-        if (picsAmountState.isViewingReceipt) hideElement(previewOverlay.querySelector('.fileSize'));
+        modalPreviewArea.appendChild(previewContent);
+        if (!payment?.file) hideElement(previewOverlay.querySelector('.fileSize'));
 
     } else {
-        // ❌ NO HAY ARCHIVO: Mostrar estado vacío
-        hideElement(btnClear);
+        // si no hay archivo se muestra estado vacío
+        hideElement(btnClearFile);
 
-        // 🔑 IMPORTANTE: Remover clase has-file
-        previewArea.classList.remove('hasFile');
+        modalPreviewArea.classList.remove('hasFile');
 
         // Restaurar estructura de estado vacío
-        previewArea.innerHTML = `
+        modalPreviewArea.innerHTML = `
             <div class="emptyState">
                 <div class="uploadIconWrapper">
                     <div class="uploadIcon"></div>
@@ -201,7 +196,7 @@ export const updateModalContent = (receiptUrl, payment, Refs) => {
 };
 
 // Función auxiliar para formatear tamaño de archivo
-const  formatFileSize = (bytes) => {
+const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -209,12 +204,22 @@ const  formatFileSize = (bytes) => {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 };
 
-// Función para cerrar lightbox
+let _escapeHandler = null;
+const openLightbox = (imageUrl, lightbox) => {
+    const lightboxImage = $('lightboxImage');
+    lightboxImage.src = imageUrl;
+    lightbox.classList.add('active');
+
+    _escapeHandler = (e) => handleEscapeKey(e, lightbox);
+    document.addEventListener('keydown', _escapeHandler);
+};
+
 export const closeLightbox = (lightbox) => {
-    if (lightbox) {
-        lightbox.classList.remove('active');
+    lightbox?.classList.remove('active');
+    if (_escapeHandler) {
+        document.removeEventListener('keydown', _escapeHandler);
+        _escapeHandler = null;
     }
-    document.removeEventListener('keydown',(e) => handleEscapeKey(e, lightbox));
 };
 
 // Handler para tecla Escape
@@ -223,13 +228,3 @@ const handleEscapeKey = (e, lightbox) => {
         closeLightbox(lightbox);
     }
 };
-
-// Función para abrir lightbox (vista ampliada)
-const openLightbox = (imageUrl, lightbox) => {
-    const lightboxImage = $('lightboxImage');
-    lightboxImage.src = imageUrl;
-    lightbox.classList.add('active');
-
-    document.addEventListener('keydown',(e) => handleEscapeKey(e, lightbox));
-};
-

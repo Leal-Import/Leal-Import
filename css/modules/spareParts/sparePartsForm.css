@@ -1,0 +1,274 @@
+/* ========================================
+   SPARE PARTS DETAILS - ESTILOS MEJORADOS
+   ======================================== */
+
+/* Main Grid Layout */
+.gridContent {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+/* Fieldsets & Containers */
+legend {
+    font-size: var(--font-size-lg);
+    color: var(--text-color);
+    font-weight: var(--font-weight-bold);
+    padding: 0 12px;
+    margin-bottom: 4px;
+}
+
+fieldset,
+.imgData {
+    padding: 24px;
+    border: none;
+    border-radius: 16px;
+    background-color: var(--bg-color-white);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+    transition: all 0.3s ease;
+    animation: fadeIn 0.4s ease-out;
+}
+
+fieldset:hover,
+.imgData:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+}
+
+/* Spare Part Data Section */
+.sparePartData {
+    grid-column: 3 / 6;
+    grid-row: 1 / 4;
+    border-left: 4px solid #e53e3e;
+}
+
+/* Image Upload Section */
+.imgData {
+    grid-row: 1 / 4;
+    grid-column: 1 / 3;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    background-color: var(--bg-color);
+    position: relative;
+    overflow: hidden;
+    border: var(--border);
+}
+
+.imgData::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.containerImgPart {
+    flex: 1;
+    border: 3px dashed rgb(255 255 255 / 0.4);
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 280px;
+    position: relative;
+    z-index: 1;
+}
+
+.containerImgPart:hover {
+    transform: scale(1.02);
+}
+
+.containerImgPart.dragover {
+    transform: scale(1.05);
+}
+
+#placeholderMsg {
+    color: var(--text-color-light);
+    font-size: var(--font-size-base);
+    text-align: center;
+    font-weight: var(--font-weight-regular);
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+#imgPart {
+    width: 100%;
+    height: 100%;
+    max-height: 350px;
+    object-fit: contain;
+    opacity: 1;
+    transition: opacity 0.3s;
+    border-radius: 12px;
+}
+
+.containerImgPart.empty #imgPart {
+    opacity: 0;
+}
+
+.containerActionsImg {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    z-index: 1;
+}
+
+.containerActionsImg button {
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+
+.containerActionsImg .btnPrimary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgb(255 255 255 / 0.3);
+}
+
+#fileInput {
+    display: none;
+}
+
+/* Costs Data Section */
+.costsData {
+    grid-row: 4 / 6;
+    grid-column: 1 / 6;
+    background-color: var(--bg-color-white);
+    border-left: 4px solid #4299e1;
+}
+
+/* Form Fields */
+.rowFields {
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.rowFields:last-child {
+    margin-bottom: 0;
+}
+
+.lblInputs {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color-dark);
+    margin-bottom: 2px;
+}
+
+select.txtInputs {
+    cursor: pointer;
+}
+
+/* Link Button Inside Input */
+.btnLink {
+    position: absolute;
+    right: 8px;
+    top: 52%;
+    margin: auto;
+    padding: 4px 12px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    font-size: var(--font-size-sm) !important;
+    min-width: auto !important;
+}
+
+.btnLink:hover {
+    background: #c53030;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgb(229 62 62 / 0.3);
+}
+
+#btnSaveData {
+    padding: 14px 40px;
+    margin-top: 24px;
+}
+
+
+/* Format for cost inputs */
+.txtFormat {
+    font-weight: var(--font-weight-medium);
+}
+
+.txtCosts {
+    position: relative;
+}
+
+.txtCosts::before {
+    content: '$';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-color-dark);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* Drop zone specific styles */
+#dropZone {
+    border: 3px dashed rgb(255 255 255 / 0.4);
+    border-radius: 16px;
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    background: rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+#dropZone:hover {
+    border-color: var(--bg-color-white);
+    background: rgb(255 255 255 / 0.15);
+}
+
+#dropZone.dragover {
+    border-color: var(--bg-color-white);
+    background: rgb(255 255 255 / 0.2);
+    transform: scale(1.02);
+}
+
+
+.titleModal {
+    color: var(--text-color);
+    font-size: var(--font-size-lg);
+    margin-bottom: 0;
+}
+
+.btnSubmitData {
+    display: flex;
+    margin-top: 0;
+    align-items: center;
+    gap: 8px;
+}
+
+@container content (max-width: 1075px) {
+    .gridContent {
+        grid-template-columns: 1fr;
+    }
+
+    .imgData,
+    .sparePartData,
+    .costsData {
+        grid-column: 1 / 1;
+    }
+
+    .sparePartData {
+        grid-row: 5 / 7;
+    }
+
+    .costsData {
+        grid-row: 7 / 10;
+    }
+}

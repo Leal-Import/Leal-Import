@@ -1,24 +1,40 @@
 
-
-/* Stats Section - Dashboard Premium */
-.statsSection {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    margin-bottom: 2em;
-}
-
 .containerVehicles{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     flex: 1;
     position: relative;
 }
 
+.filterSection {
+    flex-wrap: wrap;
+    container-name: filterSection;
+    container-type: inline-size;
+}
+
+.containerTexts{
+    display: flex;
+    gap: 16px;
+    flex: 1;
+    flex-basis: 600px;
+}
+
+/* Stats Section - Dashboard Premium */
+.statsSection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
 .statItem {
-    background: linear-gradient(135deg, var(--bg-color-white) 0%, #FAFAFA 100%);
+    flex-grow: 1;
+    text-align: center;
+    flex-basis: 250px;
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
     border-radius: 16px;
     border: 1px solid #E5E7EB;
-    padding: 10px;
+    padding: 25px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -73,99 +89,9 @@
     line-height: 1.2;
 }
 
-/* Stats Grid Positioning */
-.totalVehicle {
-    grid-column: 1;
-    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
-}
-
-.stockVehicles {
-    grid-column: 2;
-    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
-}
-
-.soldVehicles {
-    grid-column: 3;
-    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
-}
-
-.totalSales {
-    grid-column: 1 / span 3;
-    grid-row: 2;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-    background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
-    color: var(--text-color);
-}
-
-.totalSales .statTitle {
-    color: var(--text-color-light);
-}
-
-.totalSales .statValue {
-    color: var(--text-color-light);
-    font-size: var(--font-size-title);
-}
-
-/* Graphic Section */
-.graphicSection {
-    grid-column: 4 / span 2;
-    grid-row: 1 / span 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    border-radius: 16px;
-    border: 1px solid #E5E7EB;
-    padding: 30px 20px;
-    background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-color-white) 100%);
-}
-
-.graphicContainer {
-    max-width: 180px;
-    max-height: 180px;
-    width: 100%;
-    height: 100%;
-}
-
-#vehicleChart {
-    width: 100%;
-    height: 100%;
-}
-
-.containerInfoGraphic {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 18px;
-}
-
-.infoGraphicItem {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: var(--font-weight-medium);
-    color: var(--text-color);
-}
-
-.colorIdGraphic {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 0.2);
-}
-
-.filtersGroup {
-    display: flex;
-    gap: 12px;
-    flex: 1;
-    flex-wrap: wrap;
-}
-
-
 #txtSearchYear {
     flex: 1;
+    min-width: 200px;
 }
 
 .card {
@@ -203,6 +129,18 @@
     transform: scale(1.08);
 }
 
+.vehicleExternal{
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    min-width: 35px;
+    min-height: 35px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    color: var(--text-color-light);
+}
+
 .headerCard {
     padding: 16px;
     display: flex;
@@ -236,6 +174,7 @@
     color: var(--text-color);
     text-align: center;
     box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);
+    border: var(--border);
 }
 
 .footerCard {
@@ -289,33 +228,19 @@
     box-shadow: 0 4px 12px rgb(211 24 19 / 0.3);
 }
 
-@container content (max-width: 950px){
-    .statsSection{
-        grid-template-columns: 1fr;
+@container filterSection (max-width: 1600px) {
+    .containerTexts {
+        flex-basis: 1200px !important;
     }
 
-    .totalVehicle{
-        grid-column: 1;
-        grid-row: 1;
+    #txtSearchData {
+        max-width: 100%;
     }
+}
 
-    .stockVehicles{
-        grid-column: 1;
-        grid-row: 2;
-    }
-
-    .soldVehicles{
-        grid-column: 1;
-        grid-row: 3;
-    }
-
-    .totalSales{
-        grid-column: 1;
-        grid-row: 4;
-    }
-
-    .graphicSection{
-        grid-column: 1;
-        grid-row: 5;
+@container content (max-width: 1000px) {
+    .containerTexts{
+        flex-basis:auto !important;
+        flex-wrap: wrap;
     }
 }

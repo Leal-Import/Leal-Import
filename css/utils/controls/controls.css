@@ -10,7 +10,7 @@
     background-position: 14px center;
     background-size: 20px;
     background-color: var(--bg-color);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     border: 2px solid #E5E7EB;
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -18,6 +18,7 @@
     max-width: 60%;
     min-width: 300px;
     flex: 10;
+    max-height: 40px;
     color: var(--text-color);
 }
 
@@ -42,7 +43,7 @@
 }
 
 .cmbFilterData {
-    padding: 8px 16px;
+    padding: 7px 16px;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
     font-size: var(--font-size-sm);
@@ -88,6 +89,7 @@
 .btnSecondary {
     border: 1px solid var(--danger-color);
     cursor: pointer;
+    display: grid;
     color: var(--danger-color);
     padding: 8px 16px;
     text-decoration: none;
@@ -196,6 +198,45 @@
     color: var(--text-color);
 }
 
+
+.dateRangeInput {
+    border: 2px solid #E8E8E8;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-color);
+    padding: 6px 12px;
+}
+
+.dateGroup {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dateLbl {
+    font-size: var(--font-size-sm);
+    color: var(--text-color-secondary);
+    white-space: nowrap;
+}
+
+.dateInput {
+    border: none;
+    background: transparent;
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+    font-family: var(--font-text);
+    outline: none;
+    cursor: pointer;
+    width: 120px;
+}
+
+.dateSeparator {
+    color: var(--text-color-secondary);
+    flex-shrink: 0;
+}
+
 .darkMode input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }
@@ -233,18 +274,30 @@ textarea {
     }
 }
 
-@media screen and (width <= 600px) {
+@media screen and (width <= 700px) {
     .txtSearchData {
         font-size: var(--font-size-sm);
-        min-width: 200px;
-        flex: 1;
-    }
-
-    .filterSection .btnPrimary {
+        min-width: 225px;
         flex: 1;
     }
 
     .filterSection {
         padding: 15px 10px;
+    }
+}
+
+@container content (max-width: 600px) {
+    .dateRangeInput {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .dateSeparator {
+        display: none;
+    }
+
+    .dateInput {
+        width: 100%;
     }
 }

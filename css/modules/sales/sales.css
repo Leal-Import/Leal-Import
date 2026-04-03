@@ -9,6 +9,11 @@
     border-radius: 10px;
 }
 
+.filterSection{
+    align-items: end !important;
+    padding: 10px 24px 15px !important;
+}
+
 .filterType {
     position: relative;
     padding: 10px;
@@ -70,7 +75,8 @@
 
 .containerImgSale {
     height: 100%;
-    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
     padding: 10px;
 }
 
@@ -84,18 +90,16 @@
 
 .dataSaleContainer {
     display: flex;
+    width: calc(100% - 225px);
     padding: 10px;
     flex: 1;
 }
 
 .dataSale {
     display: flex;
+    max-width: 100%;
     align-items: center;
     gap: 5px
-}
-
-.lbl {
-    font-weight: var(--font-weight-medium);
 }
 
 .moreParts {
@@ -162,6 +166,7 @@
 .bodyDataSale {
     display: flex;
     gap: 15px;
+    max-width: 100%;
     flex: 1;
 }
 
@@ -174,6 +179,7 @@
 
 .leftDataSale {
     gap: 10px;
+    max-width: 50%;
 }
 
 .downLeft {
@@ -181,6 +187,7 @@
     flex-direction: column;
     justify-content: end;
     gap: 5px;
+    max-width: 100%;
     margin-bottom: 20px;
 }
 
@@ -210,6 +217,10 @@
 .nameVehicle,
 .sparePartName {
     font-weight: var(--font-weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 95%;
 }
 
 .containerButtonsData {
@@ -327,14 +338,14 @@
 }
 
 .titleOption {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     color: var(--text-color);;
     margin-bottom: 8px;
 }
 
 .optionDescription {
-    font-size: var(--font-size-very-sh);
+    font-size: var(--font-size-sm);
     color: var(--text-color-secondary);
     line-height: 1.6;
 }
@@ -367,6 +378,24 @@
     justify-content: center;
 }
 
+@container content (max-width: 1075px) {
+    .filterSection {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .formGroup {
+        flex-basis: auto !important;
+    }
+
+    .txtSearchData {
+        max-width: 100% !important;
+    }
+
+    .filterSection .btnPrimary{
+        flex: auto !important;
+    }
+}
 
 /* Tablets medianas (< 900px) - Ajustar paneles */
 @media screen and (width <= 899px) {
@@ -376,8 +405,12 @@
         flex-direction: column;
     }
 
-    .containerImgSale {
+    .dataSaleContainer{
         width: 100%;
+    }
+
+    .containerImgSale {
+        max-width: 100%;
         height: 200px;
     }
 
@@ -441,7 +474,7 @@
 
     .leftDataSale,
     .rightDataSale {
-        width: 100%;
+        max-width: 100%;
     }
 
     .headerDataSale {
@@ -552,14 +585,6 @@
         width: 36px;
         height: 36px;
         font-size: var(--font-size-base);
-    }
-
-    /* Modal de opciones */
-    .modalAdd {
-        width: 95%;
-        max-width: 500px;
-        margin: 10px;
-        padding: 20px !important;
     }
 
     .containerOptions {

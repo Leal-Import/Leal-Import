@@ -1,11 +1,12 @@
-import { postCustomer, putCustomer, getCustomers, patchCustomer } from '../../service/customers.service.js';
-import { customersState, resetCustomersState } from '../../core/state/customers.state.js';
-import { toggleModal, showMessage, showFloatingMenu, setFormReadOnly, showElement, hideElement, disableElement, removeDisable } from '../../utils/dom.js';
+import { postCustomer, putCustomer, getCustomers, patchCustomer } from './customers.service.js';
+import { customersState, resetCustomersState } from './customers.state.js';
+import { toggleModal, showMessage, setFormReadOnly, showElement, hideElement, disableElement, removeDisable } from '../../utils/dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
-import { validateCustomer, mapCustomerForm } from '../../core/logic/customers.logic.js';
+import { validateCustomer, mapCustomerForm } from './customers.logic.js';
 import { initCustomerEvents } from './customers.events.js';
-import { DOMRefs, fillCustomerForm, insertCustomers, rewriteModalText } from '../../core/dom/customers.dom.js';
+import { DOMRefs, fillCustomerForm, insertCustomers, resetCustomersFilters, rewriteModalText } from './customers.dom.js';
 import { initSession } from '../../utils/api.utils.js';
+import { showFloatingMenu } from '../../utils/floatingMenu.js';
 
 const STATUS = { ACTIVE: 'T', INACTIVE: 'F' };
 
@@ -185,6 +186,7 @@ const setupApplication = async () => {
 };
 
 const initializeUI = (Refs) => {
+    resetCustomersFilters(Refs);
     initCustomerEvents({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal });
 };
 

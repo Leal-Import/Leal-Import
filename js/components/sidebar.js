@@ -4,8 +4,8 @@ const getSidebarTemplate = () => `
 
             <div class="navHeader">
                 <div class="logoContainer">
-                    <img src="" alt="Logo" class="logo" id="logo">
-                    <span class="logoWordmark" id="logoWordmark">Ris<span>kor</span></span>
+                    <img src="../media/appMedia/Logo Lealimport.png" alt="Logo" class="logo" id="logo">
+                    <span class="logoWordmark" id="logoWordmark">Leal <span>import</span></span>
                 </div>
                 <button id="btnNavbar" title="Toggle sidebar" type="button">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -156,7 +156,7 @@ const getSidebarTemplate = () => `
 const getMobileHeaderTemplate = () => `
     <div class="mobileHeader">
         <button class="menuToggle" id="menuToggle" aria-label="Toggle menu" type="button">☰</button>
-        <div class="mobileHeaderLogo">Ris<span>kor</span></div>
+        <div class="mobileHeaderLogo">Menu</div>
         <div style="width: 40px;"></div>
     </div>`;
 

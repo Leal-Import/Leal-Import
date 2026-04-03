@@ -19,7 +19,7 @@
         <div id="sidebar"></div>
         <div class="content">
             <div class="headerContent">
-                <div class="breadcrumbSection">
+                <div class="breadCrumbSection">
                     <a href="spareParts.html" class="breadcrumb">Repuestos &#62; </a>
                     <a class="breadcrumb" id="typeAction">Ver repuesto</a>
                 </div>
@@ -37,19 +37,19 @@
                             <div class="sparePartDataBody">
                                 <div class="dataInfo skeleton">
                                     <span class="label">Nombre:</span>
-                                    <a id="name" class="value redColor" target="_blank" aria-label="Nombre del repuesto"></a>
+                                    <a id="name" class="value redColor truncate" target="_blank" aria-label="Nombre del repuesto"></a>
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Marca:</span>
-                                    <span id="brand" class="value" aria-label="Marca del repuesto"></span>
+                                    <span id="brand" class="value truncate" aria-label="Marca del repuesto"></span>
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Modelo:</span>
-                                    <span id="model" class="value" aria-label="Modelo del repuesto"></span>
+                                    <span id="model" class="value truncate" aria-label="Modelo del repuesto"></span>
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Año:</span>
-                                    <span id="year" class="value" aria-label="Año del repuesto"></span>
+                                    <span id="year" class="value truncate" aria-label="Año del repuesto"></span>
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Estado:</span>
@@ -66,7 +66,7 @@
                             <div class="sparePartCostBody">
                                 <div class="dataInfo skeleton">
                                     <span class="label">Tracking:</span>
-                                    <a id="tracking" class="value redColor" target="_blank" aria-label="Numero de tracking"></a>
+                                    <a id="tracking" class="value redColor truncate" target="_blank" aria-label="Numero de tracking"></a>
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Precio de compra:</span>
@@ -136,7 +136,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/modules/spareParts/controller/spareParts.view.controller.js"></script>
+    <script type="module" src="../js/modules/spareParts/sparePartsView/spareParts.view.controller.js"></script>
     <script src="../js/components/sidebar.js"></script>
 </body>
 

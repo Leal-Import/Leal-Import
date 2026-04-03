@@ -1,9 +1,10 @@
 'use strict';
 
-import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswordCamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType, setReq, updateLabel } from "../../core/dom/login.dom.js";
-import { clearCountdown, clearCurrentFlow, getPasswordStrengthOptions, getScore, maskEmailSimple, renderMaskedEmail, startCountdown, validateMatch, validatePassword } from "../../core/logic/login.logic.js";
-import { loginState } from "../../core/state/login.state.js";
-import { login, resetPassword, verifyEmail, verifyPIN } from "../../service/login.service.js";
+import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPasswordCamps, DOMRefs, focusFirstCodeInput, hideAllModals, initDigitInputs, resetInputType, setReq, updateLabel } from "./login.dom.js";
+import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown } from "./login.logic.js";
+import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword } from "../../core/logic/new.password.logic.js";
+import { loginState } from "./login.state.js";
+import { login, resetPassword, verifyEmail, verifyPIN } from "./login.service.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { isValidEmail } from "../../utils/validators.js";
 import { initLoginEvents } from "./login.event.js";
@@ -65,6 +66,8 @@ const onSubmitLogin = async (e) => {
     disableElement(DOMRefs.refs.btnLogin);
     disableElement(DOMRefs.refs.txtUserOrEmail);
     disableElement(DOMRefs.refs.txtPassword);
+    disableElement(DOMRefs.refs.togglePassword);
+    disableElement(DOMRefs.refs.btnOpenModalRecovery);
     showElement(DOMRefs.refs.btnLoginLoader);
 
     try {
@@ -85,6 +88,8 @@ const onSubmitLogin = async (e) => {
         removeDisable(DOMRefs.refs.btnLogin);
         removeDisable(DOMRefs.refs.txtUserOrEmail);
         removeDisable(DOMRefs.refs.txtPassword);
+        removeDisable(DOMRefs.refs.togglePassword);
+        removeDisable(DOMRefs.refs.btnOpenModalRecovery);
         hideElement(DOMRefs.refs.btnLoginLoader);
     }
 };
@@ -188,7 +193,7 @@ const onUpdatePassword = async () => {
         return;
     }
 
-    const invalidate = validatePassword(newPass);
+    const invalidate = validatePassword(newPass, confirmPass);
     if (invalidate) {
         await showMessage("Advertencia", invalidate, "warning");
         return;

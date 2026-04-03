@@ -1,6 +1,4 @@
 .modalAdd {
-    padding: 40px !important;
-
     --width-modal: clamp(250px, 90%, 550px);
 }
 
@@ -12,10 +10,6 @@
 
 .modalAdd .formGroup {
     flex-basis: 0;
-}
-
-.filterSection {
-    justify-content: space-between;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -40,6 +34,10 @@
 @container content (max-width: 800px) {
     .containerTable {
         min-height: 400px;
+    }
+
+    .table td{
+        max-width: 100% !important;
     }
 
     /* Ocultar thead */
@@ -90,7 +88,6 @@
         gap: 8px;
         padding: 0;
         border: none;
-        font-size: var(--font-size-sm);
         overflow-wrap: break-word;
     }
 
@@ -121,7 +118,6 @@
     .table tbody tr td:nth-child(1) {
         grid-column: 1 / -1;
         grid-row: 1;
-        font-size: var(--font-size-base);
         font-weight: var(--font-weight-semibold);
         color: var(--text-color);
     }
@@ -156,27 +152,10 @@
     .table tbody tr td:nth-child(4) .actionButton {
         padding: 8px 12px;
     }
-
-    /* Ajustar modal en móvil */
-    .modalAdd {
-        width: 95% !important;
-        max-width: 500px !important;
-        margin: 10px !important;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
-
-    .modalCustomerBody {
-        padding: 15px 0;
-    }
 }
 
 /* Móviles pequeños (< 500px) */
-@media screen and (width <= 499px) {
-    .content {
-        padding: 70px 15px 15px;
-    }
-
+@media screen and (width <= 500px) {
     .table tbody tr {
         padding: 15px;
     }

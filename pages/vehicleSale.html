@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <link rel="stylesheet" href="../css/sidebar.css">
-    <link rel="stylesheet" href="../css/modules/vehicleSale/vehicleSale.css">
+    <link rel="stylesheet" href="../css/modules/sales/vehicleSale.css">
     <link rel="stylesheet" href="../css/utils/salesStyles/panelSalesStyles.css">
     <link rel="stylesheet" href="../css/utils/showData/tableSales.css">
     <link rel="stylesheet" href="../css/utils/controls/controls.css">
@@ -78,6 +78,27 @@
                         <span>Eliminar Comprobante</span>
                     </button>
                 </div>
+                <div class="viewAmountContainer hide" id="viewAmountContainer">
+                    <h2>Detalles del abono</h2>
+                    <div class="dataView">
+                        <div class="dataItem">
+                            <span class="dataLabel">Monto del abono:</span>
+                            <span class="dataValue" id="amountToPay"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Método de pago:</span>
+                            <span class="dataValue" id="paymentMethodToPay"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Registrado por:</span>
+                            <span class="dataValue" id="registeredBy"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Fecha de registro:</span>
+                            <span class="dataValue" id="registrationDate"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <input type="hidden" id="currentReceiptInputId">
@@ -90,269 +111,275 @@
     <div class="bodyContent">
         <div id="sidebar"></div>
         <div class="content">
-            <div class="leftColumn">
-                <div class="headerContent">
-                    <div class="breadCrumbSection">
-                        <a href="sales.html" class="breadcrumb">Ventas &#62; </a>
-                        <a class="breadcrumb" id="customerName">Cargando...</a>
+            <div class="mainContent">
+                <div class="leftColumn">
+                    <div class="headerContent">
+                        <div class="breadCrumbSection">
+                            <a href="sales.html" class="breadcrumb">Ventas &#62; </a>
+                            <a class="breadcrumb truncate" id="customerName">Cargando...</a>
+                        </div>
+                    </div>
+                    <div class="bodyLeftPart">
+                        <div class="containerLoader hide" style="z-index: 15;" id="loaderAddVehicle">
+                            <div class="loader"></div>
+                            <div>Cargando vehiculo...</div>
+                        </div>
+                        <div class="viewVechicleContainer hide">
+                            <div class="imagesSection">
+                                <div class="containerCarousel">
+                                    <div class="swiper" id="mainSwiper">
+                                        <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                                        <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
+                                        <div class="swiper-button-next" style="color: var(--danger-color);"></div>
+                                    </div>
+
+                                    <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                                        <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                            <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                                        </div>
+                                    </div>
+
+                                    <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                                </div>
+                            </div>
+                            <div class="vehicleInfo">
+                                <div class="mainInfoContainer">
+                                    <div class="columnInfo">
+                                        <h2>Vehiculo</h2>
+                                        <div class="bodyDataInfo">
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Fecha compra:</span>
+                                                <span id="purchaseDate" class="infoValue"
+                                                    aria-label="Fecha de compra del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Vin:</span>
+                                                <span id="vehicleVin" class="infoValue"
+                                                    aria-label="VIN del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Año:</span>
+                                                <span id="vehicleYear" class="infoValue"
+                                                    aria-label="Año del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Lote:</span>
+                                                <a id="lote" class="infoValue" target="_blank"
+                                                    aria-label="Numero de lote"></a>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Marca:</span>
+                                                <span id="vehicleBrand" class="infoValue"
+                                                    aria-label="Marca del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Modelo:</span>
+                                                <span id="vehicleModel" class="infoValue"
+                                                    aria-label="Modelo del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Millaje:</span>
+                                                <span id="mileaje" class="infoValue"
+                                                    aria-label="Millaje del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Estado:</span>
+                                                <span id="status" class="infoValue"
+                                                    aria-label="Estado del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem suggestedItem">
+                                                <span class="infoLabel">Precio sugerido:</span>
+                                                <span id="suggestedPrice" class="values"
+                                                    style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="columnInfo columnCosts">
+                                        <h2>Costos</h2>
+                                        <div class="bodyDataInfo costsBody">
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Factura:</span>
+                                                <a id="bill" class="infoValue" target="_blank"
+                                                    aria-label="Factura del vehículo"></a>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Impuestos:</span>
+                                                <a id="taxes" class="infoValue" target="_blank"
+                                                    aria-label="Impuestos del vehículo"></a>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Barco:</span>
+                                                <a id="ship" class="infoValue" target="_blank"
+                                                    aria-label="Barco del vehículo"></a>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Transporte:</span>
+                                                <a id="towTruck" class="infoValue" target="_blank"
+                                                    aria-label="Transporte del vehículo"></a>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Almacen:</span>
+                                                <span id="storage" class="infoValue"
+                                                    aria-label="Almacén del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Transfer:</span>
+                                                <span id="transfer" class="infoValue"
+                                                    aria-label="Transferencia del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Iva:</span>
+                                                <span id="iva" class="infoValue" aria-label="Iva del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">P.A:</span>
+                                                <span id="pa" class="infoValue" aria-label="P.A del vehículo"></span>
+                                            </div>
+                                            <div class="infoItem">
+                                                <span class="infoLabel">Costo total:</span>
+                                                <span id="total" class="values" aria-label="Costo total del vehiculo"
+                                                    style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btnSecondary btnCancelVehicle" id="btnCancelVehicle">Cancelar</button>
+                            </div>
+                        </div>
+                        <div class="dataLeft">
+                            <div class="filterSection">
+                                <input type="text" id="txtSearchData" class="txtSearchData"
+                                    placeholder="Buscar vehiculo">
+                                <button class="btnPrimary btnOpenModal" id="btnImportVehicle">Realizar encargo</button>
+                            </div>
+                            <div class="tableContainer">
+                                <div class="containerLoader show" id="tableVehiclesLoader">
+                                    <div class="loader"></div>
+                                    <div>Cargando lista de vehiculos...</div>
+                                </div>
+                                <table class="table" id="tableVehicles">
+                                    <thead>
+                                        <tr>
+                                            <th>Imagen</th>
+                                            <th>Vin</th>
+                                            <th>Costo</th>
+                                            <th>P. sugerido</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tBodyInventory"></tbody>
+                                </table>
+                            </div>
+                            <div class="paginationContainer">
+
+                                <!-- Info + page size -->
+                                <div class="paginationLeft">
+                                    <span class="paginationInfo"></span>
+
+                                    <div class="pageSize">
+                                        <select class="txtInputs" id="sizeSelect">
+                                            <option value="5">5</option>
+                                            <option value="10" selected>10</option>
+                                            <option value="15">15</option>
+                                            <option value="20">20</option>
+                                            <option value="30">30</option>
+                                        </select>
+                                        <span>por página</span>
+                                    </div>
+                                </div>
+
+                                <!-- Page controls -->
+                                <div class="paginationRight">
+                                    <button class="pageBtn prev">‹</button>
+                                    <button class="pageBtn next">›</button>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="bodyLeftPart">
-                    <div class="containerLoader hide" style="z-index: 15;" id="loaderAddVehicle">
-                        <div class="loader"></div>
-                        <div>Cargando vehiculo...</div>
-                    </div>
-                    <div class="viewVechicleContainer hide">
-                        <div class="imagesSection">
-                            <div class="containerCarousel">
-                                <div class="swiper" id="mainSwiper">
-                                    <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
-                                    <div class="swiper-button-prev" style="color: var(--danger-color);"></div>
-                                    <div class="swiper-button-next" style="color: var(--danger-color);"></div>
-                                </div>
+                <div class="rightColumn">
+                    <form class="formRightColumn" id="frmVehicleSale">
+                        <div class="headerPanel">
+                            <h3 class="titlePanel">Resumen de Pago</h3>
+                            <p class="subtitlePanel">Gestiona los abonos y métodos de pago</p>
+                        </div>
 
-                                <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
-                                    <div class="swiper thumbs-swiper" id="thumbsSwiper">
-                                        <div class="swiper-wrapper" id="thumbsWrapper"></div>
-                                    </div>
-                                </div>
-
-                                <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                        <!-- Payment Form -->
+                        <div class="paymentForm">
+                            <div class="formGroup">
+                                <label class="lblInputs" for="txtAmount">Abono</label>
+                                <input type="text" class="txtInputs" placeholder="Abono" id="txtAmount">
+                            </div>
+                            <div class="formGroup">
+                                <label class="lblInputs" for="paymentMethod">Método de pago</label>
+                                <select name="paymentMethod" class="txtInputs" id="paymentMethod">
+                                    <option value="">Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="containerActionsPayments">
+                                <button id="btnCancelEdit" class="btnSecondary hide" type="button">Cancelar
+                                    edición</button>
+                                <div class="separatorDiv"></div>
+                                <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir
+                                    abono</button>
                             </div>
                         </div>
-                        <div class="vehicleInfo">
-                            <div class="mainInfoContainer">
-                                <div class="columnInfo">
-                                    <h2>Vehiculo</h2>
-                                    <div class="bodyDataInfo">
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Fecha compra:</span>
-                                            <span id="purchaseDate" class="infoValue"
-                                                aria-label="Fecha de compra del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Vin:</span>
-                                            <span id="vehicleVin" class="infoValue"
-                                                aria-label="VIN del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Año:</span>
-                                            <span id="vehicleYear" class="infoValue"
-                                                aria-label="Año del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Lote:</span>
-                                            <a id="lote" class="infoValue" target="_blank"
-                                                aria-label="Numero de lote"></a>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Marca:</span>
-                                            <span id="vehicleBrand" class="infoValue"
-                                                aria-label="Marca del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Modelo:</span>
-                                            <span id="vehicleModel" class="infoValue"
-                                                aria-label="Modelo del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Millaje:</span>
-                                            <span id="mileaje" class="infoValue"
-                                                aria-label="Millaje del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Estado:</span>
-                                            <span id="status" class="infoValue" aria-label="Estado del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem suggestedItem">
-                                            <span class="infoLabel">Precio sugerido:</span>
-                                            <span id="suggestedPrice" class="values"
-                                                style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="columnInfo columnCosts">
-                                    <h2>Costos</h2>
-                                    <div class="bodyDataInfo costsBody">
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Factura:</span>
-                                            <a id="bill" class="infoValue" target="_blank"
-                                                aria-label="Factura del vehículo"></a>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Impuestos:</span>
-                                            <a id="taxes" class="infoValue" target="_blank"
-                                                aria-label="Impuestos del vehículo"></a>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Barco:</span>
-                                            <a id="ship" class="infoValue" target="_blank"
-                                                aria-label="Barco del vehículo"></a>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Transporte:</span>
-                                            <a id="towTruck" class="infoValue" target="_blank"
-                                                aria-label="Transporte del vehículo"></a>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Almacen:</span>
-                                            <span id="storage" class="infoValue"
-                                                aria-label="Almacén del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Transfer:</span>
-                                            <span id="transfer" class="infoValue"
-                                                aria-label="Transferencia del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Iva:</span>
-                                            <span id="iva" class="infoValue" aria-label="Iva del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">P.A:</span>
-                                            <span id="pa" class="infoValue" aria-label="P.A del vehículo"></span>
-                                        </div>
-                                        <div class="infoItem">
-                                            <span class="infoLabel">Costo total:</span>
-                                            <span id="total" class="values" aria-label="Costo total del vehiculo"
-                                                style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btnSecondary btnCancelVehicle" id="btnCancelVehicle">Cancelar</button>
-                        </div>
-                    </div>
-                    <div class="dataLeft">
-                        <div class="filterSection">
-                            <input type="text" id="txtSearchData" class="txtSearchData"
-                                placeholder="Buscar por: vin, marca o modelo">
-                            <button class="btnPrimary btnOpenModal" id="btnAddPart">Realizar encargo</button>
-                        </div>
-                        <div class="tableContainer">
-                            <div class="containerLoader show" id="tableVehiclesLoader">
-                                <div class="loader"></div>
-                                <div>Cargando lista de vehiculos...</div>
-                            </div>
-                            <table class="table" id="tableVehicles">
-                                <thead>
-                                    <tr>
-                                        <th>Imagen</th>
-                                        <th>Vin</th>
-                                        <th>Costo</th>
-                                        <th>P. sugerido</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tBodyInventory"></tbody>
-                            </table>
-                        </div>
-                        <div class="paginationContainer">
 
-                            <!-- Info + page size -->
-                            <div class="paginationLeft">
-                                <span class="paginationInfo"></span>
+                        <!-- Payments List -->
+                        <div class="paymentsList" id="paymentsList"></div>
 
-                                <div class="pageSize">
-                                    <select class="txtInputs" id="sizeSelect">
-                                        <option value="5">5</option>
-                                        <option value="10" selected>10</option>
-                                        <option value="15">15</option>
-                                        <option value="20">20</option>
-                                        <option value="30">30</option>
-                                    </select>
-                                    <span>por página</span>
-                                </div>
+                        <!-- Summary -->
+                        <div class="summarySection">
+                            <div class="summaryRow">
+                                <span class="summaryLabel">Total:</span>
+                                <span class="summaryValue" id="totalVehicle">$0.00</span>
                             </div>
-
-                            <!-- Page controls -->
-                            <div class="paginationRight">
-                                <button class="pageBtn prev">‹</button>
-                                <button class="pageBtn next">›</button>
+                            <div class="summaryRow">
+                                <span class="summaryLabel">Total abonado:</span>
+                                <span class="summaryValue" id="totalPaid">$0.00</span>
                             </div>
-
+                            <div class="summaryRow">
+                                <span class="summaryLabel">Deuda:</span>
+                                <span class="summaryValue summaryTotal" id="due">$0.00</span>
+                            </div>
                         </div>
-                    </div>
+
+                        <!-- Additional Notes -->
+                        <div class="formGroup">
+                            <label class="lblInputs" for="txtNotes">Notas adicionales</label>
+                            <textarea class="txtInputs" id="txtNotes" maxlength="500"
+                                placeholder="Agrega notas sobre la venta..." rows="4"></textarea>
+                        </div>
+
+                        <!-- Commission -->
+                        <div class="formGroup">
+                            <label class="lblInputs" for="txtCommission">Comisión</label>
+                            <input type="text" class="txtInputs" id="txtCommission" placeholder="$0.00">
+                        </div>
+
+                        <!-- Final Price -->
+                        <div class="formGroup">
+                            <label class="lblInputs" for="txtTotal">Precio final del vehículo</label>
+                            <input type="text" class="txtInputs" required id="txtTotal" placeholder="$0.00">
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="actionButtons">
+                            <button class="btnSecondary truncate" id="btnCreateOrder" data-action="true">
+                                <span>Vender y crear orden</span>
+                                <div class="loader hide" id="btnCreateOrderLoader"></div>
+                            </button>
+                            <button class="btnPrimary" id="btnSaveSale">
+                                <span>Vender</span>
+                                <div class="loader hide" id="btnSaveSaleLoader"></div>
+                            </button>
+                            <button class="btnPrimary hide" id="btnGeneratePdf" type="button">
+                                <span>Generar reporte</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </div>
-            <div class="rightColumn">
-                <form class="formRightColumn" id="frmVehicleSale">
-                    <div class="headerPanel">
-                        <h3 class="titlePanel">Resumen de Pago</h3>
-                        <p class="subtitlePanel">Gestiona los abonos y métodos de pago</p>
-                    </div>
-
-                    <!-- Payment Form -->
-                    <div class="paymentForm">
-                        <div class="formGroup">
-                            <label class="lblInputs" for="txtAmount">Abono</label>
-                            <input type="text" class="txtInputs" placeholder="Abono" id="txtAmount">
-                        </div>
-                        <div class="formGroup">
-                            <label class="lblInputs" for="paymentMethod">Método de pago</label>
-                            <select name="paymentMethod" class="txtInputs" id="paymentMethod">
-                                <option value="">Cargando...</option>
-                            </select>
-                        </div>
-                        <div class="containerActionsPayments">
-                            <button id="btnCancelEdit" class="btnSecondary hide" type="button">Cancelar edición</button>
-                            <div class="separatorDiv"></div>
-                            <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button> 
-                        </div>
-                    </div>
-
-                    <!-- Payments List -->
-                    <div class="paymentsList" id="paymentsList"></div>
-
-                    <!-- Summary -->
-                    <div class="summarySection">
-                        <div class="summaryRow">
-                            <span class="summaryLabel">Total:</span>
-                            <span class="summaryValue" id="totalVehicle">$0.00</span>
-                        </div>
-                        <div class="summaryRow">
-                            <span class="summaryLabel">Total abonado:</span>
-                            <span class="summaryValue" id="totalPaid">$0.00</span>
-                        </div>
-                        <div class="summaryRow">
-                            <span class="summaryLabel">Deuda:</span>
-                            <span class="summaryValue summaryTotal" id="due">$0.00</span>
-                        </div>
-                    </div>
-
-                    <!-- Additional Notes -->
-                    <div class="formGroup">
-                        <label class="lblInputs" for="txtNotes">Notas adicionales</label>
-                        <textarea class="txtInputs" id="txtNotes" maxlength="500" placeholder="Agrega notas sobre la venta..."
-                            rows="4"></textarea>
-                    </div>
-
-                    <!-- Commission -->
-                    <div class="formGroup">
-                        <label class="lblInputs" for="txtCommission">Comisión</label>
-                        <input type="text" class="txtInputs" id="txtCommission" placeholder="$0.00">
-                    </div>
-
-                    <!-- Final Price -->
-                    <div class="formGroup">
-                        <label class="lblInputs" for="txtTotal">Precio final del vehículo</label>
-                        <input type="text" class="txtInputs" required id="txtTotal" placeholder="$0.00">
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="actionButtons">
-                        <button class="btnSecondary truncate" id="btnCreateOrder" data-action="true">
-                            <span>Vender y crear orden</span>
-                            <div class="loader hide" id="btnCreateOrderLoader"></div>
-                        </button>
-                        <button class="btnPrimary" id="btnSaveSale">
-                            <span>Vender</span>
-                            <div class="loader hide" id="btnSaveSaleLoader"></div>
-                        </button>
-                        <button class="btnPrimary hide" id="btnGeneratePdf" type="button">
-                            <span>Generar reporte</span>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
@@ -360,7 +387,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module" src="../js/modules/vehicleSales/controller/vehicles.sales.controller.js"></script>
+    <script type="module" src="../js/modules/sales/vehicleSale/vehicles.sales.controller.js"></script>
     <script src="../js/components/sidebar.js"></script>
 </body>
 

@@ -36,15 +36,15 @@ const sectionHeader = (doc, y, contentW, margin, pageW, title, sub = '') => {
 
 export const generateWorkOrderReport = (order) => {
     const { jsPDF } = window.jspdf;
-    const doc      = new jsPDF();
-    const pageW    = doc.internal.pageSize.getWidth();
-    const pageH    = doc.internal.pageSize.getHeight();
-    const margin   = 14;
+    const doc = new jsPDF();
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 14;
     const contentW = pageW - margin * 2;
 
-    const isCompleted  = order.orderStatusName === 'Completada';
-    const isPaid       = order.paymentStatus   === 'Pagado';
-    const hasDebt      = Number(order.amountDue) > 0;
+    const isCompleted = order.orderStatusName === 'Completada';
+    const isPaid = order.paymentStatus === 'Pagado';
+    const hasDebt = Number(order.amountDue) > 0;
 
     // ═══════════════════════════════════════
     // HEADER
@@ -117,9 +117,9 @@ export const generateWorkOrderReport = (order) => {
     // ═══════════════════════════════════════
     // DOS COLUMNAS — Vehículo | Cliente & Mecánico
     // ═══════════════════════════════════════
-    const colW  = (contentW - 6) / 2;
+    const colW = (contentW - 6) / 2;
     const col2X = margin + colW + 6;
-    const boxH  = 46;
+    const boxH = 46;
 
     y = checkPageBreak(doc, y, boxH, pageH, margin, pageW);
 
@@ -139,8 +139,8 @@ export const generateWorkOrderReport = (order) => {
 
     const vehicleRows = [
         { label: 'Marca / Modelo', value: `${order.vehicleInfo.brand} ${order.vehicleInfo.model}` },
-        { label: 'Año',            value: String(order.vehicleInfo.year) },
-        { label: 'VIN',            value: order.vehicleInfo.vin || '—' }
+        { label: 'Año', value: String(order.vehicleInfo.year) },
+        { label: 'VIN', value: order.vehicleInfo.vin || '—' }
     ];
 
     vehicleRows.forEach((row, i) => {
@@ -174,9 +174,9 @@ export const generateWorkOrderReport = (order) => {
     doc.text('ORDEN', col2X + 14, y + 7.5, { align: 'center' });
 
     const orderRows = [
-        { label: 'Fecha de orden',     value: order.orderDate     || '—' },
-        { label: 'Fecha estimada',     value: order.estimatedDate || '—' },
-        { label: 'Mecánico a cargo',   value: order.payments?.[0]?.employeeName || '—' }
+        { label: 'Fecha de orden', value: order.orderDate || '—' },
+        { label: 'Fecha estimada', value: order.estimatedDate || '—' },
+        { label: 'Mecánico a cargo', value: order.payments?.[0]?.employeeName || '—' }
     ];
 
     orderRows.forEach((row, i) => {
@@ -223,15 +223,15 @@ export const generateWorkOrderReport = (order) => {
         styles: {
             fontSize: 9,
             cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
-            textColor:  [60, 60, 60],
-            lineColor:  [235, 235, 235],
-            lineWidth:  0.3
+            textColor: [60, 60, 60],
+            lineColor: [235, 235, 235],
+            lineWidth: 0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
-            fontSize:  7.5,
+            fontSize: 7.5,
             lineWidth: 0
         },
         columnStyles: {
@@ -270,15 +270,15 @@ export const generateWorkOrderReport = (order) => {
         styles: {
             fontSize: 9,
             cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
-            textColor:  [60, 60, 60],
-            lineColor:  [235, 235, 235],
-            lineWidth:  0.3
+            textColor: [60, 60, 60],
+            lineColor: [235, 235, 235],
+            lineWidth: 0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
-            fontSize:  7.5,
+            fontSize: 7.5,
             lineWidth: 0
         },
         columnStyles: {
@@ -303,14 +303,15 @@ export const generateWorkOrderReport = (order) => {
     const paymentsBody = order.payments?.length
         ? order.payments.map(p => [
             `#${p.paymentNumber}`,
+            p.paymentMethod || '—',   // 👈 nuevo
             p.employeeName || '—',
-            p.paymentDate  || '—',
+            p.paymentDate || '—',
             `$${Number(p.amount).toFixed(2)}`
         ])
         : [['—', '—', 'Sin abonos registrados', '$0.00']];
 
     doc.autoTable({
-        head: [['#', 'Registrado por', 'Fecha', 'Monto']],
+        head: [['#', 'Método', 'Registrado por', 'Fecha', 'Monto']],
         body: paymentsBody,
         startY: y,
         margin: { left: margin, right: margin },
@@ -318,22 +319,23 @@ export const generateWorkOrderReport = (order) => {
         styles: {
             fontSize: 9,
             cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
-            textColor:  [60, 60, 60],
-            lineColor:  [235, 235, 235],
-            lineWidth:  0.3
+            textColor: [60, 60, 60],
+            lineColor: [235, 235, 235],
+            lineWidth: 0.3
         },
         headStyles: {
             fillColor: [245, 245, 245],
             textColor: [130, 130, 130],
             fontStyle: 'bold',
-            fontSize:  7.5,
+            fontSize: 7.5,
             lineWidth: 0
         },
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
-            1: { cellWidth: 'auto' },
-            2: { cellWidth: 30, halign: 'center', textColor: [130, 130, 130] },
-            3: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
+            1: { cellWidth: 30 },          // 👈 método
+            2: { cellWidth: 'auto' },      // registrado por
+            3: { cellWidth: 26, halign: 'center', textColor: [130, 130, 130] },
+            4: { cellWidth: 32, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
         alternateRowStyles: { fillColor: [252, 252, 252] }
     });
@@ -345,9 +347,9 @@ export const generateWorkOrderReport = (order) => {
     // ═══════════════════════════════════════
     y = checkPageBreak(doc, y, 50, pageH, margin, pageW);
 
-    const totalServices   = order.services?.reduce((a, s) => a + Number(s.priceApplied), 0) ?? 0;
+    const totalServices = order.services?.reduce((a, s) => a + Number(s.priceApplied), 0) ?? 0;
     const totalSpareParts = order.spareParts?.reduce((a, p) => a + Number(p.priceApplied), 0) ?? 0;
-    const totalPaid       = order.payments?.reduce((a, p) => a + Number(p.amount), 0) ?? 0;
+    const totalPaid = order.payments?.reduce((a, p) => a + Number(p.amount), 0) ?? 0;
 
     doc.setFillColor(22, 22, 22);
     doc.roundedRect(margin, y, contentW, 52, 3, 3, 'F');
@@ -364,10 +366,10 @@ export const generateWorkOrderReport = (order) => {
     doc.line(margin + 8, y + 11, pageW - margin - 4, y + 11);
 
     const finRows = [
-        { label: 'Total servicios',  value: `$${totalServices.toFixed(2)}`,   color: [220, 220, 220] },
-        { label: 'Total repuestos',  value: `$${totalSpareParts.toFixed(2)}`,  color: [220, 220, 220] },
+        { label: 'Total servicios', value: `$${totalServices.toFixed(2)}`, color: [220, 220, 220] },
+        { label: 'Total repuestos', value: `$${totalSpareParts.toFixed(2)}`, color: [220, 220, 220] },
         { label: 'Costo de reparación', value: `$${Number(order.repairCost).toFixed(2)}`, color: [220, 220, 220] },
-        { label: 'Total abonado',    value: `$${totalPaid.toFixed(2)}`,        color: [109, 190, 69]  }
+        { label: 'Total abonado', value: `$${totalPaid.toFixed(2)}`, color: [109, 190, 69] }
     ];
 
     finRows.forEach((row, i) => {
@@ -402,7 +404,7 @@ export const generateWorkOrderReport = (order) => {
         y = checkPageBreak(doc, y, 24, pageH, margin, pageW);
 
         const notasLines = doc.splitTextToSize(order.notes.trim(), contentW - 30);
-        const notasH     = Math.max(20, notasLines.length * 5 + 16);
+        const notasH = Math.max(20, notasLines.length * 5 + 16);
 
         doc.setFillColor(255, 251, 235);
         doc.setDrawColor(245, 158, 11);

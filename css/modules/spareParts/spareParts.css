@@ -24,25 +24,9 @@
     margin: 0;
 }
 
-.priceRange {
-    width: 100%;
-    margin-top: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1em;
-}
-
-.range {
-    width: 80%;
-    gap: 5px;
-}
-
-/* Section Cards - Stats */
-#idTotalCost {
-    width: 320px !important;
-    height: 80% !important;
-    max-height: 500px !important;
+.filterSection{
+    align-items: end !important;
+    padding: 10px 24px 15px !important;
 }
 
 .seccionCard {
@@ -73,12 +57,18 @@
     border-left: 4px solid var(--success-color);
 }
 
-#totalCost {
+#sold {
     border-left: 4px solid var(--helper-stat-color);
+}
+
+#returned{
+    border-left: 4px solid var(--warning-color);
 }
 
 .card {
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
     border: 2px solid transparent;
     border: var(--border);
 }
@@ -87,6 +77,10 @@
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
     border-color: var(--danger-color);
+}
+
+.bodyCard{
+    flex: 1;
 }
 
 .containerImgSpare {
@@ -117,11 +111,19 @@
     font-weight: var(--font-weight-medium);
     color: var(--text-color);
     margin: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .brandModel {
     font-size: var(--font-size-base);
     color: var(--text-color-secondary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .moreInfoContainer {
@@ -188,12 +190,21 @@
     border: 2px solid var(--danger-color);
 }
 
-.noDataMessage {
-    font-size: var(--font-size-lg);
-    color: var(--text-color-secondary);
-    width: 100%;
-    height: 100%;
-    grid-column: 1 / -1;
-    display: grid;
-    place-content: center;
+@container content (max-width: 1075px) {
+    .filterSection {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .formGroup {
+        flex-basis: auto !important;
+    }
+
+    .txtSearchData {
+        max-width: 100% !important;
+    }
+
+    .filterSection .btnPrimary{
+        flex: auto !important;
+    }
 }

@@ -60,6 +60,24 @@
     transform: rotate(90deg);
 }
 
+@media screen and (width <= 500px) {
+    .modalAdd {
+        padding: 20px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: fit-content;
+        width: 100% !important;
+        border-radius: 20px 20px 0 0;
+        overflow: auto;
+    }
+
+    .btnClose{
+        display: none;
+    }
+}
+
 @keyframes modalSlideIn {
     from {
         opacity: 0;
@@ -69,20 +87,6 @@
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
-    }
-}
-
-@media screen and (width <= 500px) {
-    .modalAdd {
-        padding: 40px 20px;
-    }
-
-    .titleModal {
-        font-size: var(--font-size-lg);
-    }
-
-    .lblInputs {
-        font-size: var(--font-size-sm);
     }
 }
 

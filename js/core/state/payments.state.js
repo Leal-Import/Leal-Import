@@ -7,7 +7,7 @@ export const paymentsState = {
     },
     payments: [],
     paymentMethods: [],
-    onSaveState: null,
     onCalculateTotal: null,
-    onCreateButton: null
+    onCreateButton: null,
+    editingPaymentId: null
 };

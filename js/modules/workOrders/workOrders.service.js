@@ -1,0 +1,40 @@
+import config from "../../config.js";
+import { buildParams } from "../../utils/dom.js";
+
+const API_URL = `${config.API_BASE_URL}/ViewWorkOrder`;
+const API_URLSTAT = `${config.API_BASE_URL}/OrdersStatus`;
+
+export const getVehiclesWOrders = async(page = 0, size = 15, search = "", idStatus = "") => {
+    try {
+        const params = buildParams({ page, size, search, idStatus });
+        const request = await fetch(`${API_URL}/getVehiclesWithOrders?${params.toString()}`, {
+            credentials: 'include'
+        });
+        if (!request.ok) {
+            const errorBody = await request.text();
+            throw new Error(`Error ${request.status}: No se pudo obtener la lista de las ordenes. Detalle: ${errorBody.substring(0, 100)}`);
+        }
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en getVehiclesWOrders:", error);
+        throw new Error("Fallo al conectar con el servicio de ordenes.", { cause: error });
+    }
+};
+
+export const getWOStatus = async() => {
+    try {
+        const request = await fetch(`${API_URLSTAT}/getOrdersStatus`, {
+            credentials: 'include'
+        });
+        if (!request.ok) {
+            const errorBody = await request.text();
+            throw new Error(`Error ${request.status}: No se pudo obtener la lista de los estados. Detalle: ${errorBody.substring(0, 100)}`);
+        }
+        return await request.json();
+
+    } catch (error) {
+        console.error("Error en getVehiclesWOrders:", error);
+        throw new Error("Fallo al conectar con el servicio de los estados.", { cause: error });
+    }
+};

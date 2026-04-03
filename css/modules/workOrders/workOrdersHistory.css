@@ -1,0 +1,386 @@
+.containerTable {
+    min-height: 60dvh;
+}
+
+.detailsWOSection {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1em;
+}
+
+
+.infoItem {
+    font-size: var(--font-size-lg);
+    color: var(--text-color);
+}
+
+.lbl {
+    font-weight: var(--font-weight-medium);
+}
+
+.containerDtStatus {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.orderColor {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+.colorPending {
+    background-color: var(--warning-color);
+}
+
+.pendingOrder {
+    color: var(--warning-color);
+    font-weight: var(--font-weight-medium);
+}
+
+.colorCompleted {
+    background-color: var(--success-color);
+}
+
+.completedOrder {
+    color: var(--success-color);
+    font-weight: var(--font-weight-medium);
+}
+
+.colorDelay {
+    background-color: var(--danger-color);
+}
+
+.delayOrder {
+    color: var(--danger-color);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Móviles (< 768px) - Transformar tabla en cards mejoradas */
+@media screen and (width <= 950px) {
+    .content {
+        height: fit-content;
+    }
+}
+
+@container content (max-width: 950px) {
+    /* Contenedor de tabla - sin overflow */
+    .containerTable {
+        overflow: visible;
+    }
+
+    /* Ocultar thead */
+    .table thead {
+        display: none;
+    }
+
+    /* Convertir tabla en contenedor de cards */
+    .table {
+        display: block;
+        width: 100%;
+        border: none;
+        background-color: transparent;
+    }
+
+    .table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        width: 100%;
+    }
+
+    .table td {
+        max-width: 100% !important;
+    }
+
+    /* ═══════════════════════════════════════
+       CARD PRINCIPAL - Diseño mejorado
+    ═══════════════════════════════════════ */
+    .table tbody tr {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        margin: 0;
+        border-radius: 16px;
+        border: var(--border);
+        border-bottom: var(--border) !important;
+        position: relative;
+    }
+
+    .table tbody tr:hover {
+        box-shadow:
+            0 12px 24px rgb(205 144 143 / 0.15),
+            0 4px 8px rgb(0 0 0 / 0.08);
+        transform: translateY(-4px);
+    }
+
+    /* ═══════════════════════════════════════
+       HEADER DE LA CARD
+    ═══════════════════════════════════════ */
+    .table tbody tr td:nth-child(1),
+    .table tbody tr td:nth-child(2) {
+        padding: 16px 20px 0;
+        border: none;
+    }
+
+    .table tbody tr td:nth-child(1) {
+        padding-top: 20px;
+        max-width: 95% !important;
+        padding-bottom: 4px;
+    }
+
+    .table tbody tr td:nth-child(1)::before {
+        content: "Empleado: ";
+        margin-right: 4px;
+    }
+
+    .table tbody tr td:nth-child(2) {
+        padding-top: 4px;
+        padding-bottom: 12px;
+        color: var(--text-color-secondary);
+        border-bottom: 1px solid rgb(205 144 143 / 0.1);
+    }
+
+    .table tbody tr td:nth-child(2)::before {
+        content: "Cliente: ";
+        font-weight: var(--font-weight-semibold);
+        color: var(--helper-color);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ═══════════════════════════════════════
+       CUERPO DE LA CARD - Grid 2 columnas
+    ═══════════════════════════════════════ */
+    .table tbody tr td:nth-child(3),
+    .table tbody tr td:nth-child(4),
+    .table tbody tr td:nth-child(5),
+    .table tbody tr td:nth-child(6) {
+        display: flex;
+        flex-wrap: wrap;
+        font-weight: var(--font-weight-regular);
+        color: var(--text-color);
+        padding: 12px 20px;
+        border: none;
+        gap: 6px;
+    }
+
+    /* Grid container para los 4 elementos del cuerpo */
+    .table tbody tr td:nth-child(3) {
+        padding-top: 16px;
+    }
+
+    /* Labels mejorados */
+    .table tbody tr td:nth-child(3)::before {
+        content: "Fecha estimada: ";
+    }
+
+    .table tbody tr td:nth-child(4)::before {
+        flex-shrink: 0;
+        content: "Estado";
+    }
+
+    .table tbody tr td:nth-child(5)::before {
+        content: "Costo total: ";
+    }
+
+    .table tbody tr td:nth-child(6)::before {
+        content: "Deuda: ";
+    }
+
+    .table tbody tr td::before {
+        font-weight: var(--font-weight-semibold);
+        color: var(--helper-color);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ═══════════════════════════════════════
+       ESTADO - Badge mejorado
+    ═══════════════════════════════════════ */
+    .table tbody tr td:nth-child(4) {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .table tbody tr td:nth-child(4) .containerDtStatus {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: var(--font-weight-semibold);
+        transition: all 0.2s;
+    }
+
+    /* Estado Pendiente */
+    .table tbody tr td:nth-child(4) .containerDtStatus:has(.pendingOrder) {
+        background-color: var(--bg-warning-badge);
+        color: var(--dark-warning-color);
+    }
+
+    .table tbody tr td:nth-child(4) .containerDtStatus:has(.pendingOrder) .orderColor {
+        background-color: var(--dark-warning-color);
+        box-shadow: 0 0 8px rgb(245 158 11 / 0.4);
+    }
+
+    /* Estado Completada */
+    .table tbody tr td:nth-child(4) .containerDtStatus:has(.completedOrder) {
+        background-color: var(--bg-success-badge);
+        color: var(--success-color);
+    }
+
+    .table tbody tr td:nth-child(4) .containerDtStatus:has(.completedOrder) .orderColor {
+        background-color: var(--success-color);
+        box-shadow: 0 0 8px var(--dark-success-color);
+    }
+
+    /* Estado Retrasada */
+    .table tbody tr td:nth-child(4) .containerDtStatus:has(.delayOrder) {
+        background-color: var(--bg-danger-badge);
+        color: var(--danger-color)
+    }
+
+    .table tbody tr td:nth-child(4) .containerDtStatus:has(.delayOrder) .orderColor {
+        background-color: var(--danger-color);
+        box-shadow: 0 0 8px rgb(239 68 68 / 0.4);
+    }
+
+    .table tbody tr td:nth-child(4) .orderColor {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    /* ═══════════════════════════════════════
+       MONTOS - Destacados con fondo
+    ═══════════════════════════════════════ */
+    .table tbody tr td:nth-child(5) {
+        background-color: var(--bg-color);
+        border-radius: 10px;
+        margin: 0 12px;
+        padding: 14px 16px;
+        font-weight: var(--font-weight-bold);
+    }
+
+    .table tbody tr td:nth-child(6) {
+        background-color: var(--bg-danger-badge);
+        border-radius: 10px;
+        margin: 0 12px;
+        padding: 14px 16px;
+        font-weight: var(--font-weight-bold);
+    }
+
+    .table tbody tr td:nth-child(6).textDanger {
+        color: var(--danger-color);
+        background-color: var(--bg-danger-badge);
+    }
+
+    /* ═══════════════════════════════════════
+       BOTÓN DE ACCIONES - Flotante mejorado
+    ═══════════════════════════════════════ */
+    .table tbody tr td:nth-child(7) {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        padding: 0;
+        border: none;
+    }
+
+    .table tbody tr td:nth-child(7)::before {
+        display: none;
+    }
+
+    .table tbody tr td:nth-child(7) .actionButton {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgb(211 24 19 / 0.08) 0%, rgb(211 24 19 / 0.12) 100%);
+        border: 1px solid rgb(211 24 19 / 0.2);
+        color: var(--danger-color);
+        font-weight: var(--font-weight-semibold);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 4px rgb(211 24 19 / 0.1);
+    }
+
+    .table tbody tr td:nth-child(7) .actionButton:hover {
+        background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color, #871B19) 100%);
+        border-color: var(--danger-color);
+        color: var(--bg-color-white);
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgb(211 24 19 / 0.3);
+    }
+
+    .table tbody tr td:nth-child(7) .actionButton:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Móviles pequeños (< 500px) */
+@container content (max-width: 500px) {
+    .content {
+        padding: 70px 12px 12px;
+    }
+
+    .table tbody {
+        gap: 12px;
+    }
+
+    .table tbody tr {
+        border-radius: 12px;
+    }
+
+    .table tbody tr td:nth-child(1),
+    .table tbody tr td:nth-child(2),
+    .table tbody tr td:nth-child(3),
+    .table tbody tr td:nth-child(4),
+    .table tbody tr td:nth-child(5),
+    .table tbody tr td:nth-child(6) {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .table tbody tr td:nth-child(1) {
+        padding-top: 16px;
+    }
+
+    .table tbody tr td:nth-child(3),
+    .table tbody tr td:nth-child(4) {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .table tbody tr td:nth-child(5),
+    .table tbody tr td:nth-child(6) {
+        padding: 12px 14px;
+        margin: 0 8px;
+    }
+
+    .table tbody tr td:nth-child(4) .containerDtStatus {
+        padding: 5px 12px;
+    }
+
+    .table tbody tr td:nth-child(4) .orderColor {
+        width: 8px;
+        height: 8px;
+    }
+
+    .table tbody tr td:nth-child(7) {
+        top: 12px;
+        right: 12px;
+    }
+
+    .table tbody tr td:nth-child(7) .actionButton {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+    }
+}

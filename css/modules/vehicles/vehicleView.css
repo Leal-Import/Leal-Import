@@ -11,16 +11,13 @@
 /* =======================
    Breadcrumb
 ======================= */
-.breadcrumbSection {
-    display: inline-flex;
+.breadCrumbSection {
     width: 100%;
     gap: 10px;
-    align-items: center;
     background-color: var(--bg-color-white);
     padding: 20px 30px;
     border-radius: 12px;
     box-shadow: var(--bx-shadow-primary);
-    margin-bottom: 20px;
 }
 
 .breadcrumb {
@@ -189,9 +186,6 @@
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-lg);
     color: var(--text-color);
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 /* =======================
@@ -207,12 +201,14 @@
 .data {
     flex: 1;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     border: var(--border);
     padding: 15px 20px;
     gap: 12px;
     transition: all 0.3s ease;
     position: relative;
+    max-width: 50%;
 }
 
 .data::before {
@@ -263,7 +259,9 @@
     color: var(--text-color-secondary);
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-base);
-    flex: 1;
+    flex-grow: 1;
+    flex-basis: 100px;
+    max-width: 100%;
 }
 
 .values:empty::after {
@@ -419,7 +417,6 @@
     .imgData {
         grid-column: 1 / 5;
         grid-row: 1 / 2;
-        max-height: 600px;
     }
 
     .vehicleData {
@@ -452,7 +449,7 @@
 
     .imgData {
         grid-row: 1 / 2;
-        padding: 15px;
+        padding: 10px;
     }
 
     .vehicleData {
@@ -491,6 +488,15 @@
 
     .imageGrid img {
         height: 100px;
+    }
+
+    .titleData {
+        text-align: center;
+        width: 100%;
+    }
+
+    body #mainSwiper .swiper-wrapper {
+        height: 300px;
     }
 }
 

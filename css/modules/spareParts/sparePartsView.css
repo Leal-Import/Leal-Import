@@ -1,16 +1,13 @@
 /* =======================
    Breadcrumb
 ======================= */
-.breadcrumbSection {
-    display: inline-flex;
+.breadCrumbSection {
     width: 100%;
     gap: 10px;
-    align-items: center;
     background: var(--bg-color-white);
     padding: 20px 30px;
     border-radius: 12px;
     box-shadow: var(--bx-shadow-primary);
-    margin-bottom: 20px;
 }
 
 .breadcrumb {
@@ -53,6 +50,7 @@
 .dataSection {
     flex: 1;
     height: 100%;
+    min-width: 50%;
 }
 
 .pictureSection {
@@ -153,9 +151,6 @@
     padding-bottom: 15px;
     border-bottom: 3px solid var(--danger-color);
     color: var(--text-color);
-    display: flex;
-    align-items: center;
-    gap: 12px;
 }
 
 /* =======================
@@ -197,7 +192,6 @@
     color: var(--text-color-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    min-width: 150px;
 }
 
 .value {
@@ -301,6 +295,10 @@
    Responsive Design
 ======================= */
 @media (width <= 1024px) {
+    .titleData{
+        text-align: center;
+    }
+
     .mainContainer {
         flex-direction: column;
         max-height: none;
