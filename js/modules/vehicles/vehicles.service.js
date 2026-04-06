@@ -1,43 +1,23 @@
 import config from "../../config.js";
 import { buildParams } from "../../utils/dom.js";
+import { apiRequest } from "../../utils/api.utils.js";
 
 const API_URL = `${config.API_BASE_URL}/Vehicle`;
-const API_URLS = `${config.API_BASE_URL}/Sales`;
 
-export const getVehicles = async(page = 0, size = 15, search = "", statusId = "", year = "", statusExist = "") => {
-    try {
-        const params = buildParams({ page, size, search, statusId, year, statusExist });
-        const request = await fetch(`${API_URL}/getVehicleSummary?${params.toString()}`, {
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener la lista de vehiculos. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en getVehicles:", error);
-        throw new Error("Fallo al conectar con el servicio de vehiculos.", { cause: error });
-    }
+export const getVehicles = async(page = 0, size = 15, search = "", statusId = "", year = "", source = "", startDate = "", endDate = "") => {
+    const params = buildParams({ page, size, search, statusId, year, source, startDate, endDate });
+    return await apiRequest(
+        `${API_URL}/getVehicleSummary?${params.toString()}`,
+        { method: 'GET', credentials: 'include' },
+        'Error al obtener la lista de vehículos'
+    );
 };
 
 /*GET para optener el status*/
 export const getStatus = async() => {
-    try {
-        const request = await fetch(`${API_URLS}/getStatus`, {
-            credentials: 'include'
-        });
-
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener la lista de roles. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en getRoles:", error);
-        throw new Error("Fallo al conectar con el servicio de roles.", { cause: error });
-    }
+    return await apiRequest(
+        `${API_URL}/getStatus`,
+        { method: 'GET', credentials: 'include' },
+        'Error al obtener la lista de roles'
+    );
 };

@@ -1,129 +1,119 @@
-import { resetSparePartDetailState, sparePartDetailState } from "./spareParts.form.state.js";
-import { fillSparePartsBaseForm, hydrateContextFromURL, mapSparePart, validateBaseSparePart, validateImage } from "./spareParts.form.logic.js";
-import { buildParams, disableElement, fillSelect, hideElement, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
+import { resetSparePartsFormState, sparePartsFormState } from "./spareParts.form.state.js";
+import { fillSparePartsBaseForm, hydrateContextFromURL, mapSparePart, validateBaseSparePart } from "./spareParts.form.logic.js";
+import { buildParams, disableElement, hideElement, removeDisable, showElement, showMessage, createModuleInitializer } from "../../../utils/dom.js";
+import { navigateTo, replaceTo, ROUTES } from "../../../utils/router.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
 import { isValidURL, safeParseFloat } from "../../../utils/validators.js";
 import { initSparePartDetailEvents } from "./events/spareParts.form.event.js";
-import { initImageEvents } from "./events/spareParts.form.uploads.event.js";
-import { DOMRefs, loadImage, loadUpdateInfo, openLinkModal, saveLinkModal } from "./spareParts.form.dom.js";
+import { DOMRefs, loadUpdateInfo, openLinkModal, saveLinkModal } from "./spareParts.form.dom.js";
 import { getSparePart, postSparePart, putSparePart } from "./spareParts.form.service.js";
-import { getStatus } from "../spareParts.service.js";
-import { initSession } from "../../../utils/api.utils.js";
-
-const loadStatusSelect = async () => {
-    try {
-        const status = await getStatus();
-        sparePartDetailState.statusList = status;
-        fillSelect("cmbPartStatus", status, 'idPartsState', 'state', 'Selecciona un estado');
-    } catch (error) {
-        showMessage(
-            'Error',
-            'No se pudieron cargar los estados de los repuestos',
-            'error'
-        );
-        console.error(error);
-    }
-};
+import { handleApiError } from "../../../utils/api.utils.js";
+import { handleAddImage, initCarouselController } from "../../carousel/carousel.controller.js";
+import { mapCarouselImages, validateBaseImages, validateEditImages } from "../../carousel/carousel.logic.js";
 
 const loadSparePart = async () => {
     try {
-        const sparePart = await getSparePart(sparePartDetailState.context.currentId);
+        const sparePart = await getSparePart(sparePartsFormState.context.currentId);
         loadUpdateInfo(DOMRefs.refs);
 
         fillSparePartsBaseForm(sparePart);
-        loadImage(sparePart.photoUrl, DOMRefs.refs);
-        sparePartDetailState.trackingId = sparePart.tracking.idTracking;
-        sparePartDetailState.costsId = sparePart.sparePartsCosts.idCostSparePart;
-        sparePartDetailState.links.bill = sparePart.billUrl || '';
-        sparePartDetailState.links.tracking = sparePart.tracking.linkTracking || '';
+        sparePartsFormState.trackingId = sparePart.tracking.idTracking;
+        sparePartsFormState.costsId = sparePart.sparePartsCosts.idCostSparePart;
+        sparePartsFormState.links.bill = sparePart.billUrl || '';
+        sparePartsFormState.links.tracking = sparePart.tracking.linkTracking || '';
+        sparePart.sparePartPhotos.forEach(photo => {
+            handleAddImage(sparePartsFormState, {
+                id: photo.idPhoto,
+                url: photo.photoUrl
+            });
+        });
     } catch (error) {
-        console.error("No se pudo cargar el repuestp: ", error);
-        showMessage("Error", "Error al cargar el repuesto", "error");
+        await handleApiError(error, 'No se pudo cargar la información del repuesto. Por favor, inténtalo de nuevo.');
     }
 };
 
 const onSubmitSparePart = async (e) => {
     e.preventDefault();
+    let sparePartImagesValid;
+    if (sparePartsFormState.context.currentId) {
+        sparePartImagesValid = validateEditImages(sparePartsFormState.sparePartPhotos.length);
+    } else {
+        sparePartImagesValid = validateBaseImages(sparePartsFormState.sparePartPhotos);
+    }
+    if (sparePartImagesValid) {
+        showMessage(sparePartImagesValid.title, sparePartImagesValid.message, 'warning');
+        return;
+    }
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmSpareParts));
     const fd = new FormData();
-    const invalidate = validateBaseSparePart(formData, sparePartDetailState.links.bill, sparePartDetailState.links.tracking);
+    const invalidate = validateBaseSparePart(formData, sparePartsFormState.links.bill, sparePartsFormState.links.tracking);
     if (invalidate) {
         showMessage('Datos no válidos', invalidate, 'warning');
-        return;
-    }
-    let imagesValid;
-    if (!sparePartDetailState.context.currentId || sparePartDetailState.image.file) {
-        imagesValid = validateImage(sparePartDetailState.image.file);
-    }
-    if (imagesValid) {
-        showMessage('Imagen no valida', imagesValid, 'warning');
         return;
     }
     showElement(DOMRefs.refs.loaderAddSparePart);
     DOMRefs.refs.camps.forEach(disableElement);
     const payloadSparePart = mapSparePart(formData);
 
-    if (sparePartDetailState.trackingId && sparePartDetailState.costsId) {
-        payloadSparePart.tracking.idTracking = sparePartDetailState.trackingId;
-        payloadSparePart.sparePartsCosts.idCostSparePart = sparePartDetailState.costsId;
+    if (sparePartsFormState.context.currentId) {
+        payloadSparePart.photosToDeleteIds = sparePartsFormState.photosToDeleteIds;
     }
 
-    if (sparePartDetailState.image.file) {
-        fd.append("photo", sparePartDetailState.image.file);
+    if (sparePartsFormState.trackingId && sparePartsFormState.costsId) {
+        payloadSparePart.tracking.idTracking = sparePartsFormState.trackingId;
+        payloadSparePart.sparePartsCosts.idCostSparePart = sparePartsFormState.costsId;
     }
+
+    mapCarouselImages(fd, sparePartsFormState.sparePartPhotos);
     fd.append("SparePartData", JSON.stringify(payloadSparePart));
     try {
         let response;
-        if (sparePartDetailState.context.currentId !== null) {
-            await putSparePart(fd, sparePartDetailState.context.currentId);
+        if (sparePartsFormState.context.currentId !== null) {
+            await putSparePart(fd, sparePartsFormState.context.currentId);
             await showMessage('Repuesto actualizado con éxito!', 'Éxito', 'success');
         } else {
             response = await postSparePart(fd);
             await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
-        if (sparePartDetailState.context.hasSale) {
+        if (sparePartsFormState.context.hasSale) {
             const paramsSale = buildParams({
                 isNewPart: true,
-                idCustomer: sparePartDetailState.context.idCustomer,
-                customerName: sparePartDetailState.context.customerName,
+                idCustomer: sparePartsFormState.context.idCustomer,
+                customerName: sparePartsFormState.context.customerName,
                 sparePartId: response.data.idSparePart,
-                sparePartName: response.data.nameSpareParts,
+                sparePartName: response.data.nameSparePart,
                 suggestedPrice: response.data.sparePartsCosts.suggestedPrice,
-                idSale: sparePartDetailState.context.idSale
+                idSale: sparePartsFormState.context.idSale
             });
-            window.location.href = `sparePartSale.html?${paramsSale.toString()}`;
+            navigateTo(ROUTES.SPARE_PART_SALE, Object.fromEntries(paramsSale.entries()));
             return;
         }
-        if (sparePartDetailState.context.hasWorkOrder) {
+        if (sparePartsFormState.context.hasWorkOrder) {
             const paramsOrder = buildParams({
                 isNewPart: true,
-                idSale: sparePartDetailState.context.idSale,
-                customerName: sparePartDetailState.context.customerName,
-                idVehicle: sparePartDetailState.context.idVehicle,
-                idCustomer: sparePartDetailState.context.idCustomer,
-                totalPrice: sparePartDetailState.context.totalPrice,
+                idSale: sparePartsFormState.context.idSale,
+                customerName: sparePartsFormState.context.customerName,
+                idVehicle: sparePartsFormState.context.idVehicle,
+                idCustomer: sparePartsFormState.context.idCustomer,
+                totalPrice: sparePartsFormState.context.totalPrice,
                 idNewPart: response.data.idSparePart,
-                newPartName: response.data.nameSpareParts,
+                newPartName: response.data.nameSparePart,
                 newPartSuggestedPrice: response.data.sparePartsCosts.suggestedPrice,
-                idWorkOrder: sparePartDetailState.context.idWorkOrder
+                idWorkOrder: sparePartsFormState.context.idWorkOrder
             });
-            window.location.replace(`workOrderForm.html?${paramsOrder.toString()}`);
+            replaceTo(ROUTES.WORK_ORDER_FORM, Object.fromEntries(paramsOrder.entries()));
         } else {
-            window.location.replace("spareParts.html");
+            navigateTo(ROUTES.SPARE_PARTS);
         }
 
     } catch (error) {
-        console.error("Error al realizar la operación:", error);
-        const errorMessage = error.message || 'Error desconocido al registrar el repuesto.';
-        showMessage(errorMessage, 'error', 'error');
+        await handleApiError(error, 'No se pudo guardar el repuesto. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.loaderAddSparePart);
         DOMRefs.refs.camps.forEach(removeDisable);
     }
 };
-
-const onAddImage = () => DOMRefs.refs.fileInput.click();
 
 const onCalculateTotal = () => {
     let total = 0;
@@ -131,23 +121,8 @@ const onCalculateTotal = () => {
     DOMRefs.refs.txtTotal.value = formatWithCommas(total);
 };
 
-const onOpenModal = (type) => openLinkModal(type, sparePartDetailState, DOMRefs.refs, onValidateUrl);
-const onSaveDataModal = () => saveLinkModal(sparePartDetailState, DOMRefs.refs);
-
-const onChangeUpload = (e) => {
-    const file = e.target.files[0];
-    const error = validateImage(file);
-
-    if (error) {
-        showMessage("Error", error, "warning");
-        return;
-    }
-
-    sparePartDetailState.image.file = file;
-    sparePartDetailState.image.url = URL.createObjectURL(file);
-
-    loadImage(file, DOMRefs.refs);
-};
+const onOpenModal = (type) => openLinkModal(type, sparePartsFormState, DOMRefs.refs, onValidateUrl);
+const onSaveDataModal = () => saveLinkModal(sparePartsFormState, DOMRefs.refs);
 
 const onValidateUrl = (url) => {
     if (url !== "") {
@@ -168,66 +143,25 @@ const onValidateUrl = (url) => {
     }
 };
 
-const onDeleteImage = () => {
-    sparePartDetailState.image.file = null;
-    sparePartDetailState.image.url = null;
-
-    DOMRefs.refs.imgPart.src = "";
-    DOMRefs.refs.imgPart.style.display = "none";
-    DOMRefs.refs.placeholderMsg.style.display = "block";
-    DOMRefs.refs.fileInput.value = "";
-};
-
-const onDropModal = (e) => {
-    e.preventDefault();
-    DOMRefs.refs.dropArea.classList.remove("dragover");
-};
-
-const onDragOver = (e) => {
-    e.preventDefault();
-    DOMRefs.refs.dropArea.classList.add("dragover");
-};
-
-const onDragLeave = () => {
-    DOMRefs.refs.dropArea.classList.remove("dragover");
-};
-
-const setupApplication = async () => {
-    resetSparePartDetailState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    // 3. Hidratar contexto desde URL
-    hydrateContextFromURL(sparePartDetailState);
-
-    return true;
-};
-
 const initializeUI = (Refs) => {
     initSparePartDetailEvents({ Refs, onSubmit: onSubmitSparePart, onCalculateTotal, onOpenModal, onSaveDataModal, onValidateUrl });
-    initImageEvents({ Refs, onChangeUpload, onDropModal, onAddImage, onDeleteImage, onDragOver, onDragLeave });
+    initCarouselController(sparePartsFormState, { imagesStateName: "sparePartPhotos", imagesToDeleteIdsStateName: "photosToDeleteIds" });
 };
 
 const loadDataFlow = async () => {
-    await loadStatusSelect();
-    if (sparePartDetailState.context.currentId) {
+    if (sparePartsFormState.context.currentId) {
         await loadSparePart();
     }
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        const refs = DOMRefs.init();
-
-        initializeUI(refs);
-
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error initializing application:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: () => {
+        resetSparePartsFormState();
+        hydrateContextFromURL(sparePartsFormState);
+    },
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener("DOMContentLoaded", init);

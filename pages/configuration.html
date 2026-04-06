@@ -18,6 +18,55 @@
 </head>
 
 <body>
+    <!-- Modal Métodos de Pago -->
+    <div id="modalPaymentMethods" class="containerModal hide">
+        <div class="modalAdd modalPaymentMethodsCard">
+            <!-- Header -->
+            <div class="modalNewPasswordHeader">
+                <div class="modalNewPasswordHeaderLeft">
+                    <div class="modalNewPasswordIconWrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="1" y="4" width="22" height="16" rx="3" stroke="currentColor" stroke-width="1.8" />
+                            <path d="M1 9h22" stroke="currentColor" stroke-width="1.8" />
+                            <rect x="4" y="13" width="5" height="2.5" rx="1" fill="currentColor" opacity="0.5" />
+                            <circle cx="18" cy="14" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                            <circle cx="20.2" cy="14" r="2.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="modalNewPasswordTitle">Métodos de pago</h2>
+                        <p class="modalNewPasswordSubtitle">Administra los métodos de pago del sistema</p>
+                    </div>
+                </div>
+                <button type="button" class="btnClose" id="btnClosePaymentMethods" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Lista de métodos -->
+            <div class="pmMethodList" id="pmMethodList"></div>
+
+            <!-- Formulario para agregar -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtPaymentMethod">Nuevo método de pago</label>
+                <div class="pmAddRow">
+                    <div class="modalNewPasswordInputRow" style="flex:1; margin:0;">
+                        <input type="text" id="txtPaymentMethod" class="txtInputs modalNewPasswordInput"
+                            placeholder="Ej: Transferencia bancaria" maxlength="50" />
+                    </div>
+                    <button type="button" class="btnPrimary pmAddBtn" id="btnAddPaymentMethod" disabled>
+                        <span>Agregar</span>
+                        <div class="loader hide" id="btnAddPaymentMethodLoader"></div>
+                    </button>
+                </div>
+                <span class="modalNewPasswordMatchHint" style="color: var(--danger-color);" id="pmHint"></span>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Cambiar Usuario -->
     <div id="modalChangeUsername" class="containerModal hide">
         <form class="modalAdd modalNewPasswordCard" id="frmToggleUsername">
@@ -48,7 +97,8 @@
             <div class="modalNewPasswordFieldWrap">
                 <label class="modalNewPasswordLabel" for="txtCurrentUsername">Usuario actual</label>
                 <div class="modalNewPasswordInputRow">
-                    <input type="text" id="txtCurrentUsername" class="txtInputs modalNewPasswordInput" placeholder="—" readonly />
+                    <input type="text" id="txtCurrentUsername" class="txtInputs modalNewPasswordInput" placeholder="—"
+                        readonly />
                 </div>
             </div>
 
@@ -246,8 +296,8 @@
             <div class="modalNewPasswordFieldWrap">
                 <label class="modalNewPasswordLabel" for="txtConfirmPassword">Confirmar contraseña</label>
                 <div class="modalNewPasswordInputRow">
-                    <input maxlength="20" type="password" id="txtConfirmPassword" class="txtInputs modalNewPasswordInput"
-                        placeholder="Repite tu contraseña" required />
+                    <input maxlength="20" type="password" id="txtConfirmPassword"
+                        class="txtInputs modalNewPasswordInput" placeholder="Repite tu contraseña" required />
                     <button type="button" class="modalNewPasswordToggle togglePassword" id="toggleConfirmPassword"
                         aria-label="Mostrar/ocultar contraseña">
                         <svg id="eyeIconConfirm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -382,6 +432,36 @@
                         </svg>
                     </div>
                 </div>
+
+                <div class="configSectionTitle">Sistema</div>
+                <div class="configCard">
+                    <div class="configRow" id="btnOpenPaymentMethods">
+                        <div class="containerIconDarkMode">
+                            <div class="configItemIcon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="1" y="4" width="22" height="16" rx="3" stroke="currentColor"
+                                        stroke-width="1.8" />
+                                    <path d="M1 9h22" stroke="currentColor" stroke-width="1.8" />
+                                    <rect x="4" y="13" width="5" height="2.5" rx="1" fill="currentColor"
+                                        opacity="0.5" />
+                                    <circle cx="18" cy="14" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                                    <circle cx="20.2" cy="14" r="2.5" stroke="currentColor" stroke-width="1.5"
+                                        opacity="0.5" />
+                                </svg>
+                            </div>
+                            <div class="configItemText">
+                                <span class="configItemLabel">Metodos de pago</span>
+                                <span class="configItemSub">Administra tus métodos de pago</span>
+                            </div>
+                        </div>
+                        <svg class="configChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    </div>
+                </div>
+
                 <!-- Modo Oscuro -->
                 <div class="configSectionTitle">Apariencia</div>
                 <div class="darkModeContainer">

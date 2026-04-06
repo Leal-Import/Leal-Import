@@ -1,6 +1,7 @@
 
 import { $, buildParams, qs } from '../../utils/dom.js';
 import { formatWithCommas } from '../../utils/formatters.js';
+import { ROUTES } from '../../utils/router.js';
 
 export const DOMRefs = {
     refs: {},
@@ -159,18 +160,18 @@ const createButtons = (vehicle, hasWorkOrder) => {
         btnSelect.textContent = 'Seleccionar';
         btnSelect.classList.add('btnPrimary');
         const params = buildParams({ idVehicle: vehicle.idVehicle, idCustomer: vehicle.idOwnerCustomer });
-        btnSelect.href = `workOrderForm.html?${params.toString()}`;
+        btnSelect.href = `${ROUTES.WORK_ORDER_FORM}?${params.toString()}`;
         container.appendChild(btnSelect);
     } else {
         const btnView = document.createElement('a');
         btnView.textContent = 'Ver más';
         btnView.classList.add('btnPrimary');
-        btnView.href = `vehicleView.html?id=${vehicle.idVehicle}`;
+        btnView.href = `${ROUTES.VEHICLE_VIEW}?id=${vehicle.idVehicle}`;
 
         const btnEdit = document.createElement('a');
         btnEdit.textContent = 'Editar';
         btnEdit.classList.add('btnSecondary');
-        btnEdit.href = `vehiclesForm.html?id=${vehicle.idVehicle}`;
+        btnEdit.href = `${ROUTES.VEHICLES_FORM}?id=${vehicle.idVehicle}`;
 
         container.appendChild(btnView);
         container.appendChild(btnEdit);

@@ -1,8 +1,10 @@
-export const sparePartsState = {
+export const sparePartsListState = {
     list: [],
     filters: {
         search: '',
-        idState: ''
+        idState: '',
+        startDate: '',
+        endDate: ''
     },
     pagination: {
         page: 1,
@@ -13,17 +15,19 @@ export const sparePartsState = {
     statusList: []
 };
 
-export const resetSparePartsState = () => {
-    sparePartsState.list = [];
-    sparePartsState.filters = {
+export const resetSparePartsListState = () => {
+    sparePartsListState.list = [];
+    sparePartsListState.filters = {
         search: '',
-        idState: ''
+        idState: '',
+        startDate: '',
+        endDate: ''
     };
-    sparePartsState.pagination = {
+    sparePartsListState.pagination = {
         page: 1,
         size: 10,
         total: 0,
         totalPages: 0
     };
-    sparePartsState.statusList = [];
+    sparePartsListState.statusList = [];
 };

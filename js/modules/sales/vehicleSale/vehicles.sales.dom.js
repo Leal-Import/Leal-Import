@@ -1,6 +1,6 @@
 import { $, hideElement, qs, showElement } from "../../../utils/dom.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
-import { renderAndInitViewCarousel } from "../../../core/dom/carousel.dom.js";
+import { renderAndInitViewCarousel } from "../../carousel/carousel.dom.js";
 
 export const DOMRefs = {
     refs: {},
@@ -15,7 +15,6 @@ export const DOMRefs = {
             tableVehiclesLoader: $("tableVehiclesLoader"),
             btnSaveSaleLoader: $("btnSaveSaleLoader"),
             btnSaveSale: $("btnSaveSale"),
-            btnCancelVehicle: $("btnCancelVehicle"),
             txtSearchData: $("txtSearchData"),
             txtNotes: $("txtNotes"),
             txtCommission: $("txtCommission"),
@@ -55,7 +54,8 @@ export const DOMRefs = {
             totalVehicle: $("totalVehicle"),
             btnCreateOrderLoader: $("btnCreateOrderLoader"),
             paymentForm: qs(".paymentForm"),
-            btnGeneratePdf: $("btnGeneratePdf")
+            btnGeneratePdf: $("btnGeneratePdf"),
+            btnCancelVehicle: $("btnCancelVehicle")
         };
         return this.refs;
     }
@@ -134,32 +134,32 @@ export const loadVehicle = (vehicle, idSale, Refs) => {
     Refs.vehicleYear.textContent = vehicle.year;
     Refs.purchaseDate.textContent = vehicle.purchaseDate;
     Refs.mileaje.textContent = vehicle.mileage;
-    Refs.lote.textContent = vehicle.lote.numLote;
-    if (vehicle.lote.linkLote) Refs.lote.href = vehicle.lote.linkLote;
+    Refs.lote.textContent = vehicle.lot.numLot;
+    if (vehicle.lot.linkLote) Refs.lote.href = vehicle.lot.linkLote;
     Refs.status.textContent = vehicle.status;
 
-    if (vehicle.costs) {
-        Refs.suggestedPrice.textContent = formatWithCommas(vehicle.costs.suggestedPrice);
+    if (vehicle.vehicleCosts) {
+        Refs.suggestedPrice.textContent = formatWithCommas(vehicle.vehicleCosts.suggestedPrice);
 
-        Refs.bill.textContent = formatWithCommas(vehicle.costs.bill);
-        if (vehicle.costs.costPhoto.billPhoto) Refs.bill.href = vehicle.costs.costPhoto.billPhoto;
-        Refs.ship.textContent = formatWithCommas(vehicle.costs.ship);
-        if (vehicle.costs.costPhoto.shipPhoto) Refs.ship.href = vehicle.costs.costPhoto.shipPhoto;
-        Refs.towTruck.textContent = formatWithCommas(vehicle.costs.towTruck);
-        if (vehicle.costs.costPhoto.towTruckPhoto) Refs.towTruck.href = vehicle.costs.costPhoto.towTruckPhoto;
-        Refs.iva.textContent = formatWithCommas(vehicle.costs.iva);
-        Refs.taxes.textContent = formatWithCommas(vehicle.costs.taxes);
-        if (vehicle.costs.costPhoto.taxesPhoto) Refs.taxes.href = vehicle.costs.costPhoto.taxesPhoto;
-        Refs.transfer.textContent = formatWithCommas(vehicle.costs.transfer);
-        Refs.pa.textContent = formatWithCommas(vehicle.costs.pa);
-        Refs.storage.textContent = formatWithCommas(vehicle.costs.storage);
+        Refs.bill.textContent = formatWithCommas(vehicle.vehicleCosts.bill);
+        if (vehicle.vehicleCosts.costPhoto.billPhoto) Refs.bill.href = vehicle.vehicleCosts.costPhoto.billPhoto;
+        Refs.ship.textContent = formatWithCommas(vehicle.vehicleCosts.ship);
+        if (vehicle.vehicleCosts.costPhoto.shipPhoto) Refs.ship.href = vehicle.vehicleCosts.costPhoto.shipPhoto;
+        Refs.towTruck.textContent = formatWithCommas(vehicle.vehicleCosts.towTruck);
+        if (vehicle.vehicleCosts.costPhoto.towTruckPhoto) Refs.towTruck.href = vehicle.vehicleCosts.costPhoto.towTruckPhoto;
+        Refs.iva.textContent = formatWithCommas(vehicle.vehicleCosts.iva);
+        Refs.taxes.textContent = formatWithCommas(vehicle.vehicleCosts.taxes);
+        if (vehicle.vehicleCosts.costPhoto.taxesPhoto) Refs.taxes.href = vehicle.vehicleCosts.costPhoto.taxesPhoto;
+        Refs.transfer.textContent = formatWithCommas(vehicle.vehicleCosts.transfer);
+        Refs.pa.textContent = formatWithCommas(vehicle.vehicleCosts.pa);
+        Refs.storage.textContent = formatWithCommas(vehicle.vehicleCosts.storage);
         if (!idSale && Refs.txtTotal) {
-            Refs.txtTotal.value = formatWithCommas(vehicle.costs.suggestedPrice);
+            Refs.txtTotal.value = formatWithCommas(vehicle.vehicleCosts.suggestedPrice);
         }
         if (Refs.totalCostV) {
-            Refs.totalCostV.textContent = formatWithCommas(vehicle.costs.total);
+            Refs.totalCostV.textContent = formatWithCommas(vehicle.vehicleCosts.total);
         } else if (Refs.total) {
-            Refs.total.textContent = formatWithCommas(vehicle.costs.total);
+            Refs.total.textContent = formatWithCommas(vehicle.vehicleCosts.total);
         }
 
         showElement(Refs.columnCosts);
@@ -170,7 +170,7 @@ export const loadVehicle = (vehicle, idSale, Refs) => {
     }
 
     renderAndInitViewCarousel({
-        photos: vehicle.photos,
+        photos: vehicle.vehiclePhotos,
         mainWrapper: Refs.mainSwiperWrapper,
         thumbsWrapper: Refs.thumbsWrapper
     });

@@ -1,20 +1,16 @@
-import { addModalCloseEvents } from '../../utils/dom.js';
+import { addModalCloseEvents, debounce } from '../../utils/dom.js';
 import { formatPhoneNumber } from '../../utils/formatters.js';
 
 export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal }) => {
     const { txtEmployeePhone, cmbSearchByStatus, cmbSearchByRole, txtSearchData, frmEmployees, btnCloseModalEmployee, modalEmployees, btnOpenModalEmployees } = Refs;
 
-    let searchTimeout = null;
-    const emitFilters = () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            onSearchEmployee({
-                search: txtSearchData?.value.trim() || '',
-                idRole: cmbSearchByRole?.value || '',
-                status: cmbSearchByStatus?.value || ''
-            });
-        }, 1000);
-    };
+    const emitFilters = debounce(() => {
+        onSearchEmployee({
+            search: txtSearchData?.value.trim() || '',
+            idRole: cmbSearchByRole?.value || '',
+            status: cmbSearchByStatus?.value || ''
+        });
+    }, 1000);
 
     txtEmployeePhone.addEventListener('input', (e) => {
         formatPhoneNumber(e.target);

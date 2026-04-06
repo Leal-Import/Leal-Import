@@ -8,7 +8,8 @@ export const configurationState = {
         email: '',
         phone: '',
         username: ''
-    }
+    },
+    paymentMethods: []
 };
 
 export const resetConfigurationState = () => {
@@ -22,4 +23,5 @@ export const resetConfigurationState = () => {
         phone: '',
         username: ''
     };
+    configurationState.paymentMethods = [];
 };

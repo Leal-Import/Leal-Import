@@ -1,4 +1,5 @@
-import { $, qs } from "../../../utils/dom.js";
+import { $, buildParams, qs } from "../../../utils/dom.js";
+import { ROUTES } from "../../../utils/router.js";
 
 export const DOMRefs = {
     refs: {},
@@ -67,7 +68,7 @@ export const insertCustomers = (container, customers, type, idVehicle, newSpareP
             customerLink.dataset.customerId = customer.idCustomer;
 
             if (type === "sparePart") {
-                const queryParams = new URLSearchParams({
+                const queryParams = buildParams({
                     idCustomer: customer.idCustomer,
                     customerName: customer.fullName,
                     sparePartId: newSparePart?.id,
@@ -75,9 +76,14 @@ export const insertCustomers = (container, customers, type, idVehicle, newSpareP
                     suggestedPrice: newSparePart?.suggestedPrice,
                     isNewPart: newSparePart?.isNewPart
                 });
-                customerLink.href = `sparePartSale.html?${queryParams.toString()}`;
+                customerLink.href = `${ROUTES.SPARE_PART_SALE}?${queryParams.toString()}`;
             } else if (type === "vehicle") {
-                customerLink.href = `vehicleSale.html?idCustomer=${customer.idCustomer}&customerName=${encodeURIComponent(customer.fullName)}&idVehicle=${idVehicle}`;
+                const queryParams = buildParams({
+                    idCustomer: customer.idCustomer,
+                    customerName: customer.fullName,
+                    idVehicle: idVehicle
+                });
+                customerLink.href = `${ROUTES.VEHICLE_SALE}?${queryParams.toString()}`;
             }
 
             const selectionIndicator = document.createElement("span");
@@ -90,7 +96,7 @@ export const insertCustomers = (container, customers, type, idVehicle, newSpareP
 
             const statusBadge = document.createElement("span");
             statusBadge.className = "statusBadge";
-            statusBadge.textContent = customer.status === 'T' ? 'Activo' : 'Inactivo'; // fix bug anterior
+            statusBadge.textContent = customer.status === 'ACTIVE' ? 'Activo' : 'Inactivo';
 
             const customerStatus = document.createElement("div");
             customerStatus.className = "customerStatus";

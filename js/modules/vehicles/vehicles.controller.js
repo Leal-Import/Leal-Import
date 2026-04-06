@@ -1,16 +1,17 @@
-import { resetVehiclesState, vehiclesState } from './vehicles.state.js';
+import { resetVehiclesListState, vehiclesListState } from './vehicles.state.js';
 import { DOMRefs, insertVehicles, resetVehiclesFilters } from './vehicles.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { getVehicles, getStatus } from './vehicles.service.js';
-import { showMessage, fillSelect, showElement, hideElement } from '../../utils/dom.js';
+import { fillSelect, showElement, hideElement, createModuleInitializer } from '../../utils/dom.js';
 import { initVehicleEvents } from './vehicles.events.js';
-import { initSession } from '../../utils/api.utils.js';
+import { handleApiError } from '../../utils/api.utils.js';
+import { ROUTES } from '../../utils/router.js';
 
 const pagination = createPagination({
-    initialSize: vehiclesState.pagination.size,
+    initialSize: vehiclesListState.pagination.size,
     onChange: ({ page, size }) => {
-        vehiclesState.pagination.page = page;
-        vehiclesState.pagination.size = size;
+        vehiclesListState.pagination.page = page;
+        vehiclesListState.pagination.size = size;
         loadVehicles();
     }
 });
@@ -18,37 +19,34 @@ const pagination = createPagination({
 const loadStatusSelect = async () => {
     try {
         const status = await getStatus();
-        vehiclesState.statusList = status;
-        fillSelect('cmbSearchByStatus', vehiclesState.statusList, 'idStatus', 'statusName', null, 'Buscar por estado');
+        vehiclesListState.statusList = status;
+        fillSelect('cmbSearchByStatus', vehiclesListState.statusList, 'idStatus', 'statusName', null, 'Buscar por estado');
     } catch (error) {
-        showMessage(
-            'Error',
-            'No se pudieron cargar los estados del vehiculo',
-            'error'
-        );
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar los estados de los vehículos. Por favor, inténtalo de nuevo.');
     }
 };
 
 const loadVehicles = async () => {
     try {
         showElement(DOMRefs.refs.loaderVehicles);
-        const { page, size } = vehiclesState.pagination;
-        const { search, year, statusId, statusExist } = vehiclesState.filters;
+        const { page, size } = vehiclesListState.pagination;
+        const { search, year, statusId, source, startDate, endDate } = vehiclesListState.filters;
         const data = await getVehicles(
             page - 1,
             size,
             search || '',
             statusId || '',
             year || '',
-            statusExist || ''
+            source || '',
+            startDate,
+            endDate
         );
 
-        vehiclesState.list = data.content;
-        vehiclesState.pagination.total = data.page.totalElements;
-        vehiclesState.pagination.totalPages = data.page.totalPages;
+        vehiclesListState.list = data.content;
+        vehiclesListState.pagination.total = data.page.totalElements;
+        vehiclesListState.pagination.totalPages = data.page.totalPages;
 
-        insertVehicles(DOMRefs.refs.cardContainer, vehiclesState.list, vehiclesState.context.hasWorkOrder);
+        insertVehicles(DOMRefs.refs.cardContainer, vehiclesListState.list, vehiclesListState.context.hasWorkOrder);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -57,47 +55,34 @@ const loadVehicles = async () => {
             size: data.page.size
         });
     } catch (error) {
-        showMessage('Error', 'No se pudieron cargar los vehículos', 'error');
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar los vehículos. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.loaderVehicles);
     }
 };
 
 const onSearchVehicles = (filters) => {
-    vehiclesState.filters = {
-        ...vehiclesState.filters,
+    vehiclesListState.filters = {
+        ...vehiclesListState.filters,
         ...filters
     };
-    vehiclesState.pagination.page = 1;
+    vehiclesListState.pagination.page = 1;
     loadVehicles();
 };
 
 const workOrderBtn = () => {
     if (!DOMRefs.refs.btnAddVehicle) return;
-    DOMRefs.refs.btnAddVehicle.href = `vehicleDetails.html?workOrder=${vehiclesState.context.hasWorkOrder}`;
+    DOMRefs.refs.btnAddVehicle.href = `${ROUTES.VEHICLE_DETAILS}?workOrder=${vehiclesListState.context.hasWorkOrder}`;
 };
 const hydrateContextFromURL = () => {
     const params = new URLSearchParams(window.location.search);
-    vehiclesState.context.hasWorkOrder = !!params.get("workOrder");
-};
-
-const setupApplication = async () => {
-    resetVehiclesState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    // 3. Hidratar contexto desde URL
-    hydrateContextFromURL();
-
-    return true;
+    vehiclesListState.context.hasWorkOrder = !!params.get("workOrder");
 };
 
 const initializeUI = (Refs) => {
     resetVehiclesFilters(Refs);
     initVehicleEvents({ Refs, onSearchVehicles });
-    if (vehiclesState.context.hasWorkOrder) {
+    if (vehiclesListState.context.hasWorkOrder) {
         workOrderBtn();
     }
 };
@@ -106,22 +91,14 @@ const loadDataFlow = async () => {
     await Promise.all([loadStatusSelect(), loadVehicles()]);
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        // 1. Configurar aplicación
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        // 2. Inicializar referencias del DOMRefs
-        const refs = DOMRefs.init();
-
-        // 3. Inicializar componentes UI
-        initializeUI(refs);
-
-        // 4. Cargar datos según el flujo
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error initializing application:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: () => {
+        resetVehiclesListState();
+        hydrateContextFromURL();
+    },
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);

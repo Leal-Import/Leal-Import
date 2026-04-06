@@ -6,8 +6,10 @@ import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword }
 import { loginState } from "./login.state.js";
 import { login, resetPassword, verifyEmail, verifyPIN } from "./login.service.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
+import { navigateTo, ROUTES } from "../../utils/router.js";
 import { isValidEmail } from "../../utils/validators.js";
 import { initLoginEvents } from "./login.event.js";
+import { handleApiError } from "../../utils/api.utils.js";
 
 const onTogglePassword = (e, txtPassword) => {
     const btn = e.currentTarget;
@@ -23,7 +25,7 @@ const onTogglePassword = (e, txtPassword) => {
 const onBackHome = (e) => {
     e.preventDefault();
     hideAllModals();
-    window.location.href = '/index.html';
+    navigateTo(ROUTES.INDEX);
 };
 
 const onOpenModalRecovery = (e) => {
@@ -55,10 +57,10 @@ const onClosePin = () => {
 const onSubmitLogin = async (e) => {
     e.preventDefault();
 
-    const credentials = DOMRefs.refs.txtUserOrEmail.value;
+    const username = DOMRefs.refs.txtUserOrEmail.value;
     const password = DOMRefs.refs.txtPassword.value;
 
-    if (!credentials.trim() || !password.trim()) {
+    if (!username.trim() || !password.trim()) {
         showMessage("Advertencia", "Campos incompletos", "warning");
         return;
     }
@@ -71,10 +73,10 @@ const onSubmitLogin = async (e) => {
     showElement(DOMRefs.refs.btnLoginLoader);
 
     try {
-        await login(credentials, password);
-        await showMessage("Bienvenido", `Hola, ${credentials.trim()}`, "success", true);
+        await login(username, password);
+        await showMessage("Bienvenido", `Hola, ${username.trim()}`, "success", true);
         localStorage.setItem("navItem", "dashItem");
-        window.location.href = 'dashboard.html';
+        navigateTo(ROUTES.DASHBOARD);
     } catch (error) {
         let title = 'Error';
         let text = error?.message || 'Ocurrió un error';
@@ -125,7 +127,7 @@ const onAuthEmail = async (e) => {
         startCountdown(minutes, loginState, DOMRefs.refs.modalCodeBody);
         focusFirstCodeInput(DOMRefs.refs.codeDigits);
     } catch (error) {
-        await showMessage("Error", error?.message || 'Error al verificar el correo', "error");
+        await handleApiError(error, 'No se pudo enviar el correo de recuperación. Por favor, inténtalo de nuevo.');
     } finally {
         loginState.flags.pendingSend = false;
         removeDisable(DOMRefs.refs.authPrimaryBtn);
@@ -167,7 +169,7 @@ const onSendCode = async (e) => {
         toggleModal(DOMRefs.refs.modalNewPassword, true);
         clearCountdown(loginState, DOMRefs.refs.modalCodeBody);
     } catch (error) {
-        await showMessage("Codigo invalido", error?.message || 'No se pudo verificar el código.', "error");
+        await handleApiError(error, 'Código inválido. Por favor, verifica el código enviado a tu correo e inténtalo de nuevo.');
         focusFirstCodeInput(DOMRefs.refs.codeDigits);
     } finally {
         loginState.flags.pendingVerify = false;
@@ -216,9 +218,7 @@ const onUpdatePassword = async () => {
         clearCurrentFlow(loginState, DOMRefs.refs.modalCodeBody);
 
     } catch (error) {
-
-        await showMessage("Error", error?.message || 'No se pudo actualizar la contraseña', "error");
-
+        await handleApiError(error, 'No se pudo actualizar la contraseña. Por favor, inténtalo de nuevo.');
     } finally {
         loginState.flags.pendingUpdate = false;
         removeDisable(DOMRefs.refs.btnUpdatePassword);
@@ -291,13 +291,14 @@ const initializeUI = (Refs) => {
     initDigitInputs(Refs.codeDigits);
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+const init = () => {
     try {
         const refs = DOMRefs.init();
-
         initializeUI(refs);
     } catch (error) {
         console.error('Error inicializando la aplicación: ', error);
         showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
     }
-});
+};
+
+document.addEventListener('DOMContentLoaded', init);

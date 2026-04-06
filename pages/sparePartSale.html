@@ -14,12 +14,135 @@
     <link rel="stylesheet" href="../css/utils/loaders/loader.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
     <link rel="stylesheet" href="../css/utils/controls/btnTrash.css">
+    <link rel="stylesheet" href="../css/utils/modals/modal.css">
+    <link rel="stylesheet" href="../css/utils/modals/modalVoucher.css">
+    <link rel="stylesheet" href="../css/utils/modals/modalCancelSale.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Agregar venta</title>
 </head>
 
 <body>
+    <div id="modalCancelSale" class="containerModal hide">
+        <form class="modalAdd modalNewPasswordCard" id="frmCancelSale">
+            <!-- Header -->
+            <div class="modalNewPasswordHeader">
+                <div class="modalNewPasswordHeaderLeft">
+                    <div>
+                        <h2 class="modalNewPasswordTitle">Cancelar venta</h2>
+                        <p class="modalNewPasswordSubtitle">Esta acción no se puede deshacer</p>
+                    </div>
+                </div>
+                <button type="button" class="btnClose" id="btnCloseCancelSale" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Motivo -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtCancelReason">Motivo de cancelación</label>
+                <textarea id="txtCancelReason" class="txtInputs txtCancelReason"
+                    placeholder="Describe el motivo de la cancelación..." maxlength="500" required></textarea>
+                <div class="cancelReasonFooter">
+                    <span class="modalNewPasswordMatchHint" id="cancelReasonHint"></span>
+                    <span class="cancelReasonCount"><span id="cancelReasonCount">0</span>/500</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btnDanger btnPrimary" id="btnConfirmCancelSale" disabled>
+                <span>Confirmar cancelación</span>
+                <div class="loader hide" id="btnConfirmCancelSaleLoader"></div>
+            </button>
+        </form>
+    </div>
+
+    <div id="voucherLightbox" class="voucherLightbox">
+        <div class="lightboxContent">
+            <button class="lightboxClose btnCloseLightBox"></button>
+            <img class="lightboxImage" id="lightboxImage" alt="Vista previa del comprobante">
+        </div>
+    </div>
+
+    <div class="containerModal hide" id="modalVoucher">
+        <div class="modalVoucher modalAdd">
+            <button id="btnCloseVoucherModal" class="btnClose" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
+            </button>
+
+            <div class="headerModalVoucher">
+                <div class="headerContent">
+                    <h2>Comprobante de Abono</h2>
+                    <p class="headerSubtitle">
+                        Abono <span id="modalAbonoTitle"></span> • Sube tu comprobante de pago
+                    </p>
+                </div>
+            </div>
+
+            <div class="bodyModalVoucher">
+                <div id="modalPreviewArea" class="previewArea">
+                    <!-- Estado vacío - se muestra cuando no hay archivo -->
+                    <div class="emptyState">
+                        <div class="uploadIconWrapper">
+                            <div class="uploadIcon"></div>
+                        </div>
+                        <div class="uploadContent">
+                            <h3 class="uploadTitle">Selecciona tu comprobante</h3>
+                            <p class="uploadDescription">Arrastra y suelta tu archivo aquí o haz clic en el botón</p>
+                            <p class="uploadFormats">JPG, PNG o PDF • Máximo 10MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modalActions">
+                    <button id="btnSelectFile" class="btnPrimary" type="button">
+                        <svg class="btnIcon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M9 1v16M16 9H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                        <span>Seleccionar comprobante</span>
+                    </button>
+                    <button id="btnClearFile" class="btnSecondary hide" type="button">
+                        <svg class="btnIcon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        <span>Eliminar Comprobante</span>
+                    </button>
+                </div>
+                <div class="viewAmountContainer hide" id="viewAmountContainer">
+                    <h2>Detalles del abono</h2>
+                    <div class="dataView">
+                        <div class="dataItem">
+                            <span class="dataLabel">Monto del abono:</span>
+                            <span class="dataValue" id="amountToPay"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Método de pago:</span>
+                            <span class="dataValue" id="paymentMethodToPay"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Registrado por:</span>
+                            <span class="dataValue" id="registeredBy"></span>
+                        </div>
+                        <div class="dataItem">
+                            <span class="dataLabel">Fecha de registro:</span>
+                            <span class="dataValue" id="registrationDate"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" id="currentReceiptInputId">
+
+            <!-- Input file oculto para selección de archivos -->
+            <input type="file" id="fileInputHidden" accept="image/*,.pdf" style="display: none;">
+        </div>
+    </div>
     <div class="containerMobileHeader"></div>
     <div class="bodyContent">
         <div id="sidebar"></div>
@@ -29,14 +152,25 @@
                     <div class="breadCrumbSection">
                         <a href="sales.html" class="breadcrumb">Ventas &#62; </a>
                         <a class="breadcrumb truncate" id="customerName">Cargando...</a>
+                        <a class="breadcrumb hide" id="cancelledBreadcrumb"> &#62; Venta cancelada</a>
                     </div>
                     <div class="filterSection">
-                        <input type="text" id="txtSearchData" class="txtSearchData"
-                            placeholder="Buscar repuestos">
+                        <input type="text" id="txtSearchData" class="txtSearchData" placeholder="Buscar repuestos">
                         <a class="btnPrimary btnOpenModal" id="btnOrderPart">Realizar encargo</a>
                     </div>
                 </div>
-                <div class="tableContainer">
+                <div class="tableContainer hide" id="tableViewContainer">
+                    <table class="table" style="height: fit-content;">
+                        <thead>
+                            <tr>
+                                <th>Nombre del repuesto</th>
+                                <th>Precio final</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBodyPartView"></tbody>
+                    </table>
+                </div>
+                <div class="tableContainer" id="tableNewSpareParts">
                     <div class="containerLoader show" style="z-index: 20;" id="loaderSpareParts">
                         <div class="loader"></div>
                         <div>Cargando lista de repuestos...</div>
@@ -121,7 +255,8 @@
                         <div class="containerActionsPayments">
                             <button id="btnCancelEdit" class="btnSecondary hide" type="button">Cancelar edición</button>
                             <div class="separatorDiv"></div>
-                            <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir abono</button>
+                            <button id="btnAddPayment" class="btnPrimary btnAddPayment" type="button">Añadir
+                                abono</button>
                         </div>
                     </div>
 
@@ -153,11 +288,13 @@
 
                     <!-- Action Buttons -->
                     <div class="actionButtons">
-                        <div></div>
+                        <div id="divSpace"></div>
+                        <button class="btnPrimary hide" id="btnOpenCancelSale" type="button">Cancelar venta</button>
                         <button class="btnPrimary" id="btnSaveSale">
                             <span>Vender</span>
                             <div class="loader hide" id="loaderAddSale"></div>
                         </button>
+                        <button class="btnPrimary hide" id="btnGeneratePdf" type="button">Generar reporte</button>
                     </div>
                 </form>
             </div>

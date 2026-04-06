@@ -1,0 +1,73 @@
+/* ===== MODAL CANCELAR VENTA ===== */
+
+#modalCancelSale {
+    color: var(--text-color);
+}
+
+.modalNewPasswordHeaderLeft {
+    text-align: center;
+}
+
+.txtCancelReason {
+    width: 100%;
+    min-height: 110px;
+    max-height: 200px;
+    resize: none;
+    padding: 10px 14px;
+    border-radius: var(--border-radius-input);
+    border: var(--border);
+    background-color: var(--bg-color-white);
+    color: var(--text-color);
+    font-size: var(--font-size-default);
+    font-family: var(--font-text);
+    font-weight: var(--font-weight-regular);
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.txtCancelReason:focus {
+    border-color: var(--danger-color);
+}
+
+.cancelReasonFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.cancelReasonCount {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-regular);
+    flex-shrink: 0;
+}
+
+.btnDanger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--border-radius-btn);
+    border: 1px solid var(--danger-color);
+    background-color: transparent;
+    color: var(--danger-color);
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-text);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btnDanger:hover {
+    background-color: var(--bg-danger-badge);
+}
+
+.btnDanger:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}

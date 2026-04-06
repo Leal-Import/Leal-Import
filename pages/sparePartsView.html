@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/modules/spareParts/sparePartsView.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
     <link rel="stylesheet" href="../css/utils/loaders/skeletonLoader.css">
+    <link rel="stylesheet" href="../css/utils/showData/carousel.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Repuestos</title>
@@ -27,7 +29,23 @@
             <div class="mainContainer">
                 <div class="pictureSection">
                     <div class="containerImgSparePart skeleton">
-                        <img src="../media/appMedia/defaultImg.svg" alt="" id="pictureSparePart">
+                        <div class="containerCarousel" style="width: 100%;">
+                            <div class="swiper" id="mainSwiper">
+                                <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                                <div class="swiper-button-prev">
+                                </div>
+                                <div class="swiper-button-next">
+                                </div>
+                            </div>
+
+                            <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                                <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                    <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                                </div>
+                            </div>
+
+                            <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                        </div>
                     </div>
                 </div>
                 <div class="dataSection">
@@ -37,7 +55,8 @@
                             <div class="sparePartDataBody">
                                 <div class="dataInfo skeleton">
                                     <span class="label">Nombre:</span>
-                                    <a id="name" class="value redColor truncate" target="_blank" aria-label="Nombre del repuesto"></a>
+                                    <a id="name" class="value redColor truncate" target="_blank"
+                                        aria-label="Nombre del repuesto"></a>
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Marca:</span>
@@ -57,7 +76,8 @@
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Precio sugerido:</span>
-                                    <span id="suggestedPrice" class="value redColor" aria-label="Precio sugerido del repuesto"></span>
+                                    <span id="suggestedPrice" class="value redColor"
+                                        aria-label="Precio sugerido del repuesto"></span>
                                 </div>
                             </div>
                         </div>
@@ -66,11 +86,13 @@
                             <div class="sparePartCostBody">
                                 <div class="dataInfo skeleton">
                                     <span class="label">Tracking:</span>
-                                    <a id="tracking" class="value redColor truncate" target="_blank" aria-label="Numero de tracking"></a>
+                                    <a id="tracking" class="value redColor truncate" target="_blank"
+                                        aria-label="Numero de tracking"></a>
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Precio de compra:</span>
-                                    <span id="purchasePrice" class="value" aria-label="Precio de compra del repuesto"></span>
+                                    <span id="purchasePrice" class="value"
+                                        aria-label="Precio de compra del repuesto"></span>
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Impuestos:</span>
@@ -78,7 +100,8 @@
                                 </div>
                                 <div class="dataInfo skeleton">
                                     <span class="label">Costo total:</span>
-                                    <span id="totalCost" class="value redColor" aria-label="Costo total del repuesto"></span>
+                                    <span id="totalCost" class="value redColor"
+                                        aria-label="Costo total del repuesto"></span>
                                 </div>
                             </div>
                         </div>
@@ -133,8 +156,7 @@
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/spareParts/sparePartsView/spareParts.view.controller.js"></script>
     <script src="../js/components/sidebar.js"></script>

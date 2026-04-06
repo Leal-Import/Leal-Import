@@ -1,5 +1,5 @@
 // core/state/vehicles.state.js
-export const vehiclesState = {
+export const vehiclesListState = {
     list: [],
     context: {
         hasWorkOrder: null
@@ -8,7 +8,9 @@ export const vehiclesState = {
         search: '',
         year: '',
         statusId: '',
-        statusExist: ''
+        source: '',
+        startDate: '',
+        endDate: ''
     },
     pagination: {
         page: 1,
@@ -19,22 +21,24 @@ export const vehiclesState = {
     statusList: []
 };
 
-export const resetVehiclesState = () => {
-    vehiclesState.list = [];
-    vehiclesState.context = {
+export const resetVehiclesListState = () => {
+    vehiclesListState.list = [];
+    vehiclesListState.context = {
         hasWorkOrder: null
     };
-    vehiclesState.filters = {
+    vehiclesListState.filters = {
         search: '',
         year: '',
         statusId: '',
-        statusExist: ''
+        source: '',
+        startDate: '',
+        endDate: ''
     };
-    vehiclesState.pagination = {
+    vehiclesListState.pagination = {
         page: 1,
         size: 10,
         total: 0,
         totalPages: 0
     };
-    vehiclesState.statusList = [];
+    vehiclesListState.statusList = [];
 };

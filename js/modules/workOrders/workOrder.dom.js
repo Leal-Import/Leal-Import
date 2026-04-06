@@ -1,4 +1,5 @@
 import { $, buildParams, qs } from "../../utils/dom.js";
+import { ROUTES } from "../../utils/router.js";
 
 export const DOMRefs = {
     refs: {},
@@ -117,7 +118,7 @@ export const insertWorkOrders = (container, workOrders) => {
                 idCustomer: workOrder.idCustomer,
                 customerName: workOrder.customerName
             });
-            btnView.href = `workOrderHistory.html?${params.toString()}`;
+            btnView.href = `${ROUTES.WORK_ORDER_HISTORY}?${params.toString()}`;
 
             moreInfoContainer.append(moreInfoText, btnView);
 

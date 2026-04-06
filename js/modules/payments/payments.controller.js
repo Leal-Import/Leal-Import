@@ -8,6 +8,7 @@ import { $, fillSelect, hideElement, showElement, showMessage } from '../../util
 import { initPaymentsEvents } from './payments.event.js';
 import { safeParseFloat } from '../../utils/validators.js';
 import { formatWithCommas } from '../../utils/formatters.js';
+import { handleApiError } from '../../utils/api.utils.js';
 
 /* Aca se cargan todos los metodos de pago */
 export const loadPayMethods = async (Refs) => {
@@ -20,7 +21,7 @@ export const loadPayMethods = async (Refs) => {
             fillSelect(cmbPaymentMethod, paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Metodo de pago");
         }
     } catch (error) {
-        console.error('Error al cargar métodos de pago:', error);
+        await handleApiError(error, 'No se pudieron cargar los métodos de pago. Por favor, inténtalo de nuevo.');
         paymentsState.paymentMethods = [];
     }
 };
@@ -28,7 +29,6 @@ export const loadPayMethods = async (Refs) => {
 export const initPaymentsController = async ({ totalCalculator, createReceiptBtn, isView, state }) => {
     try {
         const refs = DOMRefs.init();
-
         initPaymentsEvents({ btnCancelEdit: refs.btnCancelEdit, onCancelEdit: () => onCancelEdit(), btnAddPayment: refs.btnAddPayment, onAddPayment: () => onAddPayment(state) });
 
         await loadPayMethods(refs);

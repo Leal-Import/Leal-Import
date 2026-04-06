@@ -1,4 +1,5 @@
-import { $, qsa, qs } from "../../utils/dom.js";
+import { $, qsa, qs, buildParams } from "../../utils/dom.js";
+import { ROUTES } from "../../utils/router.js";
 
 export const DOMRefs = {
     refs: {},
@@ -165,6 +166,19 @@ export const insertSales = (container, sales) => {
             totalSpan.textContent = sale.totalAmount !== null ? `$${sale.totalAmount.toLocaleString('es-SV')}` : "$N/A";
             totalAmountData.append(lblTotal, totalSpan);
 
+            const statusSale = document.createElement("div");
+            statusSale.classList.add("saleBadge");
+            statusSale.textContent = sale.stateName || "N/A";
+            if (sale.stateName === "Cancelada") {
+                statusSale.classList.add("cancelled");
+            } else if (sale.stateName === "Completada") {
+                statusSale.classList.add("completed");
+            } else if (sale.stateName === "Pendiente") {
+                statusSale.classList.add("pending");
+            } else if (sale.stateName === "Reservado") {
+                statusSale.classList.add("reserved");
+            }
+
             // Deuda
             const amountDueData = document.createElement("div");
             amountDueData.classList.add("dataSale", "amountDue");
@@ -185,21 +199,32 @@ export const insertSales = (container, sales) => {
             btnView.textContent = "Ver mas";
 
             // Botón "Editar"
-            const btnEdit = document.createElement("a");
-            btnEdit.classList.add("btnPrimary");
-            btnEdit.textContent = "Editar";
-
+            let btnEdit;
+            if (sale.stateName !== "Cancelada") {
+                btnEdit = document.createElement("a");
+                btnEdit.classList.add("btnPrimary");
+                btnEdit.textContent = "Editar";
+            }
+            const params = buildParams({
+                idCustomer: sale.idCustomer,
+                customerName: sale.customerName,
+                idVehicle: sale.idVehicle,
+                idSale: sale.idSale
+            });
             if (sale.productType === "Vehicle") {
-                btnEdit.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}`;
-                btnView.href = `vehicleSale.html?idSale=${sale.idSale}&idVehicle=${sale.idVehicle}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}&isView=true`;
+                if (btnEdit) btnEdit.href = `${ROUTES.VEHICLE_SALE}?${params.toString()}`;
+                btnView.href = `${ROUTES.VEHICLE_SALE}?${params.toString()}&isView=true`;
             } else {
-                btnEdit.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}`;
-                btnView.href = `sparePartSale.html?idSale=${sale.idSale}&customerName=${encodeURIComponent(sale.customerName)}&idCustomer=${sale.idCustomer}&isView=true`;
+                if (btnEdit) btnEdit.href = `${ROUTES.SPARE_PART_SALE}?${params.toString()}`;
+                btnView.href = `${ROUTES.SPARE_PART_SALE}?${params.toString()}&isView=true`;
             }
 
-            containerButtonsData.append(btnView, btnEdit);
+            containerButtonsData.appendChild(btnView);
+            if (btnEdit) {
+                containerButtonsData.appendChild(btnEdit);
+            }
 
-            rightDataSale.append(totalAmountData, amountDueData, containerButtonsData);
+            rightDataSale.append(totalAmountData, amountDueData, containerButtonsData, statusSale);
 
             // --- 6. Ensamblar el Panel ---
             dataSaleContainer.append(leftDataSale, rightDataSale);

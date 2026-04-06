@@ -1,4 +1,4 @@
-export const customerSaleState = {
+export const customerSalesFormState = {
     list: [],
     type: null,
     filters: {
@@ -16,13 +16,13 @@ export const customerSaleState = {
     }
 };
 
-export const resetCustomerSaleState = () => {
-    customerSaleState.list = [];
-    customerSaleState.type = null;
-    customerSaleState.filters = { search: '' };
-    customerSaleState.context = { id: null };
-    customerSaleState.sparePart = null;
-    customerSaleState.pagination = {
+export const resetCustomerSalesFormState = () => {
+    customerSalesFormState.list = [];
+    customerSalesFormState.type = null;
+    customerSalesFormState.filters = { search: '' };
+    customerSalesFormState.context = { id: null };
+    customerSalesFormState.sparePart = null;
+    customerSalesFormState.pagination = {
         page: 1,
         size: 10,
         totalElements: 0,

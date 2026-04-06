@@ -1,6 +1,7 @@
 import { asUUID, getNullableParam, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal } from "../../../utils/validators.js";
 import { normalizePayments, validatePayments } from "../../../core/logic/payments.logic.js";
+import { sanitizeURLParam } from "../../../utils/sanitizer.js";
 
 export const validateSale = (state, idVehicle, idCustomer, idSale) => {
     if (!idVehicle) return "Ningún vehículo seleccionado";
@@ -19,7 +20,7 @@ export const validateSale = (state, idVehicle, idCustomer, idSale) => {
     if (validatePaymentsError) return validatePaymentsError;
 
     const totalAmounts = state.payments.reduce((sum, p) => sum + Number(p.amount), 0);
-    if (totalAmounts > state.salePrice) return 'La suma de los abonos no puede superar el precio final del vehículo' ;
+    if (totalAmounts > state.salePrice) return 'La suma de los abonos no puede superar el precio final del vehículo';
 
     return null;
 };
@@ -39,7 +40,7 @@ export const hydrateContextFromURL = async (state) => {
 
     state.context.idCustomer = idCustomer;
     state.context.idSale = asUUID(params.get('idSale'));
-    state.context.customerName = params.get('customerName')?.trim() || '';
+    state.context.customerName = sanitizeURLParam(params.get('customerName'), '');
     state.context.isView = params.get('isView') === 'true';
     const idVehicle = asUUID(getNullableParam(params.get('idVehicle')));
     state.context.idVehicle = idVehicle;
@@ -58,13 +59,13 @@ export const buildPostSalePayload = (state) => {
         commission: data.commission || 0,
         notes: data.notes || '',
         idCustomer: context.idCustomer,
-        payments: normalizePayments(data.payments)
+        vehiclePayments: normalizePayments(data.payments)
     };
 
-    fd.append('vehicleData', JSON.stringify(saleData));
+    fd.append('saleData', JSON.stringify(saleData));
 
     data.payments.forEach(p => {
-        fd.append('paymentImages', p.file);
+        fd.append(p.id, p.file);
     });
 
     return fd;
@@ -74,47 +75,17 @@ export const buildPutSalePayload = (state) => {
     const { data } = state;
 
     const fd = new FormData();
-
-    const paymentsToUpdate = [];
-    const newPayments = [];
-    for (const p of data.payments) {
-        const paymentData = {
-            amount: p.amount,
-            idPaymentMethod: p.idPaymentMethod,
-            idPayment: p.idPayment || null
-        };
-
-        if (p.idPayment) {
-            paymentsToUpdate.push(paymentData);
-        } else {
-            newPayments.push(paymentData);
-        }
-    }
-
-    if (paymentsToUpdate.length === 0 && newPayments.length === 0) return { error: 'Debe registrar al menos un abono' };
-
     const saleData = {
         salePrice: data.salePrice,
         commission: data.commission || 0,
         notes: data.notes || '',
-        paymentsToUpdate,
-        newPayments,
+        paymentsSaveToUpdate: normalizePayments(data.payments),
         paymentsToDelete: data.paymentsToDelete
     };
 
-    fd.append('vehicleData', JSON.stringify(saleData));
-
-    /* ===== FILES ===== */
-    for (const p of data.payments) {
-        if (!p.file) continue;
-
-        if (p.idPayment) {
-            // reemplazo de comprobante existente
-            fd.append(p.idPayment, p.file);
-        } else {
-            // nuevo comprobante
-            fd.append('paymentImages', p.file);
-        }
-    }
+    fd.append('saleData', JSON.stringify(saleData));
+    data.payments.forEach(p => {
+        fd.append(p.id, p.file);
+    });
     return fd;
 };

@@ -28,7 +28,7 @@ export const validateEmployee = (data) => {
         highlightAndFocus('cmbUserRole');
         return 'El rol es requerido';
     }
-    if (data.username?.username.length > 30 || data.username?.username.length < 6) {
+    if (data.user?.username.length > 30 || data.user?.username.length < 6) {
         highlightAndFocus('txtUsername');
         return 'El nombre de usuario no puede tener más de 30 caracteres ni menos de 6';
     }
@@ -40,7 +40,7 @@ export const mapEmployeeForm = (formData) => {
         fullName: formData.txtFullName,
         email: formData.txtEmployeeEmail,
         phoneEmployee: formData.txtEmployeePhone,
-        username: {
+        user: {
             username: formData.txtUsername
         },
         idRole: formData.cmbUserRole

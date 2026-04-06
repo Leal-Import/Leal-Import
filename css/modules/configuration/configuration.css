@@ -71,6 +71,7 @@
 
 .configCard {
     background-color: var(--bg-color-white);
+    overflow: hidden;
     border: var(--border);
     border-radius: 5px;
     box-shadow: var(--bx-shadow-primary);
@@ -157,4 +158,141 @@
 .infoDarkContainer .configItemIcon svg {
     width: 20px;
     height: 20px;
+}
+
+/* ===== MODAL MÉTODOS DE PAGO ===== */
+
+.modalPaymentMethodsCard {
+    --width-modal: clamp(200px, 90%, 480px);
+    
+    padding: 20px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pmMethodList {
+    display: flex;
+    flex-direction: column;
+    border: var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.pmMethodList:empty::after {
+    content: 'Sin métodos registrados';
+    display: block;
+    padding: 20px;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-color-secondary);
+}
+
+.pmMethodItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: var(--border);
+    background-color: var(--bg-color-white);
+    transition: background 0.18s ease;
+    gap: 12px;
+}
+
+.pmMethodItem:last-child {
+    border-bottom: none;
+}
+
+.pmMethodItem:hover {
+    background-color: var(--bg-color);
+}
+
+.pmMethodItemName {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.pmMethodDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    flex-shrink: 0;
+}
+
+.pmMethodItemName span {
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pmMethodActions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.pmBtnEdit,
+.pmBtnDelete {
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-medium);
+    padding: 4px 12px;
+    border-radius: var(--border-radius-btn);
+    border: var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.pmBtnEdit {
+    color: var(--text-color-secondary);
+}
+
+.pmBtnEdit:hover {
+    background-color: var(--bg-color);
+}
+
+.pmBtnDelete {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.pmBtnDelete:hover {
+    background-color: var(--bg-danger-badge);
+}
+
+/* Input editable inline */
+.pmEditInput {
+    flex: 1;
+    font-size: var(--font-size-default);
+    padding: 4px 10px;
+    border-radius: var(--border-radius-input);
+    border: 1px solid var(--danger-color);
+    background-color: var(--bg-color-white);
+    color: var(--text-color);
+    outline: none;
+    min-width: 0;
+}
+
+/* Fila de agregar */
+.pmAddRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.pmAddBtn {
+    padding: 0 20px !important;
+    height: 40px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: stretch;
 }

@@ -1,5 +1,6 @@
-export const spareSaleState = {
+export const spareSalesFormState = {
     context: {
+        isView: false,
         idSale: null,
         idCustomer: null,
         customerName: null,
@@ -33,8 +34,8 @@ export const spareSaleState = {
     }
 };
 
-export const resetSpareSaleState = () => {
-    spareSaleState.context = {
+export const resetSpareSalesFormState = () => {
+    spareSalesFormState.context = {
         idSale: null,
         idCustomer: null,
         customerName: null,
@@ -43,27 +44,27 @@ export const resetSpareSaleState = () => {
         newPartName: null,
         suggestedPrice: null
     };
-    spareSaleState.saleKey = null;
-    spareSaleState.data = {
+    spareSalesFormState.saleKey = null;
+    spareSalesFormState.data = {
         selectedItems: [],
         payments: [],
         itemsToDelete: [],
         paymentsToDelete: [],
         notes: ''
     };
-    spareSaleState.totals = {
+    spareSalesFormState.totals = {
         total: 0,
         due: 0,
         totalPaid: 0
     };
-    spareSaleState.list = [];
-    spareSaleState.pagination = {
+    spareSalesFormState.list = [];
+    spareSalesFormState.pagination = {
         page: 1,
         size: 10,
         total: 0,
         totalPages: 0
     };
-    spareSaleState.filters = {
+    spareSalesFormState.filters = {
         search: ''
     };
 };

@@ -2,13 +2,10 @@
    SPARE PARTS DETAILS - ESTILOS MEJORADOS
    ======================================== */
 
-/* Main Grid Layout */
-.gridContent {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: auto auto auto;
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
     gap: 24px;
-    margin-bottom: 30px;
 }
 
 /* Fieldsets & Containers */
@@ -31,6 +28,14 @@ fieldset,
     animation: fadeIn 0.4s ease-out;
 }
 
+.sparePartDataContainer{
+    flex: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 fieldset:hover,
 .imgData:hover {
     box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
@@ -38,16 +43,13 @@ fieldset:hover,
 
 /* Spare Part Data Section */
 .sparePartData {
-    grid-column: 3 / 6;
-    grid-row: 1 / 4;
     border-left: 4px solid #e53e3e;
 }
 
 /* Image Upload Section */
 .imgData {
-    grid-row: 1 / 4;
-    grid-column: 1 / 3;
     display: flex;
+    flex: 1;
     gap: 20px;
     flex-direction: column;
     background-color: var(--bg-color);
@@ -141,8 +143,6 @@ fieldset:hover,
 
 /* Costs Data Section */
 .costsData {
-    grid-row: 4 / 6;
-    grid-column: 1 / 6;
     background-color: var(--bg-color-white);
     border-left: 4px solid #4299e1;
 }
@@ -251,24 +251,4 @@ select.txtInputs {
     margin-top: 0;
     align-items: center;
     gap: 8px;
-}
-
-@container content (max-width: 1075px) {
-    .gridContent {
-        grid-template-columns: 1fr;
-    }
-
-    .imgData,
-    .sparePartData,
-    .costsData {
-        grid-column: 1 / 1;
-    }
-
-    .sparePartData {
-        grid-row: 5 / 7;
-    }
-
-    .costsData {
-        grid-row: 7 / 10;
-    }
 }

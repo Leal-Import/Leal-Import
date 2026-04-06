@@ -75,7 +75,7 @@ export const insertWorkOrderHistory = (container, workOrders, onActions, tableHi
         tdEmployee.textContent = wo.employeeName ?? "—";
 
         const tdCustomer = document.createElement("td");
-        tdCustomer.textContent = wo.customerName ?? "—";
+        tdCustomer.textContent = wo.customerName ?? "Sin cliente";
 
         const tdOrderDate = document.createElement("td");
         tdOrderDate.textContent = wo.estimatedDate;

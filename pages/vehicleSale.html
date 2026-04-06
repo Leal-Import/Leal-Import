@@ -17,12 +17,49 @@
     <link rel="stylesheet" href="../css/utils/showData/carousel.css">
     <link rel="stylesheet" href="../css/utils/modals/modalVoucher.css">
     <link rel="stylesheet" href="../css/utils/controls/btnTrash.css">
+    <link rel="stylesheet" href="../css/utils/modals/modalCancelSale.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Agregar venta</title>
 </head>
 
 <body>
+    <div id="modalCancelSale" class="containerModal hide">
+        <form class="modalAdd modalNewPasswordCard" id="frmCancelSale">
+            <!-- Header -->
+            <div class="modalNewPasswordHeader">
+                <div class="modalNewPasswordHeaderLeft">
+                    <div>
+                        <h2 class="modalNewPasswordTitle">Cancelar venta</h2>
+                        <p class="modalNewPasswordSubtitle">Esta acción no se puede deshacer</p>
+                    </div>
+                </div>
+                <button type="button" class="btnClose" id="btnCloseCancelSale" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Motivo -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtCancelReason">Motivo de cancelación</label>
+                <textarea id="txtCancelReason" class="txtInputs txtCancelReason"
+                    placeholder="Describe el motivo de la cancelación..." maxlength="500" required></textarea>
+                <div class="cancelReasonFooter">
+                    <span class="modalNewPasswordMatchHint" id="cancelReasonHint"></span>
+                    <span class="cancelReasonCount"><span id="cancelReasonCount">0</span>/500</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btnDanger btnPrimary" id="btnConfirmCancelSale" disabled>
+                <span>Confirmar cancelación</span>
+                <div class="loader hide" id="btnConfirmCancelSaleLoader"></div>
+            </button>
+        </form>
+    </div>
+
     <div id="voucherLightbox" class="voucherLightbox">
         <div class="lightboxContent">
             <button class="lightboxClose btnCloseLightBox"></button>
@@ -30,7 +67,7 @@
         </div>
     </div>
 
-    <div class="containerModal hide">
+    <div class="containerModal hide" id="modalVoucher">
         <div class="modalVoucher modalAdd">
             <button id="btnCloseVoucherModal" class="btnClose" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -117,6 +154,7 @@
                         <div class="breadCrumbSection">
                             <a href="sales.html" class="breadcrumb">Ventas &#62; </a>
                             <a class="breadcrumb truncate" id="customerName">Cargando...</a>
+                            <a class="breadcrumb hide" id="cancelledBreadcrumb"> &#62; Venta cancelada</a>
                         </div>
                     </div>
                     <div class="bodyLeftPart">
@@ -366,6 +404,9 @@
 
                         <!-- Action Buttons -->
                         <div class="actionButtons">
+                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button">
+                                <span>Cancelar venta</span>
+                            </button>
                             <button class="btnSecondary truncate" id="btnCreateOrder" data-action="true">
                                 <span>Vender y crear orden</span>
                                 <div class="loader hide" id="btnCreateOrderLoader"></div>

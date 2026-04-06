@@ -1,12 +1,12 @@
 // core/state/employees.state.js
-export const employeesState = {
+export const employeesListState = {
     list: [],
     selectedId: null,
     roles: [],
     filters: {
         search: '',
         idRole: '',
-        status: ''
+        status: 'ACTIVE' // ACTIVE: Activo, INACTIVE: Inactivo, '' para todos
     },
     pagination: {
         page: 1,
@@ -16,16 +16,16 @@ export const employeesState = {
     }
 };
 
-export const resetEmployeesState = () => {
-    employeesState.list = [];
-    employeesState.selectedId = null;
-    employeesState.roles = [];
-    employeesState.filters = {
+export const resetEmployeesListState = () => {
+    employeesListState.list = [];
+    employeesListState.selectedId = null;
+    employeesListState.roles = [];
+    employeesListState.filters = {
         search: '',
         idRole: '',
-        status: ''
+        status: 'ACTIVE'
     };
-    employeesState.pagination = {
+    employeesListState.pagination = {
         page: 1,
         size: 15,
         total: 0,

@@ -1,4 +1,4 @@
-export const workOrdersState = {
+export const workOrdersListState = {
     list: [],
     stateList: [],
     pagination: {
@@ -13,16 +13,16 @@ export const workOrdersState = {
     }
 };
 
-export const resetWorkOrdersState = () => {
-    workOrdersState.list = [];
-    workOrdersState.stateList = [];
-    workOrdersState.pagination = {
+export const resetWorkOrdersListState = () => {
+    workOrdersListState.list = [];
+    workOrdersListState.stateList = [];
+    workOrdersListState.pagination = {
         page: 1,
         size: 10,
         total: 0,
         totalPages: 0
     };
-    workOrdersState.filters = {
+    workOrdersListState.filters = {
         search: '',
         idStatus: ''
     };

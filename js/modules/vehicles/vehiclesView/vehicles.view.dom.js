@@ -1,6 +1,7 @@
 import { $, buildParams, hideElement, qsa } from "../../../utils/dom.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
-import { renderAndInitViewCarousel } from "../../../core/dom/carousel.dom.js";
+import { renderAndInitViewCarousel } from "../../carousel/carousel.dom.js";
+import { ROUTES } from "../../../utils/router.js";
 
 export const DOMRefs = {
     refs: {},
@@ -43,7 +44,7 @@ export const loadVehicleData = (vehicle, Refs) => {
     loadVehicleInfo(vehicle, Refs);
     loadDownButtons(vehicle, Refs);
     renderAndInitViewCarousel({
-        photos: vehicle.photos,
+        photos: vehicle.vehiclePhotos,
         mainWrapper: Refs.mainSwiperWrapper,
         thumbsWrapper: Refs.thumbsWrapper
     });
@@ -56,14 +57,14 @@ const removeSkeletonLoad = (skeletonElements) => {
 
 const loadDownButtons = (vehicle, Refs) => {
     const { btnEdit, btnSell, btnHistorial, vehicleStatus } = Refs;
-    btnEdit.href = `vehiclesForm.html?id=${vehicle.idVehicle}`;
+    btnEdit.href = `${ROUTES.VEHICLES_FORM}?id=${vehicle.idVehicle}`;
     const paramsHistorial = buildParams({ idVehicle: vehicle.idVehicle, idCustomer: vehicle.idOwnerCustomer });
-    btnHistorial.href = `workOrderHistory.html?${paramsHistorial.toString()}`;
+    btnHistorial.href = `${ROUTES.WORK_ORDER_HISTORY}?${paramsHistorial.toString()}`;
     if (vehicle.status === "Disponible") {
         vehicleStatus.querySelector(".statusText").textContent = "Disponible";
         vehicleStatus.classList.add("aviable");
         const paramsSell = buildParams({ type: "vehicle", id: vehicle.idVehicle });
-        btnSell.href = `customerSale.html?${paramsSell.toString()}`;
+        btnSell.href = `${ROUTES.CUSTOMER_SALE}?${paramsSell.toString()}`;
     } else if (vehicle.status === "Vendido") {
         vehicleStatus.querySelector(".statusText").textContent = "Vendido";
         vehicleStatus.classList.add("sold");
@@ -78,11 +79,11 @@ const loadVehicleInfo = (vehicle, Refs) => {
     model.textContent = vehicle.model;
     year.textContent = vehicle.year;
     mileage.textContent = vehicle.mileage;
-    lote.textContent = vehicle.lote.numLote;
+    lote.textContent = vehicle.lot.numLot;
     purchaseDate.textContent = vehicle.purchaseDate;
     status.textContent = vehicle.status;
-    if (vehicle.lote.linkLote) {
-        lote.href = vehicle.lote.linkLote;
+    if (vehicle.lot.linkLot) {
+        lote.href = vehicle.lot.linkLot;
         lote.target = "_blank";
     }
     description.textContent = vehicle.description;
@@ -91,21 +92,21 @@ const loadVehicleInfo = (vehicle, Refs) => {
     description.style.height = description.scrollHeight + "px";
     description.readOnly = true;
 
-    if (vehicle.costs) {
+    if (vehicle.vehicleCosts) {
         const { bill, transfer, storage, transport, ship, taxes, iva, pa, suggestedPrice, total } = Refs;
-        bill.textContent = formatWithCommas(vehicle.costs.bill);
-        vehicle.costs.costPhoto.billPhoto !== null ? bill.href = vehicle.costs.costPhoto.billPhoto : null;
-        transfer.textContent = formatWithCommas(vehicle.costs.transfer);
-        storage.textContent = formatWithCommas(vehicle.costs.storage);
-        transport.textContent = formatWithCommas(vehicle.costs.towTruck);
-        vehicle.costs.costPhoto.shipPhoto !== null ? transport.href = vehicle.costs.costPhoto.shipPhoto : transport;
-        ship.textContent = formatWithCommas(vehicle.costs.ship);
-        vehicle.costs.costPhoto.shipPhoto !== null ? ship.href = vehicle.costs.costPhoto.shipPhoto : null;
-        taxes.textContent = formatWithCommas(vehicle.costs.taxes);
-        vehicle.costs.costPhoto.taxesPhoto !== null ? taxes.href = vehicle.costs.costPhoto.taxesPhoto : null;
-        iva.textContent = formatWithCommas(vehicle.costs.iva);
-        pa.textContent = formatWithCommas(vehicle.costs.pa);
-        vehicle.costs.suggestedPrice !== null ? suggestedPrice.textContent = formatWithCommas(vehicle.costs.suggestedPrice) : suggestedPrice.style.display = "none";
-        total.textContent = formatWithCommas(vehicle.costs.total);
+        bill.textContent = formatWithCommas(vehicle.vehicleCosts.bill);
+        vehicle.vehicleCosts.costPhoto.billPhoto !== null ? bill.href = vehicle.vehicleCosts.costPhoto.billPhoto : null;
+        transfer.textContent = formatWithCommas(vehicle.vehicleCosts.transfer);
+        storage.textContent = formatWithCommas(vehicle.vehicleCosts.storage);
+        transport.textContent = formatWithCommas(vehicle.vehicleCosts.towTruck);
+        vehicle.vehicleCosts.costPhoto.shipPhoto !== null ? transport.href = vehicle.vehicleCosts.costPhoto.shipPhoto : transport;
+        ship.textContent = formatWithCommas(vehicle.vehicleCosts.ship);
+        vehicle.vehicleCosts.costPhoto.shipPhoto !== null ? ship.href = vehicle.vehicleCosts.costPhoto.shipPhoto : null;
+        taxes.textContent = formatWithCommas(vehicle.vehicleCosts.taxes);
+        vehicle.vehicleCosts.costPhoto.taxesPhoto !== null ? taxes.href = vehicle.vehicleCosts.costPhoto.taxesPhoto : null;
+        iva.textContent = formatWithCommas(vehicle.vehicleCosts.iva);
+        pa.textContent = formatWithCommas(vehicle.vehicleCosts.pa);
+        vehicle.vehicleCosts.suggestedPrice !== null ? suggestedPrice.textContent = formatWithCommas(vehicle.vehicleCosts.suggestedPrice) : suggestedPrice.style.display = "none";
+        total.textContent = formatWithCommas(vehicle.vehicleCosts.total);
     }
 };

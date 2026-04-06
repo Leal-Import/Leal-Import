@@ -1,17 +1,17 @@
 import { getCustomers } from "../../customers/customers.service.js";
 import { DOMRefs, insertCustomers, resetCustomerSaleFilters } from "./customers.sale.dom.js";
-import { customerSaleState, resetCustomerSaleState } from "./customers.sale.state.js";
-import { hideElement, showElement, showMessage } from "../../../utils/dom.js";
+import { customerSalesFormState, resetCustomerSalesFormState } from "./customers.sale.state.js";
+import { hideElement, showElement, createModuleInitializer } from "../../../utils/dom.js";
 import { createPagination } from "../../../pagination/pagination.controller.js";
 import { initCustomerSaleEvents } from "./customer.sale.event.js";
-import { initSession } from "../../../utils/api.utils.js";
 import { hydrateContextFromURL } from "./customer.sale.logic.js";
+import { handleApiError } from "../../../utils/api.utils.js";
 
 const pagination = createPagination({
-    initialSize: customerSaleState.pagination.size,
+    initialSize: customerSalesFormState.pagination.size,
     onChange: ({ page, size }) => {
-        customerSaleState.pagination.page = page;
-        customerSaleState.pagination.size = size;
+        customerSalesFormState.pagination.page = page;
+        customerSalesFormState.pagination.size = size;
         loadCustomers();
     }
 });
@@ -19,18 +19,18 @@ const pagination = createPagination({
 const loadCustomers = async () => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
-        const { page, size } = customerSaleState.pagination;
-        const { search } = customerSaleState.filters;
+        const { page, size } = customerSalesFormState.pagination;
+        const { search } = customerSalesFormState.filters;
         const data = await getCustomers(
             page - 1,
             size,
             search || ''
         );
 
-        customerSaleState.list = data.content;
-        customerSaleState.pagination.total = data.page.totalElements;
-        customerSaleState.pagination.totalPages = data.page.totalPages;
-        insertCustomers(DOMRefs.refs.cardContainer, customerSaleState.list, customerSaleState.type, customerSaleState.context.id, customerSaleState.sparePart);
+        customerSalesFormState.list = data.content;
+        customerSalesFormState.pagination.total = data.page.totalElements;
+        customerSalesFormState.pagination.totalPages = data.page.totalPages;
+        insertCustomers(DOMRefs.refs.cardContainer, customerSalesFormState.list, customerSalesFormState.type, customerSalesFormState.context.id, customerSalesFormState.sparePart);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -39,33 +39,19 @@ const loadCustomers = async () => {
             size: data.page.size
         });
     } catch (error) {
-        console.error("Error al cargar los clientes:", error);
-        showMessage('Error', 'No se pudieron cargar los clientes. Inténtalo de nuevo más tarde.', 'error');
+        await handleApiError(error, 'No se pudieron cargar los clientes');
     } finally {
         hideElement(DOMRefs.refs.loaderCustomers);
     }
 };
 
 export const onSearchCustomer = (filters) => {
-    customerSaleState.filters = {
-        ...customerSaleState.filters,
+    customerSalesFormState.filters = {
+        ...customerSalesFormState.filters,
         ...filters
     };
-    customerSaleState.pagination.page = 1;
+    customerSalesFormState.pagination.page = 1;
     loadCustomers();
-};
-
-const setupApplication = async () => {
-    resetCustomerSaleState();
-    // Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    // Hidratar contexto desde URL
-    const contextReady = await hydrateContextFromURL(customerSaleState);
-    if (!contextReady) return false;
-
-    return true;
 };
 
 const initializeUI = (Refs) => {
@@ -77,22 +63,15 @@ const loadDataFlow = async () => {
     await loadCustomers();
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        // Validar sesión y preparar contexto
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        // Inicializar referencias del DOMRefs
-        const refs = DOMRefs.init();
-
-        // Inicializar componentes UI
-        initializeUI(refs);
-
-        // Cargar datos según el flujo
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error initializing application:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: async () => {
+        resetCustomerSalesFormState();
+        const contextReady = await hydrateContextFromURL(customerSalesFormState);
+        if (!contextReady) throw new Error('Failed to hydrate context');
+    },
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);

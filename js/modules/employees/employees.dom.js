@@ -28,7 +28,7 @@ export const resetEmployeesFilters = (refs) => {
     const { txtSearchData, cmbSearchByRole, cmbSearchByStatus } = refs;
     txtSearchData.value = '';
     cmbSearchByRole.value = '';
-    cmbSearchByStatus.value = '';
+    cmbSearchByStatus.value = 'ACTIVE';
 };
 
 const createCell = (text) => {
@@ -56,7 +56,7 @@ export const fillEmployeesForm = (employee) => {
         txtFullName: employee.fullName,
         txtEmployeeEmail: employee.email,
         txtEmployeePhone: employee.phoneEmployee,
-        txtUsername: employee.username.username,
+        txtUsername: employee.user.username,
         cmbUserRole: employee.idRole
     });
 };

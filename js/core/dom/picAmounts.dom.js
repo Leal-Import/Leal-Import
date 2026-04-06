@@ -8,7 +8,7 @@ export const DOMRefs = {
     init() {
         this.refs = {
             currentReceiptInputId: $('currentReceiptInputId'),
-            modalContainer: qs('.containerModal'),
+            modalContainer: qs('#modalVoucher'),
             btnSelectFile: $('btnSelectFile'),
             btnClearFile: $('btnClearFile'),
             modalPreviewArea: $('modalPreviewArea'),
@@ -41,14 +41,33 @@ export const createBtnUrl = (index, receiptUrl, payment) => {
     const span = document.createElement('span');
     span.classList.add('icon');
 
-    const btnReceipt = document.createElement('button');
-    btnReceipt.type = 'button';
-    btnReceipt.classList.add('btnAddPayment', 'btnSecondary');
-    btnReceipt.appendChild(span);
-    btnReceipt.addEventListener('click', (e) => {
-        e.preventDefault();
-        openReceiptModal(receiptInput, receiptUrl, payment);
-    });
+    let btnReceipt;
+    if (!picsAmountState.isViewingReceipt && !payment.paymentURL) {
+        // mostrar input para subir comprobante
+        btnReceipt = document.createElement('button');
+        btnReceipt.type = 'button';
+        btnReceipt.classList.add('btnAddPayment', 'btnSecondary');
+        btnReceipt.appendChild(span);
+        btnReceipt.addEventListener('click', (e) => {
+            e.preventDefault();
+            openReceiptModal(receiptInput, receiptUrl, payment);
+        });
+    } else if (payment.paymentURL) {
+        // hay URL, mostrar botón para ver comprobante
+        btnReceipt = document.createElement('button');
+        btnReceipt.type = 'button';
+        btnReceipt.classList.add('btnAddPayment', 'btnSecondary');
+        btnReceipt.appendChild(span);
+        btnReceipt.addEventListener('click', (e) => {
+            e.preventDefault();
+            openReceiptModal(receiptInput, receiptUrl, payment);
+        });
+    } else {
+        // no hay URL ni se puede subir
+        btnReceipt = document.createElement('span');
+        btnReceipt.style.color = 'var(--text-color)';
+        btnReceipt.textContent = 'No hay comprobante';
+    }
 
     const isLoaded = (receiptUrl?.startsWith('http')) || (payment?.file instanceof File);
     setReceiptBtnState(btnReceipt, span, isLoaded);

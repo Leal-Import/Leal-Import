@@ -1,20 +1,15 @@
-import { addModalCloseEvents } from '../../utils/dom.js';
+import { addModalCloseEvents, debounce } from '../../utils/dom.js';
 import { formatDUIInput, formatPhoneNumber } from '../../utils/formatters.js';
 
 export const initCustomerEvents = ({ Refs, onSubmitCustomer, onSearchCustomer, onOpenModal, onCloseModal }) => {
-
-    let searchTimeout = null;
     const { frmCustomers, txtCustomerPhone, txtCustomerDUI, txtSearchData, cmbSearchByStatus, modalCustomers, btnCloseModalCustomer, btnOpenModalCustomer } = Refs;
 
-    const emiFilters = () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            onSearchCustomer({
-                search: txtSearchData.value.trim(),
-                status: cmbSearchByStatus.value
-            });
-        }, 1000);
-    };
+    const emiFilters = debounce(() => {
+        onSearchCustomer({
+            search: txtSearchData.value.trim(),
+            status: cmbSearchByStatus.value
+        });
+    }, 1000);
 
     btnOpenModalCustomer.addEventListener('click', onOpenModal);
 

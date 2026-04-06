@@ -1,3 +1,4 @@
+import { addModalCloseEvents, debounce } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
 export const initWorkOrdersEvents = ({
@@ -9,19 +10,26 @@ export const initWorkOrdersEvents = ({
     onSaveDate,
     onAddNewService,
     onCompleteOrder,
-    onGeneratePdf
+    onGeneratePdf,
+    onClosePersonModal,
+    onSearchEmployee
 }) => {
-    const { txtAmount, txtSearchSparePart, txtAddService, txtNotes, frmWorkOrder, dtEstimated, btnCompleteOrder, btnGeneratePdf } = Refs;
+    const { txtAmount, txtSearchSparePart, txtAddService, txtNotes, frmWorkOrder, dtEstimated, btnCompleteOrder, btnGeneratePdf, btnClosePersonModal, modalPersonContainer, txtSearchEmployee } = Refs;
 
-    let searchTimeOut = null;
-
-    const search = (e, onSearch) => {
+    const search = debounce((e, onSearch) => {
         const value = e.target.value;
-        clearTimeout(searchTimeOut);
-        searchTimeOut = setTimeout(() => {
-            onSearch({ target: { value } });
-        }, 1000);
-    };
+        onSearch({ target: { value } });
+    }, 1000);
+
+    const searchEmployee = debounce((e) => {
+        const query = e.target.value.trim();
+        onSearchEmployee({ target: { value: query } });
+    }, 1000);
+
+    txtSearchEmployee.addEventListener("input", searchEmployee);
+
+    addModalCloseEvents(modalPersonContainer, onClosePersonModal);
+    btnClosePersonModal.addEventListener("click", onClosePersonModal);
 
     txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
     txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));

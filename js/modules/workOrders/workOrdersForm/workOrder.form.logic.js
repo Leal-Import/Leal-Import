@@ -45,7 +45,9 @@ export const pushSparePart = (state, sparePart) => {
         idSparePart: sparePart.idSparePart || sparePart.idSpareParts,
         name: sparePart.sparePartName || sparePart.nameSpareParts || sparePart.name || '',
         priceApplied: sparePart.priceApplied || sparePart.suggestedPrice || 0,
-        idWorkOrderSpareParts: sparePart.idWorkOrderSpareParts || null
+        idWorkOrdersSpareParts: sparePart.idWorkOrdersSpareParts || null,
+        idEmployee: sparePart.idEmployee || null,
+        assignedEmployee: sparePart.assignedEmployee || null
     };
     state.push(normalizedPart);
     return normalizedPart;
@@ -57,9 +59,11 @@ export const pushService = (state, service) => {
     const normalizedPart = {
         id: id || crypto.randomUUID(),
         idService: service.idService || null,
-        name: service.nameService || service.name || '',
+        name: service.serviceName || service.name || '',
         priceApplied: service.priceApplied || 0.00,
-        idWorkOrderService: service.idWorkOrderService || null
+        idWorkOrdersServices: service.idWorkOrdersServices || null,
+        idEmployee: service.idEmployee || null,
+        assignedEmployee: service.assignedEmployee || null
     };
     state.push(normalizedPart);
     return normalizedPart;
@@ -164,11 +168,11 @@ const buildPutWorkOrderPayload = (state) => {
         idCustomer: context.idCustomer,
         notes: data.notes || '',
         estimatedDate: data.estimatedDate,
-        saveOrUpdateService: normalizeServices(data.selectedServices),
-        saveOrUpdateItems: normalizeSpareParts(data.selectedSpareParts),
-        saveOrUpdatePayments: normalizePayments(data.payments),
+        servicesSaveToUpdate: normalizeServices(data.selectedServices),
+        sparePartsSaveToUpdate: normalizeSpareParts(data.selectedSpareParts),
+        paymentsSaveToUpdate: normalizePayments(data.payments),
         serviceToDelete: data.servicesToDelete,
-        itemsToDelete: data.sparePartsToDelete,
+        sparePartsToDelete: data.sparePartsToDelete,
         paymentsToDelete: data.paymentsToDelete
     };
 };
@@ -179,29 +183,15 @@ const buildPostWorkOrderPayload = (state) => {
         idCustomer: context.idCustomer,
         notes: data.notes || '',
         estimatedDate: data.estimatedDate,
-        services: normalizeServices(data.selectedServices),
-        spareParts: normalizeSpareParts(data.selectedSpareParts),
-        payments: normalizePayments(data.payments)
+        workOrdersServices: normalizeServices(data.selectedServices),
+        workOrdersSpareParts: normalizeSpareParts(data.selectedSpareParts),
+        workOrdersPayments: normalizePayments(data.payments)
     };
 };
 
-const appendPaymentFiles = (fd, payments, isEditing) => {
+const appendPaymentFiles = (fd, payments) => {
     payments.forEach(p => {
-        if (!p.file) return;
-
-        if (isEditing) {
-            // PUT
-            if (p.paymentURL) {
-                // Reemplazo de comprobante existente
-                fd.append(p.idPayment, p.file);
-            } else {
-                // Nuevo pago
-                fd.append('newPaymentImages', p.file);
-            }
-        } else {
-            // POST
-            fd.append('paymentImages', p.file);
-        }
+        fd.append(p.id, p.file);
     });
 };
 
@@ -209,12 +199,13 @@ const normalizeServices = (services) => {
     return services.map(s => {
         const obj = {
             idService: s.idService ?? null,
-            nameService: s.name,
-            priceApplied: Number(s.priceApplied)
+            serviceName: s.name,
+            priceApplied: Number(s.priceApplied),
+            idEmployee: s.idEmployee
         };
 
-        if (s.idWorkOrderService) {
-            obj.idWorkOrderService = s.idWorkOrderService;
+        if (s.idWorkOrdersServices) {
+            obj.idWorkOrdersServices = s.idWorkOrdersServices;
         }
 
         return obj;
@@ -225,11 +216,12 @@ const normalizeSpareParts = (spareParts) => {
     return spareParts.map(p => {
         const obj = {
             idSparePart: p.idSparePart,
-            priceApplied: Number(p.priceApplied)
+            priceApplied: Number(p.priceApplied),
+            idEmployee: p.idEmployee
         };
 
-        if (p.idWorkOrderSpareParts) {
-            obj.idWorkOrderSpareParts = p.idWorkOrderSpareParts;
+        if (p.idWorkOrdersSpareParts) {
+            obj.idWorkOrdersSpareParts = p.idWorkOrdersSpareParts;
         }
 
         return obj;

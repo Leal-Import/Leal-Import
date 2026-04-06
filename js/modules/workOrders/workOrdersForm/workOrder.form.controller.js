@@ -1,30 +1,39 @@
-import { appendToDom, cleanRow, DOMRefs, initStaticRows, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "./workOrder.form.dom.js";
-import { resetWorkOrderDetailsState, workOrderDetailsState } from "./workOrder.form.state.js";
+import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "./workOrder.form.dom.js";
+import { resetWorkOrdersFormState, workOrdersFormState } from "./workOrder.form.state.js";
 import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "./workOrder.form.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
-import { buildParams, cleanOneShotParams, disableElement, hideElement, qsa, removeDisable, showElement, showMessage } from "../../../utils/dom.js";
+import { buildParams, cleanOneShotParams, disableElement, hideElement, qsa, removeDisable, showElement, showMessage, createModuleInitializer, toggleModal } from "../../../utils/dom.js";
+import { DraftManager } from "../../../utils/draft.manager.js";
+import { navigateTo, replaceTo, ROUTES } from "../../../utils/router.js";
 import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
 import { initWorkOrdersEvents } from "./workOrder.form.event.js";
 import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validateOrder, buildOrderFormData } from "./workOrder.form.logic.js";
 import { addNewPayment, initPaymentsController } from "../../payments/payments.controller.js";
 import { createBtnUrl } from "../../../core/dom/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
-import { initSession } from "../../../utils/api.utils.js";
 import { generateWorkOrderReport } from "../../../core/reports/workorders/workorders.report.js";
+import { handleApiError } from "../../../utils/api.utils.js";
+import { getActiveEmployees } from "../../employees/employees.service.js";
+
+// Centralizar manejo de borradores con DraftManager
+const workOrderDraft = new DraftManager(workOrdersFormState.saleKey, {
+    data: {},
+    totals: {}
+});
 
 const addNewPartToTable = () => {
-    if (!workOrderDetailsState.context.idNewPart || !workOrderDetailsState.context.newPartName) return;
-    const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, {
-        idSparePart: workOrderDetailsState.context.idNewPart,
-        sparePartName: workOrderDetailsState.context.newPartName,
-        priceApplied: workOrderDetailsState.context.newPartSuggestedPrice
+    if (!workOrdersFormState.context.idNewPart || !workOrdersFormState.context.newPartName) return;
+    const normalizedPart = pushSparePart(workOrdersFormState.data.selectedSpareParts, {
+        idSparePart: workOrdersFormState.context.idNewPart,
+        sparePartName: workOrdersFormState.context.newPartName,
+        priceApplied: workOrdersFormState.context.newPartSuggestedPrice
     });
     if (normalizedPart === null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodySpareParts,
         data: normalizedPart,
-        arraySelected: workOrderDetailsState.data.selectedSpareParts,
-        arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
+        arraySelected: workOrdersFormState.data.selectedSpareParts,
+        arrayDelete: workOrdersFormState.data.sparePartsToDelete,
         onWritePrice,
         onDelete,
         renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
@@ -38,15 +47,16 @@ const onWritePrice = (e, data) => {
 };
 
 const onAddService = (service) => {
-    const normalizedService = pushService(workOrderDetailsState.data.selectedServices, service);
+    const normalizedService = pushService(workOrdersFormState.data.selectedServices, service);
     if (normalizedService === null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodyServices,
         data: normalizedService,
-        arraySelected: workOrderDetailsState.data.selectedServices,
-        arrayDelete: workOrderDetailsState.data.servicesToDelete,
+        arraySelected: workOrdersFormState.data.selectedServices,
+        arrayDelete: workOrdersFormState.data.servicesToDelete,
         onWritePrice,
-        onDelete
+        onDelete,
+        onClickCreatePerson
     });
 
     DOMRefs.refs.txtAddService.value = '';
@@ -56,16 +66,17 @@ const onAddService = (service) => {
 };
 
 const onAddSparePart = (sparePart) => {
-    const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, sparePart);
+    const normalizedPart = pushSparePart(workOrdersFormState.data.selectedSpareParts, sparePart);
     if (normalizedPart === null) return;
     appendToDom({
         tBody: DOMRefs.refs.tBodySpareParts,
         data: normalizedPart,
-        arraySelected: workOrderDetailsState.data.selectedSpareParts,
-        arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
+        arraySelected: workOrdersFormState.data.selectedSpareParts,
+        arrayDelete: workOrdersFormState.data.sparePartsToDelete,
         onWritePrice,
         onDelete,
-        renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
+        renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts),
+        onClickCreatePerson
     });
 
     DOMRefs.refs.txtSearchSparePart.value = '';
@@ -75,14 +86,39 @@ const onAddSparePart = (sparePart) => {
     calculateAllTotals();
 };
 
+const onClickCreatePerson = async (itemName, arraySelected, id, cell) => {
+    const itemSelected = arraySelected.find(i => i.id === id);
+    let employeeSelected = null;
+    if (itemSelected?.assignedEmployee) {
+        employeeSelected = {
+            idEmployee: itemSelected.idEmployee,
+            fullName: itemSelected.assignedEmployee
+        };
+    }
+    toggleModal(DOMRefs.refs.modalPersonContainer, true);
+    let employees;
+    if (workOrdersFormState.employeeList.length > 0) {
+        employees = workOrdersFormState.employeeList;
+    } else {
+        employees = await loadEmployees('');
+    }
+    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee, employeeSelected);
+    DOMRefs.refs.modalPersonItemName.textContent = itemName;
+    workOrdersFormState.employeeContext = {
+        selectedArray: arraySelected,
+        idItem: id,
+        cell: cell
+    };
+};
+
 const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) => {
     const index = arraySelected.indexOf(item);
     if (index !== -1) {
         arraySelected.splice(index, 1);
     }
 
-    if (item.idWorkOrderService || item.idWorkOrderSpareParts) {
-        arrayDelete.push(item.idWorkOrderService || item.idWorkOrderSpareParts);
+    if (item.idWorkOrdersServices || item.idWorkOrdersSpareParts) {
+        arrayDelete.push(item.idWorkOrdersServices || item.idWorkOrdersSpareParts);
     }
 
     cleanRow(row);
@@ -92,21 +128,21 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
 };
 
 const onSearchService = (e) => {
-    onSearch(e, getServices, renderServiceSuggestions, DOMRefs.refs.boxServ, onAddService, workOrderDetailsState.data.selectedServices);
+    onSearch(e, getServices, renderServiceSuggestions, DOMRefs.refs.boxServ, onAddService, workOrdersFormState.data.selectedServices);
 };
 
 const onSearchSpareParts = (e) => {
-    onSearch(e, getSpareParts, renderSparePartSuggestions, DOMRefs.refs.boxSparePart, onAddSparePart, workOrderDetailsState.data.selectedSpareParts);
+    onSearch(e, getSpareParts, renderSparePartSuggestions, DOMRefs.refs.boxSparePart, onAddSparePart, workOrdersFormState.data.selectedSpareParts);
 };
 
 const onSubmitOrder = async (e) => {
     e.preventDefault();
     const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnImport, .btnSecondary");
-    const isEditing = !!workOrderDetailsState.context.idWorkOrder;
+    const isEditing = !!workOrdersFormState.context.idWorkOrder;
     const errorValidate = validateOrder(
-        workOrderDetailsState.data,
-        workOrderDetailsState.context.idVehicle,
-        workOrderDetailsState.totals.total,
+        workOrdersFormState.data,
+        workOrdersFormState.context.idVehicle,
+        workOrdersFormState.totals.total,
         !isEditing // requirePayment solo en POST
     );
 
@@ -115,33 +151,37 @@ const onSubmitOrder = async (e) => {
         return;
     }
 
-    const fd = buildOrderFormData(workOrderDetailsState, isEditing);
+    const fd = buildOrderFormData(workOrdersFormState, isEditing);
 
     showElement(DOMRefs.refs.loaderAddOrder);
     camps.forEach(disableElement);
 
     try {
         let response;
-        if (workOrderDetailsState.context.idWorkOrder) {
-            response = await putWorkOrder(fd, workOrderDetailsState.context.idWorkOrder);
+        if (workOrdersFormState.context.idWorkOrder) {
+            response = await putWorkOrder(fd, workOrdersFormState.context.idWorkOrder);
             await showMessage('Orden actualizada', 'Éxito', 'success');
         } else {
-            response = await postWorkOrder(fd, workOrderDetailsState.context.idVehicle, workOrderDetailsState.context.idSale);
+            response = await postWorkOrder(fd, workOrdersFormState.context.idVehicle, workOrdersFormState.context.idSale);
             await showMessage('Orden registrada', 'Éxito', 'success');
         }
 
         if (response) {
-            localStorage.removeItem(workOrderDetailsState.saleKey);
+            workOrderDraft.clear();
             DOMRefs.refs.frmWorkOrder.reset();
         }
-        if (workOrderDetailsState.context.idSale) {
-            window.location.replace('sales.html');
+        if (workOrdersFormState.context.idSale) {
+            replaceTo(ROUTES.SALES, { id: workOrdersFormState.context.idSale });
         } else {
-            window.location.replace('workOrders.html');
+            const params = buildParams({
+                idWorkOrder: response.idWorkOrder,
+                idVehicle: workOrdersFormState.context.idVehicle,
+                idCustomer: workOrdersFormState.context.idCustomer
+            });
+            replaceTo(ROUTES.WORK_ORDERS, Object.fromEntries(params.entries()));
         }
     } catch (error) {
-        console.error(error);
-        showMessage('Error al procesar venta', error, 'error');
+        await handleApiError(error, 'No se pudo guardar la orden. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.loaderAddOrder);
         camps.forEach(removeDisable);
@@ -150,174 +190,173 @@ const onSubmitOrder = async (e) => {
 
 const onSaveNotes = (e) => {
     const value = e.target.value.trim() || '';
-    workOrderDetailsState.data.notes = value;
+    workOrdersFormState.data.notes = value;
 };
 
 const onSaveDate = (e) => {
     const value = e.target.value || null;
-    workOrderDetailsState.data.estimatedDate = value;
+    workOrdersFormState.data.estimatedDate = value;
 };
 
 const loadDataVehicle = async (Refs) => {
     try {
-        const vehicle = await getDataVehicleById(workOrderDetailsState.context.idVehicle);
-        if (workOrderDetailsState.context.idSale) {
+        const vehicle = await getDataVehicleById(workOrdersFormState.context.idVehicle);
+        if (workOrdersFormState.context.idSale) {
             loadViewSaleInfo(vehicle.vin, Refs);
-        } else if (workOrderDetailsState.context.idWorkOrder) {
+        } else if (workOrdersFormState.context.idWorkOrder) {
             loadViewUpdateOrder(vehicle.vin, Refs);
         }
         renderVehicleData(vehicle, Refs);
-        renderVehiclePrice(workOrderDetailsState.context.vehiclePrice, Refs.vehiclePrice);
+        renderVehiclePrice(workOrdersFormState.context.vehiclePrice, Refs.vehiclePrice);
     } catch (error) {
-        showMessage("Error", "No se pudieron cargar los datos del vehiculo", "error");
-        console.log(error);
+        await handleApiError(error, 'No se pudo cargar la información del vehículo. Por favor, inténtalo de nuevo.');
     }
 };
 
 const onImportSparePart = () => {
-    saveWorkOrderState();
+    workOrderDraft.save({
+        data: workOrdersFormState.data,
+        totals: workOrdersFormState.totals
+    });
     const params = buildParams({
         workOrder: true,
-        idWorkOrder: workOrderDetailsState.context.idWorkOrder,
-        idSale: workOrderDetailsState.context.idSale,
-        customerName: workOrderDetailsState.context.customerName,
-        idVehicle: workOrderDetailsState.context.idVehicle,
-        idCustomer: workOrderDetailsState.context.idCustomer,
-        totalPrice: workOrderDetailsState.context.vehiclePrice
+        idWorkOrder: workOrdersFormState.context.idWorkOrder,
+        idSale: workOrdersFormState.context.idSale,
+        customerName: workOrdersFormState.context.customerName,
+        idVehicle: workOrdersFormState.context.idVehicle,
+        idCustomer: workOrdersFormState.context.idCustomer,
+        totalPrice: workOrdersFormState.context.vehiclePrice
     });
-    window.location.href = `sparePartsForm.html?${params.toString()}`;
-};
-
-const saveWorkOrderState = () => {
-    localStorage.setItem(workOrderDetailsState.saleKey, JSON.stringify({
-        data: workOrderDetailsState.data,
-        totals: workOrderDetailsState.totals
-    }));
+    navigateTo(ROUTES.SPARE_PART_FORM, Object.fromEntries(params.entries()));
 };
 
 const recalculateTotalsPanel = () => {
     const items = [
-        ...workOrderDetailsState.data.selectedServices,
-        ...workOrderDetailsState.data.selectedSpareParts
+        ...workOrdersFormState.data.selectedServices,
+        ...workOrdersFormState.data.selectedSpareParts
     ];
     const { total, due } = calculateTotals({
         items,
-        paid: workOrderDetailsState.totals.totalPaid
+        paid: workOrdersFormState.totals.totalPaid
     });
-    workOrderDetailsState.totals.total = total;
-    workOrderDetailsState.totals.due = due;
-    renderTotalsPanel({ total, due, totalPaid: workOrderDetailsState.totals.totalPaid }, DOMRefs.refs);
+    workOrdersFormState.totals.total = total;
+    workOrdersFormState.totals.due = due;
+    renderTotalsPanel({ total, due, totalPaid: workOrdersFormState.totals.totalPaid }, DOMRefs.refs);
 };
 
 const calculateAllTotals = () => {
     const totals = calculateWorkOrderTotals({
-        services: workOrderDetailsState.data.selectedServices,
-        spareParts: workOrderDetailsState.data.selectedSpareParts,
-        payments: workOrderDetailsState.data.payments,
-        vehiclePrice: workOrderDetailsState.context.vehiclePrice
+        services: workOrdersFormState.data.selectedServices,
+        spareParts: workOrdersFormState.data.selectedSpareParts,
+        payments: workOrdersFormState.data.payments,
+        vehiclePrice: workOrdersFormState.context.vehiclePrice
     });
-    workOrderDetailsState.totals.total = totals.total;
-    workOrderDetailsState.totals.due = totals.due;
-    workOrderDetailsState.totals.totalPaid = totals.totalPaid;
+    workOrdersFormState.totals.total = totals.total;
+    workOrdersFormState.totals.due = totals.due;
+    workOrdersFormState.totals.totalPaid = totals.totalPaid;
     renderTotals(totals, DOMRefs.refs);
 };
 
-const loadDraft = (Refs) => {
-    const item = localStorage.getItem(workOrderDetailsState.saleKey);
-    if (!item) {
-        console.warn('No draft found in localStorage');
-        return;
-    }
-    try {
-        const storageItem = JSON.parse(item);
-        workOrderDetailsState.data.estimatedDate = storageItem.data?.estimatedDate || "";
-        workOrderDetailsState.data.notes = storageItem.data?.notes || "";
-        workOrderDetailsState.data.paymentsToDelete = storageItem.data?.paymentsToDelete || [];
-        workOrderDetailsState.data.sparePartsToDelete = storageItem.data?.sparePartsToDelete || [];
-        workOrderDetailsState.data.servicesToDelete = storageItem.data?.servicesToDelete || [];
-        workOrderDetailsState.totals = storageItem.totals || {};
+/**
+ * Carga datos de borrador guardados en localStorage
+ * Restaura servicios, repuestos, pagos, notas y totales
+ */
+const loadDraftData = (Refs) => {
+    const draft = workOrderDraft.load();
+    if (!draft.data || Object.keys(draft.data).length === 0) return;
 
-        loadExtraInputs(workOrderDetailsState.data.notes, workOrderDetailsState.data.estimatedDate, Refs);
+    try {
+        workOrdersFormState.data.estimatedDate = draft.data?.estimatedDate || "";
+        workOrdersFormState.data.notes = draft.data?.notes || "";
+        workOrdersFormState.data.paymentsToDelete = draft.data?.paymentsToDelete || [];
+        workOrdersFormState.data.sparePartsToDelete = draft.data?.sparePartsToDelete || [];
+        workOrdersFormState.data.servicesToDelete = draft.data?.servicesToDelete || [];
+        if (draft.totals) workOrdersFormState.totals = { ...workOrdersFormState.totals, ...draft.totals };
+
+        loadExtraInputs(workOrdersFormState.data.notes, workOrdersFormState.data.estimatedDate, Refs);
 
         // Cargar spare parts
-        storageItem.data?.selectedSpareParts?.forEach(part => {
-            const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, part);
+        (draft.data?.selectedSpareParts || []).forEach(part => {
+            const normalizedPart = pushSparePart(workOrdersFormState.data.selectedSpareParts, part);
             if (normalizedPart === null) return;
             appendToDom({
                 tBody: DOMRefs.refs.tBodySpareParts,
                 data: normalizedPart,
-                arraySelected: workOrderDetailsState.data.selectedSpareParts,
-                arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
+                arraySelected: workOrdersFormState.data.selectedSpareParts,
+                arrayDelete: workOrdersFormState.data.sparePartsToDelete,
                 onWritePrice,
                 onDelete,
                 renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
             });
         });
+
         // Cargar servicios
-        storageItem.data?.selectedServices?.forEach(service => {
-            const normalizedService = pushService(workOrderDetailsState.data.selectedServices, service);
+        (draft.data?.selectedServices || []).forEach(service => {
+            const normalizedService = pushService(workOrdersFormState.data.selectedServices, service);
             if (normalizedService === null) return;
             appendToDom({
                 tBody: DOMRefs.refs.tBodyServices,
                 data: normalizedService,
-                arraySelected: workOrderDetailsState.data.selectedServices,
-                arrayDelete: workOrderDetailsState.data.servicesToDelete,
+                arraySelected: workOrdersFormState.data.selectedServices,
+                arrayDelete: workOrdersFormState.data.servicesToDelete,
                 onWritePrice,
                 onDelete
             });
         });
+
         // Cargar pagos
-        storageItem.data?.payments?.forEach(payment => {
+        (draft.data?.payments || []).forEach(payment => {
             addNewPayment({
-                state: workOrderDetailsState.data,
-                totals: workOrderDetailsState.totals,
+                state: workOrdersFormState.data,
+                totals: workOrdersFormState.totals,
                 payment
             });
         });
     } catch (error) {
-        console.error('Error loading draft:', error);
-        showMessage('Advertencia', 'No se pudo cargar el borrador guardado', 'warning');
+        handleApiError(error, 'No se pudo cargar el borrador de la orden. Por favor, inténtalo de nuevo.');
     }
 };
 
 const loadWorkOrder = async (Refs) => {
-    const workOrder = await getWorkOrderById(workOrderDetailsState.context.idWorkOrder);
-    workOrderDetailsState.workOrder = workOrder;
-    workOrderDetailsState.context.idVehicle = workOrder.idVehicle;
-    workOrderDetailsState.data.estimatedDate = workOrder.estimatedDate || "";
-    workOrderDetailsState.data.notes = workOrder.notes || "";
+    const workOrder = await getWorkOrderById(workOrdersFormState.context.idWorkOrder);
+    workOrdersFormState.workOrder = workOrder;
+    workOrdersFormState.context.idVehicle = workOrder.idVehicle;
+    workOrdersFormState.data.estimatedDate = workOrder.estimatedDate || "";
+    workOrdersFormState.data.notes = workOrder.notes || "";
     loadViewUpdateOrder(workOrder.vehicleInfo.vin, Refs);
     renderVehicleData(workOrder.vehicleInfo, Refs);
-    loadExtraInputs(workOrderDetailsState.data.notes, workOrderDetailsState.data.estimatedDate, Refs);
-    workOrder.spareParts.forEach(part => {
-        const normalizedPart = pushSparePart(workOrderDetailsState.data.selectedSpareParts, part);
+    loadExtraInputs(workOrdersFormState.data.notes, workOrdersFormState.data.estimatedDate, Refs);
+    workOrder.workOrdersSpareParts.forEach(part => {
+        const normalizedPart = pushSparePart(workOrdersFormState.data.selectedSpareParts, part);
         appendToDom({
             tBody: DOMRefs.refs.tBodySpareParts,
             data: normalizedPart,
-            arraySelected: workOrderDetailsState.data.selectedSpareParts,
-            arrayDelete: workOrderDetailsState.data.sparePartsToDelete,
+            arraySelected: workOrdersFormState.data.selectedSpareParts,
+            arrayDelete: workOrdersFormState.data.sparePartsToDelete,
             onWritePrice,
             onDelete,
             renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts),
-            isView: workOrderDetailsState.context.isView
+            isView: workOrdersFormState.context.isView,
+            onClickCreatePerson
         });
     });
-    workOrder.services.forEach(service => {
-        const normalizedService = pushService(workOrderDetailsState.data.selectedServices, service);
+    workOrder.workOrdersServices.forEach(service => {
+        const normalizedService = pushService(workOrdersFormState.data.selectedServices, service);
         appendToDom({
             tBody: DOMRefs.refs.tBodyServices,
             data: normalizedService,
-            arraySelected: workOrderDetailsState.data.selectedServices,
-            arrayDelete: workOrderDetailsState.data.servicesToDelete,
+            arraySelected: workOrdersFormState.data.selectedServices,
+            arrayDelete: workOrdersFormState.data.servicesToDelete,
             onWritePrice,
             onDelete,
-            isView: workOrderDetailsState.context.isView
+            isView: workOrdersFormState.context.isView,
+            onClickCreatePerson
         });
     });
-    workOrder.payments.forEach(payment => {
+    workOrder.workOrdersPayments.forEach(payment => {
         addNewPayment({
-            state: workOrderDetailsState.data,
-            totals: workOrderDetailsState.totals,
+            state: workOrdersFormState.data,
+            totals: workOrdersFormState.totals,
             payment
         });
     });
@@ -328,22 +367,55 @@ const onCompleteOrder = async () => {
     showElement(DOMRefs.refs.loaderCompleteOrder);
     camps.forEach(disableElement);
     try {
-        const answer = await patchWorkOrder(workOrderDetailsState.context.idWorkOrder);
+        const answer = await patchWorkOrder(workOrdersFormState.context.idWorkOrder);
         await showMessage("Exito", "Orden completada", "success", true);
         if (answer) {
             const params = buildParams({
-                idVehicle: workOrderDetailsState.context.idVehicle,
-                idCustomer: workOrderDetailsState.context.idCustomer
+                idVehicle: workOrdersFormState.context.idVehicle,
+                idCustomer: workOrdersFormState.context.idCustomer
             });
-            window.location.replace(`workOrderDetails.html?${params.toString()}`);
+            replaceTo(ROUTES.WORK_ORDER_HISTORY, Object.fromEntries(params.entries()));
         }
     } catch (error) {
-        console.error(error);
-        showMessage("Error", "No se pudo completar la orden", "error");
+        await handleApiError(error, 'No se pudo completar la orden. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.loaderCompleteOrder);
         camps.forEach(removeDisable);
     }
+};
+
+const loadEmployees = async (query) => {
+    try {
+        const employeesResponse = await getActiveEmployees(0, 10, query);
+        workOrdersFormState.employeeList = employeesResponse.content || [];
+        return workOrdersFormState.employeeList;
+    } catch (error) {
+        await handleApiError(error, 'No se pudieron cargar los empleados. Por favor, inténtalo de nuevo.');
+    }
+};
+
+const onSearchEmployee = async (e) => {
+    const query = e.target.value.trim();
+    let employees;
+    if (workOrdersFormState.employeeList.length && query.length >= 3) {
+        employees = workOrdersFormState.employeeList.filter(emp => emp.fullName.toLowerCase().includes(query.toLowerCase()));
+    } else {
+        employees = await loadEmployees(query);
+    }
+    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee);
+};
+
+const onSelectEmployee = (employee) => {
+    const { selectedArray, idItem, cell } = workOrdersFormState.employeeContext;
+    // Encontrar y actualizar el objeto en arraySelected con el id coincidente
+    const item = selectedArray.find(i => i.id === idItem);
+
+    if (item) {
+        item.idEmployee = employee.idEmployee;
+        item.assignedEmployee = employee.fullName;
+    }
+
+    cell.querySelector('span').textContent = employee.fullName;
 };
 
 const onSearch = async (e, getData, renderData, box, onAdd, selected) => {
@@ -355,7 +427,7 @@ const onSearch = async (e, getData, renderData, box, onAdd, selected) => {
     try {
         const res = await getData(query);
         renderData(selected, box, res.content || [], onAdd);
-    } catch (err) { console.error(err); }
+    } catch (err) { await handleApiError(err, 'No se pudieron cargar los datos. Por favor, inténtalo de nuevo.'); }
 };
 
 const onAddNewService = (e) => {
@@ -363,23 +435,23 @@ const onAddNewService = (e) => {
         e.preventDefault();
         const val = e.target.value.trim();
         if (!val) return;
-        onAddService({ idService: null, nameService: val, priceApplied: 0 });
+        onAddService({ idService: null, serviceName: val, priceApplied: 0 });
     }
 };
 
 // Funciones auxiliares para cada flujo
 const initNewPartFlow = async (Refs) => {
-    loadDraft(Refs);
+    loadDraftData(Refs);
     addNewPartToTable();
     validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
     await loadDataVehicle(Refs);
-    localStorage.removeItem(workOrderDetailsState.saleKey);
+    workOrderDraft.clear();
 };
 
 const initEditOrderFlow = async (Refs) => {
     await loadWorkOrder(Refs);
 
-    if (workOrderDetailsState.context.isView) {
+    if (workOrdersFormState.context.isView) {
         loadViewDom(Refs);
         showElement(Refs.btnCompleteOrder);
         showElement(Refs.btnGeneratePdf);
@@ -398,17 +470,10 @@ const initNewOrderFlow = async (Refs) => {
     validateDate(Refs.dtEstimated, new Date());
 };
 
-const setupApplication = async () => {
-    resetWorkOrderDetailsState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    // 3. Hidratar contexto desde URL
-    const hydrated = await hydrateContextFromURL(workOrderDetailsState);
-    if (!hydrated) return false;
-
-    return true;
+const onClosePersonModal = () => {
+    toggleModal(DOMRefs.refs.modalPersonContainer, false);
+    DOMRefs.refs.txtSearchEmployee.value = '';
+    DOMRefs.refs.employeeList.innerHTML = '';
 };
 
 const initializeUI = async (Refs) => {
@@ -419,8 +484,8 @@ const initializeUI = async (Refs) => {
         totalCalculator: recalculateTotalsPanel,
         onStateChange: null,
         createReceiptBtn: createBtnUrl,
-        isView: workOrderDetailsState.context.isView,
-        state: workOrderDetailsState
+        isView: workOrdersFormState.context.isView,
+        state: workOrdersFormState
     });
 
     initWorkOrdersEvents({
@@ -432,14 +497,16 @@ const initializeUI = async (Refs) => {
         onAddNewService,
         onSaveDate,
         onCompleteOrder,
-        onGeneratePdf: () => generateWorkOrderReport(workOrderDetailsState.workOrder)
+        onClosePersonModal,
+        onGeneratePdf: () => generateWorkOrderReport(workOrdersFormState.workOrder),
+        onSearchEmployee
     });
 
-    initializeModalListeners(workOrderDetailsState.data, workOrderDetailsState.context.isView);
+    initializeModalListeners(workOrdersFormState.data, workOrdersFormState.context.isView);
 };
 
 const loadDataFlow = async (Refs) => {
-    const { context } = workOrderDetailsState;
+    const { context } = workOrdersFormState;
 
     // Determinar qué flujo ejecutar
     if (context.isNewPart) {
@@ -466,25 +533,19 @@ const finalizeTotals = () => {
 // ============================================
 // INICIALIZACIÓN PRINCIPAL
 // ============================================
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        // 1. Configurar aplicación
-        const isReady = await setupApplication();
-        if (!isReady) return;
 
-        // 2. Inicializar referencias del DOMRefs
-        const refs = DOMRefs.init();
-
-        // 3. Inicializar componentes UI
-        await initializeUI(refs);
-
-        // 4. Cargar datos según el flujo
+const init = createModuleInitializer({
+    resetState: async () => {
+        resetWorkOrdersFormState();
+        const hydrated = await hydrateContextFromURL(workOrdersFormState);
+        if (!hydrated) throw new Error('Failed to hydrate context');
+    },
+    initialize: initializeUI,
+    load: async (refs) => {
         await loadDataFlow(refs);
-
-        // 5. Calcular totales finales
         finalizeTotals();
-    } catch (error) {
-        console.error('Error inicializando la aplicación:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+    },
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);

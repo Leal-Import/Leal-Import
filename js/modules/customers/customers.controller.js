@@ -1,20 +1,20 @@
 import { postCustomer, putCustomer, getCustomers, patchCustomer } from './customers.service.js';
-import { customersState, resetCustomersState } from './customers.state.js';
-import { toggleModal, showMessage, setFormReadOnly, showElement, hideElement, disableElement, removeDisable } from '../../utils/dom.js';
+import { customersListState, resetCustomersListState } from './customers.state.js';
+import { toggleModal, showMessage, setFormReadOnly, showElement, hideElement, disableElement, removeDisable, createModuleInitializer } from '../../utils/dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateCustomer, mapCustomerForm } from './customers.logic.js';
 import { initCustomerEvents } from './customers.events.js';
 import { DOMRefs, fillCustomerForm, insertCustomers, resetCustomersFilters, rewriteModalText } from './customers.dom.js';
-import { initSession } from '../../utils/api.utils.js';
 import { showFloatingMenu } from '../../utils/floatingMenu.js';
+import { handleApiError } from '../../utils/api.utils.js';
 
-const STATUS = { ACTIVE: 'T', INACTIVE: 'F' };
+const STATUS = { ACTIVE: 'ACTIVE', INACTIVE: 'INACTIVE' };
 
 const pagination = createPagination({
-    initialSize: customersState.pagination.size,
+    initialSize: customersListState.pagination.size,
     onChange: ({ page, size }) => {
-        customersState.pagination.page = page;
-        customersState.pagination.size = size;
+        customersListState.pagination.page = page;
+        customersListState.pagination.size = size;
         loadCustomers();
     }
 });
@@ -22,23 +22,22 @@ const pagination = createPagination({
 export const loadCustomers = async () => {
     try {
         showElement(DOMRefs.refs.loaderCustomers);
-        const { page, size } = customersState.pagination;
-        const { search, status } = customersState.filters;
+        const { page, size } = customersListState.pagination;
+        const { search, status } = customersListState.filters;
         const data = await getCustomers(
             page - 1,
             size,
             search || '',
             status || ''
-
         );
 
-        customersState.list = data.content;
-        customersState.pagination.total = data.page.totalElements;
-        customersState.pagination.totalPages = data.page.totalPages;
+        customersListState.list = data.content;
+        customersListState.pagination.total = data.page.totalElements;
+        customersListState.pagination.totalPages = data.page.totalPages;
 
         insertCustomers(
             DOMRefs.refs.CustomersTableBody,
-            customersState.list,
+            customersListState.list,
             handleCustomerActions,
             DOMRefs.refs.tableCustomers
         );
@@ -50,12 +49,7 @@ export const loadCustomers = async () => {
             size: data.page.size
         });
     } catch (error) {
-        showMessage(
-            'Error',
-            'No se pudieron cargar los clientes',
-            'error'
-        );
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar los clientes');
     } finally {
         hideElement(DOMRefs.refs.loaderCustomers);
     }
@@ -93,17 +87,12 @@ const toggleCustomerStatus = async (id, status) => {
 
         await loadCustomers();
     } catch (error) {
-        showMessage(
-            'Error',
-            'No se pudo cambiar el estado',
-            'error'
-        );
-        console.error(error);
+        await handleApiError(error, 'No se pudo actualizar el estado del cliente. Por favor, inténtalo de nuevo.');
     }
 };
 
 const editCustomer = (customer) => {
-    customersState.selectedId = customer.idCustomer;
+    customersListState.selectedId = customer.idCustomer;
     fillCustomerForm(customer);
     rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Actualizar");
     setFormReadOnly('#frmCustomers', false);
@@ -111,7 +100,7 @@ const editCustomer = (customer) => {
 };
 
 const viewCustomer = (customer) => {
-    customersState.selectedId = null;
+    customersListState.selectedId = null;
     fillCustomerForm(customer);
     rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Ver");
     setFormReadOnly('#frmCustomers', true);
@@ -119,7 +108,7 @@ const viewCustomer = (customer) => {
 };
 
 const onOpenModal = () => {
-    customersState.selectedId = null;
+    customersListState.selectedId = null;
     DOMRefs.refs.frmCustomers.reset();
     rewriteModalText(DOMRefs.refs.btnAddNewCustomer, DOMRefs.refs.titleModal, "Agregar");
     setFormReadOnly('#frmCustomers', false);
@@ -127,7 +116,7 @@ const onOpenModal = () => {
 };
 
 const onCloseModal = () => {
-    customersState.selectedId = null;
+    customersListState.selectedId = null;
     toggleModal(DOMRefs.refs.modalCustomers, false);
 };
 
@@ -145,8 +134,8 @@ const onSubmitCustomer = async (e) => {
     DOMRefs.refs.campsModal.forEach(disableElement);
     disableElement(DOMRefs.refs.btnAddNewCustomer);
     try {
-        if (customersState.selectedId) {
-            await putCustomer(customer, customersState.selectedId);
+        if (customersListState.selectedId) {
+            await putCustomer(customer, customersListState.selectedId);
             showMessage('Exito', 'Cliente actualizado exitosamente', 'success');
         } else {
             await postCustomer(customer);
@@ -154,12 +143,11 @@ const onSubmitCustomer = async (e) => {
         }
 
     } catch (err) {
-        console.error(err);
-        showMessage('Error', err.message || 'Error al guardar cliente', 'error');
+        await handleApiError(err, 'No se pudo guardar el cliente. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.loaderAddCustomer);
         DOMRefs.refs.campsModal.forEach(removeDisable);
-        customersState.selectedId = null;
+        customersListState.selectedId = null;
         DOMRefs.refs.frmCustomers.reset();
         removeDisable(DOMRefs.refs.btnAddNewCustomer);
         pagination.update({});
@@ -168,21 +156,12 @@ const onSubmitCustomer = async (e) => {
 };
 
 const onSearchCustomer = (filters) => {
-    customersState.filters = {
-        ...customersState.filters,
+    customersListState.filters = {
+        ...customersListState.filters,
         ...filters
     };
-    customersState.pagination.page = 1;
+    customersListState.pagination.page = 1;
     loadCustomers();
-};
-
-const setupApplication = async () => {
-    resetCustomersState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    return true;
 };
 
 const initializeUI = (Refs) => {
@@ -194,22 +173,11 @@ const loadDataFlow = async () => {
     await loadCustomers();
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        // 1. Configurar aplicación
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        // 2. Inicializar referencias del DOMRefs
-        const refs = DOMRefs.init();
-
-        // 3. Inicializar componentes UI
-        initializeUI(refs);
-
-        // 4. Cargar datos según el flujo
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error initializing application:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: resetCustomersListState,
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);

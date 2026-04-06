@@ -28,7 +28,7 @@ export const DOMRefs = {
 export const resetCustomersFilters = (Refs) => {
     const { txtSearchData, cmbSearchByStatus } = Refs;
     txtSearchData.value = '';
-    cmbSearchByStatus.value = '';
+    cmbSearchByStatus.value = 'ACTIVE';
 };
 
 export const insertCustomers = (container, customers, onActions, tableCustomers) => {

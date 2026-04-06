@@ -7,6 +7,10 @@ export const DOMRefs = {
         this.refs = {
             darkModeToggle: $('darkModeToggle'),
             btnOpenVerifyPassword: $('btnOpenVerifyPassword'),
+            btnOpenPaymentMethods: $('btnOpenPaymentMethods'),
+            modalPaymentMethods: $('modalPaymentMethods'),
+            btnClosePaymentMethods: $('btnClosePaymentMethods'),
+            pmMethodList: $('pmMethodList'),
             btnEditProfile: $('btnEditProfile'),
             btnCloseEditProfile: $('btnCloseEditProfile'),
             btnCloseNewPassword: $('btnCloseNewPassword'),
@@ -48,6 +52,10 @@ export const DOMRefs = {
             passwordMatchHint: $('passwordMatchHint'),
             frmNewPassword: $('frmNewPassword'),
             frmToggleUsername: $('frmToggleUsername'),
+            btnAddPaymentMethodLoader: $('btnAddPaymentMethodLoader'),
+            txtPaymentMethod: $('txtPaymentMethod'),
+            btnAddPaymentMethod: $('btnAddPaymentMethod'),
+            pmHint: $('pmHint'),
             btnLogout: $('btnLogout'),
             segs: [1, 2, 3, 4, 5].map(i => document.getElementById('strengthSeg' + i))
         };
@@ -61,6 +69,55 @@ export const toggleDarkMode = (isDark) => {
     } else {
         document.documentElement.classList.remove('darkMode');
     }
+};
+
+export const insertPaymentMethods = (methods, listEl, onEdit, onDelete) => {
+    listEl.innerHTML = '';
+
+    const fragment = document.createDocumentFragment();
+
+    methods.forEach(method => {
+        const item = document.createElement('div');
+        item.classList.add('pmMethodItem');
+        item.dataset.id = method.idPaymentMethod;
+
+        const nameWrapper = document.createElement('div');
+        nameWrapper.classList.add('pmMethodItemName');
+
+        const dot = document.createElement('div');
+        dot.classList.add('pmMethodDot');
+
+        const name = document.createElement('span');
+        name.textContent = method.methodName;
+
+        nameWrapper.appendChild(dot);
+        nameWrapper.appendChild(name);
+
+        const actions = document.createElement('div');
+        actions.classList.add('pmMethodActions');
+
+        const btnEdit = document.createElement('button');
+        btnEdit.classList.add('pmBtnEdit');
+        btnEdit.type = 'button';
+        btnEdit.textContent = 'Editar';
+        btnEdit.addEventListener('click', () => onEdit(method, listEl));
+
+        const btnDelete = document.createElement('button');
+        btnDelete.classList.add('pmBtnDelete');
+        btnDelete.type = 'button';
+        btnDelete.textContent = 'Eliminar';
+        btnDelete.addEventListener('click', () => onDelete(method.idPaymentMethod));
+
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDelete);
+
+        item.appendChild(nameWrapper);
+        item.appendChild(actions);
+
+        fragment.appendChild(item);
+    });
+
+    listEl.appendChild(fragment);
 };
 
 export const toggleSwitch = (switchElement, isDark) => {

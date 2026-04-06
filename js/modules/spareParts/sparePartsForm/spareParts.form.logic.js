@@ -1,36 +1,16 @@
 import { formatWithCommas } from "../../../utils/formatters.js";
 import { asUUID, fillForm, highlightAndFocus } from "../../../utils/dom.js";
-import { validateImageSize, validateImageType } from "../../../utils/images.validators.js";
 import { isValidDecimal, isValidURL, safeParseFloat } from "../../../utils/validators.js";
-import { sparePartDetailState } from "./spareParts.form.state.js";
-
-export const validateImage = (file) => {
-    if (!(file instanceof File)) {
-        return "Archivo inválido";
-    }
-    const type = validateImageType(file);
-    const size = validateImageSize(file);
-
-    // Tipo
-    if (type) {
-        return type;
-    }
-    // Tamaño
-    if (size) {
-        return size;
-    }
-
-    return null;
-};
+import { sanitizeURLParam } from "../../../utils/sanitizer.js";
+import { sparePartsFormState } from "./spareParts.form.state.js";
 
 export const fillSparePartsBaseForm = (sparePart) => {
     fillForm('#frmSpareParts', {
-        txtPartName: sparePart.nameSpareParts,
+        txtPartName: sparePart.nameSparePart,
         txtLinkName: sparePart.billUrl,
         txtPartBrand: sparePart.brand,
         txtPartModel: sparePart.model,
         txtPartYear: sparePart.yearPart,
-        cmbPartStatus: sparePart.idPartsState,
         txtTracking: sparePart.tracking.numTracking,
         txtLinkTracking: sparePart.tracking.linkTracking,
         txtPurchasePrice: formatWithCommas(sparePart.sparePartsCosts.purchasePrice),
@@ -45,7 +25,6 @@ export const validateBaseSparePart = ({
     txtPartBrand,
     txtPartModel,
     txtPartYear,
-    cmbPartStatus,
     txtPurchasePrice,
     txtTaxes,
     txtSuggestedPrice,
@@ -71,11 +50,6 @@ export const validateBaseSparePart = ({
         highlightAndFocus('txtPartYear');
         return 'El año del repuesto es obligatorio.';
     }
-
-    if (!cmbPartStatus) {
-        highlightAndFocus('cmbPartStatus');
-        return 'Debe seleccionar el estado del repuesto.';
-    } // Esto se debera de quitar despues
 
     if (billLink !== '') {
         if (!isValidURL(billLink)) return 'El enlace de la factura no es válido.';
@@ -115,15 +89,14 @@ export const validateBaseSparePart = ({
 
 export const mapSparePart = (formData) => {
     const sparePart = {
-        nameSpareParts: formData.txtPartName,
+        nameSparePart: formData.txtPartName,
         brand: formData.txtPartBrand,
         model: formData.txtPartModel,
         yearPart: formData.txtPartYear,
-        idPartsState: formData.cmbPartStatus,
-        billUrl: sparePartDetailState.links.bill || null,
+        billUrl: sparePartsFormState.links.bill || null,
         tracking: {
             numTracking: formData.txtTracking || null,
-            linkTracking: sparePartDetailState.links.tracking || null
+            linkTracking: sparePartsFormState.links.tracking || null
         },
         sparePartsCosts: {
             purchasePrice: safeParseFloat(formData.txtPurchasePrice),
@@ -141,7 +114,7 @@ export const hydrateContextFromURL = (state) => {
     state.context.currentId = asUUID(params.get('id'));
     state.context.hasSale = params.get('sale') === 'true';
     state.context.hasWorkOrder = params.get('workOrder') === 'true';
-    state.context.customerName = params.get('customerName')?.trim() || '';
+    state.context.customerName = sanitizeURLParam(params.get('customerName'), '');
     state.context.idCustomer = asUUID(params.get('idCustomer'));
     state.context.idSale = asUUID(params.get('idSale'));
     state.context.totalPrice = params.get('totalPrice');

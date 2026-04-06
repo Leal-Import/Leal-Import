@@ -1,4 +1,4 @@
-import { $, existsById } from "../../../utils/dom.js";
+import { $, existsById, qs } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } from "../../../utils/formatters.js";
 
 export const DOMRefs = {
@@ -22,7 +22,17 @@ export const DOMRefs = {
             totalPaid: $("totalPaid"),
             totalSale: $("totalSale"),
             paymentMethod: $("paymentMethod"),
-            tableInventory: $("tableInventory")
+            tableInventory: $("tableInventory"),
+            divSpace: $("divSpace"),
+            paginationContainer: qs(".paginationContainer"),
+            filterSection: qs(".filterSection"),
+            tBodyPartView: $("tBodyPartView"),
+            tableViewContainer: $("tableViewContainer"),
+            tableNewSpareParts: $("tableNewSpareParts"),
+            paymentForm: qs(".paymentForm"),
+            headerPanel: qs(".headerPanel"),
+            tableContainerSelected: qs(".tableContainerSelected"),
+            btnGeneratePdf: $("btnGeneratePdf")
         };
 
         return this.refs;
@@ -113,6 +123,24 @@ const createBtnAdd = (sparePart, tr, onAddSparePart) => {
     return tdBtn;
 };
 
+export const insertViewParts = (container, sparePart) => {
+    if (!container) return;
+
+    const tr = document.createElement('tr');
+
+    const tdName = document.createElement('td');
+    tdName.textContent = sparePart.name || sparePart.sparePartName || '—';
+
+    const tdPrice = document.createElement('td');
+    tdPrice.textContent = sparePart.priceApplied
+        ? `$${parseFloat(sparePart.priceApplied).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+        : '—';
+
+    tr.appendChild(tdName);
+    tr.appendChild(tdPrice);
+    container.appendChild(tr);
+};
+
 export const createRowTable = (container, sparePart, onDeleteSparePart, onWritePrice) => {
     if (!container) return;
     // Remover row 'no data' si existe
@@ -121,7 +149,7 @@ export const createRowTable = (container, sparePart, onDeleteSparePart, onWriteP
     const idSparePart = sparePart.idSparePart;
     const name = sparePart.name;
     const priceApplied = sparePart.priceApplied;
-    const idSaleItem = sparePart.idSaleItem || null;
+    const idSaleItem = sparePart.idSparePartsSaleItems || null;
 
     const tr = document.createElement("tr");
     const partName = document.createElement("td");

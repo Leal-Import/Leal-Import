@@ -1,3 +1,5 @@
+import { showMessage } from "./dom.js";
+
 export const isValidEmail = (email) => {
     if (!email) return false;
 
@@ -10,6 +12,18 @@ export const isValidEmail = (email) => {
     const domainParts = domain.split('.');
     if (!domainParts.every(part => part.length > 0 && part.length <= 63)) return false;
     if (domainParts.some(part => part.startsWith('-') || part.endsWith('-'))) return false;
+    return true;
+};
+
+export const isValidFromToDates = (start, end, dt) => {
+    if (start && end) {
+        if (new Date(end) < new Date(start)) {
+            // puedes manejar el error como quieras
+            showMessage('La fecha final no puede ser menor a la fecha inicial');
+            dt.value = '';
+            return;
+        }
+    }
     return true;
 };
 
@@ -74,11 +88,9 @@ export const isValidURL = (url) => {
         const parsed = new URL(url);
         return parsed.protocol === "https:";
     } catch (error) {
-        throw new Error("URL inválida: " + error.message, { cause: error });
+        return false;
     }
 };
-
-// utils/validators.js
 
 export const isValidDecimal = (value, precision = 10, scale = 2) => {
     const maxDecimals = scale;

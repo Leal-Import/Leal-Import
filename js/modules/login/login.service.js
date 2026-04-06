@@ -1,184 +1,60 @@
 import config from "../../config.js";
+import { apiRequest, APIError } from "../../utils/api.utils.js";
 
 const API_URL = `${config.API_BASE_URL}/auth`;
 const API_URLS = `${config.API_BASE_URL}/passwordReset`;
 
-export const login = async (credentials, password) => {
+const defaultApiOptions = {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' }
+};
+
+export const login = async (username, password) => {
     try {
-        const request = await fetch(`${API_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ credentials, password }),
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            let errorMessage = `Error al iniciar sesion. Código: ${request.status}.`;
-
-            try {
-                const errorData = await request.json();
-                if (errorData.errors) {
-                    const errores = Object.entries(errorData.errors)
-                        .map(([message]) => `${message}`)
-                        .join("\n");
-                    errorMessage = `Errores de validación:\n${errores}`;
-                } else if (errorData.message) {
-                    errorMessage = errorData.message;
-                }
-            } catch (error) {
-                const errorText = await request.text();
-                if (errorText.length > 0) {
-                    errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
-                }
-                throw new Error(errorMessage, { cause: error });
-            }
-
-            // Lanza el error capturable por el controlador
-            throw new Error(errorMessage);
-        }
-        return await request.json();
-
+        const body = JSON.stringify({ username, password });
+        return await apiRequest(
+            `${API_URL}/login`,
+            { ...defaultApiOptions, method: 'POST', body },
+            'Error al iniciar sesión'
+        );
     } catch (error) {
-        if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
+        if (error instanceof APIError) {
+            throw error;
         }
-
-        throw error;
+        throw new APIError('Error al iniciar sesión', 0, error, `${API_URL}/login`);
     }
 };
 
 export const getAuthMe = async () => {
-    try {
-        const request = await fetch(`${API_URL}/me`, {
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener los datos personales. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en getAuthMe:", error);
-        throw new Error("Fallo al conectar con el servicio de Login.", { cause: error });
-    }
+    return await apiRequest(`${API_URL}/me`, {
+        ...defaultApiOptions,
+        method: 'GET'
+    }, 'No se pudo obtener los datos de sesión');
 };
 
 export const verifyEmail = async (email) => {
-    try {
-        const request = await fetch(`${API_URLS}/request`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            let errorMessage = `Error al verificar correo. Código: ${request.status}.`;
-
-            try {
-                const errorData = await request.json();
-                if (errorData.errors) {
-                    const errores = Object.entries(errorData.errors)
-                        .map(([message]) => `${message}`)
-                        .join("\n");
-                    errorMessage = `Errores de validación:\n${errores}`;
-                } else if (errorData.message) {
-                    errorMessage = errorData.message;
-                }
-            } catch (error) {
-                const errorText = await request.text();
-                if (errorText.length > 0) {
-                    errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
-                }
-                throw new Error(errorMessage, { cause: error });
-            }
-            throw new Error(errorMessage);
-        }
-        return await request.json();
-
-    } catch (error) {
-        if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
-        }
-        throw error;
-    }
+    const body = JSON.stringify({ email });
+    return await apiRequest(
+        `${API_URLS}/request`,
+        { ...defaultApiOptions, method: 'POST', body },
+        'Error al enviar solicitud de verificación de correo'
+    );
 };
 
 export const verifyPIN = async (resetId, email, code) => {
-    try {
-        const request = await fetch(`${API_URLS}/verify`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resetId, email, code }),
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            let errorMessage = `Error al verificar PIN. Código: ${request.status}.`;
-
-            try {
-                const errorData = await request.json();
-                if (errorData.errors) {
-                    const errores = Object.entries(errorData.errors)
-                        .map(([message]) => `${message}`)
-                        .join("\n");
-                    errorMessage = `Errores de validación:\n${errores}`;
-                } else if (errorData.message) {
-                    errorMessage = errorData.message;
-                }
-            } catch (error) {
-                const errorText = await request.text();
-                if (errorText.length > 0) {
-                    errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
-                }
-                throw new Error(errorMessage, { cause: error });
-            }
-            throw new Error(errorMessage);
-        }
-        return await request.json();
-
-    } catch (error) {
-        if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
-        }
-        throw error;
-    }
+    const body = JSON.stringify({ resetId, email, code });
+    return await apiRequest(
+        `${API_URLS}/verify`,
+        { ...defaultApiOptions, method: 'POST', body },
+        'Error al verificar el PIN'
+    );
 };
 
 export const resetPassword = async (ticket, newPassword) => {
-    try {
-        const request = await fetch(`${API_URLS}/confirm`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticket, newPassword }),
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            let errorMessage = `Error al restablecer contraseña. Código: ${request.status}.`;
-
-            try {
-                const errorData = await request.json();
-                if (errorData.errors) {
-                    const errores = Object.entries(errorData.errors)
-                        .map(([message]) => `${message}`)
-                        .join("\n");
-                    errorMessage = `Errores de validación:\n${errores}`;
-                } else if (errorData.message) {
-                    errorMessage = errorData.message;
-                }
-            } catch (error) {
-                const errorText = await request.text();
-                if (errorText.length > 0) {
-                    errorMessage += ` Detalle: ${errorText.substring(0, 100)}`;
-                }
-                throw new Error(errorMessage, { cause: error });
-            }
-            throw new Error(errorMessage);
-        }
-        return await request.json();
-
-    } catch (error) {
-        if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
-        }
-        throw error;
-    }
+    const body = JSON.stringify({ ticket, newPassword });
+    return await apiRequest(
+        `${API_URLS}/confirm`,
+        { ...defaultApiOptions, method: 'POST', body },
+        'Error al restablecer contraseña'
+    );
 };

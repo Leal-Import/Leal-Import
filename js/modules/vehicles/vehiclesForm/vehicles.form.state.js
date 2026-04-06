@@ -1,6 +1,6 @@
 // core/state/vehicles-detail.state.js
 
-export const vehicleDetailState = {
+export const vehiclesFormState = {
     context: {
         currentId: null,
         hasSale: null,
@@ -27,29 +27,29 @@ export const vehicleDetailState = {
     loteId: null
 };
 
-export const resetVehicleDetailState = () => {
-    vehicleDetailState.context = {
+export const resetVehiclesFormState = () => {
+    vehiclesFormState.context = {
         currentId: null,
         hasSale: null,
         hasWorkOrder: null,
         idCustomer: null,
         customerName: null
     };
-    vehicleDetailState.customerId = null;
-    vehicleDetailState.isExternal = false;
-    vehicleDetailState.images = [];
-    vehicleDetailState.photosToDeleteIds = [];
-    vehicleDetailState.currentUploadType = null;
-    vehicleDetailState.uploads = {
+    vehiclesFormState.customerId = null;
+    vehiclesFormState.isExternal = false;
+    vehiclesFormState.images = [];
+    vehiclesFormState.photosToDeleteIds = [];
+    vehiclesFormState.currentUploadType = null;
+    vehiclesFormState.uploads = {
         bill: null,
         taxes: null,
         ship: null
     };
-    vehicleDetailState.urls = {
+    vehiclesFormState.urls = {
         bill: null,
         taxes: null,
         ship: null
     };
-    vehicleDetailState.costsId = null;
-    vehicleDetailState.loteId = null;
+    vehiclesFormState.costsId = null;
+    vehiclesFormState.loteId = null;
 };

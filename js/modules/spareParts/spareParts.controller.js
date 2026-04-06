@@ -1,16 +1,16 @@
-import { resetSparePartsState, sparePartsState } from './spareParts.state.js';
+import { resetSparePartsListState, sparePartsListState } from './spareParts.state.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
-import { showMessage, fillSelect, showElement, hideElement } from '../../utils/dom.js';
+import { fillSelect, showElement, hideElement, createModuleInitializer } from '../../utils/dom.js';
 import { initSparePartsEvents } from './spareParts.events.js';
 import { getSpareParts, getStatus } from './spareParts.service.js';
 import { DOMRefs, insertSpareParts, resetSparePartsFilters } from './spareParts.dom.js';
-import { initSession } from '../../utils/api.utils.js';
+import { handleApiError } from '../../utils/api.utils.js';
 
 const pagination = createPagination({
-    initialSize: sparePartsState.pagination.size,
+    initialSize: sparePartsListState.pagination.size,
     onChange: ({ page, size }) => {
-        sparePartsState.pagination.page = page;
-        sparePartsState.pagination.size = size;
+        sparePartsListState.pagination.page = page;
+        sparePartsListState.pagination.size = size;
         loadSpareParts();
     }
 });
@@ -18,36 +18,33 @@ const pagination = createPagination({
 const loadStatusSelect = async () => {
     try {
         const status = await getStatus();
-        sparePartsState.statusList = status;
-        fillSelect("cmbSearchByStatus", status, 'idPartsState', 'state', null, "Buscar por estado");
+        sparePartsListState.statusList = status;
+        fillSelect("cmbSearchByStatus", status, 'idStatus', 'statusName', null, "Buscar por estado");
     } catch (error) {
-        showMessage(
-            'Error',
-            'No se pudieron cargar los estados de los repuestos',
-            'error'
-        );
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar los estados de los repuestos. Por favor, inténtalo de nuevo.');
     }
 };
 
 export const loadSpareParts = async () => {
     try {
         showElement(DOMRefs.refs.loaderSpareParts);
-        const { page, size } = sparePartsState.pagination;
-        const { search, idState } = sparePartsState.filters;
+        const { page, size } = sparePartsListState.pagination;
+        const { search, idState, startDate, endDate } = sparePartsListState.filters;
 
         const data = await getSpareParts(
             page - 1,
             size,
             search || '',
-            idState || ''
+            idState || '',
+            startDate || '',
+            endDate || ''
         );
 
-        sparePartsState.list = data.content;
-        sparePartsState.pagination.total = data.page.totalElements;
-        sparePartsState.pagination.totalPages = data.page.totalPages;
+        sparePartsListState.list = data.content;
+        sparePartsListState.pagination.total = data.page.totalElements;
+        sparePartsListState.pagination.totalPages = data.page.totalPages;
 
-        insertSpareParts(DOMRefs.refs.cardContainer, sparePartsState.list);
+        insertSpareParts(DOMRefs.refs.cardContainer, sparePartsListState.list);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -56,30 +53,19 @@ export const loadSpareParts = async () => {
             size: data.page.size
         });
     } catch (error) {
-        showMessage('Error', 'No se pudieron cargar los repuestos', 'error');
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar los repuestos. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.loaderSpareParts);
     }
 };
 
 export const onSearchSpareParts = (filters) => {
-    sparePartsState.filters = {
-        ...sparePartsState.filters,
+    sparePartsListState.filters = {
+        ...sparePartsListState.filters,
         ...filters
     };
-    sparePartsState.pagination.page = 1;
+    sparePartsListState.pagination.page = 1;
     loadSpareParts();
-};
-
-const setupApplication = async () => {
-    resetSparePartsState();
-
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    return true;
 };
 
 const initializeUI = (Refs) => {
@@ -91,18 +77,11 @@ const loadDataFlow = async () => {
     await Promise.all([loadStatusSelect(), loadSpareParts()]);
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        const refs = DOMRefs.init();
-
-        initializeUI(refs);
-
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error inicializando la aplicación: ', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: resetSparePartsListState,
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);

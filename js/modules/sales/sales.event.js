@@ -1,20 +1,18 @@
-import { addModalCloseEvents, qs } from "../../utils/dom.js";
+import { addModalCloseEvents, debounce, qs } from "../../utils/dom.js";
 
 export const initSalesEvents = ({ Refs, onSearchSale, onClickBtnFilter, onOpenModal, onCloseModal }) => {
-    const { containerFilterType, txtSearchData, cmbSearchByStatus, btnAskSale, btnCloseModalAsk, modalAskSale } = Refs;
+    const { containerFilterType, txtSearchData, cmbSearchByStatus, btnAskSale, btnCloseModalAsk, modalAskSale, fromDt, toDt } = Refs;
 
-    let searchTimeout = null;
-    const emitFilters = () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            const selected = qs('.lineSelected.selected')?.closest('.filterType');
-            onSearchSale({
-                search: txtSearchData?.value.trim() || '',
-                idState: cmbSearchByStatus?.value || '',
-                productType: selected?.dataset.value ?? ''
-            });
-        }, 1000);
-    };
+    const emitFilters = debounce(() => {
+        const selected = qs('.lineSelected.selected')?.closest('.filterType');
+        onSearchSale({
+            search: txtSearchData?.value.trim() || '',
+            idState: cmbSearchByStatus?.value || '',
+            productType: selected?.dataset.value ?? '',
+            startDate: fromDt?.value || '', // You can set these values based on your date input elements
+            endDate: toDt?.value || ''
+        });
+    }, 1000);
     containerFilterType.addEventListener('click', (e) => {
         const btn = e.target.closest('.filterType');
         if (!btn) return;
@@ -24,12 +22,10 @@ export const initSalesEvents = ({ Refs, onSearchSale, onClickBtnFilter, onOpenMo
 
     txtSearchData.addEventListener('input', emitFilters);
     cmbSearchByStatus.addEventListener('change', emitFilters);
-    btnAskSale.addEventListener("click", () => {
-        onOpenModal();
-    });
-    btnCloseModalAsk.addEventListener("click", () => {
-        onCloseModal();
-    });
+    fromDt.addEventListener('change', emitFilters);
+    toDt.addEventListener('change', emitFilters);
+    btnAskSale.addEventListener("click", onOpenModal);
+    btnCloseModalAsk.addEventListener("click", onCloseModal);
 
     addModalCloseEvents(modalAskSale, onCloseModal);
 };

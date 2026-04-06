@@ -1,17 +1,18 @@
-import { addModalCloseEvents } from "../../../../utils/dom.js";
+import { addModalCloseEvents, debounce } from "../../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatYearInput } from "../../../../utils/formatters.js";
 
-export const initVehicleDetailEvents = ({ Refs, onSubmit, onSearchCustomer, onAddImage, onExternalChange, onCalculateTotal, openLinkLoteModal, onCloseLinkLoteModal, cleanCustomer, onValidateUrl }) => {
-    const { frmVehicles, txtCustomer, txtLink, isExternalOpt, imageInput, btnLinkLote, modalLinkLote, btnCloseLink, btnSaveLinkLote, txtFormat, txtCosts, txtYear, txtMileage } = Refs;
+export const initVehicleDetailEvents = ({ Refs, onSubmit, onSearchCustomer, onExternalChange, onCalculateTotal, onOpenLinkLoteModal, onCloseLinkLoteModal, onCleanCustomer, onValidateUrl }) => {
+    const { frmVehicles, txtCustomer, txtLink, isExternalOpt, btnLinkLote, modalLinkLote, btnCloseLink, btnSaveLinkLote, txtFormat, txtCosts, txtYear, txtMileage } = Refs;
 
-    let searchTimeout = null;
+    const handleCustomerSearch = debounce(() => {
+        onSearchCustomer(txtCustomer.value);
+    }, 1500);
 
     frmVehicles.addEventListener("submit", onSubmit);
 
     txtCustomer.addEventListener("input", () => {
-        clearTimeout(searchTimeout);
-        cleanCustomer();
-        searchTimeout = setTimeout(() => onSearchCustomer(txtCustomer.value), 1500);
+        onCleanCustomer();
+        handleCustomerSearch();
     });
 
     txtLink.addEventListener("input", () => {
@@ -21,11 +22,10 @@ export const initVehicleDetailEvents = ({ Refs, onSubmit, onSearchCustomer, onAd
     if (isExternalOpt) {
         isExternalOpt.addEventListener('change', () => {
             onExternalChange(isExternalOpt.checked);
-            cleanCustomer();
+            onCleanCustomer();
         });
     }
-    imageInput.addEventListener("change", onAddImage);
-    btnLinkLote.addEventListener("click", openLinkLoteModal);
+    btnLinkLote.addEventListener("click", onOpenLinkLoteModal);
     addModalCloseEvents(modalLinkLote, onCloseLinkLoteModal);
     btnCloseLink.addEventListener("click", onCloseLinkLoteModal);
     btnSaveLinkLote.addEventListener("click", onCloseLinkLoteModal);

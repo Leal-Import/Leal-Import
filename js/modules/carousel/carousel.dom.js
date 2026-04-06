@@ -1,4 +1,18 @@
-// utils/carousel.js
+import { $, qsa } from "../../utils/dom.js";
+
+export const DOMRefs = {
+    refs: {},
+
+    init() {
+        this.refs = {
+            btnsCarousel: qsa(".btnsCarousel"),
+            mainSwiperWrapper: $("mainSwiperWrapper"),
+            imageInput: $("imageInput"),
+            thumbsWrapper: $("thumbsWrapper")
+        };
+        return this.refs;
+    }
+};
 
 let mainSwiperInstance = null;
 let thumbsSwiperInstance = null;
@@ -12,6 +26,60 @@ const destroySwipers = () => {
         thumbsSwiperInstance.destroy(true, true);
         thumbsSwiperInstance = null;
     }
+};
+
+export const renderImages = (images, mainWrapper, thumbsWrapper, onDelete, onAddClick) => {
+    mainWrapper.innerHTML = '';
+    if (thumbsWrapper) thumbsWrapper.innerHTML = '';
+
+    if (!images.length) {
+        mainWrapper.innerHTML = `
+            <div class="swiper-slide">
+                <div class="noImageContainer">
+                    <div class="noImageIcon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>
+                    <p>No hay imágenes disponibles</p>
+                </div>
+            </div>
+        `;
+        _createPlusButton(thumbsWrapper, onAddClick);
+        return;
+    }
+
+    images.forEach((img, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        slide.innerHTML = `<img src="${img.url}" class="previewImg">`;
+        mainWrapper.appendChild(slide);
+
+        const thumb = document.createElement('div');
+        thumb.className = 'swiper-slide thumb-box';
+        thumb.innerHTML = `
+            <img src="${img.url}">
+            <div class="thumb-delete">X</div>
+        `;
+        thumb.querySelector('.thumb-delete').addEventListener('click', e => {
+            e.stopPropagation();
+            onDelete(index);
+        });
+        thumbsWrapper.appendChild(thumb);
+    });
+
+    _createPlusButton(thumbsWrapper, onAddClick);
+    initThumbsCarousel("#mainSwiper", "#thumbsSwiper", { lazy: true }, { slidesPerView: 4 });
+};
+
+const _createPlusButton = (wrapper, onAddClick) => {
+    const addThumb = document.createElement("div");
+    addThumb.classList.add("swiper-slide", "thumb-add");
+    addThumb.textContent = "+";
+    addThumb.addEventListener("click", onAddClick);
+    wrapper.appendChild(addThumb);
 };
 
 export const initSimpleCarousel = (
@@ -33,10 +101,8 @@ export const initSimpleCarousel = (
     const gridImages = document.querySelectorAll(`${gridSelector} img`);
     if (!gridImages.length) return mainSwiperInstance;
 
-    // Seleccionar primera imagen por defecto
     gridImages[0].classList.add("selected");
 
-    // Click en miniatura → ir al slide
     gridImages.forEach((img, index) => {
         img.addEventListener("click", () => {
             mainSwiperInstance.slideTo(index);
@@ -45,7 +111,6 @@ export const initSimpleCarousel = (
         });
     });
 
-    // Cambio de slide → actualizar miniatura seleccionada
     mainSwiperInstance.on("slideChange", () => {
         const current = mainSwiperInstance.activeIndex;
         gridImages.forEach(i => i.classList.remove("selected"));
@@ -86,17 +151,9 @@ export const initThumbsCarousel = (
     return { main: mainSwiperInstance, thumbs: thumbsSwiperInstance };
 };
 
-export const verifyCarouselBtns = (btnsCarousel, mainWrapper) => {
-    const hasImages = mainWrapper.querySelectorAll(".swiper-slide").length > 0;
+export const verifyCarouselBtns = (btnsCarousel, images) => {
+    const hasImages = images.length > 0;
     btnsCarousel.forEach(btn => btn.classList.toggle("hide", !hasImages));
-};
-
-const _createPlusButton = (wrapper, onAddClick) => {
-    const addThumb = document.createElement("div");
-    addThumb.classList.add("swiper-slide", "thumb-add");
-    addThumb.textContent = "+";
-    addThumb.addEventListener("click", onAddClick);
-    wrapper.appendChild(addThumb);
 };
 
 export const renderAndInitThumbsCarousel = ({
@@ -127,13 +184,11 @@ export const renderAndInitThumbsCarousel = ({
     }
 
     images.forEach((img, index) => {
-        // Slide principal
         const slide = document.createElement('div');
         slide.className = 'swiper-slide';
         slide.innerHTML = `<img src="${img.url}" class="previewImg">`;
         mainWrapper.appendChild(slide);
 
-        // Thumb
         const thumb = document.createElement('div');
         thumb.className = 'swiper-slide thumb-box';
         thumb.innerHTML = `
@@ -188,4 +243,3 @@ export const renderAndInitViewCarousel = ({
         initSimpleCarousel(mainSelector);
     }
 };
-

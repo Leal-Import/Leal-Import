@@ -1,10 +1,11 @@
-import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, resetInputType, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "./configuration.dom.js";
-import { validateProfile, validateUsernameChange } from "./configuration.logic.js";
+import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, insertPaymentMethods, resetInputType, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "./configuration.dom.js";
+import { validatePaymentMethod, validateProfile, validateUsernameChange } from "./configuration.logic.js";
 import { configurationState, resetConfigurationState } from "./configuration.state.js";
-import { getCurrentEmployee, initSession } from "../../utils/api.utils.js";
-import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
+import { getCurrentEmployee, handleApiError } from "../../utils/api.utils.js";
+import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal, createModuleInitializer, qsa } from "../../utils/dom.js";
+import { navigateTo, ROUTES } from "../../utils/router.js";
 import { initConfigurationEvents } from "./configuration.event.js";
-import { changePassword, editProfile, logout, verifyCurrentPassword } from "./configuration.service.js";
+import { changePassword, deletePaymentMethod, editProfile, getPaymentMethods, logout, postPaymentMethod, putPaymentMethod, verifyCurrentPassword } from "./configuration.service.js";
 import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword } from "../../core/logic/new.password.logic.js";
 
 const onChangeDarkMode = () => {
@@ -44,7 +45,7 @@ const onVerifyPassword = async (e) => {
         toggleModal(DOMRefs.refs.modalNewPassword, true);
         toggleModal(DOMRefs.refs.modalVerifyPassword, false);
     } catch (error) {
-        await showMessage('Error', error.message || 'Ocurrió un error al verificar la contraseña. Inténtalo de nuevo.', 'error');
+        await handleApiError(error, 'Contraseña incorrecta. Por favor, inténtalo de nuevo.');
     } finally {
         const btn = DOMRefs.refs.toggleVerifyPassword;
         const icon = btn.querySelector('svg');
@@ -110,8 +111,7 @@ const onChangePassword = async (e) => {
         await showMessage('Éxito', 'Contraseña cambiada correctamente', 'success', true);
         toggleModal(DOMRefs.refs.modalNewPassword, false);
     } catch (error) {
-        console.error('Error updating password:', error);
-        await showMessage('Error', 'Ocurrió un error al actualizar la contraseña. Inténtalo de nuevo.', 'error');
+        await handleApiError(error, 'No se pudo cambiar la contraseña. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.btnUpdatePasswordLoader);
         removeDisable(pw1);
@@ -190,10 +190,9 @@ const onLogout = async () => {
         try {
             await logout();
         } catch (error) {
-            console.error('Error during logout:', error);
-            await showMessage('Error', 'Ocurrió un error al cerrar sesión. Inténtalo de nuevo.', 'error');
+            await handleApiError(error, 'No se pudo cerrar sesión correctamente. Redirigiendo al login de todas formas.');
         } finally {
-            window.location.href = 'login.html';
+            navigateTo(ROUTES.LOGIN);
         }
     }
 };
@@ -228,14 +227,142 @@ const onEditProfile = async (e) => {
         configurationState.profile.phone = txtPhone.value.trim();
         toggleModal(DOMRefs.refs.modalProflile, false);
     } catch (error) {
-        console.error('Error updating profile:', error);
-        await showMessage('Error', 'Ocurrió un error al actualizar el perfil. Inténtalo de nuevo.', 'error');
+        await handleApiError(error, 'No se pudo actualizar el perfil. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.btnEditProfileLoader);
         removeDisable(txtFullName);
         removeDisable(txtEmail);
         removeDisable(txtPhone);
         removeDisable(DOMRefs.refs.btnEditProfile);
+    }
+};
+
+const onOpenPaymentMethods = async () => {
+    hideElement(DOMRefs.refs.pmHint);
+    DOMRefs.refs.txtPaymentMethod.value = '';
+    DOMRefs.refs.txtPaymentMethod.classList.remove('inputValid');
+    DOMRefs.refs.txtPaymentMethod.classList.remove('inputInvalid');
+    toggleModal(DOMRefs.refs.modalPaymentMethods, true);
+    if (configurationState.paymentMethods.length === 0) {
+        try {
+            const paymentMethods = await getPaymentMethods();
+            configurationState.paymentMethods = paymentMethods;
+        } catch (error) {
+            await handleApiError(error, 'No se pudieron cargar los métodos de pago. Por favor, inténtalo de nuevo más tarde.');
+        }
+    }
+    insertPaymentMethods(configurationState.paymentMethods, DOMRefs.refs.pmMethodList, onEditPaymentMethod, onDeletePaymentMethod);
+};
+
+const onSavePaymentMethod = async (updatedMethod) => {
+    if (!updatedMethod) {
+        insertPaymentMethods(configurationState.paymentMethods, DOMRefs.refs.pmMethodList, onEditPaymentMethod, onDeletePaymentMethod);
+        return;
+    }
+    const camps = qsa("#modalPaymentMethods .pmBtnEdit, #modalPaymentMethods .pmEditInput, #modalPaymentMethods .pmBtnDelete, #txtPaymentMethod, #btnAddPaymentMethod");
+    camps.forEach(disableElement);
+    try {
+        await putPaymentMethod(updatedMethod, updatedMethod.idPaymentMethod);
+        configurationState.paymentMethods = configurationState.paymentMethods.map(m =>
+            m.idPaymentMethod === updatedMethod.idPaymentMethod ? updatedMethod : m
+        );
+        await showMessage('Éxito', 'Método de pago actualizado correctamente', 'success', true);
+        insertPaymentMethods(configurationState.paymentMethods, DOMRefs.refs.pmMethodList, onEditPaymentMethod, onDeletePaymentMethod);
+    } catch (error) {
+        await handleApiError(error, 'No se pudo actualizar el método de pago.');
+    } finally {
+        camps.forEach(removeDisable);
+    }
+};
+
+export const onEditPaymentMethod = (method, listEl) => {
+    const item = listEl.querySelector(`[data-id="${method.idPaymentMethod}"]`);
+    if (!item) return;
+    item.innerHTML = '';
+
+    const nameWrapper = document.createElement('div');
+    nameWrapper.classList.add('pmMethodItemName');
+
+    const dot = document.createElement('div');
+    dot.classList.add('pmMethodDot');
+
+    const input = document.createElement('input');
+    input.classList.add('pmEditInput');
+    input.type = 'text';
+    input.value = method.methodName;
+    input.maxLength = 50;
+
+    nameWrapper.appendChild(dot);
+    nameWrapper.appendChild(input);
+
+    const actions = document.createElement('div');
+    actions.classList.add('pmMethodActions');
+
+    const btnSave = document.createElement('button');
+    btnSave.classList.add('pmBtnEdit');
+    btnSave.type = 'button';
+    btnSave.textContent = 'Guardar';
+    btnSave.addEventListener('click', () => {
+        const newName = input.value.trim();
+        if (!newName) return;
+        onSavePaymentMethod({ ...method, methodName: newName });
+    });
+
+    const btnCancel = document.createElement('button');
+    btnCancel.classList.add('pmBtnDelete');
+    btnCancel.type = 'button';
+    btnCancel.textContent = 'Cancelar';
+    btnCancel.addEventListener('click', () => onSavePaymentMethod(null));
+
+    actions.appendChild(btnSave);
+    actions.appendChild(btnCancel);
+
+    item.appendChild(nameWrapper);
+    item.appendChild(actions);
+
+    input.focus();
+};
+
+const onDeletePaymentMethod = async (methodId) => {
+    const response = await showMessage('Confirmar', '¿Estás seguro que deseas eliminar este método de pago?', 'question', false, true);
+    if (response.isConfirmed) {
+        const camps = qsa("#modalPaymentMethods .pmBtnEdit, #modalPaymentMethods .pmEditInput, #modalPaymentMethods .pmBtnDelete, #txtPaymentMethod, #btnAddPaymentMethod");
+        camps.forEach(disableElement);
+        try {
+            await deletePaymentMethod(methodId);
+            configurationState.paymentMethods = configurationState.paymentMethods.filter(m => m.idPaymentMethod !== methodId);
+            await showMessage('Éxito', 'Método de pago eliminado correctamente', 'success', true);
+            insertPaymentMethods(configurationState.paymentMethods, DOMRefs.refs.pmMethodList, onEditPaymentMethod, onDeletePaymentMethod);
+        } catch (error) {
+            await handleApiError(error, 'No se pudo eliminar el método de pago.');
+        } finally {
+            camps.forEach(removeDisable);
+        }
+    }
+};
+
+const onSubmitPaymentMethod = async () => {
+    const methodName = DOMRefs.refs.txtPaymentMethod.value.trim();
+    const invalidate = validatePaymentMethod(methodName);
+    if (invalidate) {
+        await showMessage('Advertencia', invalidate, 'warning');
+        return;
+    }
+    const camps = qsa("#modalPaymentMethods .pmBtnEdit, #modalPaymentMethods .pmEditInput, #modalPaymentMethods .pmBtnDelete, #txtPaymentMethod, #btnAddPaymentMethod");
+    showElement(DOMRefs.refs.btnAddPaymentMethodLoader);
+    camps.forEach(disableElement);
+    try {
+        const newMethod = await postPaymentMethod({ methodName });
+        configurationState.paymentMethods.push(newMethod.data);
+        await showMessage('Éxito', 'Método de pago agregado correctamente', 'success', true);
+        DOMRefs.refs.txtPaymentMethod.value = '';
+        insertPaymentMethods(configurationState.paymentMethods, DOMRefs.refs.pmMethodList, onEditPaymentMethod, onDeletePaymentMethod);
+    } catch (error) {
+        await handleApiError(error, 'No se pudo agregar el método de pago. Por favor, inténtalo de nuevo.');
+    } finally {
+        hideElement(DOMRefs.refs.btnAddPaymentMethodLoader);
+        DOMRefs.refs.txtPaymentMethod.classList.remove('inputValid');
+        camps.forEach(removeDisable);
     }
 };
 
@@ -262,8 +389,7 @@ const onChangeUsername = async (e) => {
         await showMessage('Éxito', 'Nombre de usuario actualizado correctamente', 'success', true);
         configurationState.profile.username = txtNewUsername.value.trim();
     } catch (error) {
-        console.error('Error updating username:', error);
-        await showMessage('Error', 'No se pudo actualizar el nombre de usuario', 'error');
+        await handleApiError(error, 'No se pudo cambiar el nombre de usuario. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.btnSaveUsernameLoader);
         removeDisable(DOMRefs.refs.btnSaveUsername);
@@ -275,6 +401,23 @@ const onChangeUsername = async (e) => {
     }
 };
 
+const onVerifyPaymentMethod = (e) => {
+    const value = e.currentTarget.value.trim();
+    const methodValidate = validatePaymentMethod(value);
+    if (methodValidate) {
+        DOMRefs.refs.txtPaymentMethod.classList.add('inputInvalid');
+        DOMRefs.refs.txtPaymentMethod.classList.remove('inputValid');
+        disableElement(DOMRefs.refs.btnAddPaymentMethod);
+        showElement(DOMRefs.refs.pmHint);
+        DOMRefs.refs.pmHint.textContent = methodValidate;
+    } else {
+        DOMRefs.refs.txtPaymentMethod.classList.remove('inputInvalid');
+        DOMRefs.refs.txtPaymentMethod.classList.add('inputValid');
+        removeDisable(DOMRefs.refs.btnAddPaymentMethod);
+        hideElement(DOMRefs.refs.pmHint);
+    }
+};
+
 const initializeUi = (Refs) => {
     initConfigurationEvents({
         Refs,
@@ -282,6 +425,8 @@ const initializeUi = (Refs) => {
         onOpenEditProfile,
         onCloseEditProfile: () => toggleModal(Refs.modalProflile, false),
         onOpenVerifyPassword: () => toggleModal(Refs.modalVerifyPassword, true),
+        onOpenPaymentMethods,
+        onClosePaymentMethods: () => toggleModal(Refs.modalPaymentMethods, false),
         onCloseVerifyPassword,
         onOpenToggleUsername,
         onCloseToggleUsername,
@@ -291,6 +436,8 @@ const initializeUi = (Refs) => {
         onVerifyNewPassword,
         onChangePassword,
         onVerifyButtonUsername,
+        onVerifyPaymentMethod,
+        onSubmitPaymentMethod,
         onChangeUsername,
         onLogout,
         onEditProfile,
@@ -303,17 +450,6 @@ const initializeUi = (Refs) => {
 
 const loadDataFlow = (Refs) => {
     toggleSwitch(Refs.darkModeToggle, configurationState.isDarkMode);
-};
-
-const setupApplication = async () => {
-    resetConfigurationState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    const stateLoaded = await loadState();
-    if (!stateLoaded) return false;
-    return true;
 };
 
 const loadState = async () => {
@@ -329,23 +465,23 @@ const loadState = async () => {
 
         return true;
     } catch (error) {
-        console.error('Error loading configuration state: ', error);
+        await handleApiError(error, 'No se pudo cargar la configuración del usuario. Algunas funciones podrían no estar disponibles.');
         return false;
     }
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const isReady = await setupApplication();
-        if (!isReady) return;
+const initializeUIWithLoad = async (refs) => {
+    initializeUi(refs);
+    const stateReady = await loadState();
+    if (!stateReady) throw new Error('Failed to load state');
+    loadDataFlow(refs);
+};
 
-        const refs = DOMRefs.init();
-
-        initializeUi(refs);
-
-        loadDataFlow(refs);
-    } catch (error) {
-        console.error('Error initializing application:', error);
-        await showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: resetConfigurationState,
+    initialize: initializeUIWithLoad,
+    load: async () => { },
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);
