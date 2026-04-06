@@ -368,6 +368,10 @@ tr {
     font-style: italic;
 }
 
+.tdName {
+    width: 100%;
+}
+
 
 /* =======================
    Sugerencias

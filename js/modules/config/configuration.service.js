@@ -4,7 +4,6 @@ import { apiRequest } from "../../utils/api.utils.js";
 const APIPAY_URL = `${config.API_BASE_URL}/PaymentMethod`;
 const API_URL = `${config.API_BASE_URL}/auth`;
 const APIPW_URL = `${config.API_BASE_URL}/passwordReset`;
-const APIME_URL = `${config.API_BASE_URL}/me`;
 
 export const getPaymentMethods = async () => {
     return await apiRequest(
@@ -38,9 +37,22 @@ export const verifyCurrentPassword = async (currentPassword) => {
     );
 };
 
+export const putUsername = async (payload) => {
+    return await apiRequest(
+        `${APIPW_URL}/changeUsername`,
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        },
+        'Error al verificar contraseña actual'
+    );
+};
+
 export const editProfile = async (profile) => {
     return await apiRequest(
-        `${APIME_URL}/profile`,
+        `${API_URL}/profile`,
         {
             method: 'PUT',
             credentials: 'include',

@@ -5,7 +5,7 @@ import { getCurrentEmployee, handleApiError } from "../../utils/api.utils.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal, createModuleInitializer, qsa } from "../../utils/dom.js";
 import { navigateTo, ROUTES } from "../../utils/router.js";
 import { initConfigurationEvents } from "./configuration.event.js";
-import { changePassword, deletePaymentMethod, editProfile, getPaymentMethods, logout, postPaymentMethod, putPaymentMethod, verifyCurrentPassword } from "./configuration.service.js";
+import { changePassword, deletePaymentMethod, editProfile, getPaymentMethods, logout, postPaymentMethod, putPaymentMethod, putUsername, verifyCurrentPassword } from "./configuration.service.js";
 import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword } from "../../core/logic/new.password.logic.js";
 
 const onChangeDarkMode = () => {
@@ -383,11 +383,18 @@ const onChangeUsername = async (e) => {
     disableElement(txtNewUsername);
     disableElement(txtPassword);
     disableElement(DOMRefs.refs.btnSaveUsername);
+    const payload = {
+        currentUsername: txtCurrentUsername.value.trim(),
+        newUsername: txtNewUsername.value.trim(),
+        password: txtPassword.value.trim()
+    };
 
     try {
-        //await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        await putUsername(payload);
         await showMessage('Éxito', 'Nombre de usuario actualizado correctamente', 'success', true);
         configurationState.profile.username = txtNewUsername.value.trim();
+        toggleModal(DOMRefs.refs.modalChangeUsername, false);
+        cleanCampsToggleUsername(DOMRefs.refs, DOMRefs.refs.togglePasswordForUsername.querySelector('svg'));
     } catch (error) {
         await handleApiError(error, 'No se pudo cambiar el nombre de usuario. Por favor, inténtalo de nuevo.');
     } finally {
@@ -396,8 +403,6 @@ const onChangeUsername = async (e) => {
         removeDisable(DOMRefs.refs.togglePasswordForUsername);
         removeDisable(txtNewUsername);
         removeDisable(txtPassword);
-        cleanCampsToggleUsername(DOMRefs.refs, DOMRefs.refs.togglePasswordForUsername.querySelector('svg'));
-        toggleModal(DOMRefs.refs.modalChangeUsername, false);
     }
 };
 

@@ -1,6 +1,6 @@
 import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "./workOrder.form.dom.js";
 import { resetWorkOrdersFormState, workOrdersFormState } from "./workOrder.form.state.js";
-import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "./workOrder.form.service.js";
+import { approveOrder, getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "./workOrder.form.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
 import { buildParams, cleanOneShotParams, disableElement, hideElement, qsa, removeDisable, showElement, showMessage, createModuleInitializer, toggleModal } from "../../../utils/dom.js";
 import { DraftManager } from "../../../utils/draft.manager.js";
@@ -36,7 +36,8 @@ const addNewPartToTable = () => {
         arrayDelete: workOrdersFormState.data.sparePartsToDelete,
         onWritePrice,
         onDelete,
-        renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
+        renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts),
+        onClickCreatePerson
     });
 };
 
@@ -286,7 +287,8 @@ const loadDraftData = (Refs) => {
                 arrayDelete: workOrdersFormState.data.sparePartsToDelete,
                 onWritePrice,
                 onDelete,
-                renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
+                renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts),
+                onClickCreatePerson
             });
         });
 
@@ -300,7 +302,8 @@ const loadDraftData = (Refs) => {
                 arraySelected: workOrdersFormState.data.selectedServices,
                 arrayDelete: workOrdersFormState.data.servicesToDelete,
                 onWritePrice,
-                onDelete
+                onDelete,
+                onClickCreatePerson
             });
         });
 
@@ -360,6 +363,34 @@ const loadWorkOrder = async (Refs) => {
             payment
         });
     });
+
+    if (workOrder.status === "Espera de Aprobación") {
+        showElement(Refs.btnApproveOrder);
+    } else {
+        showElement(Refs.btnCompleteOrder);
+    }
+};
+
+const onApproveOrder = async () => {
+    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnEdit, .btnImport, .btnSecondary");
+    showElement(DOMRefs.refs.loaderApproveOrder);
+    camps.forEach(disableElement);
+    try {
+        const answer = await approveOrder(workOrdersFormState.context.idWorkOrder);
+        await showMessage("Exito", "Orden aprobada", "success", true);
+        if (answer) {
+            const params = buildParams({
+                idVehicle: workOrdersFormState.context.idVehicle,
+                idCustomer: workOrdersFormState.context.idCustomer
+            });
+            replaceTo(ROUTES.WORK_ORDER_HISTORY, Object.fromEntries(params.entries()));
+        }
+    } catch (error) {
+        await handleApiError(error, 'No se pudo aprobar la orden. Por favor, inténtalo de nuevo.');
+    } finally {
+        hideElement(DOMRefs.refs.loaderApproveOrder);
+        camps.forEach(removeDisable);
+    }
 };
 
 const onCompleteOrder = async () => {
@@ -453,7 +484,6 @@ const initEditOrderFlow = async (Refs) => {
 
     if (workOrdersFormState.context.isView) {
         loadViewDom(Refs);
-        showElement(Refs.btnCompleteOrder);
         showElement(Refs.btnGeneratePdf);
         hideElement(Refs.btnSaveOrder);
         hideElement(Refs.paymentForm);
@@ -498,6 +528,7 @@ const initializeUI = async (Refs) => {
         onSaveDate,
         onCompleteOrder,
         onClosePersonModal,
+        onApproveOrder,
         onGeneratePdf: () => generateWorkOrderReport(workOrdersFormState.workOrder),
         onSearchEmployee
     });

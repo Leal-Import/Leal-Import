@@ -46,7 +46,9 @@ export const DOMRefs = {
             modalPersonItemName: $("modalPersonItemName"),
             btnClosePersonModal: $("btnClosePersonModal"),
             employeeList: $("employeeList"),
-            txtSearchEmployee: $("txtSearchEmployee")
+            txtSearchEmployee: $("txtSearchEmployee"),
+            btnApproveOrder: $("btnApproveOrder"),
+            loaderApproveOrder: $("loaderApproveOrder")
         };
         return this.refs;
     }

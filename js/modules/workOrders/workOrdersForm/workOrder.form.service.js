@@ -26,6 +26,18 @@ export const patchWorkOrder = async (idWorkOrder) => {
     );
 };
 
+export const approveOrder = async (idWorkOrder) => {
+    return await apiRequest(
+        `${API_URL}/approveOrder/${idWorkOrder}`,
+        {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        },
+        'Error al completar la orden'
+    );
+};
+
 export const getDataVehicleById = async (id) => {
     return await apiRequest(
         `${API_URLVE}/getWorkOrderVehicle/${id}`,

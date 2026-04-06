@@ -113,7 +113,7 @@ export const onSubmitVehicleSale = async (e, isWorkOrder) => {
         });
         replaceTo(ROUTES.WORK_ORDER_FORM, Object.fromEntries(params.entries()));
     } else if (response === "sale") {
-        navigateTo(ROUTES.SALES);
+        replaceTo(ROUTES.SALES);
     }
 };
 
@@ -153,7 +153,7 @@ const createNewSale = async (isWorkOrder) => {
                 return {
                     idVehicle: response.data.idVehicle,
                     price: response.data.salePrice,
-                    idSale: response.data.idSale
+                    idSale: response.data.idVehicleSale
                 };
             } else {
                 return "sale";

@@ -71,7 +71,6 @@
 
 .configCard {
     background-color: var(--bg-color-white);
-    overflow: hidden;
     border: var(--border);
     border-radius: 5px;
     box-shadow: var(--bx-shadow-primary);
@@ -79,6 +78,7 @@
 
 .configRow {
     width: 100%;
+    border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
