@@ -1,4 +1,4 @@
-export const workOrderDetailsState = {
+export const workOrdersFormState = {
     context: {
         idVehicle: null,
         idCustomer: null,
@@ -11,6 +11,12 @@ export const workOrderDetailsState = {
         idNewPart: null,
         newPartName: null,
         newPartSuggestedPrice: null
+    },
+    employeeList: [],
+    employeeContext: {
+        selectedArray: null,
+        idItem: null,
+        cell: null
     },
     saleKey: null,
     idEmployee: null,
@@ -32,8 +38,8 @@ export const workOrderDetailsState = {
     }
 };
 
-export const resetWorkOrderDetailsState = () => {
-    workOrderDetailsState.context = {
+export const resetWorkOrdersFormState = () => {
+    workOrdersFormState.context = {
         idVehicle: null,
         idCustomer: null,
         idSale: null,
@@ -46,9 +52,15 @@ export const resetWorkOrderDetailsState = () => {
         newPartName: null,
         newPartSuggestedPrice: null
     };
-    workOrderDetailsState.saleKey = null;
-    workOrderDetailsState.idEmployee = null;
-    workOrderDetailsState.data = {
+    workOrdersFormState.saleKey = null;
+    workOrdersFormState.idEmployee = null;
+    workOrdersFormState.employeeList = [];
+    workOrdersFormState.employeeContext = {
+        selectedArray: null,
+        idItem: null,
+        cell: null
+    };
+    workOrdersFormState.data = {
         selectedServices: [],
         servicesToDelete: [],
         payments: [],
@@ -58,8 +70,8 @@ export const resetWorkOrderDetailsState = () => {
         notes: '',
         estimatedDate: null
     };
-    workOrderDetailsState.workOrder = null;
-    workOrderDetailsState.totals = {
+    workOrdersFormState.workOrder = null;
+    workOrdersFormState.totals = {
         total: 0,
         due: 0,
         totalPaid: 0

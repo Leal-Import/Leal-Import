@@ -5,11 +5,12 @@ import { resetWorkOrderHistoryState, workOrderHistoryState } from "./workOrder.h
 import { createPagination } from "../../../pagination/pagination.controller.js";
 import { getDetailsOrders, getDashboardWorkorder } from "./workOrder.history.service.js";
 import { getWOStatus } from "../workOrders.service.js";
-import { initSession } from "../../../utils/api.utils.js";
 
-import { asUUID, buildParams, fillSelect, hideElement, showElement, showMessage } from "../../../utils/dom.js";
+import { asUUID, buildParams, fillSelect, hideElement, showElement, showMessage, createModuleInitializer } from "../../../utils/dom.js";
+import { navigateTo, ROUTES } from "../../../utils/router.js";
 import { initWorkOrderHistoryEvents } from "./workOrder.history.event.js";
 import { showFloatingMenu } from "../../../utils/floatingMenu.js";
+import { handleApiError } from "../../../utils/api.utils.js";
 
 /* ===============================
    CARGA DE HISTORIAL DE ÓRDENES
@@ -28,10 +29,9 @@ const loadWorkOrderHistoryStatus = async () => {
     try {
         const states = await getWOStatus();
         workOrderHistoryState.stateList = states;
-        fillSelect('cmbSearchByStatus', workOrderHistoryState.stateList, 'idOrdersStatus', 'ordersStatus', null, "Todas");
+        fillSelect('cmbSearchByStatus', workOrderHistoryState.stateList, 'idWorkOrdersStatus', 'statusName', null, "Buscar por estado");
     } catch (error) {
-        showMessage('Error', 'No se pudieron cargar los estados del historial', 'error');
-        console.error(error);
+        await handleApiError(error);
     }
 };
 
@@ -41,8 +41,7 @@ const loadDashboard = async () => {
         loadStats(data, DOMRefs.refs);
         loadVehicleInfo(data, DOMRefs.refs);
     } catch (error) {
-        showMessage("Error", "No se pudieron cargar las estadisticas de ordenes del vehiculo.", "error");
-        console.error(error);
+        await handleApiError(error);
     }
 };
 
@@ -67,8 +66,7 @@ const loadWorkOrderHistory = async () => {
             size: data.page.size
         });
     } catch (error) {
-        showMessage('Error', 'No se pudo cargar el historial de órdenes', 'error');
-        console.error(error);
+        await handleApiError(error);
     } finally {
         hideElement(DOMRefs.refs.loaderWorkOrders);
     }
@@ -100,7 +98,7 @@ const viewWorkOrder = (idWorkOrder, idVehicle) => {
         idCustomer: workOrderHistoryState.context.idCustomer,
         isView: true
     });
-    window.location.href = `workOrderForm.html?${params.toString()}`;
+    navigateTo(ROUTES.WORK_ORDER_FORM, Object.fromEntries(params.entries()));
 };
 
 const editWorkOrder = (idWorkOrder, idVehicle) => {
@@ -109,7 +107,7 @@ const editWorkOrder = (idWorkOrder, idVehicle) => {
         idVehicle,
         idCustomer: workOrderHistoryState.context.idCustomer
     });
-    window.location.href = `workOrderForm.html?${params.toString()}`;
+    navigateTo(ROUTES.WORK_ORDER_FORM, Object.fromEntries(params.entries()));
 };
 
 /* ===============================
@@ -136,7 +134,7 @@ const hydrateContextFromURL = async () => {
 
     if (!idVehicle) {
         await showMessage('Error', 'Vehículo no especificado', 'error');
-        window.location.href = 'workOrders.html';
+        navigateTo(ROUTES.WORK_ORDERS);
         return false;
     }
 
@@ -150,19 +148,7 @@ const loadBtnAdd = () => {
         idVehicle: workOrderHistoryState.context.idVehicle,
         idCustomer: workOrderHistoryState.context.idCustomer
     });
-    DOMRefs.refs.btnAddOrder.href = `workOrderForm.html?${params.toString()}`;
-};
-
-const setupApplication = async () => {
-    resetWorkOrderHistoryState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    const isContextValid = await hydrateContextFromURL();
-    if (!isContextValid) return false;
-
-    return true;
+    DOMRefs.refs.btnAddOrder.href = `${new URL(ROUTES.WORK_ORDER_FORM, window.location.origin).toString()}?${params.toString()}`;
 };
 
 const initializeUI = (Refs) => {
@@ -175,18 +161,15 @@ const loadDataFlow = async () => {
     await Promise.all([loadWorkOrderHistory(), loadWorkOrderHistoryStatus(), loadDashboard()]);
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        const refs = DOMRefs.init();
-
-        initializeUI(refs);
-
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error inicializando la aplicación:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: async () => {
+        resetWorkOrderHistoryState();
+        const isContextValid = await hydrateContextFromURL();
+        if (!isContextValid) throw new Error('Failed to hydrate context');
+    },
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);

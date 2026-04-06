@@ -1,4 +1,4 @@
-export const sparePartDetailState = {
+export const sparePartsFormState = {
     context: {
         currentId: null,
         hasSale: null,
@@ -12,11 +12,8 @@ export const sparePartDetailState = {
     },
     statusList: [],
     currentLinkType: null,
-
-    image: {
-        file: null,
-        url: null
-    },
+    sparePartPhotos: [],
+    photosToDeleteIds: [],
 
     links: {
         bill: "",
@@ -27,8 +24,8 @@ export const sparePartDetailState = {
     trackingId: null
 };
 
-export const resetSparePartDetailState = () => {
-    sparePartDetailState.context = {
+export const resetSparePartsFormState = () => {
+    sparePartsFormState.context = {
         currentId: null,
         hasSale: null,
         idSale: null,
@@ -39,16 +36,14 @@ export const resetSparePartDetailState = () => {
         idVehicle: null,
         totalPrice: null
     };
-    sparePartDetailState.statusList = [];
-    sparePartDetailState.currentLinkType = null;
-    sparePartDetailState.image = {
-        file: null,
-        url: null
-    };
-    sparePartDetailState.links = {
+    sparePartsFormState.statusList = [];
+    sparePartsFormState.currentLinkType = null;
+    sparePartsFormState.sparePartPhotos = [];
+    sparePartsFormState.photosToDeleteIds = [];
+    sparePartsFormState.links = {
         bill: '',
         tracking: ''
     };
-    sparePartDetailState.costsId = null;
-    sparePartDetailState.trackingId = null;
+    sparePartsFormState.costsId = null;
+    sparePartsFormState.trackingId = null;
 };

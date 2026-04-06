@@ -69,6 +69,7 @@ export const validatePayment = (amount, method) => {
 export const normalizePayments = (payments) => {
     return payments.map(p => {
         const payment = {
+            idPayment: p.id || crypto.randomUUID(),
             amount: Number(p.amount),
             idPaymentMethod: p.idPaymentMethod
         };

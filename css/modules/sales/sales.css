@@ -378,6 +378,51 @@
     justify-content: center;
 }
 
+.saleBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.3px;
+    width: fit-content;
+}
+
+.saleBadge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.saleBadge.cancelled {
+    background-color: var(--bg-danger-badge);
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+}
+
+.saleBadge.reserved {
+    background-color: var(--bg-warning-badge);
+    color: var(--dark-warning-color);
+    border: 1px solid var(--dark-warning-color);
+}
+
+.saleBadge.completed {
+    background-color: var(--bg-success-badge);
+    color: var(--dark-success-color);
+    border: 1px solid var(--dark-success-color);
+}
+
+.saleBadge.pending {
+    background: rgb(59 130 246 / 0.1);
+    color: var(--helper-stat-color);
+    border: 1px solid var(--helper-stat-color);
+}
+
 @container content (max-width: 1075px) {
     .filterSection {
         flex-direction: column;

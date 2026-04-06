@@ -1,26 +1,26 @@
 // modules/employees/employees.controller.js
 
-import { employeesState, resetEmployeesState } from './employees.state.js';
+import { employeesListState, resetEmployeesListState } from './employees.state.js';
 import { insertEmployees, fillEmployeesForm, DOMRefs, rewriteModalElements, resetEmployeesFilters } from './employees.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateEmployee, mapEmployeeForm } from './employees.logic.js';
 import { getActiveEmployees, postEmployee, putEmployee, getRoles, patchEmployee } from './employees.service.js';
 import { initEmployeeEvents } from './employees.events.js';
-import { showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable, fillSelect } from '../../utils/dom.js';
-import { initSession } from '../../utils/api.utils.js';
+import { showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable, fillSelect, createModuleInitializer } from '../../utils/dom.js';
 import { showFloatingMenu } from '../../utils/floatingMenu.js';
+import { handleApiError } from '../../utils/api.utils.js';
 
 /* ===============================
    CARGA DE EMPLEADOS
 ================================ */
 
-const STATUS = { ACTIVE: 'T', INACTIVE: 'F' };
+const STATUS = { ACTIVE: 'ACTIVE', INACTIVE: 'INACTIVE' };
 
 const pagination = createPagination({
-    initialSize: employeesState.pagination.size,
+    initialSize: employeesListState.pagination.size,
     onChange: ({ page, size }) => {
-        employeesState.pagination.page = page;
-        employeesState.pagination.size = size;
+        employeesListState.pagination.page = page;
+        employeesListState.pagination.size = size;
         loadEmployees();
     }
 });
@@ -28,24 +28,19 @@ const pagination = createPagination({
 export const loadRoles = async () => {
     try {
         const roles = await getRoles();
-        employeesState.roles = roles;
+        employeesListState.roles = roles;
         fillSelect('cmbUserRole', roles, 'idRole', 'roleName', null, 'Selecciona un rol');
         fillSelect('cmbSearchByRole', roles, 'idRole', 'roleName', null, 'Buscar por rol');
     } catch (error) {
-        showMessage(
-            'Error',
-            'No se pudieron cargar los roles',
-            'error'
-        );
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar los roles. Algunas funciones podrían no estar disponibles.');
     }
 };
 
 export const loadEmployees = async () => {
     try {
         showElement(DOMRefs.refs.loaderEmployees);
-        const { page, size } = employeesState.pagination;
-        const { search, idRole, status } = employeesState.filters;
+        const { page, size } = employeesListState.pagination;
+        const { search, idRole, status } = employeesListState.filters;
         const data = await getActiveEmployees(
             page - 1,
             size,
@@ -54,13 +49,13 @@ export const loadEmployees = async () => {
             status || ''
         );
 
-        employeesState.list = data.content;
-        employeesState.pagination.total = data.page.totalElements;
-        employeesState.pagination.totalPages = data.page.totalPages;
+        employeesListState.list = data.content;
+        employeesListState.pagination.total = data.page.totalElements;
+        employeesListState.pagination.totalPages = data.page.totalPages;
 
         insertEmployees(
             DOMRefs.refs.employeesTableBody,
-            employeesState.list,
+            employeesListState.list,
             handleEmployeeActions
         );
 
@@ -71,12 +66,7 @@ export const loadEmployees = async () => {
             size: data.page.size
         });
     } catch (error) {
-        showMessage(
-            'Error',
-            'No se pudieron cargar los empleados',
-            'error'
-        );
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar los empleados');
     } finally {
         hideElement(DOMRefs.refs.loaderEmployees);
     }
@@ -98,8 +88,8 @@ export const onSubmitEmployee = async (e) => {
     DOMRefs.refs.campsModal.forEach(disableElement);
     disableElement(DOMRefs.refs.btnAddEmployee);
     try {
-        if (employeesState.selectedId) {
-            await putEmployee(employee, employeesState.selectedId);
+        if (employeesListState.selectedId) {
+            await putEmployee(employee, employeesListState.selectedId);
             showMessage('Exito', 'Empleado actualizado exitosamente', 'success');
         } else {
             await postEmployee(employee);
@@ -107,12 +97,11 @@ export const onSubmitEmployee = async (e) => {
         }
 
     } catch (err) {
-        console.error(err);
-        showMessage('Error', err.message || 'Error al guardar empleado', 'error');
+        await handleApiError(err, 'No se pudo guardar el empleado. Por favor, inténtalo de nuevo.');
     } finally {
         DOMRefs.refs.frmEmployees.reset();
         DOMRefs.refs.campsModal.forEach(removeDisable);
-        employeesState.selectedId = null;
+        employeesListState.selectedId = null;
         hideElement(DOMRefs.refs.btnAddEmployeeLoader);
         removeDisable(DOMRefs.refs.btnAddEmployee);
         pagination.update({});
@@ -137,12 +126,12 @@ const handleEmployeeActions = (event, employee) => {
             onClick: () => viewEmployee(employee)
         },
         {
-            label: employee.status === STATUS.ACTIVE
+            label: employee.user.status === STATUS.ACTIVE
                 ? 'Desactivar empleado'
                 : 'Activar empleado',
             onClick: () =>
                 toggleEmployeeStatus(
-                    employee.username.username,
+                    employee.user.idUser,
                     employee.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
                 )
         }
@@ -154,7 +143,7 @@ const handleEmployeeActions = (event, employee) => {
 ================================ */
 
 const editEmployee = (employee) => {
-    employeesState.selectedId = employee.idEmployee;
+    employeesListState.selectedId = employee.idEmployee;
     fillEmployeesForm(employee);
     rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Actualizar');
     setFormReadOnly('#frmEmployees', false);
@@ -162,7 +151,7 @@ const editEmployee = (employee) => {
 };
 
 const viewEmployee = (employee) => {
-    employeesState.selectedId = null;
+    employeesListState.selectedId = null;
     fillEmployeesForm(employee);
     setFormReadOnly('#frmEmployees', true);
     rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Ver');
@@ -170,7 +159,7 @@ const viewEmployee = (employee) => {
 };
 
 const onCloseModal = () => {
-    employeesState.selectedId = null;
+    employeesListState.selectedId = null;
     toggleModal(DOMRefs.refs.modalEmployees);
 };
 const onOpenModal = () => {
@@ -184,19 +173,14 @@ const onOpenModal = () => {
    ACTIVAR / DESACTIVAR
 ================================ */
 
-const toggleEmployeeStatus = async (username, status) => {
+const toggleEmployeeStatus = async (userId, status) => {
     try {
-        await patchEmployee(username, status);
+        await patchEmployee(userId, status);
         showMessage('Empleado', status === STATUS.ACTIVE ? 'Empleado activado' : 'Empleado desactivado', 'success');
 
         loadEmployees();
     } catch (error) {
-        showMessage(
-            'Error',
-            'No se pudo cambiar el estado',
-            'error'
-        );
-        console.error(error);
+        await handleApiError(error, 'No se pudo actualizar el estado del empleado. Por favor, inténtalo de nuevo.');
     }
 };
 
@@ -205,26 +189,17 @@ const toggleEmployeeStatus = async (username, status) => {
 ================================ */
 
 const onSearchEmployee = async (filters) => {
-    employeesState.filters = {
-        ...employeesState.filters,
+    employeesListState.filters = {
+        ...employeesListState.filters,
         ...filters
     };
-    employeesState.pagination.page = 1;
+    employeesListState.pagination.page = 1;
     await loadEmployees();
 };
 
 /* ===============================
    INIT
 ================================ */
-
-const setupApplication = async () => {
-    resetEmployeesState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    return true;
-};
 
 const initializeUI = (Refs) => {
     resetEmployeesFilters(Refs);
@@ -235,18 +210,11 @@ const loadDataFlow = async () => {
     await Promise.all([loadRoles(), loadEmployees()]);
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        const refs = DOMRefs.init();
-
-        initializeUI(refs);
-
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error inicializando la aplicación: ', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: resetEmployeesListState,
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);

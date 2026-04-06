@@ -8,13 +8,13 @@ export const initSparePartDetailEvents = ({ Refs, onSubmit, onCalculateTotal, on
     btnOpenLinkBill.addEventListener("click", () => onOpenModal("bill"));
     btnOpenLinkTracking.addEventListener("click", () => onOpenModal("tracking"));
 
-    btnCloseLink.addEventListener("click", onSaveDataModal());
+    btnCloseLink.addEventListener("click", onSaveDataModal);
 
     txtLink.addEventListener("input", () => onValidateUrl(Refs.txtLink.value.trim()));
 
     addModalCloseEvents(modalLink, onSaveDataModal);
 
-    btnSaveLink.addEventListener("click", onSaveDataModal());
+    btnSaveLink.addEventListener("click", onSaveDataModal);
 
     txtFormat.forEach(txt => {
         txt.addEventListener("focus", e => formatOnFocus(e, true));

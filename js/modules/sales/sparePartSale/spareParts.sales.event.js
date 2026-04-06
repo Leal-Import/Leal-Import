@@ -1,10 +1,14 @@
+import { debounce } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
 export const initSpareSaleEvents = ({ Refs, onSubmitSpareSale, onSearchSparePart, onOrderPart, onSaveNotes }) => {
     const { txtSearchData, txtAmount, txtNotes, frmSparePartSale, btnOrderPart } = Refs;
 
-    let searchTimeout = null;
-
+    const handleSearch = debounce(() => {
+        onSearchSparePart({
+            search: txtSearchData?.value.trim() || ''
+        });
+    }, 1000);
     frmSparePartSale.addEventListener("submit", onSubmitSpareSale);
 
     txtNotes.addEventListener("input", onSaveNotes);
@@ -13,14 +17,7 @@ export const initSpareSaleEvents = ({ Refs, onSubmitSpareSale, onSearchSparePart
     txtAmount.addEventListener("focus", (e) => formatOnFocus(e, true));
     formatDecimalInput(txtAmount);
 
-    txtSearchData.addEventListener("input", () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            onSearchSparePart({
-                search: txtSearchData?.value.trim() || ''
-            });
-        }, 1000);
-    });
+    txtSearchData.addEventListener("input", handleSearch);
 
     btnOrderPart.addEventListener("click", onOrderPart);
 

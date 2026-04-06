@@ -1,16 +1,17 @@
 import { showMessage } from "../../../utils/dom.js";
+import { navigateTo, ROUTES } from "../../../utils/router.js";
+import { sanitizeURLParam, sanitizeURLNumber } from "../../../utils/sanitizer.js";
 
 export const hydrateContextFromURL = async (state) => {
     const params = new URLSearchParams(window.location.search);
-    const type = params.get("type");
+    const type = sanitizeURLParam(params.get("type"), 'vehicle');
     const newSparePartId = params.get("newSparePartId");
-    const newSparePartName = params.get("newSparePartName");
-    const newSuggestedPrice = params.get("newSuggestedPrice");
+    const newSparePartName = sanitizeURLParam(params.get("newSparePartName"), '');
+    const newSuggestedPrice = sanitizeURLNumber(params.get("newSuggestedPrice"), 0);
     const isNewPart = newSparePartId && newSparePartName && newSuggestedPrice ? true : false;
     if (!type) {
         await showMessage('Error', 'Tipo de venta no especificado', 'error');
-        // opcional: redirigir
-        window.location.href = 'sales.html';
+        navigateTo(ROUTES.SALES);
         return false;
     }
 
@@ -18,7 +19,7 @@ export const hydrateContextFromURL = async (state) => {
         state.sparePart = {
             id: newSparePartId,
             name: newSparePartName,
-            suggestedPrice: parseFloat(newSuggestedPrice),
+            suggestedPrice: newSuggestedPrice,
             isNewPart
         };
     }

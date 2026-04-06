@@ -1,9 +1,9 @@
-export const customersState = {
+export const customersListState = {
     list: [],
     selectedId: null,
     filters: {
         search: '',
-        status: 'T' // T: Activo, F: Inactivo, '' para todos
+        status: 'ACTIVE' // ACTIVE: Activo, INACTIVE: Inactivo, '' para todos
     },
     pagination: {
         page: 1,
@@ -13,14 +13,14 @@ export const customersState = {
     }
 };
 
-export const resetCustomersState = () => {
-    customersState.list = [];
-    customersState.selectedId = null;
-    customersState.filters = {
+export const resetCustomersListState = () => {
+    customersListState.list = [];
+    customersListState.selectedId = null;
+    customersListState.filters = {
         search: '',
-        status: 'T'
+        status: 'ACTIVE'
     };
-    customersState.pagination = {
+    customersListState.pagination = {
         page: 1,
         size: 10,
         totalElements: 0,

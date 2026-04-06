@@ -28,3 +28,12 @@ export const validateProfile = (fullName, email, phone) => {
     return null;
 };
 
+export const validatePaymentMethod = (method) => {
+    if (method.length < 3 || method.length > 50) {
+        return 'El método de pago debe tener entre 3 y 50 caracteres.';
+    }
+
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ0-9\s-]+$/.test(method)) {
+        return 'El método de pago solo puede contener letras, números, espacios y guiones.';
+    }
+};

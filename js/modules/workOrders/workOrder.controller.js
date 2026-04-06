@@ -1,23 +1,23 @@
 // modules/workOrders/workOrders.controller.js
 
 import { DOMRefs, insertWorkOrders, resetWorkOrdersFilters } from "./workOrder.dom.js";
-import { resetWorkOrdersState, workOrdersState } from "./workOrders.state.js";
+import { resetWorkOrdersListState, workOrdersListState } from "./workOrders.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getVehiclesWOrders, getWOStatus } from "./workOrders.service.js";
-import { initSession } from "../../utils/api.utils.js";
 
-import { fillSelect, hideElement, showElement, showMessage } from "../../utils/dom.js";
+import { fillSelect, hideElement, showElement, createModuleInitializer } from "../../utils/dom.js";
 import { initWorkOrdersEvents } from "./workOrder.event.js";
+import { handleApiError } from "../../utils/api.utils.js";
 
 /* ===============================
    CARGA DE ÓRDENES DE TRABAJO
 ================================ */
 
 const pagination = createPagination({
-    initialSize: workOrdersState.pagination.size,
+    initialSize: workOrdersListState.pagination.size,
     onChange: ({ page, size }) => {
-        workOrdersState.pagination.page = page;
-        workOrdersState.pagination.size = size;
+        workOrdersListState.pagination.page = page;
+        workOrdersListState.pagination.size = size;
         loadWorkOrders();
     }
 });
@@ -25,28 +25,26 @@ const pagination = createPagination({
 const loadStateWorkOrders = async() => {
     try {
         const states = await getWOStatus();
-        workOrdersState.stateList = states;
-
-        fillSelect('cmbSearchByStatus', workOrdersState.stateList, 'idOrdersStatus', 'ordersStatus', null, "Todas");
+        workOrdersListState.stateList = states;
+        fillSelect('cmbSearchByStatus', workOrdersListState.stateList, 'idWorkOrdersStatus', 'statusName', null, "Todas");
     } catch (error) {
-        showMessage('Error', 'No se pudieron cargar los estados de las órdenes', 'error');
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar los estados de las órdenes de trabajo. Por favor, inténtalo de nuevo.');
     }
 };
 
 const loadWorkOrders = async() => {
     try {
         showElement(DOMRefs.refs.loaderWorkOrders);
-        const { page, size } = workOrdersState.pagination;
-        const { search, idStatus } = workOrdersState.filters;
+        const { page, size } = workOrdersListState.pagination;
+        const { search, idStatus } = workOrdersListState.filters;
 
         const data = await getVehiclesWOrders(page - 1, size, search || '', idStatus || '');
 
-        workOrdersState.list = data.content;
-        workOrdersState.pagination.total = data.page.totalElements;
-        workOrdersState.pagination.totalPages = data.page.totalPages;
+        workOrdersListState.list = data.content;
+        workOrdersListState.pagination.total = data.page.totalElements;
+        workOrdersListState.pagination.totalPages = data.page.totalPages;
 
-        insertWorkOrders(DOMRefs.refs.cardContainer, workOrdersState.list);
+        insertWorkOrders(DOMRefs.refs.cardContainer, workOrdersListState.list);
 
         pagination.setTotal({
             totalElements: data.page.totalElements,
@@ -55,8 +53,7 @@ const loadWorkOrders = async() => {
             size: data.page.size
         });
     } catch (error) {
-        showMessage('Error', 'No se pudieron cargar las órdenes de trabajo', 'error');
-        console.error(error);
+        await handleApiError(error, 'No se pudieron cargar las órdenes de trabajo. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.loaderWorkOrders);
     }
@@ -67,22 +64,13 @@ const loadWorkOrders = async() => {
 ================================ */
 
 const onSearchWorkOrder = (filters) => {
-    workOrdersState.filters = {
-        ...workOrdersState.filters,
+    workOrdersListState.filters = {
+        ...workOrdersListState.filters,
         ...filters
     };
 
-    workOrdersState.pagination.page = 1;
+    workOrdersListState.pagination.page = 1;
     loadWorkOrders();
-};
-
-const setupApplication = async() => {
-    resetWorkOrdersState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    return true;
 };
 
 const initializeUI = (Refs) => {
@@ -94,18 +82,11 @@ const loadDataFlow = async() => {
     await Promise.all([loadWorkOrders(), loadStateWorkOrders()]);
 };
 
-document.addEventListener('DOMContentLoaded', async() => {
-    try {
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        const refs = DOMRefs.init();
-
-        initializeUI(refs);
-
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error inicializando la aplicación:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: resetWorkOrdersListState,
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);

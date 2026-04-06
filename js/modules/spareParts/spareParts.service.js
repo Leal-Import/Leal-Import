@@ -1,45 +1,22 @@
 import config from "../../config.js";
 import { buildParams } from "../../utils/dom.js";
+import { apiRequest } from "../../utils/api.utils.js";
 
-const API_URL = `${config.API_BASE_URL}/spareParts`;
-const API_URLSTAT = `${config.API_BASE_URL}/PartsState`;
+const API_URL = `${config.API_BASE_URL}/SpareParts`;
 
-export const getSpareParts = async(page = 0, size = 15, search = "", idState = "") => {
-    try {
-        const params = buildParams({ page, size, search, idState });
-        const request = await fetch(`${API_URL}/getSparePartSummary?${params.toString()}`, {
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener la lista de repuestos. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en getSpareParts:", error);
-        throw new Error("Fallo al conectar con el servicio de repuestos.", { cause: error });
-    }
+export const getSpareParts = async(page = 0, size = 15, search = "", idState = "", startDate = "", endDate = "") => {
+    const params = buildParams({ page, size, search, idState, startDate, endDate });
+    return await apiRequest(
+        `${API_URL}/getSparePartSummary?${params.toString()}`,
+        { method: 'GET', credentials: 'include' },
+        'Error al obtener la lista de repuestos'
+    );
 };
 
 export const getStatus = async() => {
-    try {
-        const request = await fetch(`${API_URLSTAT}/getState`, {
-            method: 'GET',
-            credentials: 'include'
-        });
-
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener la lista de los estados del repuesto. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            throw new Error("Fallo de conexión: El servicio de la API no está disponible.", { cause: error });
-        }
-
-        throw error;
-    }
+    return await apiRequest(
+        `${API_URL}/getStatus`,
+        { method: 'GET', credentials: 'include' },
+        'Error al obtener la lista de estados de repuestos'
+    );
 };

@@ -51,9 +51,9 @@ export const generateVehicleReport = async(vehicle) => {
     const margin   = 14;
     const contentW = pageW - margin * 2;
 
-    const photos      = await loadPhotos(vehicle.photos || [], 4);
+    const photos      = await loadPhotos(vehicle.vehiclePhotos || [], 4);
     const isAvailable = vehicle.status === 'Disponible';
-    const costs       = vehicle.costs;
+    const costs       = vehicle.vehicleCosts;
 
     // ═══════════════════════════════════════
     // HEADER
@@ -169,7 +169,7 @@ export const generateVehicleReport = async(vehicle) => {
         { label: 'Año',             value: String(vehicle.year) || '—' },
         { label: 'Kilometraje',     value: vehicle.mileage ? `${Number(vehicle.mileage).toLocaleString()} km` : '—' },
         { label: 'Fecha de compra', value: vehicle.purchaseDate || '—' },
-        { label: 'Procedencia',     value: vehicle.isExternal || '—' }
+        { label: 'Procedencia',     value: vehicle.source || '—' }
     ];
 
     const leftBoxH = leftRows.length * 9 + 14;
@@ -223,7 +223,7 @@ export const generateVehicleReport = async(vehicle) => {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 30, 30);
-    doc.text(vehicle.lote?.numLote || '—', col2X + 4, y + 18);
+    doc.text(vehicle.lot?.numLot || '—', col2X + 4, y + 18);
 
     // Col derecha — Descripción
     if (vehicle.description?.trim()) {

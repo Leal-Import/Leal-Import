@@ -1,6 +1,33 @@
+import { initSession } from './api.utils.js';
+import { cleanOneShotParams as cleanURLParams } from './draft.manager.js';
+
 export const $ = id => document.getElementById(id);
 export const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 export const qs = (sel, root = document) => root.querySelector(sel);
+
+export const debounce = (fn, delay = 300) => {
+    let timeoutId;
+
+    const debounced = (...args) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+
+        timeoutId = window.setTimeout(() => {
+            fn(...args);
+            timeoutId = null;
+        }, delay);
+    };
+
+    debounced.cancel = () => {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+    };
+
+    return debounced;
+};
 
 export const showElement = (el) => { if (!el) return; el.classList.remove('hide'); el.classList.add('show'); };
 export const hideElement = (el) => { if (!el) return; el.classList.remove('show'); el.classList.add('hide'); };
@@ -135,7 +162,7 @@ export const enableFormUI = (frm) => {
 export const fillSelect = (selectOrId, data, valueKey, textKey, selectedValue = null, defaultText = 'Seleccione una opción') => {
     const select =
         typeof selectOrId === 'string'
-            ? document.getElementById(selectOrId)
+            ? $(selectOrId)
             : selectOrId;
 
     if (!select) return;
@@ -208,9 +235,29 @@ export const buildParams = (obj) => {
     return params;
 };
 
-// utils/url.js
-export const cleanOneShotParams = (params = []) => {
-    const url = new URL(window.location.href);
-    params.forEach(p => url.searchParams.delete(p));
-    window.history.replaceState({}, document.title, url.toString());
+export const cleanOneShotParams = cleanURLParams;
+
+/**
+ * Factory para inicialización de módulos
+ * Elimina código duplicado en controllers
+ */
+export const createModuleInitializer = async ({
+    resetState,
+    initialize,
+    load,
+    DOMRefs
+}) => {
+    try {
+        resetState();
+        const user = await initSession();
+        if (!user) return false;
+
+        const refs = DOMRefs.init();
+        await initialize(refs);
+        await load(refs);
+        return true;
+    } catch (error) {
+        console.error('Error inicializando:', error);
+        showMessage('Error', 'Fallo al cargar', 'error');
+    }
 };

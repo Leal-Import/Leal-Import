@@ -1,5 +1,6 @@
 import { qs, $ } from "../../utils/dom.js";
 import { formatWithCommas } from "../../utils/formatters.js";
+import { ROUTES } from "../../utils/router.js";
 
 export const DOMRefs = {
     refs: {},
@@ -114,12 +115,12 @@ const createCardFooter = (sparePart) => {
     const btnView = document.createElement("a");
     btnView.classList.add("btnPrimary");
     btnView.textContent = "Ver más";
-    btnView.href = `sparePartsView.html?id=${sparePart.idSparePart}`;
+    btnView.href = `${ROUTES.SPARE_PART_VIEW}?id=${sparePart.idSparePart}`;
 
     const btnEdit = document.createElement("a");
     btnEdit.classList.add("btnSecondary");
     btnEdit.textContent = "Editar";
-    btnEdit.href = `sparePartsForm.html?id=${sparePart.idSparePart}`;
+    btnEdit.href = `${ROUTES.SPARE_PART_FORM}?id=${sparePart.idSparePart}`;
 
     footer.append(btnView, btnEdit);
     return footer;

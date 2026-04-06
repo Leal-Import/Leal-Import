@@ -1,6 +1,7 @@
 import { asBoolean, asNumber, asUUID, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal } from "../../../utils/validators.js";
 import { normalizePayments, validatePayments } from "../../../core/logic/payments.logic.js";
+import { sanitizeURLParam } from "../../../utils/sanitizer.js";
 
 export const hydrateContextFromURL = async (state) => {
     const params = new URLSearchParams(window.location.search);
@@ -18,12 +19,13 @@ export const hydrateContextFromURL = async (state) => {
     }
 
     state.context.idCustomer = idCustomer;
+    state.context.isView = params.get('isView') === 'true';
 
     // 🟡 Opcional
     state.context.idSale = asUUID(params.get('idSale'));
 
     // UX (texto plano)
-    state.context.customerName = params.get('customerName')?.trim() || '';
+    state.context.customerName = sanitizeURLParam(params.get('customerName')?.trim() || '');
 
     // 🔵 One-shot params
     const isNewPart = asBoolean(params.get('isNewPart'));
@@ -81,31 +83,42 @@ export const validateSale = (state) => {
 
 export const buildPutSalePayload = (state) => {
     const { data, context } = state;
-    return {
+    const fd = new FormData();
+    const saleData = {
         idCustomer: context.idCustomer,
         notes: data.notes || "",
-        saveOrUpdatePayments: normalizePayments(data.payments),
-        saveOrUpdateItems: normalizedItems(data.selectedItems),
+        paymentsSaveOrUpdate: normalizePayments(data.payments),
+        itemsSaveOrUpdate: normalizedItems(data.selectedItems),
         paymentsToDelete: data.paymentsToDelete,
         itemsToDelete: data.itemsToDelete
     };
+    data.payments.forEach(p => {
+        fd.append(p.id, p.file);
+    });
+    fd.append("saleData", JSON.stringify(saleData));
+    return fd;
 };
 
 export const buildPostSalePayload = (state) => {
     const { data, context } = state;
-
-    return {
+    const fd = new FormData();
+    const saleData = {
         idCustomer: context.idCustomer,
         notes: data.notes || "",
-        payments: normalizePayments(data.payments),
+        sparePartsPayments: normalizePayments(data.payments),
         sparePartItems: normalizedItems(data.selectedItems)
     };
+    data.payments.forEach(p => {
+        fd.append(p.id, p.file);
+    });
+    fd.append("saleData", JSON.stringify(saleData));
+    return fd;
 };
 
 const normalizedItems = (items) => {
     return items.map(i => ({
         idSparePart: i.idSparePart,
         priceApplied: Number(i.priceApplied) || 0,
-        idSaleItem: i.idSaleItem || null
+        idSparePartsSaleItems: i.idSparePartsSaleItems || null
     }));
 };

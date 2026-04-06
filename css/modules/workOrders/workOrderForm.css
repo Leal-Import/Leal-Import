@@ -264,9 +264,35 @@
     opacity: 0.7;
 }
 
+.tdPerson{
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
 /* =======================
    Botón Import
 ======================= */
+.btnPerson{
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.btnPerson:hover {
+    color: var(--danger-color);
+    transform: translateY(-2px);
+}
+
 .btnImport {
     position: absolute;
     right: 8px;
@@ -361,4 +387,163 @@ tr {
     display: flex;
     gap: 5px;
     align-items: center;
+}
+
+/* ── Header ── */
+.headerModalPerson h2 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--danger-color);
+    margin-bottom: 0;
+}
+
+.headerModalPerson .headerSubtitle {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+    margin-top: 8px;
+}
+
+.personItemTag {
+    display: inline-block;
+    background-color: var(--bg-danger-badge);
+    color: var(--danger-color);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sh);
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-left: 4px;
+}
+
+/* ── Body ── */
+.bodyModalPerson {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.employeeList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.employeeList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.employeeList::-webkit-scrollbar-thumb {
+    background-color: var(--danger-color);
+    border-radius: 4px;
+}
+
+/* ── Item empleado ── */
+.employeeItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: var(--border);
+    background-color: var(--bg-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.employeeItem:hover {
+    background-color: var(--bg-danger-badge);
+    border-color: var(--danger-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgb(211 24 19 / 0.1);
+}
+
+.employeeItem.selected {
+    background-color: var(--bg-danger-badge);
+    border-color: var(--danger-color);
+    box-shadow: 0 4px 10px rgb(211 24 19 / 0.15);
+}
+
+/* ── Avatar ── */
+.employeeAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+    color: var(--text-color-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
+}
+
+/* ── Info empleado ── */
+.employeeInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.employeeName {
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.employeeRole {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+}
+
+/* ── Check ── */
+.employeeCheck {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--text-color-secondary);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.employeeCheck.on {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    position: relative;
+}
+
+.employeeCheck.on::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--text-color-light);
+}
+
+/* ── Estado vacío ── */
+.emptyEmployees {
+    text-align: center;
+    padding: 30px 0;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+    font-style: italic;
+}
+
+.loaderEmployees {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0;
 }

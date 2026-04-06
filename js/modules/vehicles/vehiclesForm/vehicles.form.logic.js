@@ -1,29 +1,9 @@
 import { asUUID, fillForm, highlightAndFocus } from "../../../utils/dom.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
-import { validateImageSize, validateImageType, validateImagesGeneral } from "../../../utils/images.validators.js";
+import { validateImageSize, validateImageType } from "../../../utils/images.validators.js";
 import { isValidDecimal, isValidURL, isValidYear, safeParseFloat } from "../../../utils/validators.js";
-import { vehicleDetailState } from "./vehicles.form.state.js";
-
-const validateMaxImages = (currentImages = [], newFiles = [], max = 12) => {
-    if (currentImages.length + newFiles.length > max) {
-        return `Máximo ${max} imágenes permitidas`;
-    }
-    return null;
-};
-
-const validateDuplicateImages = (currentImages = [], newFiles = []) => {
-    const exists = newFiles.find(file =>
-        currentImages.some(img =>
-            img.file?.name === file.name &&
-            img.file?.size === file.size
-        )
-    );
-
-    if (exists) {
-        return 'Una o más imágenes ya fueron agregadas';
-    }
-    return null;
-};
+import { sanitizeURLParam } from "../../../utils/sanitizer.js";
+import { vehiclesFormState } from "./vehicles.form.state.js";
 
 export const calculateTotal = (txtCosts, txtTotal) => {
     let total = 0;
@@ -35,12 +15,8 @@ export const calculateTotal = (txtCosts, txtTotal) => {
     txtTotal.value = formatWithCommas(total.toFixed(2));
 };
 
-export const validateImages = (currentImages, newFiles) => {
-    return (validateImagesGeneral(newFiles) || validateDuplicateImages(currentImages, newFiles) || validateMaxImages(currentImages, newFiles));
-};
-
 export const validateCustomer = () => {
-    if (!vehicleDetailState.customerId) {
+    if (!vehiclesFormState.customerId) {
         highlightAndFocus('txtCustomer');
         return "Debes seleccionar un cliente";
     }
@@ -170,23 +146,17 @@ export const validateVehicle = ({
     return null;
 };
 
-export const mapVehicleImages = (fd) => {
-    vehicleDetailState.images
-        .filter(img => img.isNew)
-        .forEach(img => fd.append("photos", img.file));
-};
-
 export const mapVouchers = (fd) => {
-    if (vehicleDetailState.uploads.bill) fd.append("billPhoto", vehicleDetailState.uploads.bill);
-    if (vehicleDetailState.uploads.taxes) fd.append("taxesPhoto", vehicleDetailState.uploads.taxes);
-    if (vehicleDetailState.uploads.ship) fd.append("TransferShipPhoto", vehicleDetailState.uploads.ship);
+    if (vehiclesFormState.uploads.bill) fd.append("billPhoto", vehiclesFormState.uploads.bill);
+    if (vehiclesFormState.uploads.taxes) fd.append("taxesPhoto", vehiclesFormState.uploads.taxes);
+    if (vehiclesFormState.uploads.ship) fd.append("transferShipPhoto", vehiclesFormState.uploads.ship);
 };
 
 export const handleUploadFile = (file) => {
-    const type = vehicleDetailState.currentUploadType;
+    const type = vehiclesFormState.currentUploadType;
     if (!type || !file) return;
 
-    vehicleDetailState.uploads[type] = file;
+    vehiclesFormState.uploads[type] = file;
 };
 
 export const mapVehicleData = (formData) => {
@@ -197,9 +167,9 @@ export const mapVehicleData = (formData) => {
         year: formData.txtYear,
         mileage: formData.txtMileage,
         description: formData.txtDescription,
-        lote: {
-            linkLote: formData.txtLink,
-            numLote: formData.txtLote
+        lot: {
+            linkLot: formData.txtLink,
+            numLot: formData.txtLote
         },
         costs: {
             bill: safeParseFloat(formData.txtBill),
@@ -222,8 +192,8 @@ export const fillVehiclesBaseForm = (vehicle) => {
         txtModel: vehicle.model,
         txtYear: vehicle.year,
         txtMileage: vehicle.mileage,
-        txtLote: vehicle.lote.numLote,
-        txtLink: vehicle.lote.linkLote,
+        txtLote: vehicle.lot.numLot,
+        txtLink: vehicle.lot.linkLot,
         txtDescription: vehicle.description
     });
 };
@@ -243,15 +213,6 @@ export const fillVehicleCosts = (costs) => {
     });
 };
 
-export const loadBackendImages = (photos) => {
-    vehicleDetailState.images = photos.map(p => ({
-        id: p.idPhoto,
-        url: p.photoUrl,
-        file: null,
-        isNew: false
-    }));
-};
-
 export const mapExternalVehicle = (formData) => {
     return {
         vin: formData.txtVin,
@@ -260,67 +221,12 @@ export const mapExternalVehicle = (formData) => {
         year: formData.txtYear,
         mileage: formData.txtMileage,
         description: formData.txtDescription,
-        idOwnerCustomer: vehicleDetailState.customerId,
-        lote: {
-            linkLote: formData.txtLink,
-            numLote: formData.txtLote
+        idOwnerCustomer: vehiclesFormState.customerId,
+        lot: {
+            linkLot: formData.txtLink,
+            numLot: formData.txtLote
         }
     };
-};
-
-export const validateVehicleImages = () => {
-    const images = vehicleDetailState.images;
-    // 🔹 Al menos una imagen
-    if (images.length === 0) {
-        return {
-            title: "Imagen requerida",
-            message: "Se debe incluir al menos una imagen del vehículo."
-        };
-    }
-    // 🔹 Máximo permitido
-    if (images.length > 12) {
-        return {
-            title: "Límite de imágenes",
-            message: "El máximo de imágenes permitidas es de 12."
-        };
-    }
-    // 🔹 Validar tamaño (usa normalización interna)
-    const sizeError = validateImageSize(images);
-    if (sizeError) {
-        return {
-            title: "Tamaño de imagen inválido",
-            message: sizeError
-        };
-    }
-    // 🔹 Validar tipo (usa normalización interna)
-    const typeError = validateImageType(images);
-    if (typeError) {
-        return {
-            title: "Formato de imagen inválido",
-            message: typeError
-        };
-    }
-    return null;
-};
-
-export const validateEditImages = () => {
-    const totalFinal = vehicleDetailState.images.length;
-
-    if (totalFinal === 0) {
-        return {
-            title: 'Imagen validación',
-            message: 'Debes mantener al menos una imagen'
-        };
-    }
-
-    if (totalFinal > 12) {
-        return {
-            title: 'Límite de imágenes',
-            message: `Máximo 12 imágenes`
-        };
-    }
-
-    return null;
 };
 
 export const applyExternalMode = (isExternal) => {
@@ -349,7 +255,7 @@ export const hydrateContextFromURL = (state) => {
     const params = new URLSearchParams(window.location.search);
 
     state.context.currentId = asUUID(params.get('id'));
-    state.context.customerName = params.get('customerName')?.trim() || '';
+    state.context.customerName = sanitizeURLParam(params.get('customerName'), '');
     state.context.idCustomer = asUUID(params.get('idCustomer'));
     state.context.hasSale = params.get('sale') === 'true';
     state.context.hasWorkOrder = params.get('workOrder') === 'true';

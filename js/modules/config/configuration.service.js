@@ -1,104 +1,102 @@
 import config from "../../config.js";
+import { apiRequest } from "../../utils/api.utils.js";
 
-const APIPAY_URL = `${config.API_BASE_URL}/Sales`;
+const APIPAY_URL = `${config.API_BASE_URL}/PaymentMethod`;
 const API_URL = `${config.API_BASE_URL}/auth`;
 const APIPW_URL = `${config.API_BASE_URL}/passwordReset`;
 const APIME_URL = `${config.API_BASE_URL}/me`;
 
-export const getPaymentMethods = async() => {
-    try {
-        const request = await fetch(`${APIPAY_URL}/getPaymentMethod`, {
-            credentials: 'include'
-        });
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo obtener la lista de metodos de pago. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en getPaymentMethods:", error);
-        throw new Error("Fallo al conectar con el servicio de metodos de pago.", { cause: error });
-    }
+export const getPaymentMethods = async () => {
+    return await apiRequest(
+        `${APIPAY_URL}/getPaymentMethod`,
+        { method: 'GET', credentials: 'include' },
+        'Error al obtener la lista de métodos de pago'
+    );
 };
 
-export const logout = async() => {
-    try {
-        const request = await fetch(`${API_URL}/logout`, {
-            credentials: 'include',
-            method: 'POST'
-        });
-        if (!request.ok) {
-            const errorBody = await request.json();
-            throw new Error(`Error ${request.status}: No se pudo cerrar la sesion. Detalle: ${errorBody.message || errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en autenticacion:", error);
-        throw new Error("Fallo al conectar con el servicio de autenticacion", { cause: error });
-    }
-};
-
-export const verifyCurrentPassword = async(currentPassword) => {
-    try {
-        const request = await fetch(`${APIPW_URL}/verifyPassword`, {
-            credentials: 'include',
+export const logout = async () => {
+    return await apiRequest(
+        `${API_URL}/logout`,
+        {
             method: 'POST',
+            credentials: 'include'
+        },
+        'Error al cerrar sesión'
+    );
+};
+
+export const verifyCurrentPassword = async (currentPassword) => {
+    return await apiRequest(
+        `${APIPW_URL}/verifyPassword`,
+        {
+            method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ currentPassword })
-        });
-        if (!request.ok) {
-            const errorBody = await request.json(); // 👈 json en vez de text
-            throw new Error(errorBody.message || `Error ${request.status}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en verificacion de contraseña:", error);
-        throw error; // 👈 re-lanzás el mismo error, no uno nuevo
-    }
+        },
+        'Error al verificar contraseña actual'
+    );
 };
 
-export const editProfile = async(profile) => {
-    try {
-        const request = await fetch(`${APIME_URL}/profile`, {
-            credentials: 'include',
+export const editProfile = async (profile) => {
+    return await apiRequest(
+        `${APIME_URL}/profile`,
+        {
             method: 'PUT',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(profile)
-        });
-        if (!request.ok) {
-            const errorBody = await request.json(); // 👈 json en vez de text
-            throw new Error(errorBody.message || `Error ${request.status}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en edición de perfil:", error);
-        throw error; // 👈 re-lanzás el mismo error, no uno nuevo
-    }
+        },
+        'Error al editar perfil'
+    );
 };
 
-export const changePassword = async(newPassword, ticket) => {
-    try {
-        const request = await fetch(`${APIPW_URL}/newPassword`, {
-            credentials: 'include',
+export const changePassword = async (newPassword, ticket) => {
+    return await apiRequest(
+        `${APIPW_URL}/newPassword`,
+        {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ newPassword, ticket })
-        });
-        if (!request.ok) {
-            const errorBody = await request.text();
-            throw new Error(`Error ${request.status}: No se pudo cambiar la contraseña. Detalle: ${errorBody.substring(0, 100)}`);
-        }
-        return await request.json();
-
-    } catch (error) {
-        console.error("Error en cambio de contraseña:", error);
-        throw new Error("Fallo al conectar con el servicio de cambio de contraseña", { cause: error });
-    }
+        },
+        'Error al cambiar contraseña'
+    );
 };
 
+export const putPaymentMethod = async (method, id) => {
+    return await apiRequest(
+        `${APIPAY_URL}/putPaymentMethod/${id}`,
+        {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(method)
+        },
+        'Error al actualizar método de pago'
+    );
+};
+
+export const postPaymentMethod = async (method) => {
+    return await apiRequest(
+        `${APIPAY_URL}/postPaymentMethod`,
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(method)
+        },
+        'Error al agregar método de pago'
+    );
+};
+
+export const deletePaymentMethod = async (id) => {
+    return await apiRequest(
+        `${APIPAY_URL}/${id}`,
+        {
+            method: 'DELETE',
+            credentials: 'include'
+        },
+        'Error al eliminar método de pago'
+    );
+};

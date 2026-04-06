@@ -1,4 +1,4 @@
-export const salesState = {
+export const salesListState = {
     list: [],
     stateList: [],
     pagination: {
@@ -10,22 +10,26 @@ export const salesState = {
     filters: {
         search: '',
         idState: '',
-        productType: ''
+        productType: '',
+        startDate: '',
+        endDate: ''
     }
 };
 
-export const resetSalesState = () => {
-    salesState.list = [];
-    salesState.stateList = [];
-    salesState.pagination = {
+export const resetSalesListState = () => {
+    salesListState.list = [];
+    salesListState.stateList = [];
+    salesListState.pagination = {
         page: 1,
         size: 10,
         total: 0,
         totalPages: 0
     };
-    salesState.filters = {
+    salesListState.filters = {
         search: '',
         idState: '',
-        productType: ''
+        productType: '',
+        startDate: '',
+        endDate: ''
     };
 };

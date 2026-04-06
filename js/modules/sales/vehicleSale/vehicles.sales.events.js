@@ -1,21 +1,21 @@
+import { debounce } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
 export const initVehicleSaleEvents = ({ Refs, onSubmitVehicleSale, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle }) => {
     const { txtSearchData, btnCreateOrder, btnSaveSale, frmVehicleSale, btnImportVehicle, txtAmount, btnCancelVehicle, txtNotes, txtCommission, txtTotal } = Refs;
-    let searchTimeout = null;
     let pendingWorkOrder = false;
 
-    btnCreateOrder.addEventListener("click", () => {
-        pendingWorkOrder = true;
-    });
+    const handleSearch = debounce(() => {
+        onSearchVehicle({
+            search: txtSearchData?.value.trim() || ''
+        });
+    }, 1000);
 
-    btnSaveSale.addEventListener("click", () => {
-        pendingWorkOrder = false;
-    });
+    btnCreateOrder.addEventListener("click", () => { pendingWorkOrder = true; });
 
-    frmVehicleSale.addEventListener("submit", (e) => {
-        onSubmitVehicleSale(e, pendingWorkOrder);
-    });
+    btnSaveSale.addEventListener("click", () => { pendingWorkOrder = false; });
+
+    frmVehicleSale.addEventListener("submit", (e) => { onSubmitVehicleSale(e, pendingWorkOrder); });
     btnImportVehicle.addEventListener("click", onImportVehicle);
 
     txtAmount.addEventListener("blur", (e) => formatOnBlur(e, true));
@@ -35,12 +35,5 @@ export const initVehicleSaleEvents = ({ Refs, onSubmitVehicleSale, onSearchVehic
     txtTotal.addEventListener("focus", (e) => formatOnFocus(e, true));
     formatDecimalInput(txtTotal);
 
-    txtSearchData.addEventListener("input", () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            onSearchVehicle({
-                search: txtSearchData?.value.trim() || ''
-            });
-        }, 1000);
-    });
+    txtSearchData.addEventListener("input", handleSearch);
 };

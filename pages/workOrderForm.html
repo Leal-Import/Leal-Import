@@ -23,13 +23,39 @@
 </head>
 
 <body>
+    <div class="containerModal hide" id="modalPersonContainer">
+        <div class="modalPerson modalAdd">
+            <button id="btnClosePersonModal" class="btnClose" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
+            </button>
+
+            <div class="headerModalPerson">
+                <div class="headerContent">
+                    <h2>Asignar encargado</h2>
+                    <p class="headerSubtitle">
+                        Responsable de <span id="modalPersonItemName" class="personItemTag"></span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="bodyModalPerson">
+                <input type="text" id="txtSearchEmployee" class="txtInputs" placeholder="Buscar empleado..."
+                    autocomplete="off">
+                <div id="employeeList" class="employeeList"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="voucherLightbox" class="voucherLightbox">
         <div class="lightboxContent">
             <button class="lightboxClose btnCloseLightBox"></button>
             <img class="lightboxImage" id="lightboxImage" alt="Vista previa del comprobante">
         </div>
     </div>
-    <div class="containerModal hide">
+    <div class="containerModal hide" id="modalVoucher">
         <div class="modalVoucher modalAdd">
             <button id="btnCloseVoucherModal" class="btnClose" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -186,6 +212,7 @@
                                     <table class="tableSelected">
                                         <thead>
                                             <tr>
+                                                <th class="tdPerson">Encargado</th>
                                                 <th class="tdName">Repuesto</th>
                                                 <th class="tdPrice">Precio</th>
                                                 <th></th>
@@ -208,6 +235,7 @@
                                     <table class="tableSelected">
                                         <thead>
                                             <tr>
+                                                <th class="tdPerson">Mecanico</th>
                                                 <th class="tdName">Servicio</th>
                                                 <th class="tdPrice">Precio</th>
                                                 <th></th>

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/utils/modals/modal.css">
     <link rel="stylesheet" href="../css/utils/modals/modalLinkExtra.css">
+    <link rel="stylesheet" href="../css/utils/showData/carousel.css">
     <link rel="stylesheet" href="../css/utils/loaders/loader.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
 
@@ -29,7 +30,7 @@
                 </div>
             </div>
 
-            <div class="gridContent">
+            <div class="wrapper">
                 <!-- Modal para enlaces -->
 
                 <div class="containerModal hide" id="modalLink">
@@ -99,90 +100,91 @@
 
                 <!-- Sección de imagen -->
                 <div class="imgData">
-                    <div class="containerImgPart" id="dropZone">
-                        <span id="placeholderMsg">Arrastra una imagen aquí o haz clic en "Añadir"</span>
-                        <img id="imgPart" style="display: none;" alt="Vista previa">
-                    </div>
+                    <div class="containerCarousel">
+                        <div class="swiper" id="mainSwiper">
+                            <div class="swiper-wrapper" id="mainSwiperWrapper"></div>
+                            <div class="swiper-button-prev btnsCarousel hide" style="color: var(--danger-color);"></div>
+                            <div class="swiper-button-next btnsCarousel hide" style="color: var(--danger-color);"></div>
+                        </div>
 
-                    <div class="containerActionsImg">
-                        <button class="btnPrimary" type="button" id="btnAddImg">Añadir</button>
-                        <button class="btnSecondary" type="button" id="btnDeleteImg">Eliminar</button>
-                    </div>
+                        <div class="thumbnailImagesContainer" id="thumbnailImagesContainer">
+                            <div class="swiper thumbs-swiper" id="thumbsSwiper">
+                                <div class="swiper-wrapper" id="thumbsWrapper"></div>
+                            </div>
+                        </div>
 
-                    <input type="file" id="fileInput" accept="image/*" hidden>
+                        <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+                    </div>
                 </div>
+                <div class="sparePartDataContainer">
+                    <!-- Datos del repuesto -->
+                    <fieldset class="sparePartData">
+                        <legend>Datos del repuesto</legend>
+                        <div class="rowFields">
+                            <div class="formGroup" style="position: relative;">
+                                <label for="txtPartName" class="lblInputs">Nombre</label>
+                                <input type="text" class="txtInputs" id="txtPartName" required name="txtPartName"
+                                    placeholder="Ej: Filtro de aire" maxlength="250">
+                                <button class="btnLink btnPrimary" type="button" id="btnOpenLinkBill">Enlace</button>
+                            </div>
+                            <div class="formGroup">
+                                <label for="txtPartBrand" class="lblInputs">Marca</label>
+                                <input type="text" class="txtInputs" id="txtPartBrand" required name="txtPartBrand"
+                                    placeholder="Ej: Toyota, Honda" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="rowFields">
+                            <div class="formGroup">
+                                <label for="txtPartModel" class="lblInputs">Modelo</label>
+                                <input type="text" class="txtInputs" id="txtPartModel" required name="txtPartModel"
+                                    placeholder="Ej: Corolla 2020" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="rowFields">
+                            <div class="formGroup">
+                                <label for="txtPartYear" class="lblInputs">Año</label>
+                                <input type="text" class="txtInputs" id="txtPartYear" required name="txtPartYear"
+                                    placeholder="2024" maxlength="15">
+                            </div>
+                        </div>
+                    </fieldset>
 
-                <!-- Datos del repuesto -->
-                <fieldset class="sparePartData">
-                    <legend>Datos del repuesto</legend>
-                    <div class="rowFields">
-                        <div class="formGroup" style="position: relative;">
-                            <label for="txtPartName" class="lblInputs">Nombre</label>
-                            <input type="text" class="txtInputs" id="txtPartName" required name="txtPartName"
-                                placeholder="Ej: Filtro de aire" maxlength="250">
-                            <button class="btnLink btnPrimary" type="button" id="btnOpenLinkBill">Enlace</button>
+                    <!-- Costos de importación -->
+                    <fieldset class="costsData">
+                        <legend>Costos de importación</legend>
+                        <div class="rowFields">
+                            <div class="formGroup" style="position: relative;">
+                                <label for="txtTracking" class="lblInputs">Tracking</label>
+                                <input type="text" class="txtInputs" id="txtTracking" required name="txtTracking"
+                                    placeholder="TRK-000000" maxlength="50">
+                                <button class="btnLink btnPrimary" type="button"
+                                    id="btnOpenLinkTracking">Enlace</button>
+                            </div>
+                            <div class="formGroup">
+                                <label for="txtPurchasePrice" class="lblInputs">Precio de compra</label>
+                                <input type="text" class="txtInputs txtCosts txtFormat" id="txtPurchasePrice" required
+                                    name="txtPurchasePrice" placeholder="0.00" maxlength="11">
+                            </div>
+                            <div class="formGroup">
+                                <label for="txtTaxes" class="lblInputs">Impuestos</label>
+                                <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes" required
+                                    name="txtTaxes" placeholder="0.00" maxlength="11">
+                            </div>
                         </div>
-                        <div class="formGroup">
-                            <label for="txtPartBrand" class="lblInputs">Marca</label>
-                            <input type="text" class="txtInputs" id="txtPartBrand" required name="txtPartBrand"
-                                placeholder="Ej: Toyota, Honda" maxlength="50">
+                        <div class="rowFields">
+                            <div class="formGroup">
+                                <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
+                                <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice" required
+                                    name="txtSuggestedPrice" placeholder="0.00" maxlength="11">
+                            </div>
+                            <div class="formGroup">
+                                <label for="txtTotalCost" class="lblInputs">Costo total</label>
+                                <input type="text" class="txtInputs txtFormat" id="txtTotalCost" name="txtTotalCost"
+                                    placeholder="0.00" maxlength="11" disabled>
+                            </div>
                         </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtPartModel" class="lblInputs">Modelo</label>
-                            <input type="text" class="txtInputs" id="txtPartModel" required name="txtPartModel"
-                                placeholder="Ej: Corolla 2020" maxlength="50">
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtPartYear" class="lblInputs">Año</label>
-                            <input type="text" class="txtInputs" id="txtPartYear" required name="txtPartYear" placeholder="2024"
-                                maxlength="15">
-                        </div>
-                        <div class="formGroup">
-                            <label for="cmbPartStatus" class="lblInputs">Estado</label>
-                            <select id="cmbPartStatus" name="cmbPartStatus" class="txtInputs">
-                            </select>
-                        </div>
-                    </div>
-                </fieldset>
-
-                <!-- Costos de importación -->
-                <fieldset class="costsData">
-                    <legend>Costos de importación</legend>
-                    <div class="rowFields">
-                        <div class="formGroup" style="position: relative;">
-                            <label for="txtTracking" class="lblInputs">Tracking</label>
-                            <input type="text" class="txtInputs" id="txtTracking" required name="txtTracking"
-                                placeholder="TRK-000000" maxlength="50">
-                            <button class="btnLink btnPrimary" type="button" id="btnOpenLinkTracking">Enlace</button>
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtPurchasePrice" class="lblInputs">Precio de compra</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtPurchasePrice" required
-                                name="txtPurchasePrice" placeholder="0.00" maxlength="11">
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtTaxes" class="lblInputs">Impuestos</label>
-                            <input type="text" class="txtInputs txtCosts txtFormat" id="txtTaxes" required name="txtTaxes"
-                                placeholder="0.00" maxlength="11">
-                        </div>
-                    </div>
-                    <div class="rowFields">
-                        <div class="formGroup">
-                            <label for="txtSuggestedPrice" class="lblInputs">Precio sugerido</label>
-                            <input type="text" class="txtInputs txtFormat" id="txtSuggestedPrice" required
-                                name="txtSuggestedPrice" placeholder="0.00" maxlength="11">
-                        </div>
-                        <div class="formGroup">
-                            <label for="txtTotalCost" class="lblInputs">Costo total</label>
-                            <input type="text" class="txtInputs txtFormat" id="txtTotalCost" name="txtTotalCost"
-                                placeholder="0.00" maxlength="11" disabled>
-                        </div>
-                    </div>
-                </fieldset>
+                    </fieldset>
+                </div>
             </div>
             <button class="btnPrimary btnSubmitData" id="btnSaveSparePart">
                 <span>Guardar</span>

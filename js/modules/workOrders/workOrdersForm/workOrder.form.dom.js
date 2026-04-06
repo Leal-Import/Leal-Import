@@ -1,5 +1,6 @@
 import { formatDecimalInput, formatWithCommas, formatOnFocus, formatOnBlur } from "../../../utils/formatters.js";
 import { $, existsById, qs, qsa, showElement } from "../../../utils/dom.js";
+import { ROUTES } from "../../../utils/router.js";
 
 export const DOMRefs = {
     refs: {},
@@ -40,13 +41,19 @@ export const DOMRefs = {
             txtTotal: $("txtTotal"),
             btnCompleteOrder: $("btnCompleteOrder"),
             loaderCompleteOrder: $("loaderCompleteOrder"),
-            btnGeneratePdf: $("btnGeneratePdf")
+            btnGeneratePdf: $("btnGeneratePdf"),
+            modalPersonContainer: $("modalPersonContainer"),
+            modalPersonItemName: $("modalPersonItemName"),
+            btnClosePersonModal: $("btnClosePersonModal"),
+            employeeList: $("employeeList"),
+            txtSearchEmployee: $("txtSearchEmployee")
         };
         return this.refs;
     }
 };
 
 const SELECTORS = {
+    TD_PERSON: '.tdPerson',
     TD_NAME: '.tdName',
     TD_PRICE: '.tdPrice',
     TD_TRASH: '.tdTrash',
@@ -58,13 +65,13 @@ const SELECTORS = {
 export const loadViewUpdateOrder = (vin, Refs) => {
     Refs.btnSaveOrder.querySelector("span").textContent = "Actualizar";
     Refs.firstBread.textContent = "Actualizar orden >";
-    Refs.firstBread.href = "workOrders.html";
+    Refs.firstBread.href = ROUTES.WORK_ORDERS;
     Refs.secondBread.textContent = vin;
 };
 
 export const loadViewSaleInfo = (vin, Refs) => {
     Refs.firstBread.textContent = "Ventas >";
-    Refs.firstBread.href = "sales.html";
+    Refs.firstBread.href = ROUTES.SALES;
     Refs.secondBread.textContent = vin;
 };
 
@@ -130,7 +137,7 @@ export const renderServiceSuggestions = (selectedServices, boxServ, list, onAddS
         if (existsById(selectedServices, s.idService, 'idService')) return;
         const div = document.createElement('div');
         div.className = 'suggestionItem';
-        div.textContent = s.nameService;
+        div.textContent = s.serviceName;
         div.addEventListener('click', () => onAddService(s));
         boxServ.appendChild(div);
     });
@@ -162,6 +169,95 @@ const setupPriceCell = (priceCell, data, onWritePrice, isView) => {
     }
 };
 
+const onCreateBtnPerson = (onClickCreatePerson, employeeName, itemName, arraySelected, id, cell) => {
+    const span = document.createElement('span');
+    span.classList.add('btnPerson');
+    span.textContent = employeeName ?? 'Agregar';
+    span.addEventListener('click', () => onClickCreatePerson(itemName, arraySelected, id, cell));
+    return span;
+};
+
+const getInitials = (fullName = '') => fullName.trim().split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
+
+const createSelectEmployee = (employeeSelected) => {
+    const item = document.createElement('div');
+    item.className = 'employeeItem selected';
+    item.dataset.id = employeeSelected.idEmployee;
+    const avatar = document.createElement('div');
+    avatar.className = 'employeeAvatar';
+    avatar.textContent = getInitials(employeeSelected.fullName);
+    const info = document.createElement('div');
+    info.className = 'employeeInfo';
+    const name = document.createElement('span');
+    name.className = 'employeeName';
+    name.textContent = employeeSelected.fullName;
+    const role = document.createElement('span');
+    role.className = 'employeeRole';
+    role.textContent = employeeSelected.roleName;
+    const check = document.createElement('div');
+    check.className = 'employeeCheck on';
+    check.id = `check-${employeeSelected.idEmployee}`;
+    info.append(name, role);
+    item.append(avatar, info, check);
+    return item;
+};
+
+export const insertEmployees = (container, employees, onSelect, employeeSelected) => {
+    if (!container) return;
+
+    if (!employees.length) {
+        container.innerHTML = `<p class="emptyEmployees">No se encontraron empleados</p>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    if (employeeSelected !== null && employeeSelected !== undefined) {
+        fragment.appendChild(createSelectEmployee(employeeSelected));
+    }
+
+    employees.forEach(emp => {
+        const alreadySelected = employeeSelected && emp.idEmployee === employeeSelected.idEmployee;
+        if (alreadySelected) return;
+        const item = document.createElement('div');
+        item.className = 'employeeItem';
+        item.dataset.id = emp.idEmployee;
+
+        const avatar = document.createElement('div');
+        avatar.className = 'employeeAvatar';
+        avatar.textContent = getInitials(emp.fullName);
+
+        const info = document.createElement('div');
+        info.className = 'employeeInfo';
+
+        const name = document.createElement('span');
+        name.className = 'employeeName';
+        name.textContent = emp.fullName;
+
+        const role = document.createElement('span');
+        role.className = 'employeeRole';
+        role.textContent = emp.roleName;
+
+        const check = document.createElement('div');
+        check.className = 'employeeCheck';
+        check.id = `check-${emp.idEmployee}`;
+
+        info.append(name, role);
+        item.append(avatar, info, check);
+
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.employeeItem').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.employeeCheck').forEach(el => el.classList.remove('on'));
+            item.classList.add('selected');
+            check.classList.add('on');
+            onSelect(emp);
+        });
+
+        fragment.appendChild(item);
+    });
+    container.appendChild(fragment);
+};
+
 export const appendToDom = ({
     tBody,
     data,
@@ -170,16 +266,21 @@ export const appendToDom = ({
     onWritePrice,
     onDelete,
     renderButton,
-    isView
+    isView,
+    onClickCreatePerson
 }) => {
     if (!tBody) return false;
 
     const row = findOrCreateEmptyRow(tBody);
     if (!row) return false;
 
+    const personCell = row.querySelector(SELECTORS.TD_PERSON);
     const nameCell = row.querySelector(SELECTORS.TD_NAME);
     const priceCell = row.querySelector(SELECTORS.TD_PRICE);
     const tdTrash = row.querySelector(SELECTORS.TD_TRASH);
+
+    const employeeName = onCreateBtnPerson(onClickCreatePerson, data.assignedEmployee, data.name, arraySelected, data.id, personCell);
+    personCell.appendChild(employeeName);
 
     nameCell.textContent = data.name;
     setupPriceCell(priceCell, data, onWritePrice, isView);
@@ -293,16 +394,16 @@ export const renderTotalsPanel = ({ total, due, totalPaid }, Refs) => {
 };
 
 export const cleanRow = (row) => {
+    const tdPerson = row.querySelector(SELECTORS.TD_PERSON);
     const tdName = row.querySelector(SELECTORS.TD_NAME);
     const tdPrice = row.querySelector(SELECTORS.TD_PRICE);
     const btnTrash = row.querySelector(SELECTORS.BTN_TRASH);
 
-    if (tdName) tdName.textContent = "";
-    if (tdPrice) {
-        tdPrice.textContent = "";
-        tdPrice.removeAttribute("contenteditable");
-    }
-    if (btnTrash) btnTrash.remove();
+    tdPerson.textContent = "";
+    tdName.textContent = "";
+    tdPrice.textContent = "";
+    tdPrice.removeAttribute("contenteditable");
+    btnTrash.remove();
 };
 
 export const renderTotals = ({
@@ -348,13 +449,15 @@ export const renderVehiclePrice = (vehiclePrice, spanVehiclePrice) => {
 
 const createEmptyRow = () => {
     const tr = document.createElement('tr');
+    const tdPerson = document.createElement('td');
+    tdPerson.classList.add(SELECTORS.TD_PERSON.slice(1));
     const tdName = document.createElement('td');
     tdName.classList.add(SELECTORS.TD_NAME.slice(1));
     const tdPrice = document.createElement('td');
     tdPrice.classList.add(SELECTORS.TD_PRICE.slice(1));
     const tdTrash = document.createElement("td");
     tdTrash.classList.add(SELECTORS.TD_TRASH.slice(1));
-    tr.append(tdName, tdPrice, tdTrash);
+    tr.append(tdPerson, tdName, tdPrice, tdTrash);
     return tr;
 };
 

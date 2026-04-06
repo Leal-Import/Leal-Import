@@ -28,7 +28,11 @@ export const DOMRefs = {
             defaultText: $('defaultText'),
             errorLinkLote: $('errorLinkLote'),
             validateUrlMessage: $('validateUrlMessage'),
-            camps: qsa('.txtInputs, .btnPrimary')
+            camps: qsa('.txtInputs, .btnPrimary'),
+            btnsCarousel: qsa(".btnsCarousel"),
+            mainSwiperWrapper: $("mainSwiperWrapper"),
+            imageInput: $("imageInput"),
+            thumbsWrapper: $("thumbsWrapper")
         };
 
         return this.refs;
@@ -38,8 +42,6 @@ export const DOMRefs = {
 export const loadUpdateInfo = (Refs) => {
     Refs.typeAction.textContent = "Actualizar repuesto";
     Refs.btnSaveSparePart.querySelector("span").textContent = "Actualizar";
-    Refs.btnDeleteImg.classList.add("hide");
-    Refs.btnAddImg.textContent = "Actualizar foto";
 };
 
 const LINK_CONFIG = {

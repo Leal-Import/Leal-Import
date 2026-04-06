@@ -1,26 +1,28 @@
 // vehicleSale.controller.js
-import { getVehiclesAviable, getSaleById, postVehicle as postVehicleSale, putVehicle as putVehicleSale } from './vehicles.sales.service.js';
+import { getVehiclesAviable, getSaleById, postVehicle as postVehicleSale, putVehicle as putVehicleSale, patchVehicleSale } from './vehicles.sales.service.js';
 import { getVehicles as getVehicleById } from '../../vehicles/vehiclesForm/vehicles.form.service.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
-import { showMessage, hideElement, showElement, disableElement, removeDisable, qsa, buildParams } from '../../../utils/dom.js';
-import { resetVehicleSaleState, vehicleSaleState } from './vehicles.sales.state.js';
+import { showMessage, hideElement, showElement, disableElement, removeDisable, qsa, buildParams, createModuleInitializer } from '../../../utils/dom.js';
+import { navigateTo, replaceTo, ROUTES } from '../../../utils/router.js';
+import { resetVehicleSalesFormState, vehicleSalesFormState } from "./vehicles.sales.state.js";
 import { initVehicleSaleEvents } from './vehicles.sales.events.js';
 import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
 import { DOMRefs, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals, resetVehicleSaleFilters } from './vehicles.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from './vehicles.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
-import { initSession } from '../../../utils/api.utils.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments, onResetPayments } from '../../payments/payments.controller.js';
 import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
 import { safeParseFloat } from '../../../utils/validators.js';
 import { generateVehicleSaleReport } from '../../../core/reports/vehicleSale/vehicles.sales.report.js';
+import { handleApiError } from '../../../utils/api.utils.js';
+import { initCancelSale, saleCancelledUIUpdate } from '../../cancelSale/cancelSale.controller.js';
 
 /* ================= PAGINATION ================= */
 const pagination = createPagination({
-    initialSize: vehicleSaleState.pagination.size,
+    initialSize: vehicleSalesFormState.pagination.size,
     onChange: ({ page, size }) => {
-        vehicleSaleState.pagination.page = page;
-        vehicleSaleState.pagination.size = size;
+        vehicleSalesFormState.pagination.page = page;
+        vehicleSalesFormState.pagination.size = size;
         loadInventory();
     }
 });
@@ -29,18 +31,18 @@ const pagination = createPagination({
 export const loadInventory = async () => {
     try {
         showElement(DOMRefs.refs.tableVehiclesLoader);
-        const { page, size } = vehicleSaleState.pagination;
-        const { search } = vehicleSaleState.filters;
+        const { page, size } = vehicleSalesFormState.pagination;
+        const { search } = vehicleSalesFormState.filters;
 
         const data = await getVehiclesAviable(page - 1, size, search || '');
 
-        vehicleSaleState.list = data.content;
-        vehicleSaleState.pagination.total = data.page.totalElements;
-        vehicleSaleState.pagination.totalPages = data.page.totalPages;
+        vehicleSalesFormState.list = data.content;
+        vehicleSalesFormState.pagination.total = data.page.totalElements;
+        vehicleSalesFormState.pagination.totalPages = data.page.totalPages;
 
         insertVehicles(
             DOMRefs.refs.tBodyInventory,
-            vehicleSaleState.list,
+            vehicleSalesFormState.list,
             onAddVehicle,
             DOMRefs.refs.tableVehicles
         );
@@ -53,8 +55,7 @@ export const loadInventory = async () => {
         });
 
     } catch (error) {
-        showMessage('Error', error, 'error');
-        console.error('Error cargando vehículos:', error);
+        await handleApiError(error, 'No se pudieron cargar los vehículos disponibles para la venta. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.tableVehiclesLoader);
     }
@@ -63,23 +64,23 @@ export const loadInventory = async () => {
 /* ================= TOTALS ================= */
 const recalculateTotals = () => {
     const { total, due } = calculateTotals({
-        items: vehicleSaleState.data.salePrice,
-        paid: vehicleSaleState.totals.totalPaid
+        items: vehicleSalesFormState.data.salePrice,
+        paid: vehicleSalesFormState.totals.totalPaid
     });
 
-    vehicleSaleState.totals.total = total;
-    vehicleSaleState.totals.due = due;
-    renderTotals({ total, due, totalPaid: vehicleSaleState.totals.totalPaid }, DOMRefs.refs);
+    vehicleSalesFormState.totals.total = total;
+    vehicleSalesFormState.totals.due = due;
+    renderTotals({ total, due, totalPaid: vehicleSalesFormState.totals.totalPaid }, DOMRefs.refs);
 };
 
 const onAddVehicle = async (vehicle) => {
-    vehicleSaleState.idVehicle = vehicle.idVehicle;
+    vehicleSalesFormState.idVehicle = vehicle.idVehicle;
     showElement(DOMRefs.refs.addVehicleLoader);
     const vehicleToAppend = await getVehicleById(vehicle.idVehicle);
     hideElement(DOMRefs.refs.addVehicleLoader);
-    vehicleSaleState.data.salePrice = vehicleToAppend.costs ? vehicleToAppend.costs.suggestedPrice : 0;
-    vehicleSaleState.totals.total = vehicleToAppend.costs ? vehicleToAppend.costs.suggestedPrice : 0;
-    loadVehicle(vehicleToAppend, vehicleSaleState.context.idSale, DOMRefs.refs);
+    vehicleSalesFormState.data.salePrice = vehicleToAppend.vehicleCosts ? vehicleToAppend.vehicleCosts.suggestedPrice : 0;
+    vehicleSalesFormState.totals.total = vehicleToAppend.vehicleCosts ? vehicleToAppend.vehicleCosts.suggestedPrice : 0;
+    loadVehicle(vehicleToAppend, vehicleSalesFormState.context.idSale, DOMRefs.refs);
     recalculateTotals();
 };
 
@@ -87,13 +88,13 @@ const onCancelVehicle = () => {
     hideElement(DOMRefs.refs.viewVechicleContainer);
     showElement(DOMRefs.refs.dataLeft);
 
-    vehicleSaleState.idVehicle = null;
-    vehicleSaleState.data.salePrice = 0;
-    vehicleSaleState.totals.total = 0;
+    vehicleSalesFormState.idVehicle = null;
+    vehicleSalesFormState.data.salePrice = 0;
+    vehicleSalesFormState.totals.total = 0;
 
     DOMRefs.refs.frmVehicleSale.reset();
 
-    onResetPayments(vehicleSaleState.data, vehicleSaleState.totals);
+    onResetPayments(vehicleSalesFormState.data, vehicleSalesFormState.totals);
     onResetDomPayments();
     recalculateTotals();
 };
@@ -106,18 +107,18 @@ export const onSubmitVehicleSale = async (e, isWorkOrder) => {
         const params = buildParams({
             idVehicle: response.idVehicle,
             totalPrice: response.price,
-            customerName: vehicleSaleState.context.customerName,
-            idCustomer: vehicleSaleState.context.idCustomer,
+            customerName: vehicleSalesFormState.context.customerName,
+            idCustomer: vehicleSalesFormState.context.idCustomer,
             idSale: response.idSale
         });
-        window.location.replace(`workOrderForm.html?${params.toString()}`);
+        replaceTo(ROUTES.WORK_ORDER_FORM, Object.fromEntries(params.entries()));
     } else if (response === "sale") {
-        window.location.replace('sales.html');
+        navigateTo(ROUTES.SALES);
     }
 };
 
 const createNewSale = async (isWorkOrder) => {
-    const invalidate = validateSale(vehicleSaleState.data, vehicleSaleState.idVehicle, vehicleSaleState.context.idCustomer, vehicleSaleState.context.idSale);
+    const invalidate = validateSale(vehicleSalesFormState.data, vehicleSalesFormState.idVehicle, vehicleSalesFormState.context.idCustomer, vehicleSalesFormState.context.idSale);
     const camps = qsa(".txtInputs, .btnPrimary, .btnSecondary, .btnTrash, .btnEdit");
     if (invalidate) {
         await showMessage('Error de validación', invalidate, 'warning');
@@ -125,15 +126,10 @@ const createNewSale = async (isWorkOrder) => {
     }
 
     let payload;
-    if (vehicleSaleState.context.idSale) {
-        payload = buildPutSalePayload(vehicleSaleState);
+    if (vehicleSalesFormState.context.idSale) {
+        payload = buildPutSalePayload(vehicleSalesFormState);
     } else {
-        payload = buildPostSalePayload(vehicleSaleState);
-    }
-
-    if (payload.error) {
-        await showMessage('Error', payload.error, 'warning');
-        return false;
+        payload = buildPostSalePayload(vehicleSalesFormState);
     }
 
     if (isWorkOrder) {
@@ -141,22 +137,18 @@ const createNewSale = async (isWorkOrder) => {
     } else {
         showElement(DOMRefs.refs.btnSaveSaleLoader);
     }
-
     camps.forEach(disableElement);
     try {
         let response;
-        if (vehicleSaleState.context.idSale) {
-            response = await putVehicleSale(payload, vehicleSaleState.context.idSale);
+        if (vehicleSalesFormState.context.idSale) {
+            response = await putVehicleSale(payload, vehicleSalesFormState.context.idSale);
             await showMessage('Venta actualizada', 'Éxito', 'success');
         } else {
-            response = await postVehicleSale(payload, vehicleSaleState.idVehicle);
+            response = await postVehicleSale(payload, vehicleSalesFormState.idVehicle);
             await showMessage('Venta registrada', 'Éxito', 'success');
         }
 
         if (response) {
-            DOMRefs.refs.frmVehicleSale.reset();
-            const cleanUrl = window.location.pathname;
-            history.replaceState({}, "", cleanUrl);
             if (isWorkOrder) {
                 return {
                     idVehicle: response.data.idVehicle,
@@ -169,8 +161,7 @@ const createNewSale = async (isWorkOrder) => {
         };
 
     } catch (error) {
-        console.error(error);
-        showMessage(error.message || 'Error al procesar venta', error, 'error');
+        await handleApiError(error, 'No se pudo guardar la venta. Por favor, inténtalo de nuevo.');
     } finally {
         if (isWorkOrder) {
             hideElement(DOMRefs.refs.btnCreateOrderLoader);
@@ -182,11 +173,11 @@ const createNewSale = async (isWorkOrder) => {
 };
 
 const onSearchVehicle = async (filters) => {
-    vehicleSaleState.filters = {
-        ...vehicleSaleState.filters,
+    vehicleSalesFormState.filters = {
+        ...vehicleSalesFormState.filters,
         ...filters
     };
-    vehicleSaleState.pagination.page = 1;
+    vehicleSalesFormState.pagination.page = 1;
     showElement(DOMRefs.refs.tableVehiclesLoader);
     await loadInventory();
     hideElement(DOMRefs.refs.tableVehiclesLoader);
@@ -194,19 +185,23 @@ const onSearchVehicle = async (filters) => {
 
 /* ================= LOAD EXISTING ================= */
 const loadExistingSale = (sale, vehicle) => {
+    if (sale.statusSaleName === "Cancelada") {
+        saleCancelledUIUpdate(sale.cancellationReason);
+    }
     showElement(DOMRefs.refs.addVehicleLoader);
     hideElement(DOMRefs.refs.btnCancelVehicle);
-    loadVehicle(vehicle, vehicleSaleState.context.idSale, DOMRefs.refs);
+    loadVehicle(vehicle, vehicleSalesFormState.context.idSale, DOMRefs.refs);
     hideElement(DOMRefs.refs.addVehicleLoader);
-    vehicleSaleState.data.notes = sale.notes || '';
-    vehicleSaleState.data.salePrice = sale.fullTotalCost || 0;
-    vehicleSaleState.data.commission = sale.commission || 0;
-    loadDomData(vehicleSaleState.data, DOMRefs.refs);
+    vehicleSalesFormState.data.notes = sale.notes || '';
+    vehicleSalesFormState.data.salePrice = sale.fullTotalCost || 0;
+    vehicleSalesFormState.data.commission = sale.commission || 0;
+    vehicleSalesFormState.data.salePrice = sale.salePrice || 0;
+    loadDomData(vehicleSalesFormState.data, DOMRefs.refs);
 
-    sale.payments.forEach(p => {
+    sale.vehiclePayments.forEach(p => {
         addNewPayment({
-            state: vehicleSaleState.data,
-            totals: vehicleSaleState.totals,
+            state: vehicleSalesFormState.data,
+            totals: vehicleSalesFormState.totals,
             payment: p
         });
     });
@@ -215,26 +210,26 @@ const loadExistingSale = (sale, vehicle) => {
 
 const onSaveFinalPrice = (e) => {
     const total = safeParseFloat(e.target.value) || 0;
-    vehicleSaleState.data.salePrice = total;
-    vehicleSaleState.totals.total = total;
+    vehicleSalesFormState.data.salePrice = total;
+    vehicleSalesFormState.totals.total = total;
     recalculateTotals();
 };
 
 const onSaveNotes = (e) => {
-    vehicleSaleState.data.notes = e.target.value.trim() || '';
+    vehicleSalesFormState.data.notes = e.target.value.trim() || '';
 };
 
 const onSaveComission = (e) => {
-    vehicleSaleState.data.commission = e.target.value.trim() || '';
+    vehicleSalesFormState.data.commission = e.target.value.trim() || '';
 };
 
 const onImportVehicle = () => {
     const params = buildParams({
         sale: true,
-        idCustomer: vehicleSaleState.context.idCustomer,
-        customerName: vehicleSaleState.context.customerName
+        idCustomer: vehicleSalesFormState.context.idCustomer,
+        customerName: vehicleSalesFormState.context.customerName
     });
-    window.location.href = `vehiclesForm.html?${params.toString()}`;
+    navigateTo(ROUTES.VEHICLES_FORM, Object.fromEntries(params.entries()));
 };
 
 const initializeUI = async (Refs) => {
@@ -242,33 +237,23 @@ const initializeUI = async (Refs) => {
     await initPaymentsController({
         totalCalculator: recalculateTotals,
         createReceiptBtn: createBtnUrl,
-        isView: vehicleSaleState.context.isView,
-        state: vehicleSaleState
+        isView: vehicleSalesFormState.context.isView,
+        state: vehicleSalesFormState
     });
-    loadCustomerName(DOMRefs.refs.customerName, vehicleSaleState.context.customerName);
-    initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onCancelVehicle, onImportVehicle });
-    initializeModalListeners(vehicleSaleState.data, vehicleSaleState.context.isView);
-};
-
-const setupApplication = async () => {
-    resetVehicleSaleState();
-    // 1. Validar sesión
-    const user = await initSession();
-    if (!user) return false;
-
-    // 2. Hidratar contexto desde URL
-    const hydrated = await hydrateContextFromURL(vehicleSaleState);
-    if (!hydrated) return false;
-
-    return true;
+    loadCustomerName(DOMRefs.refs.customerName, vehicleSalesFormState.context.customerName);
+    initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onImportVehicle, onCancelVehicle });
+    if (vehicleSalesFormState.context.isView) {
+        initCancelSale(vehicleSalesFormState.context.idSale, patchVehicleSale);
+    };
+    initializeModalListeners(vehicleSalesFormState.data, vehicleSalesFormState.context.isView);
 };
 
 const loadDataFlow = async () => {
-    if (vehicleSaleState.context.idSale) {
-        const sale = await getSaleById(vehicleSaleState.context.idSale);
+    if (vehicleSalesFormState.context.idSale) {
+        const sale = await getSaleById(vehicleSalesFormState.context.idSale);
         const vehicle = await getVehicleById(sale.idVehicle);
         loadExistingSale(sale, vehicle);
-        if (vehicleSaleState.context.isView) {
+        if (vehicleSalesFormState.context.isView) {
             hideElement(DOMRefs.refs.btnSaveSale);
             disableElement(DOMRefs.refs.btnImportVehicle);
             disableElement(DOMRefs.refs.txtNotes);
@@ -276,16 +261,16 @@ const loadDataFlow = async () => {
             disableElement(DOMRefs.refs.txtCommission);
             hideElement(DOMRefs.refs.paymentForm);
             showElement(DOMRefs.refs.btnGeneratePdf);
-            sale.totalPaid = vehicleSaleState.totals.totalPaid;
-            DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => generateVehicleSaleReport(sale, vehicle, vehicleSaleState.context.customerName));
+            sale.totalPaid = vehicleSalesFormState.totals.totalPaid;
+            DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => generateVehicleSaleReport(sale, vehicle, vehicleSalesFormState.context.customerName));
         }
         return;
-    } else if (vehicleSaleState.context.idVehicle) {
+    } else if (vehicleSalesFormState.context.idVehicle) {
         showElement(DOMRefs.refs.addVehicleLoader);
-        const vehicle = await getVehicleById(vehicleSaleState.context.idVehicle);
-        loadVehicle(vehicle, vehicleSaleState.context.idSale, DOMRefs.refs);
-        if (vehicle.costs && vehicle.costs.suggestedPrice) {
-            vehicleSaleState.data.salePrice = vehicle.costs.suggestedPrice;
+        const vehicle = await getVehicleById(vehicleSalesFormState.context.idVehicle);
+        loadVehicle(vehicle, vehicleSalesFormState.context.idSale, DOMRefs.refs);
+        if (vehicle.vehicleCosts && vehicle.vehicleCosts.suggestedPrice) {
+            vehicleSalesFormState.data.salePrice = vehicle.vehicleCosts.suggestedPrice;
         }
         hideElement(DOMRefs.refs.addVehicleLoader);
         recalculateTotals();
@@ -293,22 +278,15 @@ const loadDataFlow = async () => {
     await loadInventory();
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        // 1. Configurar aplicación
-        const isReady = await setupApplication();
-        if (!isReady) return;
-
-        // 2. Inicializar referencias del DOMRefs
-        const refs = DOMRefs.init();
-
-        // 3. Inicializar componentes UI
-        await initializeUI(refs);
-
-        // 4. Cargar datos según el flujo
-        await loadDataFlow();
-    } catch (error) {
-        console.error('Error initializing application:', error);
-        showMessage('Error', 'No se pudo inicializar la aplicación', 'error');
-    }
+const init = createModuleInitializer({
+    resetState: async () => {
+        resetVehicleSalesFormState();
+        const hydrated = await hydrateContextFromURL(vehicleSalesFormState);
+        if (!hydrated) throw new Error('Failed to hydrate context');
+    },
+    initialize: initializeUI,
+    load: loadDataFlow,
+    DOMRefs
 });
+
+document.addEventListener('DOMContentLoaded', init);
