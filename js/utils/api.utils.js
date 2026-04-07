@@ -23,7 +23,7 @@ export const handleApiError = async (error) => {
         }
 
         if (error.status === 403) {
-            await showMessage('Acceso Denegado', 'No tienes permiso para esta acción.', 'error');
+            await showMessage('Acceso Denegado', error.message || 'No tienes permiso para esta acción.', 'error');
             return;
         }
 

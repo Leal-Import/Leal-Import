@@ -242,12 +242,14 @@ export const cleanOneShotParams = cleanURLParams;
 /**
  * Escanea el DOM buscando elementos con el atributo [data-privilege]
  * y los oculta si el usuario no cuenta con dicho permiso.
+ * @param {HTMLElement} container - Opcional, contenedor raíz para el escaneo
  */
-export const applyPrivilegesToUI = () => {
-    const elements = document.querySelectorAll('[data-privilege]');
+export const applyPrivilegesToUI = (container = document) => {
+    const elements = container.querySelectorAll('[data-privilege]');
     elements.forEach(el => {
         const required = el.getAttribute('data-privilege').split(',').map(p => p.trim());
-        if (!canAccess(required)) hideElement(el);
+        if (canAccess(required)) showElement(el);
+        else hideElement(el);
     });
 };
 
