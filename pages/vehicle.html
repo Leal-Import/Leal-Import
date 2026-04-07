@@ -78,7 +78,7 @@
                     <option value="INVENTORY">No externos</option>
                     <option value="EXTERNAL">Externos</option>
                 </select>
-                <a class="btnPrimary btnOpenModal" id="btnAddVehicle" href="vehiclesForm.html">Añadir</a>
+                <a class="btnPrimary btnOpenModal" id="btnAddVehicle" href="vehiclesForm.html" data-privilege="WRITE_VEHICLES">Añadir</a>
             </div>
 
             <!-- Cards Container -->
@@ -116,7 +116,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/vehicles/vehicles.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

@@ -18,6 +18,7 @@ export const showFloatingMenu = (event, actions) => {
         const btn = document.createElement('button');
         btn.textContent = action.label;
         btn.classList.add('floatingMenuButton');
+        if (action.privilege) btn.dataset.privilege = action.privilege;
 
         btn.addEventListener('click', (e) => {
             e.stopPropagation();

@@ -60,7 +60,7 @@
                 <select id="cmbSearchByStatus" class="cmbFilterData">
                     <option value="">Cargando...</option>
                 </select>
-                <a href="sparePartsForm.html" class="btnPrimary btnOpenModal">Añadir</a>
+                <a href="sparePartsForm.html" class="btnPrimary btnOpenModal" data-privilege="WRITE_SPAREPARTS">Añadir</a>
             </div>
 
             <div class="containerSpareParts">
@@ -95,7 +95,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/spareParts/spareParts.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

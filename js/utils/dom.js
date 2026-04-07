@@ -1,5 +1,7 @@
 import { initSession } from './api.utils.js';
 import { cleanOneShotParams as cleanURLParams } from './draft.manager.js';
+import { initSidebar } from '../components/sidebar.js';
+import { canAccess } from './privilegesValidator.js';
 
 export const $ = id => document.getElementById(id);
 export const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -238,6 +240,18 @@ export const buildParams = (obj) => {
 export const cleanOneShotParams = cleanURLParams;
 
 /**
+ * Escanea el DOM buscando elementos con el atributo [data-privilege]
+ * y los oculta si el usuario no cuenta con dicho permiso.
+ */
+export const applyPrivilegesToUI = () => {
+    const elements = document.querySelectorAll('[data-privilege]');
+    elements.forEach(el => {
+        const required = el.getAttribute('data-privilege').split(',').map(p => p.trim());
+        if (!canAccess(required)) hideElement(el);
+    });
+};
+
+/**
  * Factory para inicialización de módulos
  * Elimina código duplicado en controllers
  */
@@ -248,16 +262,31 @@ export const createModuleInitializer = async ({
     DOMRefs
 }) => {
     try {
+        // 1. Inicializamos el sidebar de inmediato.
+        // Esto inyecta la estructura y quita la "pantalla negra" (clase uiReady).
+        initSidebar();
+
         await resetState();
         const user = await initSession();
+
+        // 2. Si la sesión es válida, re-inicializamos para mostrar los ítems
+        // según los privilegios reales obtenidos.
+        if (user) initSidebar();
+
         if (!user) return false;
 
         const refs = DOMRefs.init();
         await initialize(refs);
         await load(refs);
+        applyPrivilegesToUI();
         return true;
     } catch (error) {
         console.error('Error inicializando:', error);
-        showMessage('Error', 'Fallo al cargar', 'error');
+        // Fallback: Si falló algo crítico antes de initSidebar, forzamos la visibilidad
+        document.documentElement.classList.add('uiReady');
+        document.body.classList.add('sidebarReady');
+
+        await showMessage('Error', 'No se pudo cargar el módulo correctamente', 'error');
+        return false;
     }
 };

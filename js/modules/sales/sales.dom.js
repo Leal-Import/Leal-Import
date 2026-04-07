@@ -204,6 +204,7 @@ export const insertSales = (container, sales) => {
                 btnEdit = document.createElement("a");
                 btnEdit.classList.add("btnPrimary");
                 btnEdit.textContent = "Editar";
+                btnEdit.setAttribute("data-privilege", "WRITE_SALES");
             }
             const params = buildParams({
                 idCustomer: sale.idCustomer,

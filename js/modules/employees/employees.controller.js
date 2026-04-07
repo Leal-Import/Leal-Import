@@ -166,10 +166,12 @@ const handleEmployeeActions = (event, employee) => {
     showFloatingMenu(event, [
         {
             label: 'Actualizar empleado',
+            privilege: 'WRITE_EMPLOYEES',
             onClick: () => editEmployee(employee)
         },
         {
             label: 'Editar permisos',
+            privilege: 'WRITE_EMPLOYEES',
             onClick: () => openEmployeePrivilegesModal(employee)
         },
         {
@@ -180,6 +182,7 @@ const handleEmployeeActions = (event, employee) => {
             label: employee.user.status === STATUS.ACTIVE
                 ? 'Desactivar empleado'
                 : 'Activar empleado',
+            privilege: 'WRITE_EMPLOYEES',
             onClick: () =>
                 toggleEmployeeStatus(
                     employee.user.idUser,

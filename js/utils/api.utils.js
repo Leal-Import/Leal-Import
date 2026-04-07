@@ -2,6 +2,7 @@ import { getAuthMe } from '../modules/login/login.service.js';
 import { showMessage } from './dom.js';
 import { navigateTo, ROUTES } from './router.js';
 import { DraftManager } from './draft.manager.js';
+import { canAccess, setUserPrivileges, clearUserPrivileges } from './privilegesValidator.js';
 
 export class APIError extends Error {
     constructor(message, status = 500, cause = null, endpoint = null) {
@@ -38,7 +39,11 @@ export const handleApiError = async (error) => {
     await showMessage('Error', error?.message || 'Error desconocido', 'error');
 };
 
-export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de API') => {
+export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de API', requiredPrivileges = []) => {
+    if (!canAccess(requiredPrivileges)) {
+        throw new APIError('No tienes permiso para esta acción.', 403, null, url);
+    }
+
     try {
         const response = await fetch(url, options);
         let data = null;
@@ -89,8 +94,8 @@ export const initSession = async () => {
         const response = await getAuthMe();
         if (response.status === "OK") {
             currentUser = response.data;
-            localStorage.setItem("app.user.name", currentUser.fullName || 'Usuario');
-            localStorage.setItem("app.user.role", currentUser.role || 'Rol');
+            const privileges = currentUser.privileges || currentUser.privilegeList || currentUser.directPrivileges || [];
+            setUserPrivileges(Array.isArray(privileges) ? privileges : []);
             return currentUser;
         } else {
             await forceLogout("Sesión no válida");
@@ -109,8 +114,7 @@ export const initSession = async () => {
 const forceLogout = async (reason = 'Sesión finalizada') => {
     // Limpiar usuario
     currentUser = null;
-    localStorage.removeItem('app.user.name');
-    localStorage.removeItem('app.user.role');
+    clearUserPrivileges();
 
     // Limpiar tokens/auth
     localStorage.removeItem('app.auth.token');

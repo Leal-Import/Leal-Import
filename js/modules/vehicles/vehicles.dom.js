@@ -170,6 +170,7 @@ const createButtons = (vehicle, hasWorkOrder) => {
 
         const btnEdit = document.createElement('a');
         btnEdit.textContent = 'Editar';
+        btnEdit.dataset.privilege = 'WRITE_VEHICLES';
         btnEdit.classList.add('btnSecondary');
         btnEdit.href = `${ROUTES.VEHICLES_FORM}?id=${vehicle.idVehicle}`;
 

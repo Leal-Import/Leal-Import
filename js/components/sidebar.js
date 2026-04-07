@@ -1,173 +1,325 @@
-const getSidebarTemplate = () => `
-    <div class="navbarContainer">
-        <div class="navbar">
+import { canAccess } from '../utils/privilegesValidator.js';
+import { getCurrentEmployee } from '../utils/api.utils.js';
 
-            <div class="navHeader">
-                <div class="logoContainer">
-                    <img src="../media/appMedia/Logo Lealimport.png" alt="Logo" class="logo" id="logo">
-                    <span class="logoWordmark" id="logoWordmark">Leal <span>import</span></span>
-                </div>
-                <button id="btnNavbar" title="Toggle sidebar" type="button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="15 18 9 12 15 6"/>
-                    </svg>
-                </button>
-            </div>
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
-            <div class="navBody">
-                <nav class="navbarItemsContainer">
+const createSvgElement = (tag, attrs = {}) => {
+    const element = document.createElementNS(SVG_NS, tag);
+    Object.entries(attrs).forEach(([name, value]) => element.setAttribute(name, value));
+    return element;
+};
 
-                    <div class="navSection">
-                        <div class="navSectionLabel">Menu</div>
-                    </div>
+const createSvgIcon = (viewBox, pathData, strokeWidth = '1.8') => {
+    const svg = createSvgElement('svg', {
+        viewBox,
+        fill: 'none',
+        stroke: 'currentColor',
+        'stroke-width': strokeWidth,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round'
+    });
 
-                    <a href="../pages/dashboard.html" class="navbarItem itemNav" id="dashItem">
-                        <div class="navIconWrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-                                <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-                                <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-                                <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-                            </svg>
-                        </div>
-                        <span class="navbarText">Inicio</span>
-                        <span class="navTooltip">Inicio</span>
-                    </a>
+    pathData.forEach(({ tag, attrs }) => {
+        const child = createSvgElement(tag, attrs);
+        svg.appendChild(child);
+    });
 
-                    <a href="../pages/employees.html" class="navbarItem itemNav" id="empItem">
-                        <div class="navIconWrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                            </svg>
-                        </div>
-                        <span class="navbarText">Empleados</span>
-                        <span class="navTooltip">Empleados</span>
-                    </a>
+    return svg;
+};
 
-                    <a href="../pages/customers.html" class="navbarItem itemNav" id="clientItem">
-                        <div class="navIconWrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                        </div>
-                        <span class="navbarText">Clientes</span>
-                        <span class="navTooltip">Clientes</span>
-                    </a>
+const createNavItem = (href, id, text, icon) => {
+    const link = document.createElement('a');
+    link.href = href;
+    link.className = 'navbarItem itemNav';
+    link.id = id;
 
-                    <a href="../pages/vehicle.html" class="navbarItem itemNav" id="vehicleItem">
-                        <div class="navIconWrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="5.5" cy="17.5" r="2.5"/>
-                                <circle cx="18.5" cy="17.5" r="2.5"/>
-                                <path d="M15 6H2v11h1.5"/>
-                                <path d="M3 6l2-4h10l2 4"/>
-                                <path d="M15 6h4l3 4v4h-1.5"/>
-                            </svg>
-                        </div>
-                        <span class="navbarText">Vehiculos</span>
-                        <span class="navTooltip">Vehiculos</span>
-                    </a>
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'navIconWrap';
+    iconWrap.appendChild(icon);
 
-                    <a href="../pages/spareParts.html" class="navbarItem itemNav" id="spareItem">
-                        <div class="navIconWrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                            </svg>
-                        </div>
-                        <span class="navbarText">Repuestos</span>
-                        <span class="navTooltip">Repuestos</span>
-                    </a>
+    const label = document.createElement('span');
+    label.className = 'navbarText';
+    label.textContent = text;
 
-                    <div class="navDivider"></div>
+    const tooltip = document.createElement('span');
+    tooltip.className = 'navTooltip';
+    tooltip.textContent = text;
 
-                    <div class="navSection">
-                        <div class="navSectionLabel">Comercial</div>
-                    </div>
+    link.appendChild(iconWrap);
+    link.appendChild(label);
+    link.appendChild(tooltip);
 
-                    <a href="../pages/sales.html" class="navbarItem itemNav" id="salesItem">
-                        <div class="navIconWrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="1" x2="12" y2="23"/>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                            </svg>
-                        </div>
-                        <span class="navbarText">Ventas</span>
-                        <span class="navTooltip">Ventas</span>
-                    </a>
+    return link;
+};
 
-                    <a href="../pages/workOrders.html" class="navbarItem itemNav" id="orderItem">
-                        <div class="navIconWrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                <polyline points="14 2 14 8 20 8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                                <polyline points="10 9 9 9 8 9"/>
-                            </svg>
-                        </div>
-                        <span class="navbarText">Ordenes</span>
-                        <span class="navTooltip">Ordenes</span>
-                    </a>
+const createSectionLabel = (text) => {
+    const section = document.createElement('div');
+    section.className = 'navSection';
+    const label = document.createElement('div');
+    label.className = 'navSectionLabel';
+    label.textContent = text;
+    section.appendChild(label);
+    return section;
+};
 
-                    <div class="navDivider"></div>
+const createDivider = () => {
+    const divider = document.createElement('div');
+    divider.className = 'navDivider';
+    return divider;
+};
 
-                    <div class="navSection">
-                        <div class="navSectionLabel">Sistema</div>
-                    </div>
+const createSidebar = () => {
+    const navbarContainer = document.createElement('div');
+    navbarContainer.className = 'navbarContainer';
 
-                    <a href="../pages/configuration.html" class="navbarItem itemNav" id="configItem">
-                        <div class="navIconWrap">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                            </svg>
-                        </div>
-                        <span class="navbarText">Configuracion</span>
-                        <span class="navTooltip">Configuracion</span>
-                    </a>
+    const navbar = document.createElement('div');
+    navbar.className = 'navbar';
 
-                </nav>
-            </div>
+    const navHeader = document.createElement('div');
+    navHeader.className = 'navHeader';
 
-            <div class="navFooter">
-                <div class="userCard">
-                    <div class="sidebarUserAvatar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                    </div>
-                    <div class="userInfo">
-                        <div class="userName" id="userName">Usuario</div>
-                        <div class="userRole" id="userRole">Rol</div>
-                    </div>
-                </div>
-            </div>
+    const logoContainer = document.createElement('div');
+    logoContainer.className = 'logoContainer';
 
-        </div>
-    </div>`;
+    const logoImg = document.createElement('img');
+    logoImg.src = '../media/appMedia/Logo Lealimport.png';
+    logoImg.alt = 'Logo';
+    logoImg.className = 'logo';
+    logoImg.id = 'logo';
 
-const getMobileHeaderTemplate = () => `
-    <div class="mobileHeader">
-        <button class="menuToggle" id="menuToggle" aria-label="Toggle menu" type="button">☰</button>
-        <div class="mobileHeaderLogo">Menu</div>
-        <div style="width: 40px;"></div>
-    </div>`;
+    const logoWordmark = document.createElement('span');
+    logoWordmark.className = 'logoWordmark';
+    logoWordmark.id = 'logoWordmark';
+    logoWordmark.textContent = 'Leal ';
+
+    const logoWordmarkSpan = document.createElement('span');
+    logoWordmarkSpan.textContent = 'import';
+    logoWordmark.appendChild(logoWordmarkSpan);
+
+    logoContainer.appendChild(logoImg);
+    logoContainer.appendChild(logoWordmark);
+
+    const btnNavbar = document.createElement('button');
+    btnNavbar.id = 'btnNavbar';
+    btnNavbar.title = 'Toggle sidebar';
+    btnNavbar.type = 'button';
+    btnNavbar.appendChild(createSvgIcon('0 0 24 24', [
+        { tag: 'polyline', attrs: { points: '15 18 9 12 15 6' } }
+    ], '2.5'));
+
+    navHeader.appendChild(logoContainer);
+    navHeader.appendChild(btnNavbar);
+
+    const navBody = document.createElement('div');
+    navBody.className = 'navBody';
+
+    const navbarItems = document.createElement('nav');
+    navbarItems.className = 'navbarItemsContainer';
+
+    const sidebarSections = [
+        {
+            section: 'Menu',
+            items: [
+                {
+                    href: '../pages/dashboard.html',
+                    id: 'dashItem',
+                    text: 'Inicio',
+                    iconData: [
+                        { tag: 'rect', attrs: { x: '3', y: '3', width: '7', height: '7', rx: '1.5' } },
+                        { tag: 'rect', attrs: { x: '14', y: '3', width: '7', height: '7', rx: '1.5' } },
+                        { tag: 'rect', attrs: { x: '3', y: '14', width: '7', height: '7', rx: '1.5' } },
+                        { tag: 'rect', attrs: { x: '14', y: '14', width: '7', height: '7', rx: '1.5' } }
+                    ],
+                    requiredPrivileges: []
+                },
+                {
+                    href: '../pages/employees.html',
+                    id: 'empItem',
+                    text: 'Empleados',
+                    iconData: [
+                        { tag: 'path', attrs: { d: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2' } },
+                        { tag: 'circle', attrs: { cx: '9', cy: '7', r: '4' } },
+                        { tag: 'path', attrs: { d: 'M23 21v-2a4 4 0 0 0-3-3.87' } },
+                        { tag: 'path', attrs: { d: 'M16 3.13a4 4 0 0 1 0 7.75' } }
+                    ],
+                    requiredPrivileges: ['READ_EMPLOYEES', 'WRITE_EMPLOYEES']
+                },
+                {
+                    href: '../pages/customers.html',
+                    id: 'clientItem',
+                    text: 'Clientes',
+                    iconData: [
+                        { tag: 'path', attrs: { d: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2' } },
+                        { tag: 'circle', attrs: { cx: '12', cy: '7', r: '4' } }
+                    ],
+                    requiredPrivileges: ['READ_CUSTOMERS', 'WRITE_CUSTOMERS']
+                },
+                {
+                    href: '../pages/vehicle.html',
+                    id: 'vehicleItem',
+                    text: 'Vehiculos',
+                    iconData: [
+                        { tag: 'circle', attrs: { cx: '5.5', cy: '17.5', r: '2.5' } },
+                        { tag: 'circle', attrs: { cx: '18.5', cy: '17.5', r: '2.5' } },
+                        { tag: 'path', attrs: { d: 'M15 6H2v11h1.5' } },
+                        { tag: 'path', attrs: { d: 'M3 6l2-4h10l2 4' } },
+                        { tag: 'path', attrs: { d: 'M15 6h4l3 4v4h-1.5' } }
+                    ],
+                    requiredPrivileges: ['READ_VEHICLES', 'WRITE_VEHICLES']
+                },
+                {
+                    href: '../pages/spareParts.html',
+                    id: 'spareItem',
+                    text: 'Repuestos',
+                    iconData: [
+                        { tag: 'path', attrs: { d: 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z' } }
+                    ],
+                    requiredPrivileges: ['READ_SPAREPARTS', 'WRITE_SPAREPARTS']
+                }
+            ]
+        },
+        {
+            divider: true
+        },
+        {
+            section: 'Comercial',
+            items: [
+                {
+                    href: '../pages/sales.html',
+                    id: 'salesItem',
+                    text: 'Ventas',
+                    iconData: [
+                        { tag: 'line', attrs: { x1: '12', y1: '1', x2: '12', y2: '23' } },
+                        { tag: 'path', attrs: { d: 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' } }
+                    ],
+                    requiredPrivileges: ['READ_SALES', 'WRITE_SALES']
+                },
+                {
+                    href: '../pages/workOrders.html',
+                    id: 'orderItem',
+                    text: 'Ordenes',
+                    iconData: [
+                        { tag: 'path', attrs: { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z' } },
+                        { tag: 'polyline', attrs: { points: '14 2 14 8 20 8' } },
+                        { tag: 'line', attrs: { x1: '16', y1: '13', x2: '8', y2: '13' } },
+                        { tag: 'line', attrs: { x1: '16', y1: '17', x2: '8', y2: '17' } },
+                        { tag: 'polyline', attrs: { points: '10 9 9 9 8 9' } }
+                    ],
+                    requiredPrivileges: ['READ_WORK_ORDERS', 'WRITE_WORK_ORDERS']
+                }
+            ]
+        },
+        {
+            divider: true
+        },
+        {
+            section: 'Sistema',
+            items: [
+                {
+                    href: '../pages/configuration.html',
+                    id: 'configItem',
+                    text: 'Configuracion',
+                    iconData: [
+                        { tag: 'circle', attrs: { cx: '12', cy: '12', r: '3' } },
+                        { tag: 'path', attrs: { d: 'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z' } }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    sidebarSections.forEach((section) => {
+        if (section.items) {
+            const visibleItems = section.items.filter((item) => canAccess(item.requiredPrivileges));
+
+            if (visibleItems.length > 0) {
+                navbarItems.appendChild(createSectionLabel(section.section));
+                visibleItems.forEach((item) => {
+                    navbarItems.appendChild(createNavItem(item.href, item.id, item.text, createSvgIcon('0 0 24 24', item.iconData)));
+                });
+            }
+
+            return;
+        }
+
+        if (section.divider) {
+            navbarItems.appendChild(createDivider());
+        }
+    });
+
+    const navFooter = document.createElement('div');
+    navFooter.className = 'navFooter';
+
+    const userCard = document.createElement('div');
+    userCard.className = 'userCard';
+
+    const userAvatar = document.createElement('div');
+    userAvatar.className = 'sidebarUserAvatar';
+    userAvatar.appendChild(createSvgIcon('0 0 24 24', [
+        { tag: 'path', attrs: { d: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2' } },
+        { tag: 'circle', attrs: { cx: '12', cy: '7', r: '4' } }
+    ], '2'));
+
+    const userInfo = document.createElement('div');
+    userInfo.className = 'userInfo';
+
+    const userName = document.createElement('div');
+    userName.className = 'userName';
+    userName.id = 'userName';
+    userName.textContent = 'Usuario';
+
+    const userRole = document.createElement('div');
+    userRole.className = 'userRole';
+    userRole.id = 'userRole';
+    userRole.textContent = 'Rol';
+
+    userInfo.appendChild(userName);
+    userInfo.appendChild(userRole);
+
+    userCard.appendChild(userAvatar);
+    userCard.appendChild(userInfo);
+    navFooter.appendChild(userCard);
+
+    navbar.appendChild(navHeader);
+    navBody.appendChild(navbarItems);
+    navbar.appendChild(navBody);
+    navbar.appendChild(navFooter);
+    navbarContainer.appendChild(navbar);
+
+    return navbarContainer;
+};
+
+const createMobileHeader = () => {
+    const mobileHeader = document.createElement('div');
+    mobileHeader.className = 'mobileHeader';
+
+    const menuToggle = document.createElement('button');
+    menuToggle.className = 'menuToggle';
+    menuToggle.id = 'menuToggle';
+    menuToggle.type = 'button';
+    menuToggle.setAttribute('aria-label', 'Toggle menu');
+    menuToggle.textContent = '☰';
+
+    const mobileHeaderLogo = document.createElement('div');
+    mobileHeaderLogo.className = 'mobileHeaderLogo';
+    mobileHeaderLogo.textContent = 'Menu';
+
+    const spacer = document.createElement('div');
+    spacer.style.width = '40px';
+
+    mobileHeader.appendChild(menuToggle);
+    mobileHeader.appendChild(mobileHeaderLogo);
+    mobileHeader.appendChild(spacer);
+
+    return mobileHeader;
+};
 
 // ═══════════════════════════════════════
 // STORAGE KEYS
 // ═══════════════════════════════════════
 
-const STORAGE_KEY     = 'app.sidebar.collapsed';
-const STORAGE_NAV     = 'navItem';
-const STORAGE_NAME    = 'app.user.name';
-const STORAGE_ROLE    = 'app.user.role';
+const STORAGE_KEY = 'app.sidebar.collapsed';
+const STORAGE_NAV = 'navItem';
 
 // ═══════════════════════════════════════
 // REFERENCIAS (encapsuladas — no globales)
@@ -177,14 +329,14 @@ let refs = {};
 
 const initReferences = () => {
     refs = {
-        sidebar:     document.getElementById('sidebar'),
-        btnNavbar:   document.getElementById('btnNavbar'),
-        logo:        document.getElementById('logo'),
-        menuItems:   document.querySelectorAll('.navbarItem'),
-        itemsNav:    document.querySelectorAll('.itemNav'),
-        menuToggle:  document.getElementById('menuToggle'),
-        userName:    document.getElementById('userName'),
-        userRole:    document.getElementById('userRole')
+        sidebar: document.getElementById('sidebar'),
+        btnNavbar: document.getElementById('btnNavbar'),
+        logo: document.getElementById('logo'),
+        menuItems: document.querySelectorAll('.navbarItem'),
+        itemsNav: document.querySelectorAll('.itemNav'),
+        menuToggle: document.getElementById('menuToggle'),
+        userName: document.getElementById('userName'),
+        userRole: document.getElementById('userRole')
     };
 };
 
@@ -246,13 +398,17 @@ const restoreActiveItem = () => {
 // ═══════════════════════════════════════
 
 const loadUserInfo = () => {
-    if (refs.userName) refs.userName.textContent = localStorage.getItem(STORAGE_NAME) || 'Usuario';
-    if (refs.userRole) refs.userRole.textContent  = localStorage.getItem(STORAGE_ROLE)  || 'Rol';
+    const user = getCurrentEmployee();
+    if (refs.userName) refs.userName.textContent = user?.fullName || 'Usuario';
+    if (refs.userRole) refs.userRole.textContent = user?.role || 'Rol';
 };
 
 // ═══════════════════════════════════════
 // EVENTOS
 // ═══════════════════════════════════════
+
+let isResizeBound = false;
+const onResize = () => applyState(isCollapsed());
 
 const initEvents = () => {
 
@@ -300,7 +456,10 @@ const initEvents = () => {
     });
 
     // Resize — re-aplica estado al cambiar breakpoint
-    window.addEventListener('resize', () => applyState(isCollapsed()));
+    if (!isResizeBound) {
+        window.addEventListener('resize', onResize);
+        isResizeBound = true;
+    }
 
     // Logo — navegar al dashboard
     if (refs.logo) {
@@ -343,10 +502,18 @@ const initScrollbarFade = () => {
 // INIT
 // ═══════════════════════════════════════
 
-window.addEventListener('DOMContentLoaded', () => {
-    // 1. Inyectar HTML
-    document.getElementById('sidebar').innerHTML = getSidebarTemplate();
-    document.querySelector('.containerMobileHeader').innerHTML = getMobileHeaderTemplate();
+export const initSidebar = () => {
+    const sidebarContainer = document.getElementById('sidebar');
+    if (!sidebarContainer) return;
+
+    sidebarContainer.textContent = '';
+    sidebarContainer.appendChild(createSidebar());
+
+    const mobileHeaderContainer = document.querySelector('.containerMobileHeader');
+    if (mobileHeaderContainer) {
+        mobileHeaderContainer.textContent = '';
+        mobileHeaderContainer.appendChild(createMobileHeader());
+    }
 
     // 2. Inicializar referencias
     initReferences();
@@ -367,4 +534,4 @@ window.addEventListener('DOMContentLoaded', () => {
     // 5. Inicializar eventos
     initEvents();
     initScrollbarFade();
-});
+};

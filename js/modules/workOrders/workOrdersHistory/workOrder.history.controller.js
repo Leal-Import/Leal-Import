@@ -87,6 +87,7 @@ const handleOrdersActions = (e, order) => {
         options.push({
             label: "Editar orden",
             id: `btnEditWO-${woId}`,
+            privilege: "WRITE_WORK_ORDERS",
             onClick: () => editWorkOrder(order.idWorkOrder, order.idVehicle)
         });
     }

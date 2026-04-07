@@ -60,6 +60,7 @@ const handleCustomerActions = (event, customer) => {
     showFloatingMenu(event, [
         {
             label: 'Actualizar cliente',
+            privilege: 'WRITE_CUSTOMERS',
             onClick: () => editCustomer(customer)
         },
         {
@@ -70,6 +71,7 @@ const handleCustomerActions = (event, customer) => {
             label: customer.status === STATUS.ACTIVE
                 ? 'Desactivar cliente'
                 : 'Activar cliente',
+            privilege: 'WRITE_CUSTOMERS',
             onClick: () =>
                 toggleCustomerStatus(
                     customer.idCustomer,

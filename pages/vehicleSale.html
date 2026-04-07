@@ -404,14 +404,14 @@
 
                         <!-- Action Buttons -->
                         <div class="actionButtons">
-                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button">
+                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button" data-privilege="WRITE_SALES">
                                 <span>Cancelar venta</span>
                             </button>
-                            <button class="btnSecondary truncate" id="btnCreateOrder" data-action="true">
+                            <button class="btnSecondary truncate" id="btnCreateOrder" data-action="true" data-privilege="WRITE_SALES">
                                 <span>Vender y crear orden</span>
                                 <div class="loader hide" id="btnCreateOrderLoader"></div>
                             </button>
-                            <button class="btnPrimary" id="btnSaveSale">
+                            <button class="btnPrimary" id="btnSaveSale" data-privilege="WRITE_SALES">
                                 <span>Vender</span>
                                 <div class="loader hide" id="btnSaveSaleLoader"></div>
                             </button>
@@ -429,7 +429,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/sales/vehicleSale/vehicles.sales.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

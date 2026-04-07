@@ -67,7 +67,7 @@
                             <option value="ACTIVE" selected>Activos</option>
                             <option value="INACTIVE">Inactivos</option>
                         </select>
-                    <button id="btnOpenModalCustomer" class="btnPrimary btnOpenModal">Añadir</button>
+                    <button id="btnOpenModalCustomer" class="btnPrimary btnOpenModal" data-privilege="WRITE_CUSTOMERS">Añadir</button>
                 </div>
             </div>
             <div class="containerTable">
@@ -117,7 +117,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/customers/customers.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

@@ -289,7 +289,7 @@
                     <!-- Action Buttons -->
                     <div class="actionButtons">
                         <div id="divSpace"></div>
-                        <button class="btnPrimary hide" id="btnOpenCancelSale" type="button">Cancelar venta</button>
+                        <button class="btnPrimary hide" id="btnOpenCancelSale" type="button" data-privilege="WRITE_SALES">Cancelar venta</button>
                         <button class="btnPrimary" id="btnSaveSale">
                             <span>Vender</span>
                             <div class="loader hide" id="loaderAddSale"></div>
@@ -304,7 +304,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/sales/sparePartSale/spareParts.sales.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

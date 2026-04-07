@@ -103,7 +103,9 @@
                         <option value="ACTIVE" selected>Activo</option>
                         <option value="INACTIVE">Inactivo</option>
                     </select>
-                    <button id="btnOpenModalEmployees" class="btnPrimary btnOpenModal">Añadir</button>
+                    <button id="btnOpenModalEmployees" class="btnPrimary btnOpenModal" data-privilege="WRITE_EMPLOYEES">
+                        Añadir
+                    </button>
                 </div>
             </div>
             <div class="containerTable">
@@ -154,7 +156,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/employees/employees.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

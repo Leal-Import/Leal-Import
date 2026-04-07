@@ -351,22 +351,22 @@
                         </div>
 
                         <div class="actionButtons">
-                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button">
+                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button" data-privilege="WRITE_WORK_ORDERS">
                                 <span>Cancelar orden</span>
                                 <div class="loader hide" id="loaderCancelOrder"></div>
                             </button>
-                            <button class="btnPrimary hide" id="btnCompleteOrder" type="button">
+                            <button class="btnPrimary hide" id="btnCompleteOrder" type="button" data-privilege="WRITE_WORK_ORDERS">
                                 <span>Completar orden</span>
                                 <div class="loader hide" id="loaderCompleteOrder"></div>
                             </button>
                             <button class="btnPrimary hide" id="btnGeneratePdf" type="button">
                                 <span>Generar PDF</span>
                             </button>
-                            <button class="btnPrimary hide" id="btnApproveOrder" type="button">
+                            <button class="btnPrimary hide" id="btnApproveOrder" type="button" data-privilege="WRITE_WORK_ORDERS">
                                 <span>Aprobar orden</span>
                                 <div class="loader hide" id="loaderApproveOrder"></div>
                             </button>
-                            <button class="btnPrimary" id="btnSaveOrder">
+                            <button class="btnPrimary" id="btnSaveOrder" data-privilege="WRITE_WORK_ORDERS">
                                 <span>Crear orden</span>
                                 <div class="loader hide" id="loaderAddOrder"></div>
                             </button>
@@ -380,7 +380,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/workOrders/workOrdersForm/workOrder.form.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

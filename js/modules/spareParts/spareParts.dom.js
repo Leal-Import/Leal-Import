@@ -120,6 +120,7 @@ const createCardFooter = (sparePart) => {
     const btnEdit = document.createElement("a");
     btnEdit.classList.add("btnSecondary");
     btnEdit.textContent = "Editar";
+    btnEdit.dataset.privilege = "WRITE_SPAREPARTS";
     btnEdit.href = `${ROUTES.SPARE_PART_FORM}?id=${sparePart.idSparePart}`;
 
     footer.append(btnView, btnEdit);

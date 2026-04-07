@@ -56,7 +56,7 @@
                 <select id="cmbSearchByStatus" class="cmbFilterData">
                     <option value="">Cargando...</option>
                 </select>
-                <a id="OpenModalVehicles" href="vehicle.html?workOrder=true" class="btnPrimary btnOpenModal">Añadir</a>
+                <a id="OpenModalVehicles" href="vehicle.html?workOrder=true" class="btnPrimary btnOpenModal" data-privilege="WRITE_WORK_ORDERS">Añadir</a>
             </div>
             <div class="containerWorkOrder">
                 <div class="containerLoader show" style="z-index: 10;" id="loaderWorkOrders">
@@ -94,6 +94,6 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/modules/workOrders/workOrder.controller.js" type="module"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 </html>

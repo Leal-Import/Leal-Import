@@ -1,7 +1,7 @@
 // spareSale.controller.js
 import { getSpareParts, getSparePartById, postSparePart, putSparePart, patchSparePart } from './spareParts.sale.service.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
-import { showMessage, showElement, hideElement, disableElement, removeDisable, qsa, cleanOneShotParams, buildParams, existsById, createModuleInitializer } from '../../../utils/dom.js';
+import { showMessage, showElement, hideElement, disableElement, removeDisable, qsa, cleanOneShotParams, buildParams, existsById, createModuleInitializer, applyPrivilegesToUI } from '../../../utils/dom.js';
 import { DraftManager } from '../../../utils/draft.manager.js';
 import { resetSpareSalesFormState, spareSalesFormState } from "./spareParts.sales.state.js";
 import { initSpareSaleEvents } from './spareParts.sales.event.js';
@@ -221,13 +221,7 @@ const loadExistingSale = async (txtNotes, btnSaveSale) => {
         });
     }
     sale.sparePartsPayments.forEach(payment => {
-        const paymentToAppend = {
-            amount: payment.amount,
-            idPaymentMethod: payment.idPaymentMethod,
-            paymentURL: payment.paymentURL,
-            idPayment: payment.idPayment
-        };
-        addNewPayment({ state: spareSalesFormState.data, totals: spareSalesFormState.totals, payment: paymentToAppend });
+        addNewPayment({ state: spareSalesFormState.data, totals: spareSalesFormState.totals, payment });
     });
     recalculateTotals();
 
@@ -277,6 +271,7 @@ const initializeUI = async (Refs) => {
     initSpareSaleEvents({ Refs, onSubmitSpareSale, onSearchSparePart, onOrderPart, onSaveNotes });
     if (spareSalesFormState.context.idSale) {
         initCancelSale(spareSalesFormState.context.idSale, patchSparePart, ROUTES.SALES, "venta de repuestos");
+        applyPrivilegesToUI();
         hideElement(DOMRefs.refs.divSpace);
     }
     if (spareSalesFormState.context.isView) {
