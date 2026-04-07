@@ -10,6 +10,12 @@ export const DOMRefs = {
             frmEmployees: $('frmEmployees'),
             loaderEmployees: $("loaderEmployees"),
             btnCloseModalEmployee: $("btnCloseModalEmployee"),
+            modalEmployeePrivileges: $('modalEmployeePrivileges'),
+            btnCloseModalEmployeePrivileges: $("btnCloseModalEmployeePrivileges"),
+            employeePrivilegesName: $("employeePrivilegesName"),
+            employeePrivilegesRole: $("employeePrivilegesRole"),
+            employeePrivilegesList: $("employeePrivilegesList"),
+            employeePrivilegeButtons: $("employeePrivilegeButtons"),
             btnOpenModalEmployees: $("btnOpenModalEmployees"),
             txtEmployeePhone: $('txtEmployeePhone'),
             txtSearchData: $('txtSearchData'),
@@ -59,6 +65,68 @@ export const fillEmployeesForm = (employee) => {
         txtUsername: employee.user.username,
         cmbUserRole: employee.idRole
     });
+};
+
+export const renderEmployeePrivileges = (employee, allPrivileges, privilegesEl, buttonsEl, onRemove, onAdd) => {
+    const directPrivileges = employee && Array.isArray(employee.directPrivileges) ? employee.directPrivileges : [];
+    const currentPrivilegeIds = directPrivileges.map(privilege => privilege.idPrivilege).filter(Boolean);
+    const availablePrivileges = Array.isArray(allPrivileges)
+        ? allPrivileges.filter(privilege => !currentPrivilegeIds.includes(privilege.idPrivilege))
+        : [];
+
+    privilegesEl.classList.toggle('empty', directPrivileges.length === 0);
+    privilegesEl.innerHTML = '';
+
+    if (!employee) {
+        privilegesEl.textContent = 'Selecciona un empleado para ver sus permisos.';
+    } else if (directPrivileges.length === 0) {
+        privilegesEl.textContent = 'Este empleado no tiene permisos directos asignados.';
+    } else {
+        const fragment = document.createDocumentFragment();
+        directPrivileges.forEach(privilege => {
+            const item = document.createElement('div');
+            item.className = 'privilegeTag';
+
+            const text = document.createElement('span');
+            text.textContent = privilege.name;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btnRemovePrivilege';
+            removeButton.title = `Remover ${privilege.name}`;
+            removeButton.innerHTML = '&times;';
+            removeButton.addEventListener('click', () => onRemove(privilege));
+
+            item.appendChild(text);
+            item.appendChild(removeButton);
+            fragment.appendChild(item);
+        });
+        privilegesEl.appendChild(fragment);
+    }
+
+    buttonsEl.innerHTML = '';
+    if (!employee) {
+        return;
+    }
+
+    if (availablePrivileges.length === 0) {
+        const note = document.createElement('div');
+        note.className = 'modalNewPasswordSubtitle';
+        note.textContent = 'No hay permisos disponibles para asignar.';
+        buttonsEl.appendChild(note);
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    availablePrivileges.forEach(privilege => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btnSecondary';
+        button.textContent = `+ ${privilege.name}`;
+        button.addEventListener('click', () => onAdd(privilege));
+        fragment.appendChild(button);
+    });
+    buttonsEl.appendChild(fragment);
 };
 
 export const rewriteModalElements = (button, title, text) => {

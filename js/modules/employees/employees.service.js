@@ -53,6 +53,30 @@ export const putEmployee = async (employeeData, id) => {
     );
 };
 
+export const addPrivilegeToEmployee = async (employeeId, privilegeId) => {
+    return await apiRequest(
+        `${API_URL}/${employeeId}/privileges/${privilegeId}`,
+        {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        },
+        'Error al agregar el privilegio al empleado'
+    );
+};
+
+export const removePrivilegeFromEmployee = async (employeeId, privilegeId) => {
+    return await apiRequest(
+        `${API_URL}/${employeeId}/privileges/${privilegeId}`,
+        {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+        },
+        'Error al eliminar el privilegio del empleado'
+    );
+};
+
 // GET para obtener los roles del empleado
 export const getRoles = async () => {
     return await apiRequest(

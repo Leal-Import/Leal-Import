@@ -18,7 +18,8 @@
                 "font-size": ["/^var\\(--/", "inherit"],
                 "font-weight": ["/^var\\(--/", "inherit"]
             }
-        ]
+        ],
+        "media-feature-range-notation": null
     },
     "overrides": [
         {

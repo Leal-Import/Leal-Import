@@ -558,19 +558,19 @@
     border-style: solid;
 }
 
-.statusBadge.aviable {
+.aviable {
     background-color: var(--bg-success-badge);
     color: var(--success-color);
     border-color: var(--success-color);
 }
 
-.statusBadge.sold {
+.sold {
     background-color: var(--bg-danger-badge);
     color: var(--danger-color);
     border-color: var(--danger-color);
 }
 
-.statusBadge.reserved {
+.returned {
     background-color: var(--bg-warning-badge);
     color: var(--warning-color);
     border-color: var(--warning-color);

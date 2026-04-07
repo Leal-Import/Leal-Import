@@ -1,8 +1,8 @@
 import { addModalCloseEvents, debounce } from '../../utils/dom.js';
 import { formatPhoneNumber } from '../../utils/formatters.js';
 
-export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal }) => {
-    const { txtEmployeePhone, cmbSearchByStatus, cmbSearchByRole, txtSearchData, frmEmployees, btnCloseModalEmployee, modalEmployees, btnOpenModalEmployees } = Refs;
+export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal, onClosePrivilegesModal }) => {
+    const { txtEmployeePhone, cmbSearchByStatus, cmbSearchByRole, txtSearchData, frmEmployees, btnCloseModalEmployee, modalEmployees, btnOpenModalEmployees, btnCloseModalEmployeePrivileges, modalEmployeePrivileges } = Refs;
 
     const emitFilters = debounce(() => {
         onSearchEmployee({
@@ -19,8 +19,10 @@ export const initEmployeeEvents = ({ Refs, onSubmitEmployee, onSearchEmployee, o
     btnOpenModalEmployees.addEventListener("click", onOpenModal);
 
     btnCloseModalEmployee.addEventListener("click", onCloseModal);
+    btnCloseModalEmployeePrivileges.addEventListener("click", onClosePrivilegesModal);
 
     addModalCloseEvents(modalEmployees, onCloseModal);
+    addModalCloseEvents(modalEmployeePrivileges, onClosePrivilegesModal);
 
     cmbSearchByStatus.addEventListener('change', emitFilters);
 

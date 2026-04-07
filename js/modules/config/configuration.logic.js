@@ -37,3 +37,31 @@ export const validatePaymentMethod = (method) => {
         return 'El método de pago solo puede contener letras, números, espacios y guiones.';
     }
 };
+
+export const getAllPrivileges = (roles) => {
+    const adminRole = roles.find(role => role.roleName === 'Administrador');
+    return adminRole ? (adminRole.privileges || adminRole.privilegeList || []) : [];
+};
+
+export const getPrivilegeNameInSpanish = (privilegeName) => {
+    const translations = {
+        "READ_VEHICLES": "Leer Vehículos",
+        "WRITE_VEHICLES": "Manipular Vehículos",
+        "DELETE_VEHICLES": "Eliminar Vehículos",
+        "READ_SPAREPARTS": "Leer Repuestos",
+        "WRITE_SPAREPARTS": "Manipular Repuestos",
+        "READ_SALES": "Leer Ventas",
+        "WRITE_SALES": "Manipular Ventas",
+        "CANCEL_SALE": "Cancelar Venta",
+        "READ_EMPLOYEES": "Leer Empleados",
+        "WRITE_EMPLOYEES": "Manipular Empleados",
+        "READ_CUSTOMERS": "Leer Clientes",
+        "WRITE_CUSTOMERS": "Manipular Clientes",
+        "READ_WORK_ORDERS": "Leer Órdenes de Trabajo",
+        "WRITE_WORK_ORDERS": "Manipular Órdenes de Trabajo",
+        "MANAGE_SECURITY": "Gestionar Seguridad",
+        "MANAGE_CONFIG": "Gestionar Configuración",
+        "VIEW_DASHBOARD": "Ver Dashboard"
+    };
+    return translations[privilegeName] || privilegeName;
+};

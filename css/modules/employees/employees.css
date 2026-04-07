@@ -10,6 +10,90 @@
     gap: 20px;
 }
 
+.modalEmployeePermissionsBody {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.employeeInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rolesPrivilegesList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 140px;
+    padding: 14px;
+    border: var(--border);
+    border-radius: 18px;
+    background: var(--bg-color);
+    overflow-y: auto;
+}
+
+.rolesPrivilegesList.empty {
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color-secondary);
+    min-height: 120px;
+}
+
+.privilegeTag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: var(--border);
+    background: var(--bg-color-white);
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.btnRemovePrivilege {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-color-secondary);
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btnRemovePrivilege:hover {
+    background: rgba(211, 24, 19, 0.08);
+    color: var(--danger-color);
+}
+
+.privilegeButtons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.privilegeButtons .btnSecondary {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 14px;
+}
+
+.modalNewPasswordSubtitle {
+    font-size: var(--font-size-sh);
+    color: var(--text-color-secondary);
+    margin: 0;
+}
+
+.modalSectionSubtitle {
+    margin: 0;
+}
+
 .modalAdd .formGroup {
     flex-basis: 0;
 }
