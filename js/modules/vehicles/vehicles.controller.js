@@ -72,7 +72,7 @@ const onSearchVehicles = (filters) => {
 
 const workOrderBtn = () => {
     if (!DOMRefs.refs.btnAddVehicle) return;
-    DOMRefs.refs.btnAddVehicle.href = `${ROUTES.VEHICLE_DETAILS}?workOrder=${vehiclesListState.context.hasWorkOrder}`;
+    DOMRefs.refs.btnAddVehicle.href = `${ROUTES.VEHICLES_FORM}?workOrder=${vehiclesListState.context.hasWorkOrder}`;
 };
 const hydrateContextFromURL = () => {
     const params = new URLSearchParams(window.location.search);

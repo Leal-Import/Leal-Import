@@ -265,7 +265,7 @@
 }
 
 .tdPerson{
-    max-width: 130px;
+    max-width: 180px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis
@@ -550,4 +550,16 @@ tr {
     display: flex;
     justify-content: center;
     padding: 30px 0;
+}
+
+.actionButtons button{
+    flex: 1;
+    flex-basis: 150px;
+    transition: all 0.2s ease;
+}
+
+.actionButtons button:hover{
+    transform: translateY(-2px);
+    opacity: .9;
+    box-shadow: 0 4px 12px rgb(211 24 19 / 0.15);
 }

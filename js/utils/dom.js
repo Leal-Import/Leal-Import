@@ -248,7 +248,7 @@ export const createModuleInitializer = async ({
     DOMRefs
 }) => {
     try {
-        resetState();
+        await resetState();
         const user = await initSession();
         if (!user) return false;
 

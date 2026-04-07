@@ -16,6 +16,22 @@ const urlToBase64 = (url) => {
     });
 };
 
+const loadPhotos = async (photos = [], max = 4) => {
+    const results = await Promise.all(
+        photos.slice(0, max).map(p => urlToBase64(p.photoUrl))
+    );
+    return results.filter(Boolean);
+};
+
+const fmt = (val) =>
+    `$${Number(val ?? 0).toLocaleString('es-SV', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const statusColor = (status) => ({
+    'Disponible': [46, 125, 50],
+    'Vendido':    [211, 24, 19],
+    'Reservado':  [230, 120, 0]
+})[status] ?? [100, 100, 100];
+
 const drawFooter = (doc, pageW, pageH, margin) => {
     doc.setDrawColor(220, 220, 220);
     doc.setLineWidth(0.3);
@@ -36,7 +52,62 @@ const checkPageBreak = (doc, y, needed, pageH, margin, pageW) => {
     return y;
 };
 
-export const generateSparePartReport = async(sparePart) => {
+const drawSectionHeader = (doc, label, y, margin, contentW, rightText = '') => {
+    doc.setFillColor(30, 30, 30);
+    doc.rect(margin, y, contentW, 9, 'F');
+    doc.setFillColor(211, 24, 19);
+    doc.rect(margin, y, 3, 9, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text(label, margin + 7, y + 6);
+    if (rightText) {
+        doc.setTextColor(160, 160, 160);
+        doc.setFontSize(7);
+        doc.text(rightText, margin + contentW - 4, y + 6, { align: 'right' });
+    }
+    return y + 9;
+};
+
+const drawInfoBox = (doc, rows, x, y, w, title) => {
+    const rowH = 9;
+    const boxH = rows.length * rowH + 16;
+
+    doc.setFillColor(250, 250, 250);
+    doc.roundedRect(x, y, w, boxH, 3, 3, 'F');
+    doc.setDrawColor(235, 235, 235);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(x, y, w, boxH, 3, 3, 'S');
+
+    const tagW = title.length * 2.2 + 6;
+    doc.setFillColor(211, 24, 19);
+    doc.roundedRect(x + 4, y + 4, tagW, 5, 1, 1, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, x + 4 + tagW / 2, y + 7.5, { align: 'center' });
+
+    rows.forEach((row, i) => {
+        const rowY = y + 16 + i * rowH;
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(130, 130, 130);
+        doc.text(row.label, x + 4, rowY);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(30, 30, 30);
+        const val = doc.splitTextToSize(String(row.value ?? '—'), w - 10)[0];
+        doc.text(val, x + w - 4, rowY, { align: 'right' });
+        if (i < rows.length - 1) {
+            doc.setDrawColor(240, 240, 240);
+            doc.setLineWidth(0.2);
+            doc.line(x + 4, rowY + 3, x + w - 4, rowY + 3);
+        }
+    });
+
+    return y + boxH;
+};
+
+export const generateSparePartReport = async (sparePart) => {
     const { jsPDF } = window.jspdf;
     const doc      = new jsPDF();
     const pageW    = doc.internal.pageSize.getWidth();
@@ -44,12 +115,9 @@ export const generateSparePartReport = async(sparePart) => {
     const margin   = 14;
     const contentW = pageW - margin * 2;
 
-    const costs     = sparePart.sparePartsCosts;
-    const isSold    = sparePart.status === 'Vendido';
-    const isDelivered = sparePart.state === 'Entregado';
-
-    // Cargar foto del repuesto
-    const photo = sparePart.photoUrl ? await urlToBase64(sparePart.photoUrl) : null;
+    const costs  = sparePart.sparePartsCosts;
+    const name   = sparePart.nameSparePart?.trim() || '—';
+    const photos = await loadPhotos(sparePart.sparePartPhotos || [], 4);
 
     // ═══════════════════════════════════════
     // HEADER
@@ -77,10 +145,10 @@ export const generateSparePartReport = async(sparePart) => {
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 200, 200);
-    doc.text(sparePart.nameSpareParts?.trim() || '—', pageW - margin, 28, { align: 'right' });
+    doc.text(name, pageW - margin, 28, { align: 'right' });
 
     // ═══════════════════════════════════════
-    // META — fecha + badges
+    // META — fecha + badge status
     // ═══════════════════════════════════════
     let y = 48;
 
@@ -95,21 +163,14 @@ export const generateSparePartReport = async(sparePart) => {
         margin + 32, y
     );
 
-    // Badge estado inventario
-    const badge1W = 22;
-    const badge2W = 24;
-    doc.setFillColor(...(isSold ? [211, 24, 19] : [46, 125, 50]));
-    doc.roundedRect(pageW - margin - badge1W, y - 5, badge1W, 8, 2, 2, 'F');
+    const [r, g, b] = statusColor(sparePart.status);
+    const badgeW = 28;
+    doc.setFillColor(r, g, b);
+    doc.roundedRect(pageW - margin - badgeW, y - 5, badgeW, 8, 2, 2, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.text(sparePart.status?.toUpperCase() || '—', pageW - margin - badge1W / 2, y, { align: 'center' });
-
-    // Badge estado de orden
-    doc.setFillColor(...(isDelivered ? [46, 125, 50] : [245, 158, 11]));
-    doc.roundedRect(pageW - margin - badge1W - badge2W - 4, y - 5, badge2W, 8, 2, 2, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.text(sparePart.state?.toUpperCase() || '—', pageW - margin - badge1W - badge2W - 4 + badge2W / 2, y, { align: 'center' });
+    doc.text(sparePart.status?.toUpperCase() || '—', pageW - margin - badgeW / 2, y, { align: 'center' });
 
     y += 8;
     doc.setDrawColor(230, 230, 230);
@@ -118,218 +179,142 @@ export const generateSparePartReport = async(sparePart) => {
     y += 10;
 
     // ═══════════════════════════════════════
-    // 1. FOTO + DATOS GENERALES (lado a lado)
+    // GALERÍA DE FOTOS
+    // ═══════════════════════════════════════
+    if (photos.length > 0) {
+        const imgW   = (contentW - 4) / 2;
+        const imgH   = imgW * 0.62;
+        const gapX   = 4;
+        const gapY   = 4;
+        const rows   = Math.ceil(photos.length / 2);
+        const totalH = 9 + rows * (imgH + gapY);
+
+        y = checkPageBreak(doc, y, totalH, pageH, margin, pageW);
+        y = drawSectionHeader(doc, 'FOTOS DEL REPUESTO', y, margin, contentW, `${photos.length} foto${photos.length !== 1 ? 's' : ''}`);
+        y += 2;
+
+        photos.forEach((b64, i) => {
+            const col = i % 2;
+            const row = Math.floor(i / 2);
+            const x   = margin + col * (imgW + gapX);
+            const iy  = y + row * (imgH + gapY);
+            doc.setDrawColor(220, 220, 220);
+            doc.setLineWidth(0.3);
+            doc.roundedRect(x, iy, imgW, imgH, 2, 2, 'S');
+            doc.addImage(b64, 'JPEG', x, iy, imgW, imgH, undefined, 'FAST');
+        });
+
+        y += rows * (imgH + gapY) + 10;
+    } else {
+        y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
+        y = drawSectionHeader(doc, 'FOTOS DEL REPUESTO', y, margin, contentW, 'Sin fotos');
+        y += 2;
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(180, 180, 180);
+        doc.text('No hay fotos disponibles para este repuesto.', margin + 4, y + 8);
+        y += 18;
+    }
+
+    // ═══════════════════════════════════════
+    // DATOS GENERALES + TRACKING
     // ═══════════════════════════════════════
     const colW  = (contentW - 6) / 2;
     const col2X = margin + colW + 6;
 
-    // Foto a la izquierda
-    if (photo) {
-        const imgH = colW * 0.75;
-        y = checkPageBreak(doc, y, imgH, pageH, margin, pageW);
+    const generalRows = [
+        { label: 'Nombre',   value: name },
+        { label: 'Marca',    value: sparePart.brand    },
+        { label: 'Modelo',   value: sparePart.model    },
+        { label: 'Año',      value: sparePart.yearPart }
+    ];
 
-        doc.setDrawColor(220, 220, 220);
-        doc.setLineWidth(0.3);
-        doc.roundedRect(margin, y, colW, imgH, 3, 3, 'S');
-        doc.addImage(photo, 'JPEG', margin, y, colW, imgH, undefined, 'FAST');
+    const leftBoxH = generalRows.length * 9 + 16;
+    y = checkPageBreak(doc, y, leftBoxH + 12, pageH, margin, pageW);
+    y = drawSectionHeader(doc, 'INFORMACIÓN DEL REPUESTO', y, margin, contentW);
+    y += 4;
 
-        // Datos a la derecha
-        const dataRows = [
-            { label: 'Nombre',   value: sparePart.nameSpareParts?.trim() || '—' },
-            { label: 'Marca',    value: sparePart.brand    || '—' },
-            { label: 'Modelo',   value: sparePart.model    || '—' },
-            { label: 'Año',      value: sparePart.yearPart || '—' }
-        ];
+    drawInfoBox(doc, generalRows, margin, y, colW, 'DATOS GENERALES');
 
-        const dataBoxH = imgH;
-        doc.setFillColor(250, 250, 250);
-        doc.roundedRect(col2X, y, colW, dataBoxH, 3, 3, 'F');
-        doc.setDrawColor(235, 235, 235);
-        doc.roundedRect(col2X, y, colW, dataBoxH, 3, 3, 'S');
+    // Tracking — col derecha
+    const trackingRows = [
+        { label: 'Número',  value: sparePart.tracking?.numTracking  || 'Sin tracking' },
+        { label: 'Link',    value: sparePart.tracking?.linkTracking  || 'Sin link' }
+    ];
+    drawInfoBox(doc, trackingRows, col2X, y, colW, 'TRACKING');
 
-        doc.setFillColor(211, 24, 19);
-        doc.roundedRect(col2X + 4, y + 4, 30, 5, 1, 1, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(6);
-        doc.setFont('helvetica', 'bold');
-        doc.text('DATOS GENERALES', col2X + 19, y + 7.5, { align: 'center' });
-
-        dataRows.forEach((row, i) => {
-            const rowY = y + 18 + i * 10;
-            doc.setFontSize(7.5);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(130, 130, 130);
-            doc.text(row.label, col2X + 4, rowY);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(30, 30, 30);
-            // Truncar si es muy largo
-            const val = doc.splitTextToSize(row.value, colW - 10)[0];
-            doc.text(val, col2X + colW - 4, rowY, { align: 'right' });
-            if (i < dataRows.length - 1) {
-                doc.setDrawColor(240, 240, 240);
-                doc.setLineWidth(0.2);
-                doc.line(col2X + 4, rowY + 3, col2X + colW - 4, rowY + 3);
-            }
-        });
-
-        y += imgH + 10;
-
-    } else {
-        // Sin foto — datos a full ancho
-        const dataRows = [
-            { label: 'Nombre',   value: sparePart.nameSpareParts?.trim() || '—' },
-            { label: 'Marca',    value: sparePart.brand    || '—' },
-            { label: 'Modelo',   value: sparePart.model    || '—' },
-            { label: 'Año',      value: sparePart.yearPart || '—' }
-        ];
-
-        const boxH = dataRows.length * 9 + 14;
-        y = checkPageBreak(doc, y, boxH, pageH, margin, pageW);
-
-        doc.setFillColor(250, 250, 250);
-        doc.roundedRect(margin, y, contentW, boxH, 3, 3, 'F');
-        doc.setDrawColor(235, 235, 235);
-        doc.roundedRect(margin, y, contentW, boxH, 3, 3, 'S');
-
-        doc.setFillColor(211, 24, 19);
-        doc.roundedRect(margin + 4, y + 4, 30, 5, 1, 1, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(6);
-        doc.setFont('helvetica', 'bold');
-        doc.text('DATOS GENERALES', margin + 19, y + 7.5, { align: 'center' });
-
-        dataRows.forEach((row, i) => {
-            const rowY = y + 16 + i * 9;
-            doc.setFontSize(7.5);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(130, 130, 130);
-            doc.text(row.label, margin + 4, rowY);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(30, 30, 30);
-            doc.text(row.value, pageW - margin - 4, rowY, { align: 'right' });
-            if (i < dataRows.length - 1) {
-                doc.setDrawColor(240, 240, 240);
-                doc.setLineWidth(0.2);
-                doc.line(margin + 4, rowY + 3, pageW - margin - 4, rowY + 3);
-            }
-        });
-
-        y += boxH + 10;
-    }
+    y += Math.max(leftBoxH, trackingRows.length * 9 + 16) + 10;
 
     // ═══════════════════════════════════════
-    // 2. TRACKING
+    // COSTOS
     // ═══════════════════════════════════════
-    y = checkPageBreak(doc, y, 30, pageH, margin, pageW);
+    if (costs) {
+        y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
+        y = drawSectionHeader(doc, 'COSTOS', y, margin, contentW);
 
-    doc.setFillColor(250, 250, 250);
-    doc.roundedRect(margin, y, contentW, 28, 3, 3, 'F');
-    doc.setDrawColor(235, 235, 235);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(margin, y, contentW, 28, 3, 3, 'S');
+        const costRows = [
+            ['Precio de compra', costs.purchasePrice],
+            ['Impuestos',        costs.taxes]
+        ].filter(([, val]) => val !== null && val !== 0);
 
-    doc.setFillColor(211, 24, 19);
-    doc.roundedRect(margin + 4, y + 4, 20, 5, 1, 1, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'bold');
-    doc.text('TRACKING', margin + 14, y + 7.5, { align: 'center' });
+        doc.autoTable({
+            head: [['Concepto', 'Monto']],
+            body: costRows.map(([label, val]) => [label, fmt(val)]),
+            startY: y,
+            margin: { left: margin, right: margin },
+            theme: 'plain',
+            styles: {
+                fontSize: 9,
+                cellPadding: { top: 4, bottom: 4, left: 4, right: 4 },
+                textColor:  [60, 60, 60],
+                lineColor:  [235, 235, 235],
+                lineWidth:  0.3
+            },
+            headStyles: {
+                fillColor: [245, 245, 245],
+                textColor: [130, 130, 130],
+                fontStyle: 'bold',
+                fontSize:  7.5,
+                lineWidth: 0
+            },
+            columnStyles: {
+                0: { cellWidth: 'auto' },
+                1: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
+            },
+            alternateRowStyles: { fillColor: [252, 252, 252] }
+        });
 
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(130, 130, 130);
-    doc.text('Número de tracking:', margin + 4, y + 18);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
-    doc.text(sparePart.tracking?.numTracking || 'Sin tracking', margin + 44, y + 18);
+        y = doc.lastAutoTable.finalY;
+        y = checkPageBreak(doc, y, 34, pageH, margin, pageW);
 
-    if (sparePart.tracking?.linkTracking) {
-        doc.setFontSize(7.5);
+        doc.setFillColor(22, 22, 22);
+        doc.roundedRect(margin, y, contentW, 32, 0, 0, 'F');
+        doc.setFillColor(211, 24, 19);
+        doc.rect(margin, y, 3, 32, 'F');
+
+        doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(59, 130, 246);
-        doc.text(sparePart.tracking.linkTracking, margin + 4, y + 25);
+        doc.setTextColor(140, 140, 140);
+        doc.text('Costo total', margin + 8, y + 10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(220, 220, 220);
+        doc.text(fmt(costs.totalCost), pageW - margin - 4, y + 10, { align: 'right' });
+
+        doc.setDrawColor(50, 50, 50);
+        doc.setLineWidth(0.3);
+        doc.line(margin + 8, y + 14, pageW - margin - 4, y + 14);
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(180, 180, 180);
+        doc.text('Precio sugerido de venta', margin + 8, y + 26);
+        doc.setTextColor(109, 190, 69);
+        doc.setFontSize(12);
+        doc.text(fmt(costs.suggestedPrice), pageW - margin - 4, y + 26, { align: 'right' });
+
+        y += 34;
     }
 
-    y += 36;
-
-    // ═══════════════════════════════════════
-    // 3. COSTOS
-    // ═══════════════════════════════════════
-    y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
-
-    doc.setFillColor(30, 30, 30);
-    doc.rect(margin, y, contentW, 9, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.text('COSTOS', margin + 4, y + 6);
-    y += 9;
-
-    doc.autoTable({
-        head: [['Concepto', 'Monto']],
-        body: [
-            ['Precio de compra', `$${Number(costs?.purchasePrice ?? 0).toFixed(2)}`],
-            ['Impuestos',        `$${Number(costs?.taxes        ?? 0).toFixed(2)}`]
-        ],
-        startY: y,
-        margin: { left: margin, right: margin },
-        theme: 'plain',
-        styles: {
-            fontSize: 9,
-            cellPadding: { top: 4, bottom: 4, left: 4, right: 4 },
-            textColor:  [60, 60, 60],
-            lineColor:  [235, 235, 235],
-            lineWidth:  0.3
-        },
-        headStyles: {
-            fillColor: [245, 245, 245],
-            textColor: [130, 130, 130],
-            fontStyle: 'bold',
-            fontSize:  7.5,
-            lineWidth: 0
-        },
-        columnStyles: {
-            0: { cellWidth: 'auto' },
-            1: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
-        },
-        alternateRowStyles: { fillColor: [252, 252, 252] }
-    });
-
-    y = doc.lastAutoTable.finalY;
-    y = checkPageBreak(doc, y, 34, pageH, margin, pageW);
-
-    // Total + precio sugerido
-    doc.setFillColor(22, 22, 22);
-    doc.roundedRect(margin, y, contentW, 30, 0, 0, 'F');
-    doc.setFillColor(211, 24, 19);
-    doc.rect(margin, y, 3, 30, 'F');
-
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(140, 140, 140);
-    doc.text('Costo total', margin + 8, y + 9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(220, 220, 220);
-    doc.text(`$${Number(costs?.totalCost ?? 0).toFixed(2)}`, pageW - margin - 4, y + 9, { align: 'right' });
-
-    doc.setDrawColor(50, 50, 50);
-    doc.setLineWidth(0.3);
-    doc.line(margin + 8, y + 13, pageW - margin - 4, y + 13);
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(180, 180, 180);
-    doc.text('Precio sugerido de venta', margin + 8, y + 24);
-    doc.setTextColor(109, 190, 69);
-    doc.setFontSize(12);
-    doc.text(`$${Number(costs?.suggestedPrice ?? 0).toFixed(2)}`, pageW - margin - 4, y + 24, { align: 'right' });
-
-    y += 34;
-
-    // ═══════════════════════════════════════
-    // PIE DE PÁGINA
-    // ═══════════════════════════════════════
     drawFooter(doc, pageW, pageH, margin);
-
-    doc.save(`repuesto-${sparePart.nameSpareParts?.trim().replace(/\s+/g, '-') || sparePart.idSparePart}.pdf`);
+    doc.save(`repuesto-${name.replace(/\s+/g, '-')}.pdf`);
 };

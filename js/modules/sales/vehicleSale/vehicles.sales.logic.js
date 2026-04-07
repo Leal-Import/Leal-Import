@@ -1,6 +1,6 @@
 import { asUUID, getNullableParam, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal } from "../../../utils/validators.js";
-import { normalizePayments, validatePayments } from "../../../core/logic/payments.logic.js";
+import { normalizePayments, validatePayments } from "../../payments/payments.logic.js";
 import { sanitizeURLParam } from "../../../utils/sanitizer.js";
 
 export const validateSale = (state, idVehicle, idCustomer, idSale) => {

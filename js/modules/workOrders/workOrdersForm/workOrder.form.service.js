@@ -14,15 +14,28 @@ export const getServices = async (search) => {
     );
 };
 
-export const patchWorkOrder = async (idWorkOrder) => {
+export const completeWorkOrder = async (idWorkOrder) => {
     return await apiRequest(
-        `${API_URL}/patchWorkOrder/${idWorkOrder}/complete`,
+        `${API_URL}/finishOrder/${idWorkOrder}`,
         {
             method: 'PATCH',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' }
         },
         'Error al completar la orden'
+    );
+};
+
+export const cancelWorkOrder = async (idWorkOrder, reason) => {
+    return await apiRequest(
+        `${API_URL}/cancelOrder/${idWorkOrder}`,
+        {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason })
+        },
+        'Error al cancelar la orden'
     );
 };
 

@@ -14,7 +14,6 @@ export const DOMRefs = {
             boxSparePart: $("suggestionsSpareParts"),
             txtSearchSparePart: $("txtSearchSparePart"),
             txtAddService: $("txtAddService"),
-            separator: $("separator"),
             loaderAddOrder: $("loaderAddOrder"),
             btnSaveOrder: $("btnSaveOrder"),
             btnAddPayment: $("btnAddPayment"),
@@ -48,7 +47,9 @@ export const DOMRefs = {
             employeeList: $("employeeList"),
             txtSearchEmployee: $("txtSearchEmployee"),
             btnApproveOrder: $("btnApproveOrder"),
-            loaderApproveOrder: $("loaderApproveOrder")
+            loaderApproveOrder: $("loaderApproveOrder"),
+            btnOpenCancelSale: $("btnOpenCancelSale"),
+            loaderCancelOrder: $("loaderCancelOrder")
         };
         return this.refs;
     }
@@ -349,11 +350,30 @@ export const reindexTable = (tBody) => {
         }
     });
 
-    const frag = document.createDocumentFragment();
-    [...active, ...empty].forEach(r => frag.appendChild(r));
+    const desiredTotalRows = Math.max(active.length, MIN_STATIC_ROWS);
+    const currentTotalRows = active.length + empty.length;
+    const extraRows = currentTotalRows - desiredTotalRows;
+    const rowsToKeep = [...active];
+
+    if (extraRows > 0) {
+        // Eliminar filas vacías sobrantes
+        rowsToKeep.push(...empty.slice(0, empty.length - extraRows));
+    } else {
+        rowsToKeep.push(...empty);
+    }
+
+    const fragment = document.createDocumentFragment();
+    rowsToKeep.forEach(row => fragment.appendChild(row));
+
+    if (rowsToKeep.length < desiredTotalRows) {
+        const missing = desiredTotalRows - rowsToKeep.length;
+        for (let i = 0; i < missing; i++) {
+            fragment.appendChild(createEmptyRow());
+        }
+    }
 
     tBody.innerHTML = '';
-    tBody.appendChild(frag);
+    tBody.appendChild(fragment);
 };
 
 export const renderImportButton = (tBody, onImport, tBodyServices, tBodySpareParts) => {

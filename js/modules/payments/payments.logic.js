@@ -1,7 +1,7 @@
 // payments.logic.js
 import { existsById, highlightAndFocus } from "../../utils/dom.js";
 import { isValidDecimal, safeParseFloat } from "../../utils/validators.js";
-import { paymentsState } from "../state/payments.state.js";
+import { paymentsState } from "./payments.state.js";
 
 const normalizePayment = (payment) => {
     const resolvedId = payment.id ?? payment.idPayment ?? crypto.randomUUID();

@@ -1,6 +1,6 @@
 import { asNumber, asUUID, existsById, getNullableParam, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal, safeParseFloat } from "../../../utils/validators.js";
-import { normalizePayments, validatePayments } from "../../../core/logic/payments.logic.js";
+import { normalizePayments, validatePayments } from "../../payments/payments.logic.js";
 
 export const verifyIds = (state, idSparePart) => {
     return state.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
@@ -12,11 +12,14 @@ export const hydrateContextFromURL = async (state) => {
     const idCustomer = asUUID(getNullableParam(params.get('idCustomer')));
     const idVehicle = asUUID(params.get("idVehicle"));
     const idWorkOrder = asUUID(getNullableParam(params.get('idWorkOrder')));
+    const fromInventory = params.get('fromInventory') === 'true';
 
-    if (!idVehicle) {
-        await showMessage("Vehiculo no seleccionado", "Acceso inválido. Falta el vehiculo.", "warning");
-        history.back();
-        return false;
+    if (!fromInventory) {
+        if (!idVehicle) {
+            await showMessage("Vehiculo no seleccionado", "Acceso inválido. Falta el vehiculo.", "warning");
+            history.back();
+            return false;
+        }
     }
 
     state.context.idVehicle = idVehicle;

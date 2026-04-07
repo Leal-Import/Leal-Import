@@ -12,9 +12,10 @@ import { addNewPayment, initPaymentsController, onResetDomPayments } from '../..
 import { safeParseFloat } from '../../../utils/validators.js';
 import { handleApiError } from '../../../utils/api.utils.js';
 import { navigateTo, replaceTo, ROUTES } from '../../../utils/router.js';
-import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
-import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
+import { createBtnUrl } from '../../picsAmounts/picAmounts.dom.js';
+import { initializeModalListeners } from '../../picsAmounts/picsAmount.controller.js';
 import { initCancelSale, saleCancelledUIUpdate } from '../../cancelSale/cancelSale.controller.js';
+import { generateSparePartsSaleReport } from './spareParts.sale.report.js';
 
 // Centralizar manejo de borradores con DraftManager
 const saleStateDraft = new DraftManager(spareSalesFormState.saleKey, {
@@ -229,6 +230,8 @@ const loadExistingSale = async (txtNotes, btnSaveSale) => {
         addNewPayment({ state: spareSalesFormState.data, totals: spareSalesFormState.totals, payment: paymentToAppend });
     });
     recalculateTotals();
+
+    DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => { generateSparePartsSaleReport(sale); });
 };
 
 /**
@@ -272,8 +275,11 @@ const initializeUI = async (Refs) => {
     resetSparePartsFilters(Refs.txtSearchData);
     loadCustomerName(Refs.customerName, spareSalesFormState.context.customerName);
     initSpareSaleEvents({ Refs, onSubmitSpareSale, onSearchSparePart, onOrderPart, onSaveNotes });
+    if (spareSalesFormState.context.idSale) {
+        initCancelSale(spareSalesFormState.context.idSale, patchSparePart, ROUTES.SALES, "venta de repuestos");
+        hideElement(DOMRefs.refs.divSpace);
+    }
     if (spareSalesFormState.context.isView) {
-        initCancelSale(spareSalesFormState.context.idSale, patchSparePart);
         hideElement(DOMRefs.refs.paginationContainer);
         hideElement(DOMRefs.refs.filterSection);
         hideElement(DOMRefs.refs.paymentForm);

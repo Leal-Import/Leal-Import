@@ -1,19 +1,21 @@
 import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "./workOrder.form.dom.js";
 import { resetWorkOrdersFormState, workOrdersFormState } from "./workOrder.form.state.js";
-import { approveOrder, getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "./workOrder.form.service.js";
+import { approveOrder, getDataVehicleById, getServices, getSpareParts, getWorkOrderById, completeWorkOrder, postWorkOrder, putWorkOrder, cancelWorkOrder } from "./workOrder.form.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
 import { buildParams, cleanOneShotParams, disableElement, hideElement, qsa, removeDisable, showElement, showMessage, createModuleInitializer, toggleModal } from "../../../utils/dom.js";
 import { DraftManager } from "../../../utils/draft.manager.js";
 import { navigateTo, replaceTo, ROUTES } from "../../../utils/router.js";
-import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
+import { initializeModalListeners } from "../../picsAmounts/picsAmount.controller.js";
 import { initWorkOrdersEvents } from "./workOrder.form.event.js";
 import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validateOrder, buildOrderFormData } from "./workOrder.form.logic.js";
 import { addNewPayment, initPaymentsController } from "../../payments/payments.controller.js";
-import { createBtnUrl } from "../../../core/dom/picAmounts.dom.js";
+import { createBtnUrl } from "../../picsAmounts/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
 import { generateWorkOrderReport } from "../../../core/reports/workorders/workorders.report.js";
 import { handleApiError } from "../../../utils/api.utils.js";
 import { getActiveEmployees } from "../../employees/employees.service.js";
+
+import { initCancelSale, saleCancelledUIUpdate } from "../../cancelSale/cancelSale.controller.js";
 
 // Centralizar manejo de borradores con DraftManager
 const workOrderDraft = new DraftManager(workOrdersFormState.saleKey, {
@@ -364,20 +366,24 @@ const loadWorkOrder = async (Refs) => {
         });
     });
 
+    if (workOrder.status === "Cancelada") {
+        saleCancelledUIUpdate(workOrder.cancellationReason);
+    }
+
     if (workOrder.status === "Espera de Aprobación") {
         showElement(Refs.btnApproveOrder);
-    } else {
+    } else if (workOrder.status !== "Finalizada" && workOrder.status !== "Cancelada") {
         showElement(Refs.btnCompleteOrder);
     }
 };
 
-const onApproveOrder = async () => {
+const onPatchOrder = async (patchOrder, loader, succesWord, errorWord) => {
     const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnEdit, .btnImport, .btnSecondary");
-    showElement(DOMRefs.refs.loaderApproveOrder);
+    showElement(loader);
     camps.forEach(disableElement);
     try {
-        const answer = await approveOrder(workOrdersFormState.context.idWorkOrder);
-        await showMessage("Exito", "Orden aprobada", "success", true);
+        const answer = await patchOrder(workOrdersFormState.context.idWorkOrder);
+        await showMessage("Exito", `Orden ${succesWord}`, "success", true);
         if (answer) {
             const params = buildParams({
                 idVehicle: workOrdersFormState.context.idVehicle,
@@ -386,33 +392,19 @@ const onApproveOrder = async () => {
             replaceTo(ROUTES.WORK_ORDER_HISTORY, Object.fromEntries(params.entries()));
         }
     } catch (error) {
-        await handleApiError(error, 'No se pudo aprobar la orden. Por favor, inténtalo de nuevo.');
+        await handleApiError(error, `No se pudo ${errorWord.toLowerCase()}. Por favor, inténtalo de nuevo.`);
     } finally {
-        hideElement(DOMRefs.refs.loaderApproveOrder);
+        hideElement(loader);
         camps.forEach(removeDisable);
     }
 };
 
+const onApproveOrder = async () => {
+    await onPatchOrder(approveOrder, DOMRefs.refs.loaderApproveOrder, 'aprobada', 'aprobar');
+};
+
 const onCompleteOrder = async () => {
-    const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnEdit, .btnImport, .btnSecondary");
-    showElement(DOMRefs.refs.loaderCompleteOrder);
-    camps.forEach(disableElement);
-    try {
-        const answer = await patchWorkOrder(workOrdersFormState.context.idWorkOrder);
-        await showMessage("Exito", "Orden completada", "success", true);
-        if (answer) {
-            const params = buildParams({
-                idVehicle: workOrdersFormState.context.idVehicle,
-                idCustomer: workOrdersFormState.context.idCustomer
-            });
-            replaceTo(ROUTES.WORK_ORDER_HISTORY, Object.fromEntries(params.entries()));
-        }
-    } catch (error) {
-        await handleApiError(error, 'No se pudo completar la orden. Por favor, inténtalo de nuevo.');
-    } finally {
-        hideElement(DOMRefs.refs.loaderCompleteOrder);
-        camps.forEach(removeDisable);
-    }
+    await onPatchOrder(completeWorkOrder, DOMRefs.refs.loaderCompleteOrder, 'completada', 'completar');
 };
 
 const loadEmployees = async (query) => {
@@ -481,7 +473,7 @@ const initNewPartFlow = async (Refs) => {
 
 const initEditOrderFlow = async (Refs) => {
     await loadWorkOrder(Refs);
-
+    showElement(Refs.btnOpenCancelSale);
     if (workOrdersFormState.context.isView) {
         loadViewDom(Refs);
         showElement(Refs.btnGeneratePdf);
@@ -489,7 +481,6 @@ const initEditOrderFlow = async (Refs) => {
         hideElement(Refs.paymentForm);
         hideElement(Refs.txtSearchSparePart);
         hideElement(Refs.txtAddService);
-        hideElement(Refs.separator);
     } else {
         validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
     }
@@ -534,6 +525,10 @@ const initializeUI = async (Refs) => {
     });
 
     initializeModalListeners(workOrdersFormState.data, workOrdersFormState.context.isView);
+
+    if (workOrdersFormState.context.idWorkOrder) {
+        initCancelSale(workOrdersFormState.context.idWorkOrder, cancelWorkOrder, ROUTES.WORK_ORDERS, "orden de trabajo");
+    }
 };
 
 const loadDataFlow = async (Refs) => {

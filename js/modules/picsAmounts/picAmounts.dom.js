@@ -1,6 +1,6 @@
-import { selectFile } from "../../modules/picsAmounts/controller/picsAmount.controller.js";
+import { selectFile } from "./picsAmount.controller.js";
 import { $, hideElement, qs, showElement, toggleModal } from "../../utils/dom.js";
-import { picsAmountState } from "../state/picsAmount.state.js";
+import { picsAmountState } from "./picsAmount.state.js";
 
 export const DOMRefs = {
     refs: {},

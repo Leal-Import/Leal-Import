@@ -1,6 +1,5 @@
 import { formatWithCommas } from "../../../utils/formatters.js";
-import { $, buildParams, hideElement, qs, qsa } from "../../../utils/dom.js";
-import { ROUTES } from "../../../utils/router.js";
+import { $, qs, qsa } from "../../../utils/dom.js";
 import { renderAndInitViewCarousel } from "../../carousel/carousel.dom.js";
 
 export const DOMRefs = {
@@ -19,7 +18,7 @@ export const DOMRefs = {
             taxes: $('taxes'),
             totalCost: $('totalCost'),
             btnEditSparePart: $('btnEditSparePart'),
-            btnSellSparePart: $('btnSellSparePart'),
+            btnSparePartAction: $('btnSparePartAction'),
             statusPart: qs('.statusBadgeSparePart'),
             btnGeneratePdf: $("btnGeneratePdf"),
             skeleton: qsa('.skeleton'),
@@ -33,7 +32,6 @@ export const DOMRefs = {
 
 export const loadSparePart = (sparePart, Refs) => {
     loadSparePartInfo(sparePart, Refs);
-    loadDownButtons(sparePart, Refs);
     renderAndInitViewCarousel({
         photos: sparePart.sparePartPhotos,
         mainWrapper: Refs.mainSwiperWrapper,
@@ -44,26 +42,6 @@ export const loadSparePart = (sparePart, Refs) => {
 
 const removeSkeletonLoad = (skeletonElements) => {
     skeletonElements.forEach(el => el.classList.remove("skeleton"));
-};
-
-const loadDownButtons = (sparePart, Refs) => {
-    const { btnEditSparePart, btnSellSparePart, statusPart } = Refs;
-    btnEditSparePart.href = `${ROUTES.SPARE_PART_FORM}?id=${sparePart.idSparePart}`;
-    if (sparePart.status === "Disponible") {
-        const paramsSell = buildParams({
-            type: "sparePart",
-            id: sparePart.idSparePart,
-            name: sparePart.nameSpareParts,
-            suggestedPrice: sparePart.sparePartsCosts.suggestedPrice
-        });
-        btnSellSparePart.href = `${ROUTES.CUSTOMER_SALE}?${paramsSell.toString()}`;
-        statusPart.querySelector(".statusTextSparePart").textContent = "Disponible";
-        statusPart.classList.add("aviable");
-    } else if (sparePart.status === "Vendido") {
-        hideElement(btnSellSparePart);
-        statusPart.querySelector(".statusTextSparePart").textContent = "Vendido";
-        statusPart.classList.add("sold");
-    }
 };
 
 const loadSparePartInfo = (sparePart, Refs) => {

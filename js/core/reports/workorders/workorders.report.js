@@ -42,7 +42,7 @@ export const generateWorkOrderReport = (order) => {
     const margin = 14;
     const contentW = pageW - margin * 2;
 
-    const isCompleted = order.orderStatusName === 'Completada';
+    const isCompleted = order.status === 'Completada';
     const isPaid = order.paymentStatus === 'Pagado';
     const hasDebt = Number(order.amountDue) > 0;
 
@@ -98,7 +98,7 @@ export const generateWorkOrderReport = (order) => {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.text(order.orderStatusName?.toUpperCase() || '—', pageW - margin - b1W / 2, y, { align: 'center' });
+    doc.text(order.status?.toUpperCase() || '—', pageW - margin - b1W / 2, y, { align: 'center' });
 
     // Badge pago
     const b2W = 24;
@@ -115,7 +115,7 @@ export const generateWorkOrderReport = (order) => {
     y += 10;
 
     // ═══════════════════════════════════════
-    // DOS COLUMNAS — Vehículo | Cliente & Mecánico
+    // DOS COLUMNAS — Vehículo | Orden & Mecánico
     // ═══════════════════════════════════════
     const colW = (contentW - 6) / 2;
     const col2X = margin + colW + 6;
@@ -174,9 +174,9 @@ export const generateWorkOrderReport = (order) => {
     doc.text('ORDEN', col2X + 14, y + 7.5, { align: 'center' });
 
     const orderRows = [
-        { label: 'Fecha de orden', value: order.orderDate || '—' },
+        { label: 'Fecha de orden', value: order.workOrderDate || '—' },
         { label: 'Fecha estimada', value: order.estimatedDate || '—' },
-        { label: 'Mecánico a cargo', value: order.payments?.[0]?.employeeName || '—' }
+        { label: 'Mecánico a cargo', value: order.workOrdersPayments?.[0]?.employeeName || '—' }
     ];
 
     orderRows.forEach((row, i) => {
@@ -203,19 +203,20 @@ export const generateWorkOrderReport = (order) => {
     y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
     y = sectionHeader(doc, y, contentW, margin, pageW,
         'SERVICIOS REALIZADOS',
-        `${order.services?.length || 0} servicio${order.services?.length !== 1 ? 's' : ''}`
+        `${order.workOrdersServices?.length || 0} servicio${order.workOrdersServices?.length !== 1 ? 's' : ''}`
     );
 
-    const servicesBody = order.services?.length
-        ? order.services.map((s, i) => [
+    const servicesBody = order.workOrdersServices?.length
+        ? order.workOrdersServices.map((s, i) => [
             `#${String(i + 1).padStart(2, '0')}`,
-            s.nameService || '—',
+            s.serviceName || '—',
+            s.assignedEmployee || '—',
             `$${Number(s.priceApplied).toFixed(2)}`
         ])
-        : [['—', 'Sin servicios registrados', '$0.00']];
+        : [['—', 'Sin servicios registrados', '—', '$0.00']];
 
     doc.autoTable({
-        head: [['#', 'Servicio', 'Precio']],
+        head: [['#', 'Servicio', 'Asignado a', 'Precio']],
         body: servicesBody,
         startY: y,
         margin: { left: margin, right: margin },
@@ -237,7 +238,8 @@ export const generateWorkOrderReport = (order) => {
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
             1: { cellWidth: 'auto' },
-            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
+            2: { cellWidth: 52, textColor: [100, 100, 100] },
+            3: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
         alternateRowStyles: { fillColor: [252, 252, 252] }
     });
@@ -250,19 +252,20 @@ export const generateWorkOrderReport = (order) => {
     y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
     y = sectionHeader(doc, y, contentW, margin, pageW,
         'REPUESTOS UTILIZADOS',
-        `${order.spareParts?.length || 0} repuesto${order.spareParts?.length !== 1 ? 's' : ''}`
+        `${order.workOrdersSpareParts?.length || 0} repuesto${order.workOrdersSpareParts?.length !== 1 ? 's' : ''}`
     );
 
-    const spareBody = order.spareParts?.length
-        ? order.spareParts.map((p, i) => [
+    const spareBody = order.workOrdersSpareParts?.length
+        ? order.workOrdersSpareParts.map((p, i) => [
             `#${String(i + 1).padStart(2, '0')}`,
             p.sparePartName || '—',
+            p.assignedEmployee || '—',
             `$${Number(p.priceApplied).toFixed(2)}`
         ])
-        : [['—', 'Sin repuestos registrados', '$0.00']];
+        : [['—', 'Sin repuestos registrados', '—', '$0.00']];
 
     doc.autoTable({
-        head: [['#', 'Repuesto', 'Precio']],
+        head: [['#', 'Repuesto', 'Asignado a', 'Precio']],
         body: spareBody,
         startY: y,
         margin: { left: margin, right: margin },
@@ -284,7 +287,8 @@ export const generateWorkOrderReport = (order) => {
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
             1: { cellWidth: 'auto' },
-            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
+            2: { cellWidth: 52, textColor: [100, 100, 100] },
+            3: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
         alternateRowStyles: { fillColor: [252, 252, 252] }
     });
@@ -297,18 +301,18 @@ export const generateWorkOrderReport = (order) => {
     y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
     y = sectionHeader(doc, y, contentW, margin, pageW,
         'ABONOS REALIZADOS',
-        `${order.payments?.length || 0} abono${order.payments?.length !== 1 ? 's' : ''}`
+        `${order.workOrdersPayments?.length || 0} abono${order.workOrdersPayments?.length !== 1 ? 's' : ''}`
     );
 
-    const paymentsBody = order.payments?.length
-        ? order.payments.map(p => [
+    const paymentsBody = order.workOrdersPayments?.length
+        ? order.workOrdersPayments.map(p => [
             `#${p.paymentNumber}`,
-            p.paymentMethod || '—',   // 👈 nuevo
+            p.paymentMethodName || '—',
             p.employeeName || '—',
             p.paymentDate || '—',
             `$${Number(p.amount).toFixed(2)}`
         ])
-        : [['—', '—', 'Sin abonos registrados', '$0.00']];
+        : [['—', '—', 'Sin abonos registrados', '—', '$0.00']];
 
     doc.autoTable({
         head: [['#', 'Método', 'Registrado por', 'Fecha', 'Monto']],
@@ -332,8 +336,8 @@ export const generateWorkOrderReport = (order) => {
         },
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
-            1: { cellWidth: 30 },          // 👈 método
-            2: { cellWidth: 'auto' },      // registrado por
+            1: { cellWidth: 30 },
+            2: { cellWidth: 'auto' },
             3: { cellWidth: 26, halign: 'center', textColor: [130, 130, 130] },
             4: { cellWidth: 32, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
@@ -347,9 +351,9 @@ export const generateWorkOrderReport = (order) => {
     // ═══════════════════════════════════════
     y = checkPageBreak(doc, y, 50, pageH, margin, pageW);
 
-    const totalServices = order.services?.reduce((a, s) => a + Number(s.priceApplied), 0) ?? 0;
-    const totalSpareParts = order.spareParts?.reduce((a, p) => a + Number(p.priceApplied), 0) ?? 0;
-    const totalPaid = order.payments?.reduce((a, p) => a + Number(p.amount), 0) ?? 0;
+    const totalServices = order.workOrdersServices?.reduce((a, s) => a + Number(s.priceApplied), 0) ?? 0;
+    const totalSpareParts = order.workOrdersSpareParts?.reduce((a, p) => a + Number(p.priceApplied), 0) ?? 0;
+    const totalPaid = order.workOrdersPayments?.reduce((a, p) => a + Number(p.amount), 0) ?? 0;
 
     doc.setFillColor(22, 22, 22);
     doc.roundedRect(margin, y, contentW, 52, 3, 3, 'F');

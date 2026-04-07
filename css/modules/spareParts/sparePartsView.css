@@ -65,7 +65,7 @@
 
 .containerImgSparePart {
     width: 100%;
-    height: 70dvh;
+    height: 100%;
     border-radius: 12px;
     overflow: hidden;
     background: var(--bg-color-white);
@@ -82,32 +82,6 @@
     transform: scale(1.02);
 }
 
-#pictureSparePart {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 20px;
-    transition: transform 0.3s ease;
-}
-
-#pictureSparePart:hover {
-    transform: scale(1.05);
-}
-
-/* Placeholder cuando no hay imagen */
-.containerImgSparePart:empty::after {
-    content: '🔧';
-    font-size: 120px;
-    opacity: 0.2;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-/* =======================
-   Data Section
-======================= */
 .dataSection {
     background: var(--bg-color-white);
 }
@@ -405,19 +379,24 @@
     letter-spacing: 0.8px;
 }
 
-.statusBadgeSparePart.aviable {
+.installed {
+    color: var(--helper-stat-color);
+    border: 2px solid var(--helper-stat-color);
+}
+
+.aviable {
     background-color: var(--bg-success-badge);
     color: var(--success-color);
     border: 2px solid var(--success-color);
 }
 
-.statusBadgeSparePart.sold {
+.sold {
     background-color:var(--bg-danger-badge);
     color: var(--danger-color);
     border: 2px solid var(--danger-color);
 }
 
-.statusBadgeSparePart.reserved {
+.reserved, .pending {
     background-color: var(--bg-warning-badge);
     color: var(--warning-color);
     border: 2px solid var(--warning-color);

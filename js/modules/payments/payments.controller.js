@@ -1,9 +1,9 @@
 // payments.controller.js
 
-import { addPayment, getMethodNameById, validatePayment } from '../../core/logic/payments.logic.js';
-import { cleanPaymentCamps, DOMRefs, renderPayments, resetDomPayments } from '../../core/dom/payments.dom.js';
+import { addPayment, getMethodNameById, validatePayment } from './payments.logic.js';
+import { cleanPaymentCamps, DOMRefs, renderPayments, resetDomPayments } from './payments.dom.js';
 import { getPaymentMethods } from '../config/configuration.service.js';
-import { paymentsState } from '../../core/state/payments.state.js';
+import { paymentsState } from './payments.state.js';
 import { $, fillSelect, hideElement, showElement, showMessage } from '../../utils/dom.js';
 import { initPaymentsEvents } from './payments.event.js';
 import { safeParseFloat } from '../../utils/validators.js';

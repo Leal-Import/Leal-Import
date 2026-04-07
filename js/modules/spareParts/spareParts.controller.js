@@ -43,7 +43,6 @@ export const loadSpareParts = async () => {
         sparePartsListState.list = data.content;
         sparePartsListState.pagination.total = data.page.totalElements;
         sparePartsListState.pagination.totalPages = data.page.totalPages;
-
         insertSpareParts(DOMRefs.refs.cardContainer, sparePartsListState.list);
 
         pagination.setTotal({

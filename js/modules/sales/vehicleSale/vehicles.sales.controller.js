@@ -6,12 +6,12 @@ import { showMessage, hideElement, showElement, disableElement, removeDisable, q
 import { navigateTo, replaceTo, ROUTES } from '../../../utils/router.js';
 import { resetVehicleSalesFormState, vehicleSalesFormState } from "./vehicles.sales.state.js";
 import { initVehicleSaleEvents } from './vehicles.sales.events.js';
-import { createBtnUrl } from '../../../core/dom/picAmounts.dom.js';
+import { createBtnUrl } from '../../picsAmounts/picAmounts.dom.js';
 import { DOMRefs, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals, resetVehicleSaleFilters } from './vehicles.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from './vehicles.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments, onResetPayments } from '../../payments/payments.controller.js';
-import { initializeModalListeners } from '../../picsAmounts/controller/picsAmount.controller.js';
+import { initializeModalListeners } from '../../picsAmounts/picsAmount.controller.js';
 import { safeParseFloat } from '../../../utils/validators.js';
 import { generateVehicleSaleReport } from '../../../core/reports/vehicleSale/vehicles.sales.report.js';
 import { handleApiError } from '../../../utils/api.utils.js';
@@ -242,8 +242,8 @@ const initializeUI = async (Refs) => {
     });
     loadCustomerName(DOMRefs.refs.customerName, vehicleSalesFormState.context.customerName);
     initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onImportVehicle, onCancelVehicle });
-    if (vehicleSalesFormState.context.isView) {
-        initCancelSale(vehicleSalesFormState.context.idSale, patchVehicleSale);
+    if (vehicleSalesFormState.context.idSale) {
+        initCancelSale(vehicleSalesFormState.context.idSale, patchVehicleSale, ROUTES.SALES, "venta de vehículo");
     };
     initializeModalListeners(vehicleSalesFormState.data, vehicleSalesFormState.context.isView);
 };
