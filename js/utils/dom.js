@@ -278,9 +278,9 @@ export const createModuleInitializer = async ({
         if (!user) return false;
 
         const refs = DOMRefs.init();
+        applyPrivilegesToUI();
         await initialize(refs);
         await load(refs);
-        applyPrivilegesToUI();
         return true;
     } catch (error) {
         console.error('Error inicializando:', error);
