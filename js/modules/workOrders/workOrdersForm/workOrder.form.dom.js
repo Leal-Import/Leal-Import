@@ -175,6 +175,7 @@ const setupPriceCell = (priceCell, data, onWritePrice, isView) => {
 const onCreateBtnPerson = (onClickCreatePerson, employeeName, itemName, arraySelected, id, cell) => {
     const span = document.createElement('span');
     span.classList.add('btnPerson');
+    span.dataset.privilege = 'WRITE_WORK_ORDERS';
     span.textContent = employeeName ?? 'Agregar';
     span.addEventListener('click', () => onClickCreatePerson(itemName, arraySelected, id, cell));
     return span;
@@ -315,6 +316,7 @@ export const createTrashOption = ({
 }) => {
     const btn = document.createElement('button');
     btn.classList.add(SELECTORS.BTN_TRASH.slice(1));
+    btn.dataset.privilege = 'WRITE_WORK_ORDERS';
     btn.type = 'button';
     btn.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -397,6 +399,7 @@ export const renderImportButton = (tBody, onImport, tBodyServices, tBodySparePar
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.classList.add(SELECTORS.BTN_IMPORT.slice(1));
+    btn.dataset.privilege = 'WRITE_WORK_ORDERS';
     btn.textContent = 'IMPORTAR';
     btn.addEventListener('click', onImport);
 

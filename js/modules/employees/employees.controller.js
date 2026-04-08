@@ -162,8 +162,7 @@ export const onSubmitEmployee = async (e) => {
 
 const handleEmployeeActions = (event, employee) => {
     event.stopPropagation();
-
-    showFloatingMenu(event, [
+    const options = [
         {
             label: 'Actualizar empleado',
             privilege: 'WRITE_EMPLOYEES',
@@ -177,8 +176,11 @@ const handleEmployeeActions = (event, employee) => {
         {
             label: 'Ver detalles',
             onClick: () => viewEmployee(employee)
-        },
-        {
+        }
+    ];
+
+    if (employee.roleName !== 'Administrador') {
+        options.push({
             label: employee.user.status === STATUS.ACTIVE
                 ? 'Desactivar empleado'
                 : 'Activar empleado',
@@ -188,8 +190,10 @@ const handleEmployeeActions = (event, employee) => {
                     employee.user.idUser,
                     employee.user.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
                 )
-        }
-    ]);
+        });
+    }
+
+    showFloatingMenu(event, options);
 };
 
 /* ===============================
@@ -201,6 +205,7 @@ const editEmployee = (employee) => {
     fillEmployeesForm(employee);
     rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Actualizar');
     setFormReadOnly('#frmEmployees', false);
+    disableElement(DOMRefs.refs.txtUsername);
     toggleModal(DOMRefs.refs.modalEmployees, true);
 };
 

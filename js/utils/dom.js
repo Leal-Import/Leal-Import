@@ -280,7 +280,10 @@ export const createModuleInitializer = async ({
         const refs = DOMRefs.init();
         applyPrivilegesToUI();
         await initialize(refs);
+        // Ejecutamos una segunda vez después de initialize y load
+        // por si se generaron elementos dinámicos
         await load(refs);
+
         return true;
     } catch (error) {
         console.error('Error inicializando:', error);

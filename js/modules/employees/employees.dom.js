@@ -25,7 +25,8 @@ export const DOMRefs = {
             btnAddEmployee: $("btnAddEmployee"),
             btnAddEmployeeLoader: $("btnAddEmployeeLoader"),
             titleModal: qs('.titleModal'),
-            campsModal: qsa('#frmEmployees .txtInputs')
+            campsModal: qsa('#frmEmployees .txtInputs'),
+            txtUsername: $('txtUsername')
         };
         return this.refs;
     }

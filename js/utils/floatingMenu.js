@@ -1,5 +1,4 @@
-import { qs } from "./dom.js";
-import { canAccess } from "./privilegesValidator.js";
+import { qs, applyPrivilegesToUI } from "./dom.js";
 
 /* Menu flotante para tablas */
 export const showFloatingMenu = (event, actions) => {
@@ -16,9 +15,6 @@ export const showFloatingMenu = (event, actions) => {
     const uniqueSuffix = Date.now().toString(36) + Math.random().toString(36).slice(2);
 
     actions.forEach(action => {
-        // Validar permisos antes de inyectarlo en el DOM
-        if (action.privilege && !canAccess(action.privilege.split(','))) return;
-
         const btn = document.createElement('button');
         btn.textContent = action.label;
         btn.classList.add('floatingMenuButton');
@@ -39,6 +35,8 @@ export const showFloatingMenu = (event, actions) => {
     });
 
     document.body.appendChild(menu);
+    // Escanear privilegios del menú recién inyectado
+    applyPrivilegesToUI(menu);
 
     const positionMenu = () => {
         if (!document.body.contains(menu)) return;

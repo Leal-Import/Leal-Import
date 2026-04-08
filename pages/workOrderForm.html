@@ -243,7 +243,7 @@
                                 <div class="tableContainer">
                                     <h2>Repuestos</h2>
                                     <div class="containerInput">
-                                        <input type="text" id="txtSearchSparePart" class="txtInputs"
+                                        <input type="text" id="txtSearchSparePart" data-privilege="WRITE_WORK_ORDERS" class="txtInputs"
                                             placeholder="Buscar repuestos">
                                         <div class="suggestions hide" id="suggestionsSpareParts"></div>
                                     </div>
@@ -266,7 +266,7 @@
                                 <div class="tableContainer">
                                     <h2>Servicios</h2>
                                     <div class="containerInput">
-                                        <input type="text" id="txtAddService" class="txtInputs"
+                                        <input type="text" id="txtAddService" class="txtInputs" data-privilege="WRITE_WORK_ORDERS"
                                             placeholder="Añadir servicios">
                                         <div class="suggestions hide" id="suggestionsService"></div>
                                     </div>
@@ -351,22 +351,22 @@
                         </div>
 
                         <div class="actionButtons">
-                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button" data-privilege="WRITE_WORK_ORDERS">
+                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button">
                                 <span>Cancelar orden</span>
                                 <div class="loader hide" id="loaderCancelOrder"></div>
                             </button>
-                            <button class="btnPrimary hide" id="btnCompleteOrder" type="button" data-privilege="WRITE_WORK_ORDERS">
+                            <button class="btnPrimary hide" id="btnCompleteOrder" type="button">
                                 <span>Completar orden</span>
                                 <div class="loader hide" id="loaderCompleteOrder"></div>
                             </button>
                             <button class="btnPrimary hide" id="btnGeneratePdf" type="button">
                                 <span>Generar PDF</span>
                             </button>
-                            <button class="btnPrimary hide" id="btnApproveOrder" type="button" data-privilege="WRITE_WORK_ORDERS">
+                            <button class="btnPrimary hide" id="btnApproveOrder" type="button">
                                 <span>Aprobar orden</span>
                                 <div class="loader hide" id="loaderApproveOrder"></div>
                             </button>
-                            <button class="btnPrimary hide" id="btnSaveOrder" data-privilege="WRITE_WORK_ORDERS">
+                            <button class="btnPrimary" id="btnSaveOrder">
                                 <span>Crear orden</span>
                                 <div class="loader hide" id="loaderAddOrder"></div>
                             </button>

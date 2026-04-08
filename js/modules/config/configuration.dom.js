@@ -193,20 +193,22 @@ export const renderRolePrivileges = (role, allPrivileges, privilegesEl, countEl,
 
             const text = document.createElement('span');
             text.textContent = getPrivilegeNameInSpanish(privilege.name);
-
-            const removeButton = document.createElement('button');
-            removeButton.type = 'button';
-            removeButton.className = 'btnClos btnRemovePrivilege';
-            removeButton.title = `Remover ${privilege.name}`;
-            removeButton.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" stroke="var(--text-color)" fill="none">
-                    <line x1 = "10" y1 = "10" x2 = "22" y2 = "22" stroke - width="2.5" stroke - linecap="round" ></line >
-                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round"></line>
-                </svg > `;
-            removeButton.addEventListener('click', () => onRemove(privilege));
+            let removeButton = null;
+            if (role.roleName !== "Administrador") {
+                removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btnClos btnRemovePrivilege';
+                removeButton.title = `Remover ${privilege.name}`;
+                removeButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" stroke="var(--text-color)" fill="none">
+                        <line x1 = "10" y1 = "10" x2 = "22" y2 = "22" stroke - width="2.5" stroke - linecap="round" ></line >
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round"></line>
+                    </svg > `;
+                removeButton.addEventListener('click', () => onRemove(privilege));
+            }
 
             item.appendChild(text);
-            item.appendChild(removeButton);
+            if (removeButton) item.appendChild(removeButton);
             fragment.appendChild(item);
         });
         privilegesEl.appendChild(fragment);

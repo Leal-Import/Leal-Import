@@ -14,6 +14,7 @@ import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
 import { generateWorkOrderReport } from "../../../core/reports/workorders/workorders.report.js";
 import { handleApiError } from "../../../utils/api.utils.js";
 import { getActiveEmployees } from "../../employees/employees.service.js";
+import { canAccess } from "../../../utils/privilegesValidator.js";
 
 import { initCancelSale, saleCancelledUIUpdate } from "../../cancelSale/cancelSale.controller.js";
 
@@ -371,10 +372,10 @@ const loadWorkOrder = async (Refs) => {
     }
 
     if (workOrder.status === "Espera de Aprobación") {
-        showElement(Refs.btnApproveOrder);
+        if (canAccess(['WRITE_WORK_ORDERS'])) showElement(Refs.btnApproveOrder);
         hideElement(Refs.btnCompleteOrder);
     } else if (workOrder.status !== "Finalizada" && workOrder.status !== "Cancelada") {
-        showElement(Refs.btnCompleteOrder);
+        if (canAccess(['WRITE_WORK_ORDERS'])) showElement(Refs.btnCompleteOrder);
         hideElement(Refs.btnApproveOrder);
     }
 };
@@ -475,10 +476,11 @@ const initNewPartFlow = async (Refs) => {
 
 const initEditOrderFlow = async (Refs) => {
     await loadWorkOrder(Refs);
-    showElement(Refs.btnOpenCancelSale);
+    if (canAccess(['CANCEL_SALE'])) showElement(Refs.btnOpenCancelSale);
+
     if (workOrdersFormState.context.isView) {
         loadViewDom(Refs);
-        showElement(Refs.btnGeneratePdf);
+        if (canAccess(['READ_WORK_ORDERS'])) showElement(Refs.btnGeneratePdf);
         hideElement(Refs.btnSaveOrder);
         hideElement(Refs.paymentForm);
         hideElement(Refs.txtSearchSparePart);

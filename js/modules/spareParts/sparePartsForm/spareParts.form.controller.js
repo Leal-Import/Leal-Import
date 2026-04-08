@@ -10,6 +10,7 @@ import { getSparePart, postSparePart, putSparePart } from "./spareParts.form.ser
 import { handleApiError } from "../../../utils/api.utils.js";
 import { handleAddImage, initCarouselController } from "../../carousel/carousel.controller.js";
 import { mapCarouselImages, validateBaseImages, validateEditImages } from "../../carousel/carousel.logic.js";
+import { canAccess } from "../../../utils/privilegesValidator.js";
 
 const loadSparePart = async () => {
     try {
@@ -104,7 +105,9 @@ const onSubmitSparePart = async (e) => {
             });
             replaceTo(ROUTES.WORK_ORDER_FORM, Object.fromEntries(paramsOrder.entries()));
         } else {
-            navigateTo(ROUTES.SPARE_PARTS);
+            // Ejemplo de cómo aplicar seguridad antes de navegar o mostrar
+            if (canAccess(['READ_SPAREPARTS'])) navigateTo(ROUTES.SPARE_PARTS);
+            else navigateTo(ROUTES.DASHBOARD);
         }
 
     } catch (error) {
