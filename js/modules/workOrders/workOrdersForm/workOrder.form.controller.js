@@ -372,8 +372,10 @@ const loadWorkOrder = async (Refs) => {
 
     if (workOrder.status === "Espera de Aprobación") {
         showElement(Refs.btnApproveOrder);
+        hideElement(Refs.btnCompleteOrder);
     } else if (workOrder.status !== "Finalizada" && workOrder.status !== "Cancelada") {
         showElement(Refs.btnCompleteOrder);
+        hideElement(Refs.btnApproveOrder);
     }
 };
 
