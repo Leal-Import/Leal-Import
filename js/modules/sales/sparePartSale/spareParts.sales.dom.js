@@ -61,7 +61,7 @@ export const insertSpareParts = (
         const td = document.createElement("td");
 
         td.colSpan = 5;
-        td.textContent = "No hay datos disponibles";
+        td.textContent = "No hay repuestos disponibles";
         td.classList.add("noDataMessage");
         td.style.textAlign = "center";
         td.style.padding = "15px";

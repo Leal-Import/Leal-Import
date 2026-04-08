@@ -27,8 +27,7 @@ export const validateBaseSparePart = ({
     txtPartYear,
     txtPurchasePrice,
     txtTaxes,
-    txtSuggestedPrice,
-    txtTracking
+    txtSuggestedPrice
 }, billLink, trackingLink) => {
 
     if (txtPartName.length > 250 || txtPartName.length < 1) {
@@ -57,11 +56,6 @@ export const validateBaseSparePart = ({
 
     if (trackingLink !== '') {
         if (!isValidURL(trackingLink)) return 'El enlace del tracking no es válido.';
-    }
-
-    if (txtTracking.length > 50 || txtTracking.length < 1) {
-        highlightAndFocus('txtTracking');
-        return 'El número de tracking debe tener entre 1 y 50 caracteres.';
     }
 
     // 🔢 Validación de costos

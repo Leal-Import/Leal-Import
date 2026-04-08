@@ -130,7 +130,7 @@ const createSidebar = () => {
                         { tag: 'rect', attrs: { x: '3', y: '14', width: '7', height: '7', rx: '1.5' } },
                         { tag: 'rect', attrs: { x: '14', y: '14', width: '7', height: '7', rx: '1.5' } }
                     ],
-                    requiredPrivileges: []
+                    requiredPrivileges: ['VIEW_DASHBOARD']
                 },
                 {
                     href: '../pages/employees.html',

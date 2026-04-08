@@ -3,11 +3,11 @@ import { createModuleInitializer } from '../../utils/dom.js';
 let dashChart = null;
 
 const dashPeriods = {
-    hoy: { k: ['6', '$4,820', '$18,420', '1'], c: ['+5%', 'up', '+2%', 'up', '+1%', 'down', '±0%', 'flat'], labels: ['8am', '10am', '12pm', '2pm', '4pm', '6pm'], vals: [800, 1200, 900, 1500, 700, 420], sub: 'Horas del día' },
-    semana: { k: ['18', '$21,400', '$18,420', '3'], c: ['+12%', 'up', '+5%', 'up', '+3%', 'down', '+2%', 'up'], labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], vals: [3200, 4100, 2800, 5200, 4300, 1800], sub: 'Días de la semana' },
-    mes: { k: ['38', '$53,203', '$18,420', '5'], c: ['+18%', 'up', '+8%', 'up', '+3%', 'down', '±0%', 'flat'], labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'], vals: [12400, 15800, 13200, 11803], sub: 'Semanas del mes' },
-    trimestre: { k: ['94', '$142,800', '$18,420', '14'], c: ['+22%', 'up', '+11%', 'up', '+5%', 'down', '+4%', 'up'], labels: ['Enero', 'Febrero', 'Marzo'], vals: [42100, 53203, 47500], sub: 'Meses del trimestre' },
-    año: { k: ['284', '$383,210', '$18,420', '42'], c: ['+31%', 'up', '+19%', 'up', '+2%', 'down', '+8%', 'up'], labels: ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'], vals: [28400, 42100, 53203, 31200, 28400, 25800, 31200, 27400, 24800, 22100, 26400, null], sub: 'Meses del año' }
+    hoy: { k: ['6', '49', '$18,420', '1'], c: ['+5%', 'up', '+2%', 'up', '+1%', 'down', '±0%', 'flat'], labels: ['8am', '10am', '12pm', '2pm', '4pm', '6pm'], vals: [800, 1200, 900, 1500, 700, 420], sub: 'Horas del día' },
+    semana: { k: ['18', '45', '$18,420', '3'], c: ['+12%', 'up', '+5%', 'up', '+3%', 'down', '+2%', 'up'], labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], vals: [3200, 4100, 2800, 5200, 4300, 1800], sub: 'Días de la semana' },
+    mes: { k: ['38', '40', '$18,420', '5'], c: ['+18%', 'up', '+8%', 'up', '+3%', 'down', '±0%', 'flat'], labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'], vals: [12400, 15800, 13200, 11803], sub: 'Semanas del mes' },
+    trimestre: { k: ['94', '45', '$18,420', '14'], c: ['+22%', 'up', '+11%', 'up', '+5%', 'down', '+4%', 'up'], labels: ['Enero', 'Febrero', 'Marzo'], vals: [42100, 53203, 47500], sub: 'Meses del trimestre' },
+    año: { k: ['284', '60', '$18,420', '42'], c: ['+31%', 'up', '+19%', 'up', '+2%', 'down', '+8%', 'up'], labels: ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'], vals: [28400, 42100, 53203, 31200, 28400, 25800, 31200, 27400, 24800, 22100, 26400, null], sub: 'Meses del año' }
 };
 
 const DOMRefs = {
@@ -18,13 +18,11 @@ const DOMRefs = {
         kpis: {
             orders: document.getElementById('kpiOrders'),
             sales: document.getElementById('kpiSales'),
-            debt: document.getElementById('kpiDebt'),
             clients: document.getElementById('kpiClients')
         },
         chips: {
             orders: document.getElementById('chipOrders'),
             sales: document.getElementById('chipSales'),
-            debt: document.getElementById('chipDebt'),
             clients: document.getElementById('chipClients')
         }
     })
@@ -37,10 +35,9 @@ const dashSetPeriod = (refs, btn, key) => {
 
     refs.kpis.orders.textContent = d.k[0];
     refs.kpis.sales.textContent = d.k[1];
-    refs.kpis.debt.textContent = d.k[2];
     refs.kpis.clients.textContent = d.k[3];
 
-    const chipKeys = ['orders', 'sales', 'debt', 'clients'];
+    const chipKeys = ['orders', 'sales', 'clients'];
     chipKeys.forEach((ck, i) => {
         const el = refs.chips[ck];
         el.textContent = d.c[i * 2];

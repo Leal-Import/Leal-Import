@@ -7,6 +7,14 @@
     position: relative;
     flex: 1;
     border-radius: 10px;
+    display: flex;
+}
+
+.noDataMessage {
+    text-align: center;
+    color: var(--text-color);
+    font-size: var(--font-size-title);
+    margin: auto;
 }
 
 .filterSection{
