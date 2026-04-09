@@ -16,6 +16,7 @@ import { safeParseFloat } from '../../../utils/validators.js';
 import { generateVehicleSaleReport } from '../../../core/reports/vehicleSale/vehicles.sales.report.js';
 import { handleApiError } from '../../../utils/api.utils.js';
 import { initCancelSale, saleCancelledUIUpdate } from '../../cancelSale/cancelSale.controller.js';
+import { canAccess } from '../../../utils/privilegesValidator.js';
 
 /* ================= PAGINATION ================= */
 const pagination = createPagination({
@@ -245,6 +246,12 @@ const initializeUI = async (Refs) => {
     if (vehicleSalesFormState.context.idSale) {
         initCancelSale(vehicleSalesFormState.context.idSale, patchVehicleSale, ROUTES.SALES, "venta de vehículo");
     };
+    if (!vehicleSalesFormState.context.isView) {
+        if (canAccess(['WRITE_SALES'])) showElement(DOMRefs.refs.btnSaveSale);
+    }
+    if (!vehicleSalesFormState.context.isView && !vehicleSalesFormState.context.idSale) {
+        if (canAccess(['WRITE_SALES'])) showElement(DOMRefs.refs.btnCreateOrder);
+    }
     initializeModalListeners(vehicleSalesFormState.data, vehicleSalesFormState.context.isView);
 };
 
@@ -260,7 +267,7 @@ const loadDataFlow = async () => {
             disableElement(DOMRefs.refs.txtTotal);
             disableElement(DOMRefs.refs.txtCommission);
             hideElement(DOMRefs.refs.paymentForm);
-            showElement(DOMRefs.refs.btnGeneratePdf);
+            if (canAccess(['WRITE_SALES'])) showElement(DOMRefs.refs.btnGeneratePdf);
             sale.totalPaid = vehicleSalesFormState.totals.totalPaid;
             DOMRefs.refs.btnGeneratePdf.addEventListener('click', () => generateVehicleSaleReport(sale, vehicle, vehicleSalesFormState.context.customerName));
         }

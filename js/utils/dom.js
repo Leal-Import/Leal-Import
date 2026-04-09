@@ -263,10 +263,10 @@ export const createModuleInitializer = async ({
     load,
     DOMRefs
 }) => {
+    const sidebarEl = document.getElementById('sidebar');
     try {
-        // 1. Inicializamos el sidebar de inmediato.
-        // Esto inyecta la estructura y quita la "pantalla negra" (clase uiReady).
-        initSidebar();
+        // Añadimos clase de carga para mostrar skeletons
+        if (sidebarEl) sidebarEl.classList.add('sidebar-loading');
 
         await resetState();
         const user = await initSession();
@@ -274,7 +274,6 @@ export const createModuleInitializer = async ({
         // 2. Si la sesión es válida, re-inicializamos para mostrar los ítems
         // según los privilegios reales obtenidos.
         if (user) initSidebar();
-
         if (!user) return false;
 
         const refs = DOMRefs.init();
@@ -292,6 +291,7 @@ export const createModuleInitializer = async ({
         document.body.classList.add('sidebarReady');
 
         await showMessage('Error', 'No se pudo cargar el módulo correctamente', 'error');
+
         return false;
     }
 };

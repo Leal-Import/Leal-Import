@@ -18,7 +18,7 @@ export const loadPayMethods = async (Refs) => {
         paymentsState.paymentMethods = Array.isArray(roles) ? roles : (roles?.content || []);
         const cmbPaymentMethod = Refs.paymentMethod;
         if (cmbPaymentMethod) {
-            fillSelect(cmbPaymentMethod, paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Metodo de pago");
+            fillSelect(cmbPaymentMethod, paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Método de pago");
         }
     } catch (error) {
         await handleApiError(error, 'No se pudieron cargar los métodos de pago. Por favor, inténtalo de nuevo.');

@@ -160,7 +160,7 @@
                     <div class="bodyLeftPart">
                         <div class="containerLoader hide" style="z-index: 15;" id="loaderAddVehicle">
                             <div class="loader"></div>
-                            <div>Cargando vehiculo...</div>
+                            <div>Cargando vehículo...</div>
                         </div>
                         <div class="viewVechicleContainer hide">
                             <div class="imagesSection">
@@ -183,7 +183,7 @@
                             <div class="vehicleInfo">
                                 <div class="mainInfoContainer">
                                     <div class="columnInfo">
-                                        <h2>Vehiculo</h2>
+                                        <h2>Vehículo</h2>
                                         <div class="bodyDataInfo">
                                             <div class="infoItem">
                                                 <span class="infoLabel">Fecha compra:</span>
@@ -267,7 +267,7 @@
                                             </div>
                                             <div class="infoItem">
                                                 <span class="infoLabel">Iva:</span>
-                                                <span id="iva" class="infoValue" aria-label="Iva del vehículo"></span>
+                                                <span id="iva" class="infoValue" aria-label="IVA del vehículo"></span>
                                             </div>
                                             <div class="infoItem">
                                                 <span class="infoLabel">P.A:</span>
@@ -275,7 +275,7 @@
                                             </div>
                                             <div class="infoItem">
                                                 <span class="infoLabel">Costo total:</span>
-                                                <span id="total" class="values" aria-label="Costo total del vehiculo"
+                                                <span id="total" class="values" aria-label="Costo total del vehículo"
                                                     style="color: var(--danger-color); font-weight: var(--font-weight-semibold);"></span>
                                             </div>
                                         </div>
@@ -287,13 +287,13 @@
                         <div class="dataLeft">
                             <div class="filterSection">
                                 <input type="text" id="txtSearchData" class="txtSearchData"
-                                    placeholder="Buscar vehiculo">
-                                <button class="btnPrimary btnOpenModal" id="btnImportVehicle">Realizar encargo</button>
+                                    placeholder="Buscar vehículo">
+                                <button class="btnPrimary btnOpenModal hide" id="btnImportVehicle" data-privilege="WRITE_SALES">Realizar encargo</button>
                             </div>
                             <div class="tableContainer">
                                 <div class="containerLoader show" id="tableVehiclesLoader">
                                     <div class="loader"></div>
-                                    <div>Cargando lista de vehiculos...</div>
+                                    <div>Cargando lista de vehículos...</div>
                                 </div>
                                 <table class="table" id="tableVehicles">
                                     <thead>
@@ -404,14 +404,14 @@
 
                         <!-- Action Buttons -->
                         <div class="actionButtons">
-                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button" data-privilege="WRITE_SALES">
+                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button">
                                 <span>Cancelar venta</span>
                             </button>
-                            <button class="btnSecondary truncate hide" id="btnCreateOrder" data-action="true" data-privilege="WRITE_SALES">
+                            <button class="btnSecondary truncate hide" id="btnCreateOrder" data-action="true">
                                 <span>Vender y crear orden</span>
                                 <div class="loader hide" id="btnCreateOrderLoader"></div>
                             </button>
-                            <button class="btnPrimary hide" id="btnSaveSale" data-privilege="WRITE_SALES">
+                            <button class="btnPrimary hide" id="btnSaveSale">
                                 <span>Vender</span>
                                 <div class="loader hide" id="btnSaveSaleLoader"></div>
                             </button>

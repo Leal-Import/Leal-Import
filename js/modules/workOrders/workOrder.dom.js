@@ -114,9 +114,7 @@ export const insertWorkOrders = (container, workOrders) => {
             const moreInfoContainer = document.createElement("div");
             moreInfoContainer.classList.add("moreInfoContainer");
 
-            const moreInfoText = document.createElement("div");
-            moreInfoText.classList.add("moreInfoInfo");
-            moreInfoText.textContent = "Ver más →";
+            const spaceDiv = document.createElement("div");
 
             const btnView = document.createElement("a");
             btnView.classList.add("btnPrimary");
@@ -128,7 +126,7 @@ export const insertWorkOrders = (container, workOrders) => {
             });
             btnView.href = `${ROUTES.WORK_ORDER_HISTORY}?${params.toString()}`;
 
-            moreInfoContainer.append(moreInfoText, btnView);
+            moreInfoContainer.append(spaceDiv, btnView);
 
             footerCard.append(vehicleName, containerInfoVehicle, moreInfoContainer);
             card.append(containerImgVehicle, footerCard);

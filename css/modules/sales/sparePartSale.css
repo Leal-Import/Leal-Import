@@ -3,6 +3,15 @@
     flex-wrap: wrap;
 }
 
+.vierModeContent .leftColumn {
+    flex-basis: auto;
+    flex-grow: 0;
+}
+
+.vierModeContent .leftColumn .tableContainer {
+    min-height: 0;
+}
+
 .leftColumn {
     flex-grow: 1;
     display: flex;

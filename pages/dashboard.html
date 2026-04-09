@@ -37,7 +37,7 @@
                         <p class="dashAlertTitle">Órdenes atrasadas</p>
                         <p class="dashAlertSub">Superaron la fecha estimada de entrega</p>
                     </div>
-                    <span class="dashAlertVal dashAlertValDanger" id="alertOrders">7</span>
+                    <span class="dashAlertVal dashAlertValDanger" id="delayedOrdersCount"></span>
                 </div>
                 <div class="dashAlertItem dashAlertWarning">
                     <div class="dashAlertIcon dashAlertIconWarning">
@@ -50,10 +50,9 @@
                         </svg>
                     </div>
                     <div class="dashAlertBody">
-                        <p class="dashAlertTitle">Clientes sin abono reciente</p>
-                        <p class="dashAlertSub">Sin movimiento en más de 30 días</p>
+                        <p class="dashAlertTitle">Clientes que no han saldado ventas</p>
                     </div>
-                    <span class="dashAlertVal dashAlertValWarning" id="alertClients">4</span>
+                    <span class="dashAlertVal dashAlertValWarning" id="inactiveCustomersCount"></span>
                 </div>
                 <div class="dashAlertItem dashAlertSuccess">
                     <div class="dashAlertIcon dashAlertIconSuccess">
@@ -69,7 +68,7 @@
                         <p class="dashAlertTitle">Vehículos en stock</p>
                         <p class="dashAlertSub">Disponibles para venta inmediata</p>
                     </div>
-                    <span class="dashAlertVal dashAlertValSuccess" id="alertVehicles">12</span>
+                    <span class="dashAlertVal dashAlertValSuccess" id="stockVehiclesCount"></span>
                 </div>
             </div>
 
@@ -201,7 +200,7 @@
                         </div>
                     </div>
 
-                    <div class="dashRankList">
+                    <div class="dashRankList" id="topSellersList">
                         <div class="dashRankRow">
                             <span class="dashRankNum dashRankSilver">#2</span>
                             <div class="dashRankAvatar dashRankAvatarTop">MA</div>

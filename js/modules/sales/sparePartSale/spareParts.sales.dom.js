@@ -32,7 +32,8 @@ export const DOMRefs = {
             paymentForm: qs(".paymentForm"),
             headerPanel: qs(".headerPanel"),
             tableContainerSelected: qs(".tableContainerSelected"),
-            btnGeneratePdf: $("btnGeneratePdf")
+            btnGeneratePdf: $("btnGeneratePdf"),
+            content: qs(".content")
         };
 
         return this.refs;
@@ -241,4 +242,8 @@ export const renderTotals = ({ total, due, totalPaid }, Refs) => {
     if (Refs.totalSale) {
         Refs.totalSale.textContent = formatWithCommas(total);
     }
+};
+
+export const uiContent = (content) => {
+    content.classList.add("vierModeContent");
 };

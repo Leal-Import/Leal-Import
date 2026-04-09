@@ -1,11 +1,11 @@
 // spareSale.controller.js
 import { getSpareParts, getSparePartById, postSparePart, putSparePart, patchSparePart } from './spareParts.sale.service.js';
 import { createPagination } from '../../../pagination/pagination.controller.js';
-import { showMessage, showElement, hideElement, disableElement, removeDisable, qsa, cleanOneShotParams, buildParams, existsById, createModuleInitializer, applyPrivilegesToUI } from '../../../utils/dom.js';
+import { showMessage, showElement, hideElement, disableElement, removeDisable, qsa, cleanOneShotParams, buildParams, existsById, createModuleInitializer } from '../../../utils/dom.js';
 import { DraftManager } from '../../../utils/draft.manager.js';
 import { resetSpareSalesFormState, spareSalesFormState } from "./spareParts.sales.state.js";
 import { initSpareSaleEvents } from './spareParts.sales.event.js';
-import { createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, insertViewParts, loadCustomerName, loadDomData, loadNotes, renderTotals, resetSparePartsFilters } from './spareParts.sales.dom.js';
+import { createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, insertViewParts, loadCustomerName, loadDomData, loadNotes, renderTotals, resetSparePartsFilters, uiContent } from './spareParts.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from './spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments } from '../../payments/payments.controller.js';
@@ -16,6 +16,7 @@ import { createBtnUrl } from '../../picsAmounts/picAmounts.dom.js';
 import { initializeModalListeners } from '../../picsAmounts/picsAmount.controller.js';
 import { initCancelSale, saleCancelledUIUpdate } from '../../cancelSale/cancelSale.controller.js';
 import { generateSparePartsSaleReport } from './spareParts.sale.report.js';
+import { canAccess } from '../../../utils/privilegesValidator.js';
 
 // Centralizar manejo de borradores con DraftManager
 const saleStateDraft = new DraftManager(spareSalesFormState.saleKey, {
@@ -200,7 +201,16 @@ const loadOrderSparePart = () => {
 const loadExistingSale = async (txtNotes, btnSaveSale) => {
     const sale = await getSparePartById(spareSalesFormState.context.idSale);
     if (sale.statusSaleName === "Cancelada") {
+        showElement(DOMRefs.refs.btnOpenCancelSale);
+        initCancelSale(spareSalesFormState.context.idSale, patchSparePart, ROUTES.SALES, "venta de repuestos");
+        hideElement(DOMRefs.refs.divSpace);
         saleCancelledUIUpdate();
+    } else {
+        if (canAccess(['WRITE_SALES'])) {
+            showElement(DOMRefs.refs.btnOpenCancelSale);
+            initCancelSale(spareSalesFormState.context.idSale, patchSparePart, ROUTES.SALES, "venta de repuestos");
+            hideElement(DOMRefs.refs.divSpace);
+        }
     }
     spareSalesFormState.data.notes = sale.notes || '';
     loadDomData(txtNotes, btnSaveSale, spareSalesFormState.data.notes);
@@ -269,12 +279,8 @@ const initializeUI = async (Refs) => {
     resetSparePartsFilters(Refs.txtSearchData);
     loadCustomerName(Refs.customerName, spareSalesFormState.context.customerName);
     initSpareSaleEvents({ Refs, onSubmitSpareSale, onSearchSparePart, onOrderPart, onSaveNotes });
-    if (spareSalesFormState.context.idSale) {
-        initCancelSale(spareSalesFormState.context.idSale, patchSparePart, ROUTES.SALES, "venta de repuestos");
-        applyPrivilegesToUI();
-        hideElement(DOMRefs.refs.divSpace);
-    }
     if (spareSalesFormState.context.isView) {
+        uiContent(Refs.content);
         hideElement(DOMRefs.refs.paginationContainer);
         hideElement(DOMRefs.refs.filterSection);
         hideElement(DOMRefs.refs.paymentForm);
@@ -283,6 +289,8 @@ const initializeUI = async (Refs) => {
         hideElement(DOMRefs.refs.btnSaveSale);
         showElement(DOMRefs.refs.btnGeneratePdf);
         disableElement(DOMRefs.refs.txtNotes);
+    } else {
+        if (canAccess(['WRITE_SALES'])) showElement(DOMRefs.refs.btnSaveSale);
     }
     initializeModalListeners(spareSalesFormState, spareSalesFormState.context.isView);
     await initPaymentsController({ totalCalculator: recalculateTotals, state: spareSalesFormState, createReceiptBtn: createBtnUrl, isView: spareSalesFormState.context.isView });

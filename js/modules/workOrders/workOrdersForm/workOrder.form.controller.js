@@ -476,7 +476,7 @@ const initNewPartFlow = async (Refs) => {
 
 const initEditOrderFlow = async (Refs) => {
     await loadWorkOrder(Refs);
-    if (canAccess(['CANCEL_SALE'])) showElement(Refs.btnOpenCancelSale);
+    if (canAccess(['WRITE_WORK_ORDERS'])) showElement(Refs.btnOpenCancelSale);
 
     if (workOrdersFormState.context.isView) {
         loadViewDom(Refs);

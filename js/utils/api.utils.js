@@ -3,6 +3,7 @@ import { showMessage } from './dom.js';
 import { navigateTo, ROUTES } from './router.js';
 import { DraftManager } from './draft.manager.js';
 import { canAccess, setUserPrivileges, clearUserPrivileges } from './privilegesValidator.js';
+import { initSidebar } from '../components/sidebar.js';
 
 export class APIError extends Error {
     constructor(message, status = 500, cause = null, endpoint = null) {
@@ -16,6 +17,7 @@ export class APIError extends Error {
 
 export const handleApiError = async (error) => {
     console.error('[API Error]', error);
+    initSidebar();
     if (error instanceof APIError) {
         if (error.status === 401) {
             await forceLogout('Sesión expirada');
@@ -56,8 +58,9 @@ export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de 
         }
 
         if (!response.ok) {
-            let errorMessage = `${friendlyMessage}. Código: ${response.status}`;
+            initSidebar();
 
+            let errorMessage = `${friendlyMessage}. Código: ${response.status}`;
             if (data && typeof data === 'object') {
                 // Manejar errores de validación de Spring Boot (DTO errors)
                 if (data.errors && typeof data.errors === 'object') {
@@ -75,6 +78,7 @@ export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de 
 
         return data;
     } catch (error) {
+        initSidebar();
         if (error instanceof APIError) {
             throw error;
         }
@@ -101,6 +105,7 @@ export const initSession = async () => {
             await forceLogout("Sesión no válida");
         }
     } catch (error) {
+        initSidebar();
         if (error?.status === 401) {
             await forceLogout("Sesión expirada");
         } else {
