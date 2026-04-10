@@ -66,7 +66,8 @@ export const pushService = (state, service) => {
         priceApplied: service.priceApplied || 0.00,
         idWorkOrdersServices: service.idWorkOrdersServices || null,
         idEmployee: service.idEmployee || null,
-        assignedEmployee: service.assignedEmployee || null
+        assignedEmployee: service.assignedEmployee || null,
+        photos: service.photos || { antes: [], durante: [], después: [] }
     };
     state.push(normalizedPart);
     return normalizedPart;
@@ -160,6 +161,7 @@ export const buildOrderFormData = (state, isEditing) => {
     fd.append('workOrderData', JSON.stringify(payload));
 
     appendPaymentFiles(fd, state.data.payments, isEditing);
+    appendServicePhotos(fd, state.data.selectedServices);
 
     return fd;
 };
@@ -195,6 +197,21 @@ const buildPostWorkOrderPayload = (state) => {
 const appendPaymentFiles = (fd, payments) => {
     payments.forEach(p => {
         fd.append(p.id, p.file);
+    });
+};
+
+const appendServicePhotos = (fd, services) => {
+    services.forEach((service, serviceIndex) => {
+        ['before', 'during', 'after'].forEach(stage => {
+            (service.photos?.[stage] || []).forEach((photo, photoIndex) => {
+                if (photo instanceof File) {
+                    fd.append(
+                        `services[${serviceIndex}][photos][${stage}][${photoIndex}]`,
+                        photo
+                    );
+                }
+            });
+        });
     });
 };
 
