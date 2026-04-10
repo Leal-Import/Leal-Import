@@ -107,10 +107,13 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    max-width: 100%;
+    flex-wrap: wrap;
 }
 
 .dashPeriodBtns {
     display: flex;
+    flex-wrap: wrap;
     gap: 4px;
     background-color: var(--bg-color-white);
     border: var(--border);
@@ -119,6 +122,7 @@
 }
 
 .dashPeriodBtn {
+    flex: 1;
     padding: 6px 14px;
     border-radius: 6px;
     font-size: var(--font-size-sm);
@@ -253,6 +257,7 @@
 
 /* ── CARD BASE ── */
 .dashCard {
+    min-width: 0;
     background-color: var(--bg-color-white);
     border: var(--border);
     border-radius: var(--border-radius-table);
@@ -270,6 +275,7 @@
 
 .dashCardChart {
     flex-basis: 500px !important;
+    min-width: 0;
 }
 
 .dashCardHeader {
@@ -818,6 +824,7 @@
 /* ── DATE RANGE CHART FILTER ── */
 .dateRangeChartContainer {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 10px;

@@ -16,3 +16,17 @@ export const getCounters = async () => {
 export const getTopSellers = async () => {
     return await apiRequest(`${API_URL}/topSellers`, { method: 'GET', credentials: 'include' }, 'Error al cargar mejores vendedores');
 };
+
+/**
+ * Obtiene la mejor venta de vehículo
+ */
+export const getTopVehicleSales = async () => {
+    return await apiRequest(`${API_URL}/topVehicleSales`, { method: 'GET', credentials: 'include' }, 'Error al cargar mejor venta de vehículo');
+};
+
+/**
+ * Obtiene las órdenes de trabajo recientes
+ */
+export const getRecentWorkOrders = async () => {
+    return await apiRequest(`${API_URL}/recentWorkOrders`, { method: 'GET', credentials: 'include' }, 'Error al cargar órdenes recientes');
+};

@@ -16,7 +16,8 @@ export const workOrdersFormState = {
     employeeContext: {
         selectedArray: null,
         idItem: null,
-        cell: null
+        cell: null,
+        employeeSelected: null
     },
     saleKey: null,
     idEmployee: null,
@@ -58,7 +59,8 @@ export const resetWorkOrdersFormState = () => {
     workOrdersFormState.employeeContext = {
         selectedArray: null,
         idItem: null,
-        cell: null
+        cell: null,
+        employeeSelected: null
     };
     workOrdersFormState.data = {
         selectedServices: [],

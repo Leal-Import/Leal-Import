@@ -91,10 +91,10 @@ const onAddSparePart = (sparePart) => {
 };
 
 const onClickCreatePerson = async (itemName, arraySelected, id, cell) => {
+    if (workOrdersFormState.context.isView) return;
     const itemSelected = arraySelected.find(i => i.id === id);
-    let employeeSelected = null;
     if (itemSelected?.assignedEmployee) {
-        employeeSelected = {
+        workOrdersFormState.employeeContext.employeeSelected = {
             idEmployee: itemSelected.idEmployee,
             fullName: itemSelected.assignedEmployee
         };
@@ -106,12 +106,16 @@ const onClickCreatePerson = async (itemName, arraySelected, id, cell) => {
     } else {
         employees = await loadEmployees('');
     }
-    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee, employeeSelected);
+    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee, workOrdersFormState.employeeContext.employeeSelected);
     DOMRefs.refs.modalPersonItemName.textContent = itemName;
     workOrdersFormState.employeeContext = {
         selectedArray: arraySelected,
         idItem: id,
-        cell: cell
+        cell: cell,
+        employeeSelected: {
+            idEmployee: itemSelected.idEmployee,
+            fullName: itemSelected.assignedEmployee
+        }
     };
 };
 
@@ -428,7 +432,7 @@ const onSearchEmployee = async (e) => {
     } else {
         employees = await loadEmployees(query);
     }
-    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee);
+    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee, workOrdersFormState.employeeContext.employeeSelected);
 };
 
 const onSelectEmployee = (employee) => {
@@ -442,6 +446,8 @@ const onSelectEmployee = (employee) => {
     }
 
     cell.querySelector('span').textContent = employee.fullName;
+    // Cerrar el modal después de seleccionar
+    onClosePersonModal();
 };
 
 const onSearch = async (e, getData, renderData, box, onAdd, selected) => {
@@ -499,6 +505,8 @@ const onClosePersonModal = () => {
     toggleModal(DOMRefs.refs.modalPersonContainer, false);
     DOMRefs.refs.txtSearchEmployee.value = '';
     DOMRefs.refs.employeeList.innerHTML = '';
+    // Limpiar el contexto del empleado para evitar estado residual
+    workOrdersFormState.employeeContext = {};
 };
 
 const initializeUI = async (Refs) => {

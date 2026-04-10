@@ -169,17 +169,17 @@ const handleEmployeeActions = (event, employee) => {
             onClick: () => editEmployee(employee)
         },
         {
-            label: 'Editar permisos',
-            privilege: 'WRITE_EMPLOYEES',
-            onClick: () => openEmployeePrivilegesModal(employee)
-        },
-        {
             label: 'Ver detalles',
             onClick: () => viewEmployee(employee)
         }
     ];
 
     if (employee.roleName !== 'Administrador') {
+        options.push({
+            label: 'Editar permisos',
+            privilege: 'WRITE_EMPLOYEES',
+            onClick: () => openEmployeePrivilegesModal(employee)
+        });
         options.push({
             label: employee.user.status === STATUS.ACTIVE
                 ? 'Desactivar empleado'
@@ -191,6 +191,7 @@ const handleEmployeeActions = (event, employee) => {
                     employee.user.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
                 )
         });
+
     }
 
     showFloatingMenu(event, options);

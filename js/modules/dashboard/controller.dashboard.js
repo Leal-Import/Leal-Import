@@ -1,9 +1,9 @@
 import { createModuleInitializer } from '../../utils/dom.js';
 import { dashboardState } from './dashboard.state.js';
 import { dashPeriods } from './dashboard.logic.js';
-import { DOMRefs, renderDashboardData, renderCounters, renderTopSellers } from './dashboard.dom.js';
+import { DOMRefs, renderDashboardData, renderCounters, renderTopSellers, renderTopVehicleSale, renderRecentWorkOrders } from './dashboard.dom.js';
 import { initDashboardEvents } from './dashboard.event.js';
-import { getCounters, getTopSellers } from './dashboard.service.js';
+import { getCounters, getTopSellers, getTopVehicleSales, getRecentWorkOrders } from './dashboard.service.js';
 
 const resetState = () => {
     dashboardState.currentPeriod = 'mes';
@@ -69,13 +69,17 @@ const load = async (refs) => {
 
     // 2. Carga de datos reales desde API
     try {
-        const [counters, sellers] = await Promise.all([
+        const [counters, sellers, topVehicle, workOrders] = await Promise.all([
             getCounters(),
-            getTopSellers()
+            getTopSellers(),
+            getTopVehicleSales(),
+            getRecentWorkOrders()
         ]);
 
         renderCounters(refs, counters);
         renderTopSellers(refs, sellers);
+        renderTopVehicleSale(refs, topVehicle);
+        renderRecentWorkOrders(refs, workOrders);
     } catch (error) {
         console.error('Error cargando datos del API:', error);
     }
