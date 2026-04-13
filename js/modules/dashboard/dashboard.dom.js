@@ -1,10 +1,10 @@
-import { $, qs } from '../../utils/dom.js';
+import { $, qs, qsa } from '../../utils/dom.js';
 import { getChipClass } from './dashboard.logic.js';
 import { formatWithCommas } from '../../utils/formatters.js';
 
 export const DOMRefs = {
     init: () => ({
-        periodBtns: document.querySelectorAll('.dashPeriodBtn'),
+        periodBtns: qsa('.dashPeriodBtn'),
         chartSub: $('chartSub'),
         earningsChart: $('earningsChart'),
         kpis: {
@@ -31,40 +31,83 @@ export const DOMRefs = {
             topSellersList: $('topSellersList')
         },
         topVehicleSale: qs('.dashSaleList'),
-        recentWorkOrdersTable: qs('.dashTable tbody')
+        recentWorkOrdersTable: qs('.dashTable tbody'),
+        urgentCollections: qs('.dashCobroList')
     })
 };
 
 export const renderDashboardData = (refs, data, chart) => {
-    const d = data || { k: [], c: [], labels: [], vals: [], sub: '' };
+    // Check if data is from API or mock
+    if (data.orders && data.sales && data.newCustomers && data.incomeTrend) {
+        // API data
+        const orders = data.orders;
+        const sales = data.sales;
+        const clients = data.newCustomers;
+        const incomeTrend = data.incomeTrend;
 
-    // KPIs con acceso simple a propiedades
-    refs.kpis.orders.textContent = d.k[0] || '0';
-    refs.kpis.sales.textContent = d.k[1] || '0';
-    refs.kpis.clients.textContent = d.k[3] || '0';
+        refs.kpis.orders.textContent = orders.current || 0;
+        refs.kpis.sales.textContent = sales.current || 0;
+        refs.kpis.clients.textContent = clients.current || 0;
 
-    // Chips de tendencia
-    const chipConfig = [
-        { key: 'orders', valIdx: 0, typeIdx: 1 },
-        { key: 'sales', valIdx: 2, typeIdx: 3 },
-        { key: 'clients', valIdx: 4, typeIdx: 5 }
-    ];
+        // Chips
+        const getChipType = (change) => change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
+        const formatChange = (change) => `${change > 0 ? '+' : ''}${change.toFixed(1)}%`;
 
-    chipConfig.forEach(conf => {
-        const el = refs.chips[conf.key];
-        if (el) {
-            el.textContent = data.c[conf.valIdx] || '0%';
-            el.className = getChipClass(data.c[conf.typeIdx] || 'flat');
+        refs.chips.orders.textContent = formatChange(orders.percentageChange);
+        refs.chips.orders.className = getChipClass(getChipType(orders.percentageChange));
+
+        refs.chips.sales.textContent = formatChange(sales.percentageChange);
+        refs.chips.sales.className = getChipClass(getChipType(sales.percentageChange));
+
+        refs.chips.clients.textContent = formatChange(clients.percentageChange);
+        refs.chips.clients.className = getChipClass(getChipType(clients.percentageChange));
+
+        // Chart
+        if (chart) {
+            chart.data.labels = incomeTrend.map(item => item.label);
+            chart.data.datasets[0].data = incomeTrend.map(item => item.amount);
+            chart.update();
         }
-    });
 
-    refs.chartSub.textContent = data.sub || '';
+        // Subtitle based on period
+        const periodLabels = {
+            TODAY: 'Horas del día',
+            WEEK: 'Días de la semana',
+            MONTH: 'Semanas del mes',
+            QUARTER: 'Meses del trimestre',
+            YEAR: 'Meses del año'
+        };
+        refs.chartSub.textContent = periodLabels[refs.periodBtns.find(btn => btn.classList.contains('dashPeriodBtnActive'))?.dataset.period] || 'Período';
 
-    // Actualizar gráfico si existe
-    if (chart) {
-        chart.data.labels = data.labels || [];
-        chart.data.datasets[0].data = data.vals || [];
-        chart.update();
+    } else {
+        // Mock data fallback
+        const d = data || { k: [], c: [], labels: [], vals: [], sub: '' };
+
+        refs.kpis.orders.textContent = d.k[0] || '0';
+        refs.kpis.sales.textContent = d.k[1] || '0';
+        refs.kpis.clients.textContent = d.k[3] || '0';
+
+        const chipConfig = [
+            { key: 'orders', valIdx: 0, typeIdx: 1 },
+            { key: 'sales', valIdx: 2, typeIdx: 3 },
+            { key: 'clients', valIdx: 4, typeIdx: 5 }
+        ];
+
+        chipConfig.forEach(conf => {
+            const el = refs.chips[conf.key];
+            if (el) {
+                el.textContent = data.c[conf.valIdx] || '0%';
+                el.className = getChipClass(data.c[conf.typeIdx] || 'flat');
+            }
+        });
+
+        refs.chartSub.textContent = data.sub || '';
+
+        if (chart) {
+            chart.data.labels = data.labels || [];
+            chart.data.datasets[0].data = data.vals || [];
+            chart.update();
+        }
     }
 };
 
@@ -184,4 +227,25 @@ const getStatusBadgeClass = (status) => {
     default:
         return 'dashBadgeWarning';
     }
+};
+
+/**
+ * Renderiza los cobros urgentes
+ */
+export const renderUrgentCollections = (refs, collections) => {
+    if (!refs.urgentCollections || !Array.isArray(collections)) return;
+
+    refs.urgentCollections.innerHTML = collections.map(collection => `
+        <div class="dashCobroItem">
+            <div class="dashCobroAvatar">${collection.initials || '??'}</div>
+            <div class="dashCobroInfo">
+                <p class="dashCobroName">${collection.customerName || 'Cliente'}</p>
+                <p class="dashCobroSub">${collection.description || 'Descripción'}</p>
+            </div>
+            <div class="dashCobroRight">
+                <p class="dashCobroAmt">${formatWithCommas(collection.amountDue || 0)}</p>
+                <p class="dashCobroDays ${collection.daysWithoutPayment > 30 ? 'dashCobroDaysCritical' : 'dashCobroDaysWarning'}">${collection.delayText || 'Sin abono'}</p>
+            </div>
+        </div>
+    `).join('');
 };

@@ -67,7 +67,7 @@ export const pushService = (state, service) => {
         idWorkOrdersServices: service.idWorkOrdersServices || null,
         idEmployee: service.idEmployee || null,
         assignedEmployee: service.assignedEmployee || null,
-        photos: service.photos || { antes: [], durante: [], después: [] }
+        photos: service.photos || []
     };
     state.push(normalizedPart);
     return normalizedPart;
@@ -201,16 +201,14 @@ const appendPaymentFiles = (fd, payments) => {
 };
 
 const appendServicePhotos = (fd, services) => {
-    services.forEach((service, serviceIndex) => {
-        ['before', 'during', 'after'].forEach(stage => {
-            (service.photos?.[stage] || []).forEach((photo, photoIndex) => {
-                if (photo instanceof File) {
-                    fd.append(
-                        `services[${serviceIndex}][photos][${stage}][${photoIndex}]`,
-                        photo
-                    );
-                }
-            });
+    services.forEach((service) => {
+        (service.photos || []).forEach((photo) => {
+            if (photo.photo instanceof File) {
+                fd.append(
+                    `servicePhoto_${service.idService || service.id}_${photo.stage}`,
+                    photo.photo
+                );
+            }
         });
     });
 };
@@ -218,7 +216,7 @@ const appendServicePhotos = (fd, services) => {
 const normalizeServices = (services) => {
     return services.map(s => {
         const obj = {
-            idService: s.idService ?? null,
+            idService: s.idService || s.id,
             serviceName: s.name,
             priceApplied: Number(s.priceApplied),
             idEmployee: s.idEmployee

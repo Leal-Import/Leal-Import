@@ -1,4 +1,4 @@
-import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "./workOrder.form.dom.js";
+import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice, openServiceImageModal } from "./workOrder.form.dom.js";
 import { resetWorkOrdersFormState, workOrdersFormState } from "./workOrder.form.state.js";
 import { approveOrder, getDataVehicleById, getServices, getSpareParts, getWorkOrderById, completeWorkOrder, postWorkOrder, putWorkOrder, cancelWorkOrder } from "./workOrder.form.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
@@ -60,7 +60,8 @@ const onAddService = (service) => {
         arrayDelete: workOrdersFormState.data.servicesToDelete,
         onWritePrice,
         onDelete,
-        onClickCreatePerson
+        onClickCreatePerson,
+        onServiceImages
     });
 
     DOMRefs.refs.txtAddService.value = '';
@@ -134,7 +135,24 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
     reindexTable(tBody);
     renderButton?.(DOMRefs.refs.tBodySpareParts, onImportSparePart);
 };
+const onServiceImages = (serviceId, imageType) => {
+    // Obtener la imagen actual si existe
+    const currentImages = workOrdersFormState.data.serviceImages[serviceId] || {};
+    const currentImage = currentImages[imageType];
 
+    // Abrir el modal
+    openServiceImageModal(serviceId, imageType, currentImage, (file) => {
+        // Guardar en el estado
+        if (file) {
+            const service = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
+            const newObj = {
+                stage: imageType,
+                photo: file
+            };
+            service.photos.push(newObj);
+        }
+    });
+};
 const onSearchService = (e) => {
     onSearch(e, getServices, renderServiceSuggestions, DOMRefs.refs.boxServ, onAddService, workOrdersFormState.data.selectedServices);
 };
@@ -186,6 +204,7 @@ const onSubmitOrder = async (e) => {
                 idVehicle: workOrdersFormState.context.idVehicle,
                 idCustomer: workOrdersFormState.context.idCustomer
             });
+            return
             replaceTo(ROUTES.WORK_ORDERS, Object.fromEntries(params.entries()));
         }
     } catch (error) {
@@ -310,7 +329,8 @@ const loadDraftData = (Refs) => {
                 arrayDelete: workOrdersFormState.data.servicesToDelete,
                 onWritePrice,
                 onDelete,
-                onClickCreatePerson
+                onClickCreatePerson,
+                onServiceImages
             });
         });
 
@@ -360,7 +380,8 @@ const loadWorkOrder = async (Refs) => {
             onWritePrice,
             onDelete,
             isView: workOrdersFormState.context.isView,
-            onClickCreatePerson
+            onClickCreatePerson,
+            onServiceImages
         });
     });
     workOrder.workOrdersPayments.forEach(payment => {

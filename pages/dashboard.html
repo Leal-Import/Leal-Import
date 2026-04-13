@@ -75,12 +75,12 @@
             <!-- PERÍODO -->
             <div class="dashPeriodBar">
                 <div class="dashPeriodBtns">
-                    <button class="dashPeriodBtn" data-period="hoy">Hoy</button>
-                    <button class="dashPeriodBtn" data-period="semana">Esta semana</button>
-                    <button class="dashPeriodBtn dashPeriodBtnActive" data-period="mes">Este
+                    <button class="dashPeriodBtn" data-period="TODAY">Hoy</button>
+                    <button class="dashPeriodBtn" data-period="WEEK">Esta semana</button>
+                    <button class="dashPeriodBtn dashPeriodBtnActive" data-period="MONTH">Este
                         mes</button>
-                    <button class="dashPeriodBtn" data-period="trimestre">Trimestre</button>
-                    <button class="dashPeriodBtn" data-period="año">Este año</button>
+                    <button class="dashPeriodBtn" data-period="QUARTER">Trimestre</button>
+                    <button class="dashPeriodBtn" data-period="YEAR">Este año</button>
                 </div>
                 <span class="dashPeriodLabel">Comparado con el período anterior</span>
             </div>
@@ -126,57 +126,6 @@
                     </div>
                     <div class="dashCanvasWrap">
                         <canvas id="earningsChart"></canvas>
-                    </div>
-                    <div class="dateRangeChartContainer">
-                        <button class="dateRangeBtn" id="btnPrevRange">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="15 18 9 12 15 6" />
-                            </svg>
-                        </button>
-                        <div class="dateRangeSelects">
-                            <select class="dateRangeSelect" id="selectFromMonth">
-                                <option value="2025-01">Enero 2025</option>
-                                <option value="2025-02">Febrero 2025</option>
-                                <option value="2025-03">Marzo 2025</option>
-                                <option value="2025-04">Abril 2025</option>
-                                <option value="2025-05">Mayo 2025</option>
-                                <option value="2025-06">Junio 2025</option>
-                                <option value="2025-07">Julio 2025</option>
-                                <option value="2025-08">Agosto 2025</option>
-                                <option value="2025-09">Septiembre 2025</option>
-                                <option value="2025-10">Octubre 2025</option>
-                                <option value="2025-11" selected>Noviembre 2025</option>
-                                <option value="2025-12">Diciembre 2025</option>
-                                <option value="2026-01">Enero 2026</option>
-                                <option value="2026-02">Febrero 2026</option>
-                                <option value="2026-03">Marzo 2026</option>
-                            </select>
-                            <span class="dateRangeSeparator">—</span>
-                            <select class="dateRangeSelect" id="selectToMonth">
-                                <option value="2025-01">Enero 2025</option>
-                                <option value="2025-02">Febrero 2025</option>
-                                <option value="2025-03">Marzo 2025</option>
-                                <option value="2025-04">Abril 2025</option>
-                                <option value="2025-05">Mayo 2025</option>
-                                <option value="2025-06">Junio 2025</option>
-                                <option value="2025-07">Julio 2025</option>
-                                <option value="2025-08">Agosto 2025</option>
-                                <option value="2025-09">Septiembre 2025</option>
-                                <option value="2025-10">Octubre 2025</option>
-                                <option value="2025-11">Noviembre 2025</option>
-                                <option value="2025-12">Diciembre 2025</option>
-                                <option value="2026-01">Enero 2026</option>
-                                <option value="2026-02">Febrero 2026</option>
-                                <option value="2026-03" selected>Marzo 2026</option>
-                            </select>
-                        </div>
-                        <button class="dateRangeBtn" id="btnNextRange">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                        </button>
                     </div>
                 </div>
 
@@ -260,61 +209,6 @@
                         <span class="dashTag dashTagWarning">Prioritario</span>
                     </div>
                     <div class="dashCobroList">
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">MM</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">Mario Monroy</p>
-                                <p class="dashCobroSub">Honda CBR500R · Venta</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$3,490</p>
-                                <p class="dashCobroDays dashCobroDaysCritical">Sin abono 48 días</p>
-                            </div>
-                        </div>
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">EA</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">Edwin Adrian</p>
-                                <p class="dashCobroSub">Kawasaki Z400 · Venta</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$4,970</p>
-                                <p class="dashCobroDays dashCobroDaysCritical">Sin abono 38 días</p>
-                            </div>
-                        </div>
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">DA</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">Daniel Alfaro</p>
-                                <p class="dashCobroSub">Yamaha MT-03 · Orden</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$644</p>
-                                <p class="dashCobroDays dashCobroDaysWarning">Sin abono 32 días</p>
-                            </div>
-                        </div>
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">JF</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">José M. Fernández</p>
-                                <p class="dashCobroSub">Kawasaki R7 · Venta</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$1,500</p>
-                                <p class="dashCobroDays dashCobroDaysWarning">Sin abono 31 días</p>
-                            </div>
-                        </div>
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">RG</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">Roberto Guzmán</p>
-                                <p class="dashCobroSub">Honda Forza · Orden</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$430</p>
-                                <p class="dashCobroDays">Sin abono 18 días</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

@@ -1,9 +1,9 @@
 import { createModuleInitializer } from '../../utils/dom.js';
 import { dashboardState } from './dashboard.state.js';
-import { dashPeriods } from './dashboard.logic.js';
-import { DOMRefs, renderDashboardData, renderCounters, renderTopSellers, renderTopVehicleSale, renderRecentWorkOrders } from './dashboard.dom.js';
+import { dashPeriods, periodMapping } from './dashboard.logic.js';
+import { DOMRefs, renderDashboardData, renderCounters, renderTopSellers, renderTopVehicleSale, renderRecentWorkOrders, renderUrgentCollections } from './dashboard.dom.js';
 import { initDashboardEvents } from './dashboard.event.js';
-import { getCounters, getTopSellers, getTopVehicleSales, getRecentWorkOrders } from './dashboard.service.js';
+import { getCounters, getTopSellers, getTopVehicleSales, getRecentWorkOrders, getMetrics, getUrgentCollections } from './dashboard.service.js';
 
 const resetState = () => {
     dashboardState.currentPeriod = 'mes';
@@ -54,32 +54,50 @@ const initialize = (refs) => {
 
     // Eventos
     initDashboardEvents(refs, {
-        onPeriodChange: (period) => {
+        onPeriodChange: async (period) => {
             dashboardState.currentPeriod = period;
-            const data = dashPeriods[period] || dashPeriods.mes;
-            renderDashboardData(refs, data, dashboardState.chart);
+            try {
+                const apiPeriod = periodMapping[period] || 'MONTH';
+                const metrics = await getMetrics(apiPeriod);
+                renderDashboardData(refs, metrics, dashboardState.chart);
+            } catch (error) {
+                console.error('Error cargando métricas:', error);
+                // Fallback to mock data if API fails
+                const data = dashPeriods[period] || dashPeriods.mes;
+                renderDashboardData(refs, data, dashboardState.chart);
+            }
         }
     });
 };
 
 const load = async (refs) => {
-    // 1. Carga inicial de datos mockeados para el gráfico
-    const data = dashPeriods[dashboardState.currentPeriod] || dashPeriods.mes;
-    renderDashboardData(refs, data, dashboardState.chart);
+    // 1. Carga inicial de métricas desde API
+    try {
+        const apiPeriod = periodMapping[dashboardState.currentPeriod] || 'MONTH';
+        const metrics = await getMetrics(apiPeriod);
+        renderDashboardData(refs, metrics, dashboardState.chart);
+    } catch (error) {
+        console.error('Error cargando métricas iniciales:', error);
+        // Fallback to mock data
+        const data = dashPeriods[dashboardState.currentPeriod] || dashPeriods.mes;
+        renderDashboardData(refs, data, dashboardState.chart);
+    }
 
     // 2. Carga de datos reales desde API
     try {
-        const [counters, sellers, topVehicle, workOrders] = await Promise.all([
+        const [counters, sellers, topVehicle, workOrders, urgentCollections] = await Promise.all([
             getCounters(),
             getTopSellers(),
             getTopVehicleSales(),
-            getRecentWorkOrders()
+            getRecentWorkOrders(),
+            getUrgentCollections()
         ]);
 
         renderCounters(refs, counters);
         renderTopSellers(refs, sellers);
         renderTopVehicleSale(refs, topVehicle);
         renderRecentWorkOrders(refs, workOrders);
+        renderUrgentCollections(refs, urgentCollections);
     } catch (error) {
         console.error('Error cargando datos del API:', error);
     }

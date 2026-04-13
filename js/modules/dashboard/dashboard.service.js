@@ -30,3 +30,17 @@ export const getTopVehicleSales = async () => {
 export const getRecentWorkOrders = async () => {
     return await apiRequest(`${API_URL}/recentWorkOrders`, { method: 'GET', credentials: 'include' }, 'Error al cargar órdenes recientes');
 };
+
+/**
+ * Obtiene las métricas del dashboard por período
+ */
+export const getMetrics = async (period = 'MONTH') => {
+    return await apiRequest(`${API_URL}/metrics?period=${period}`, { method: 'GET', credentials: 'include' }, 'Error al cargar métricas');
+};
+
+/**
+ * Obtiene los cobros urgentes
+ */
+export const getUrgentCollections = async () => {
+    return await apiRequest(`${API_URL}/urgentCollections`, { method: 'GET', credentials: 'include' }, 'Error al cargar cobros urgentes');
+};

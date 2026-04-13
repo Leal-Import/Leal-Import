@@ -29,6 +29,7 @@ export const workOrdersFormState = {
         selectedSpareParts: [],
         sparePartsToDelete: [],
         notes: '',
+        serviceImages: {},
         estimatedDate: null
     },
     workOrder: null,
@@ -70,7 +71,8 @@ export const resetWorkOrdersFormState = () => {
         selectedSpareParts: [],
         sparePartsToDelete: [],
         notes: '',
-        estimatedDate: null
+        estimatedDate: null,
+        serviceImages: {}
     };
     workOrdersFormState.workOrder = null;
     workOrdersFormState.totals = {

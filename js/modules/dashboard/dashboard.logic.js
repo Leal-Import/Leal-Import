@@ -20,6 +20,13 @@ export const dashPeriods = {
         vals: [12400, 15800, 13200, 11803],
         sub: 'Semanas del mes'
     },
+    trimestre: {
+        k: ['120', '150', '$55,260', '15'],
+        c: ['+25%', 'up', '+15%', 'up', '+5%', 'down', '+10%', 'up'],
+        labels: ['Mes 1', 'Mes 2', 'Mes 3'],
+        vals: [18000, 22000, 15260],
+        sub: 'Meses del trimestre'
+    },
     año: {
         k: ['284', '60', '$18,420', '42'],
         c: ['+31%', 'up', '+19%', 'up', '+2%', 'down', '+8%', 'up'],
@@ -27,6 +34,14 @@ export const dashPeriods = {
         vals: [28400, 42100, 53203, 31200, 28400, 25800, 31200, 27400, 24800, 22100, 26400, null],
         sub: 'Meses del año'
     }
+};
+
+export const periodMapping = {
+    hoy: 'DAY',
+    semana: 'WEEK',
+    mes: 'MONTH',
+    trimestre: 'QUARTER',
+    año: 'YEAR'
 };
 
 export const getChipClass = (type) => {

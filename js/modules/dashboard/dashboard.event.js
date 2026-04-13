@@ -4,7 +4,7 @@ export const initDashboardEvents = (refs, { onPeriodChange }) => {
             // UI Feedback inmediato
             refs.periodBtns.forEach(b => b.classList.remove('dashPeriodBtnActive'));
             btn.classList.add('dashPeriodBtnActive');
-            onPeriodChange(btn.dataset.period || 'mes');
+            onPeriodChange(btn.dataset.period || 'MONTH');
         });
     });
 };
