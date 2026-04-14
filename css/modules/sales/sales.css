@@ -396,6 +396,7 @@
     font-weight: var(--font-weight-semibold);
     letter-spacing: 0.3px;
     width: fit-content;
+    margin-top: 10px;
 }
 
 .saleBadge::before {
@@ -523,6 +524,10 @@
         padding: 15px;
         flex-direction: column;
         gap: 15px;
+    }
+
+    .saleBadge{
+        align-self: end;
     }
 
     .leftDataSale,

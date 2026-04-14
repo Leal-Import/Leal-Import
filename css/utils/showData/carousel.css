@@ -133,8 +133,12 @@
     box-shadow: 0 0 0 3px rgb(211 24 19 / 0.1);
 }
 
+#mainSwiper {
+    max-height: 450px;
+}
+
 #mainSwiper .swiper-wrapper {
-    height: 450px;
+    height: 100%;
 }
 
 #mainSwiper .swiper-slide {

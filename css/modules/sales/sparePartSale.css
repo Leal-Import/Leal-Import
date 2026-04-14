@@ -21,11 +21,11 @@
     gap: 30px;
 }
 
-.tableSelected{
+.tableSelected {
     table-layout: fixed;
 }
 
-.filterSection{
+.filterSection {
     justify-content: space-between;
 }
 
@@ -42,7 +42,7 @@
     height: 80%;
 }
 
-.bodyRightColumn tr{
+.bodyRightColumn tr {
     position: relative;
 }
 
@@ -51,7 +51,16 @@
 }
 
 @container content (max-width: 767px) {
-    .leftColumn .table tbody td:nth-child(2)::before {
+    .leftColumn .table tbody td:nth-child(1)::before {
         content: "Repuesto" !important;
+        scale: 1.1;
+    }
+
+    .leftColumn .table tbody td:nth-child(2)::before {
+        content: "Precio final" !important;
+    }
+
+    .leftColumn .table tbody td:nth-child(1) {
+        grid-row: 1 !important;
     }
 }

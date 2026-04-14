@@ -61,9 +61,9 @@
 }
 
 @media screen and (width <= 500px) {
-    .modalAdd {
+    body .modalAdd {
         padding: 20px;
-        position: absolute;
+        position: absolute !important;
         bottom: 0;
         left: 0;
         right: 0;
