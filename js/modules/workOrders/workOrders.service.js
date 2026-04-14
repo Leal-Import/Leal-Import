@@ -20,3 +20,11 @@ export const getWOStatus = async () => {
         'Error al obtener la lista de estados'
     );
 };
+
+export const getOrderStats = async () => {
+    return await apiRequest(
+        `${API_URL}/getGlobalStats`,
+        { method: 'GET', credentials: 'include' },
+        'Error al obtener las estadisticas de órdenes'
+    );
+};

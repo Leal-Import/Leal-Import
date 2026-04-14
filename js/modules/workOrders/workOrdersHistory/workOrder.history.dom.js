@@ -30,15 +30,15 @@ export const resetWorkOrderHistoryFilters = (refs) => {
 };
 
 export const loadStats = (data, Refs) => {
-    const { finalized, pending, delayed } = data.statistics;
+    const { finalizedCount, pendingCount, delayedCount } = data;
     const { finalized: finalizedRef, pending: pendingRef, delayed: delayedRef } = Refs;
-    finalizedRef.textContent = finalized;
-    pendingRef.textContent = pending;
-    delayedRef.textContent = delayed;
+    finalizedRef.textContent = finalizedCount;
+    pendingRef.textContent = pendingCount;
+    delayedRef.textContent = delayedCount;
 };
 
 export const loadVehicleInfo = (data, Refs) => {
-    const { brand, model, year, vin } = data.vehicleInfo;
+    const { brand, model, year, vin } = data.vehicleHeader;
     const { infoItem, vin: vinRef } = Refs;
     infoItem.textContent = `${brand} ${model} ${year}`;
     vinRef.textContent = vin;

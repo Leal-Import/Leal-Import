@@ -21,3 +21,11 @@ export const getStatus = async() => {
         'Error al obtener la lista de roles'
     );
 };
+
+export const getVehicleStats = async() => {
+    return await apiRequest(
+        `${API_URL}/getGlobalStats`,
+        { method: 'GET', credentials: 'include' },
+        'Error al obtener las estadisticas de los vehículos'
+    );
+};

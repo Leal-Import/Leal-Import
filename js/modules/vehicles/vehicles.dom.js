@@ -16,10 +16,22 @@ export const DOMRefs = {
             cmbSearchByStatus: $('cmbSearchByStatus'),
             cmbSearchByIsExternal: $('cmbSearchByIsExternal'),
             fromDt: $('fromDt'),
-            toDt: $('toDt')
+            toDt: $('toDt'),
+            stockVehicles: $('stockVehicles'),
+            soldVehicles: $('soldVehicles'),
+            externalVehicles: $('externalVehicles'),
+            noExternalVehicles: $('noExternalVehicles')
         };
         return this.refs;
     }
+};
+
+export const renderVehicleStats = (stats, refs) => {
+    const { stockVehicles, soldVehicles, externalVehicles, noExternalVehicles } = refs;
+    stockVehicles.textContent = stats.stockCount || 0;
+    soldVehicles.textContent = stats.soldCount || 0;
+    externalVehicles.textContent = stats.externalCount || 0;
+    noExternalVehicles.textContent = stats.inventoryCount || 0;
 };
 
 export const resetVehiclesFilters = (Refs) => {

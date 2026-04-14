@@ -18,7 +18,13 @@ export const vehiclesListState = {
         total: 0,
         totalPages: 0
     },
-    statusList: []
+    statusList: [],
+    stats: {
+        stockCount: 0,
+        soldCount: 0,
+        externalCount: 0,
+        inventoryCount: 0
+    }
 };
 
 export const resetVehiclesListState = () => {
@@ -41,4 +47,10 @@ export const resetVehiclesListState = () => {
         totalPages: 0
     };
     vehiclesListState.statusList = [];
+    vehiclesListState.stats = {
+        stockCount: 0,
+        soldCount: 0,
+        externalCount: 0,
+        inventoryCount: 0
+    };
 };

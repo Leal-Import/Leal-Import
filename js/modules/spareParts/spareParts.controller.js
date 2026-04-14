@@ -2,8 +2,8 @@ import { resetSparePartsListState, sparePartsListState } from './spareParts.stat
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { fillSelect, showElement, hideElement, createModuleInitializer } from '../../utils/dom.js';
 import { initSparePartsEvents } from './spareParts.events.js';
-import { getSpareParts, getStatus } from './spareParts.service.js';
-import { DOMRefs, insertSpareParts, resetSparePartsFilters } from './spareParts.dom.js';
+import { getSpareParts, getStatus, getSparePartStats } from './spareParts.service.js';
+import { DOMRefs, insertSpareParts, renderSparePartStats, resetSparePartsFilters } from './spareParts.dom.js';
 import { handleApiError } from '../../utils/api.utils.js';
 
 const pagination = createPagination({
@@ -25,7 +25,17 @@ const loadStatusSelect = async () => {
     }
 };
 
-export const loadSpareParts = async () => {
+const loadSparePartStats = async (id) => {
+    try {
+        const stats = await getSparePartStats(id);
+        sparePartsListState.stats = stats;
+        renderSparePartStats(stats, DOMRefs.refs);
+    } catch (error) {
+        await handleApiError(error, 'No se pudieron cargar las estadísticas de los repuestos. Por favor, inténtalo de nuevo.');
+    }
+};
+
+const loadSpareParts = async () => {
     try {
         showElement(DOMRefs.refs.loaderSpareParts);
         const { page, size } = sparePartsListState.pagination;
@@ -73,7 +83,7 @@ const initializeUI = (Refs) => {
 };
 
 const loadDataFlow = async () => {
-    await Promise.all([loadStatusSelect(), loadSpareParts()]);
+    await Promise.all([loadStatusSelect(), loadSpareParts(), loadSparePartStats()]);
 };
 
 const init = createModuleInitializer({

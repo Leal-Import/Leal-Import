@@ -11,7 +11,10 @@ export const DOMRefs = {
             txtSearchData: $('txtSearchData'),
             cmbSearchByStatus: $('cmbSearchByStatus'),
             fromDt: $('fromDt'),
-            toDt: $('toDt')
+            toDt: $('toDt'),
+            finalized: $('finalized'),
+            pending: $('pending'),
+            delayed: $('delayed')
         };
 
         return this.refs;
@@ -24,6 +27,14 @@ export const resetWorkOrdersFilters = (refs) => {
     cmbSearchByStatus.value = '';
     fromDt.value = '';
     toDt.value = '';
+};
+
+export const renderStats = (stats, refs) => {
+    const { finalizedCount, pendingCount, delayedCount } = stats;
+    const { finalized, pending, delayed } = refs;
+    finalized.textContent = finalizedCount;
+    pending.textContent = pendingCount;
+    delayed.textContent = delayedCount;
 };
 
 export const insertWorkOrders = (container, workOrders) => {

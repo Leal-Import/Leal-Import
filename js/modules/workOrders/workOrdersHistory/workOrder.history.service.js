@@ -15,7 +15,7 @@ export const getDetailsOrders = async(idVehicle, page = 0, size = 15, search = "
 
 export const getDashboardWorkorder = async(id) => {
     return await apiRequest(
-        `${API_URL}/${id}/dashboard`,
+        `${API_URL}/getVehicleStats/${id}`,
         { method: 'GET', credentials: 'include' },
         'Error al obtener los datos del dashboard'
     );

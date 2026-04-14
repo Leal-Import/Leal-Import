@@ -53,7 +53,7 @@
     border-left: 4px solid var(--danger-color);
 }
 
-#requested {
+#installed {
     border-left: 4px solid var(--success-color);
 }
 
@@ -61,7 +61,7 @@
     border-left: 4px solid var(--helper-stat-color);
 }
 
-#returned{
+#waiting{
     border-left: 4px solid var(--warning-color);
 }
 

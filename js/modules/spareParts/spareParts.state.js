@@ -12,7 +12,13 @@ export const sparePartsListState = {
         total: 0,
         totalPages: 0
     },
-    statusList: []
+    statusList: [],
+    stats: {
+        stockCount: 0,
+        installedCount: 0,
+        waitingCount: 0,
+        soldCount: 0
+    }
 };
 
 export const resetSparePartsListState = () => {
@@ -30,4 +36,10 @@ export const resetSparePartsListState = () => {
         totalPages: 0
     };
     sparePartsListState.statusList = [];
+    sparePartsListState.stats = {
+        stockCount: 0,
+        installedCount: 0,
+        waitingCount: 0,
+        soldCount: 0
+    };
 };
