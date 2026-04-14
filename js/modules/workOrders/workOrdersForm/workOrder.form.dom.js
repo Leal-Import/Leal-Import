@@ -1,7 +1,6 @@
 import { formatDecimalInput, formatWithCommas, formatOnFocus, formatOnBlur } from "../../../utils/formatters.js";
 import { $, existsById, qs, qsa, showElement } from "../../../utils/dom.js";
 import { ROUTES } from "../../../utils/router.js";
-import { showFloatingMenu } from "../../../utils/floatingMenu.js";
 
 export const DOMRefs = {
     refs: {},
@@ -59,7 +58,7 @@ export const DOMRefs = {
             serviceImagePreview: $("serviceImagePreview"),
             serviceImageFileInput: $("serviceImageFileInput"),
             btnSelectServiceImage: $("btnSelectServiceImage"),
-            btnCancelServiceImage: $("btnCancelServiceImage")
+            btnDeleteServiceImage: $("btnDeleteServiceImage")
         };
         return this.refs;
     }
@@ -112,7 +111,11 @@ export const initStaticRows = () => {
         if (tBody.querySelectorAll('tr').length >= MIN_STATIC_ROWS) return;
         const frag = document.createDocumentFragment();
         for (let i = 0; i < MIN_STATIC_ROWS; i++) {
-            frag.appendChild(createEmptyRow());
+            if (tBody.id === 'tBodyServices') {
+                frag.appendChild(createEmptyRow(true));
+            } else {
+                frag.appendChild(createEmptyRow());
+            }
         }
         tBody.appendChild(frag);
     });
@@ -164,7 +167,11 @@ const findOrCreateEmptyRow = (tBody) => {
         .find(r => r.querySelector(SELECTORS.TD_NAME)?.textContent.trim() === '');
 
     if (!emptyRow) {
-        emptyRow = createEmptyRow();
+        if (tBody.id === 'tBodyServices') {
+            emptyRow = createEmptyRow(true);
+        } else {
+            emptyRow = createEmptyRow();
+        }
         tBody.appendChild(emptyRow);
     }
 
@@ -284,7 +291,7 @@ export const appendToDom = ({
     renderButton,
     isView,
     onClickCreatePerson,
-    onServiceImages
+    onActionsServices
 }) => {
     if (!tBody) return false;
 
@@ -302,12 +309,12 @@ export const appendToDom = ({
 
     nameCell.textContent = data.name;
     setupPriceCell(priceCell, data, onWritePrice, isView);
+    // Botón para gestionar imágenes del servicio
+    if (tdImages && onActionsServices) {
+        const btnImages = createServiceImagesButton(data, onActionsServices);
+        tdImages.appendChild(btnImages);
+    }
     if (!isView) {
-        // Botón para gestionar imágenes del servicio
-        if (tdImages && onServiceImages) {
-            const btnImages = createServiceImagesButton(data.id, onServiceImages);
-            tdImages.appendChild(btnImages);
-        }
 
         const btn = createTrashOption({
             row,
@@ -389,7 +396,11 @@ export const reindexTable = (tBody) => {
     if (rowsToKeep.length < desiredTotalRows) {
         const missing = desiredTotalRows - rowsToKeep.length;
         for (let i = 0; i < missing; i++) {
-            fragment.appendChild(createEmptyRow());
+            if (tBody.id === 'tBodyServices') {
+                fragment.appendChild(createEmptyRow(true));
+            } else {
+                fragment.appendChild(createEmptyRow());
+            }
         }
     }
 
@@ -441,11 +452,15 @@ export const cleanRow = (row) => {
     const tdPerson = row.querySelector(SELECTORS.TD_PERSON);
     const tdName = row.querySelector(SELECTORS.TD_NAME);
     const tdPrice = row.querySelector(SELECTORS.TD_PRICE);
+    const tdImages = row.querySelector(SELECTORS.TD_IMAGES);
     const btnTrash = row.querySelector(SELECTORS.BTN_TRASH);
 
     tdPerson.textContent = "";
     tdName.textContent = "";
     tdPrice.textContent = "";
+    if (tdImages) {
+        tdImages.innerHTML = "";
+    }
     tdPrice.removeAttribute("contenteditable");
     btnTrash.remove();
 };
@@ -491,7 +506,7 @@ export const renderVehiclePrice = (vehiclePrice, spanVehiclePrice) => {
     if (spanVehiclePrice) spanVehiclePrice.textContent = formatWithCommas(vehiclePrice) || 0.00;
 };
 
-const createEmptyRow = () => {
+const createEmptyRow = (isService) => {
     const tr = document.createElement('tr');
     const tdPerson = document.createElement('td');
     tdPerson.classList.add(SELECTORS.TD_PERSON.slice(1));
@@ -499,23 +514,29 @@ const createEmptyRow = () => {
     tdName.classList.add(SELECTORS.TD_NAME.slice(1));
     const tdPrice = document.createElement('td');
     tdPrice.classList.add(SELECTORS.TD_PRICE.slice(1));
-    const tdImages = document.createElement('td');
-    tdImages.classList.add(SELECTORS.TD_IMAGES.slice(1));
     const tdTrash = document.createElement("td");
     tdTrash.classList.add(SELECTORS.TD_TRASH.slice(1));
-    tr.append(tdPerson, tdName, tdPrice, tdImages, tdTrash);
+    tr.append(tdPerson, tdName, tdPrice);
+
+    if (isService) {
+        const tdImages = document.createElement('td');
+        tdImages.classList.add(SELECTORS.TD_IMAGES.slice(1));
+        tr.appendChild(tdImages);
+    }
+    tr.appendChild(tdTrash);
+
     return tr;
 };
 
 export const addRowToBothTables = (tBodyServices, tBodySpareParts) => {
-    if (tBodyServices) tBodyServices.appendChild(createEmptyRow());
+    if (tBodyServices) tBodyServices.appendChild(createEmptyRow(true));
     if (tBodySpareParts) tBodySpareParts.appendChild(createEmptyRow());
 };
 
 /**
  * Crea el botón flotante (3 puntitos) para gestionar imágenes del servicio
  */
-const createServiceImagesButton = (serviceId, onServiceImages) => {
+const createServiceImagesButton = (serviceData, onServiceImages) => {
     const btn = document.createElement('button');
     btn.classList.add(SELECTORS.BTN_SERVICE_IMAGES.slice(1));
     btn.type = 'button';
@@ -526,40 +547,41 @@ const createServiceImagesButton = (serviceId, onServiceImages) => {
             <circle cx="12" cy="19" r="2"/>
         </svg>
     `;
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        showFloatingMenu(e, [
-            { label: 'Añadir Antes', onClick: () => onServiceImages(serviceId, 'BEFORE') },
-            { label: 'Añadir Durante', onClick: () => onServiceImages(serviceId, 'DURING') },
-            { label: 'Añadir Después', onClick: () => onServiceImages(serviceId, 'AFTER') }
-        ]);
-    });
+    btn.addEventListener('click', (e) => onServiceImages(e, serviceData));
     return btn;
 };
 
 /**
  * Abre el modal para seleccionar/cargar una imagen
  */
-export const openServiceImageModal = (serviceId, type, currentImage, onImageSelect) => {
-    const typeLabels = {
-        before: 'Antes del servicio',
-        during: 'Durante el servicio',
-        after: 'Después del servicio'
-    };
-
+export const openServiceImageModal = (serviceName, type, currentImage) => {
     const refs = DOMRefs.refs;
 
     // Actualizar títulos
-    refs.serviceImageTitle.textContent = `Imagen - ${typeLabels[type] || type}`;
-    refs.serviceImageSubtitle.textContent = `Carga una imagen del servicio - ${typeLabels[type]}`;
+    let typeSpanish;
+    switch (type) {
+    case 'BEFORE':
+        typeSpanish = 'Antes';
+        break;
+    case 'DURING':
+        typeSpanish = 'Durante';
+        break;
+    case 'AFTER':
+        typeSpanish = 'Después';
+        break;
+    default:
+        typeSpanish = '';
+        break;
+    }
 
-    // Limpiar y resetear preview
+    refs.serviceImageTitle.textContent = `Imagen - ${typeSpanish}`;
+    refs.serviceImageSubtitle.textContent = `Carga una imagen del servicio - ${serviceName}`;
+
+    // Limpiar y renderizar preview
     refs.serviceImagePreview.innerHTML = '';
+
     if (currentImage) {
-        const img = document.createElement('img');
-        img.src = currentImage;
-        img.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain;';
-        refs.serviceImagePreview.appendChild(img);
+        renderPreview(currentImage, refs);
     } else {
         const placeholder = document.createElement('p');
         placeholder.textContent = 'Sin imagen - Haz clic para seleccionar';
@@ -570,49 +592,32 @@ export const openServiceImageModal = (serviceId, type, currentImage, onImageSele
     // Resetear input file
     refs.serviceImageFileInput.value = '';
 
-    // Event listeners
-    const handlePreviewClick = () => refs.serviceImageFileInput.click();
-    const handleFileSelect = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                refs.serviceImagePreview.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = event.target.result;
-                img.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain;';
-                refs.serviceImagePreview.appendChild(img);
-                onImageSelect(file);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleCancel = () => closeServiceImageModal();
-    const handleSelectBtn = () => refs.serviceImageFileInput.click();
-
-    // Agregar listeners
-    refs.serviceImagePreview.addEventListener('click', handlePreviewClick);
-    refs.serviceImageFileInput.addEventListener('change', handleFileSelect);
-    refs.btnCancelServiceImage.addEventListener('click', handleCancel);
-    refs.btnSelectServiceImage.addEventListener('click', handleSelectBtn);
-    refs.btnCloseServiceImages.addEventListener('click', handleCancel);
-
     // Mostrar modal
     refs.modalServiceImages.classList.remove('hide');
-
-    // Guardar referencias de cleanup para usarlas después
-    refs.modalServiceImages._cleanup = () => {
-        refs.serviceImagePreview.removeEventListener('click', handlePreviewClick);
-        refs.serviceImageFileInput.removeEventListener('change', handleFileSelect);
-        refs.btnCancelServiceImage.removeEventListener('click', handleCancel);
-        refs.btnSelectServiceImage.removeEventListener('click', handleSelectBtn);
-        refs.btnCloseServiceImages.removeEventListener('click', handleCancel);
-    };
 };
 
-export const closeServiceImageModal = () => {
-    const modal = DOMRefs.refs.modalServiceImages;
-    if (modal._cleanup) modal._cleanup();
-    modal.classList.add('hide');
+export const renderPreview = (image, refs) => {
+    refs.serviceImagePreview.innerHTML = '';
+    if (image) {
+        const img = document.createElement('img');
+        img.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain;';
+
+        if (image instanceof File) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                img.src = event.target.result;
+                refs.serviceImagePreview.appendChild(img);
+            };
+            reader.readAsDataURL(image);
+            return;
+        }
+
+        img.src = image;
+        refs.serviceImagePreview.appendChild(img);
+    } else {
+        const placeholder = document.createElement('p');
+        placeholder.textContent = 'Sin imagen - Haz clic para seleccionar';
+        placeholder.style.cssText = 'color: #999; text-align: center;';
+        refs.serviceImagePreview.appendChild(placeholder);
+    }
 };

@@ -21,6 +21,8 @@ export const workOrdersFormState = {
     },
     saleKey: null,
     idEmployee: null,
+    currentServiceForImage: null,
+    currentTypeForImage: null,
     data: {
         selectedServices: [],
         servicesToDelete: [],
@@ -29,8 +31,8 @@ export const workOrdersFormState = {
         selectedSpareParts: [],
         sparePartsToDelete: [],
         notes: '',
-        serviceImages: {},
-        estimatedDate: null
+        estimatedDate: null,
+        servicePhotosToDelete: []
     },
     workOrder: null,
     totals: {
@@ -57,6 +59,8 @@ export const resetWorkOrdersFormState = () => {
     workOrdersFormState.saleKey = null;
     workOrdersFormState.idEmployee = null;
     workOrdersFormState.employeeList = [];
+    workOrdersFormState.currentServiceForImage = null;
+    workOrdersFormState.currentTypeForImage = null;
     workOrdersFormState.employeeContext = {
         selectedArray: null,
         idItem: null,
@@ -72,7 +76,7 @@ export const resetWorkOrdersFormState = () => {
         sparePartsToDelete: [],
         notes: '',
         estimatedDate: null,
-        serviceImages: {}
+        servicePhotosToDelete: []
     };
     workOrdersFormState.workOrder = null;
     workOrdersFormState.totals = {

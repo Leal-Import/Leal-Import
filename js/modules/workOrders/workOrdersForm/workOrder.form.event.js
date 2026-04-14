@@ -56,3 +56,19 @@ export const initWorkOrdersEvents = ({
 
     btnGeneratePdf?.addEventListener("click", onGeneratePdf);
 };
+
+/**
+ * Inicializa los listeners del modal de imágenes de servicio
+ */
+export const initServiceImageModalEvents = ({ Refs, onImageSelect, onDeleteServiceImage, onCloseModalImageServices }) => {
+    const { serviceImagePreview, serviceImageFileInput, btnDeleteServiceImage, btnSelectServiceImage, btnCloseServiceImages, modalServiceImages } = Refs;
+    const onClickAddImage = () => serviceImageFileInput.click();
+
+    addModalCloseEvents(modalServiceImages, onCloseModalImageServices);
+    // Agregar listeners
+    serviceImagePreview.addEventListener('click', onClickAddImage);
+    btnSelectServiceImage.addEventListener('click', onClickAddImage);
+    serviceImageFileInput.addEventListener('change', onImageSelect);
+    btnDeleteServiceImage.addEventListener('click', onDeleteServiceImage);
+    btnCloseServiceImages.addEventListener('click', onCloseModalImageServices);
+};

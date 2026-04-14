@@ -57,14 +57,14 @@ export const pushSparePart = (state, sparePart) => {
 };
 
 export const pushService = (state, service) => {
-    const id = service.id || service.idService || null;
+    const id = crypto.randomUUID() || null;
     if (id && existsById(state, id, 'id')) return null;
     const normalizedPart = {
-        id: id || crypto.randomUUID(),
+        id,
         idService: service.idService || null,
         name: service.serviceName || service.name || '',
         priceApplied: service.priceApplied || 0.00,
-        idWorkOrdersServices: service.idWorkOrdersServices || null,
+        idWorkOrderService: service.idWorkOrderService || null,
         idEmployee: service.idEmployee || null,
         assignedEmployee: service.assignedEmployee || null,
         photos: service.photos || []
@@ -178,7 +178,8 @@ const buildPutWorkOrderPayload = (state) => {
         paymentsSaveToUpdate: normalizePayments(data.payments),
         serviceToDelete: data.servicesToDelete,
         sparePartsToDelete: data.sparePartsToDelete,
-        paymentsToDelete: data.paymentsToDelete
+        paymentsToDelete: data.paymentsToDelete,
+        servicePhotosToDelete: data.servicePhotosToDelete
     };
 };
 
@@ -205,7 +206,7 @@ const appendServicePhotos = (fd, services) => {
         (service.photos || []).forEach((photo) => {
             if (photo.photo instanceof File) {
                 fd.append(
-                    `servicePhoto_${service.idService || service.id}_${photo.stage}`,
+                    `servicePhoto_${service.idWorkOrderService || service.id}_${photo.stage}`,
                     photo.photo
                 );
             }
@@ -216,15 +217,12 @@ const appendServicePhotos = (fd, services) => {
 const normalizeServices = (services) => {
     return services.map(s => {
         const obj = {
-            idService: s.idService || s.id,
+            idWorkOrdersServices: s.idWorkOrderService || s.id,
+            idService: s.idService,
             serviceName: s.name,
             priceApplied: Number(s.priceApplied),
             idEmployee: s.idEmployee
         };
-
-        if (s.idWorkOrdersServices) {
-            obj.idWorkOrdersServices = s.idWorkOrdersServices;
-        }
 
         return obj;
     });

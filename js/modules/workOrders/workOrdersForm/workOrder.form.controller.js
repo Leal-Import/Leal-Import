@@ -1,4 +1,4 @@
-import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice, openServiceImageModal } from "./workOrder.form.dom.js";
+import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice, openServiceImageModal, renderPreview } from "./workOrder.form.dom.js";
 import { resetWorkOrdersFormState, workOrdersFormState } from "./workOrder.form.state.js";
 import { approveOrder, getDataVehicleById, getServices, getSpareParts, getWorkOrderById, completeWorkOrder, postWorkOrder, putWorkOrder, cancelWorkOrder } from "./workOrder.form.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
@@ -6,7 +6,7 @@ import { buildParams, cleanOneShotParams, disableElement, hideElement, qsa, remo
 import { DraftManager } from "../../../utils/draft.manager.js";
 import { navigateTo, replaceTo, ROUTES } from "../../../utils/router.js";
 import { initializeModalListeners } from "../../picsAmounts/picsAmount.controller.js";
-import { initWorkOrdersEvents } from "./workOrder.form.event.js";
+import { initWorkOrdersEvents, initServiceImageModalEvents } from "./workOrder.form.event.js";
 import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validateOrder, buildOrderFormData } from "./workOrder.form.logic.js";
 import { addNewPayment, initPaymentsController } from "../../payments/payments.controller.js";
 import { createBtnUrl } from "../../picsAmounts/picAmounts.dom.js";
@@ -17,6 +17,8 @@ import { getActiveEmployees } from "../../employees/employees.service.js";
 import { canAccess } from "../../../utils/privilegesValidator.js";
 
 import { initCancelSale, saleCancelledUIUpdate } from "../../cancelSale/cancelSale.controller.js";
+import { showFloatingMenu } from "../../../utils/floatingMenu.js";
+import { generateServiceReport } from "../../../core/reports/workorders/workorderService.report.js";
 
 // Centralizar manejo de borradores con DraftManager
 const workOrderDraft = new DraftManager(workOrdersFormState.saleKey, {
@@ -61,7 +63,7 @@ const onAddService = (service) => {
         onWritePrice,
         onDelete,
         onClickCreatePerson,
-        onServiceImages
+        onActionsServices
     });
 
     DOMRefs.refs.txtAddService.value = '';
@@ -126,8 +128,8 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
         arraySelected.splice(index, 1);
     }
 
-    if (item.idWorkOrdersServices || item.idWorkOrdersSpareParts) {
-        arrayDelete.push(item.idWorkOrdersServices || item.idWorkOrdersSpareParts);
+    if (item.idWorkOrderService || item.idWorkOrdersSpareParts) {
+        arrayDelete.push(item.idWorkOrderService || item.idWorkOrdersSpareParts);
     }
 
     cleanRow(row);
@@ -135,24 +137,48 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
     reindexTable(tBody);
     renderButton?.(DOMRefs.refs.tBodySpareParts, onImportSparePart);
 };
-const onServiceImages = (serviceId, imageType) => {
+const onOpenServiceImageModal = (serviceId, imageType) => {
     // Obtener la imagen actual si existe
-    const currentImages = workOrdersFormState.data.serviceImages[serviceId] || {};
-    const currentImage = currentImages[imageType];
-
+    const currentService = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
+    const currentImages = currentService?.photos || [];
+    const currentPhoto = currentImages.find(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
+    const currentImage = currentPhoto ? (currentPhoto.photoUrl || currentPhoto.photo || null) : null;
+    workOrdersFormState.currentServiceForImage = serviceId;
+    workOrdersFormState.currentTypeForImage = imageType;
     // Abrir el modal
-    openServiceImageModal(serviceId, imageType, currentImage, (file) => {
-        // Guardar en el estado
-        if (file) {
-            const service = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
-            const newObj = {
-                stage: imageType,
-                photo: file
-            };
-            service.photos.push(newObj);
-        }
-    });
+    openServiceImageModal(currentService.name, imageType, currentImage);
+    if (workOrdersFormState.context.isView) {
+        hideElement(DOMRefs.refs.btnSelectServiceImage);
+        hideElement(DOMRefs.refs.btnDeleteServiceImage);
+    }
+
+
 };
+
+// Callback para cuando se selecciona una imagen
+const onSelectServiceImage = (e) => {
+    const file = e.target.files[0];
+    const serviceId = workOrdersFormState.currentServiceForImage;
+    const imageType = workOrdersFormState.currentTypeForImage;
+    if (!file) return;
+    const service = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
+    if (!service) return;
+
+    const existingPhotoIndex = service.photos.findIndex(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
+    const newObj = {
+        stage: imageType,
+        imageStage: imageType,
+        photo: file
+    };
+    if (existingPhotoIndex >= 0) {
+        service.photos[existingPhotoIndex] = newObj;
+    } else {
+        service.photos.push(newObj);
+    }
+    console.log(file);
+    renderPreview(file, DOMRefs.refs);
+};
+
 const onSearchService = (e) => {
     onSearch(e, getServices, renderServiceSuggestions, DOMRefs.refs.boxServ, onAddService, workOrdersFormState.data.selectedServices);
 };
@@ -204,7 +230,6 @@ const onSubmitOrder = async (e) => {
                 idVehicle: workOrdersFormState.context.idVehicle,
                 idCustomer: workOrdersFormState.context.idCustomer
             });
-            return
             replaceTo(ROUTES.WORK_ORDERS, Object.fromEntries(params.entries()));
         }
     } catch (error) {
@@ -330,7 +355,7 @@ const loadDraftData = (Refs) => {
                 onWritePrice,
                 onDelete,
                 onClickCreatePerson,
-                onServiceImages
+                onActionsServices
             });
         });
 
@@ -381,7 +406,7 @@ const loadWorkOrder = async (Refs) => {
             onDelete,
             isView: workOrdersFormState.context.isView,
             onClickCreatePerson,
-            onServiceImages
+            onActionsServices
         });
     });
     workOrder.workOrdersPayments.forEach(payment => {
@@ -530,6 +555,73 @@ const onClosePersonModal = () => {
     workOrdersFormState.employeeContext = {};
 };
 
+const onCloseModalImageServices = () => {
+    toggleModal(DOMRefs.refs.modalServiceImages, false);
+    workOrdersFormState.currentServiceForImage = null;
+    workOrdersFormState.currentTypeForImage = null;
+};
+
+const onActionsServices = (e, serviceData) => {
+    e.stopPropagation();
+    const serviceId = serviceData.idService;
+    const servicePhotos = serviceData.photos || [];
+    const hasPhoto = (stage) => servicePhotos.some(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === stage);
+
+    const buildOption = (stage, labelSuffix) => ({
+        label: `Ver ${labelSuffix}`,
+        onClick: () => onOpenServiceImageModal(serviceId, stage)
+    });
+
+    let options = [];
+
+    if (workOrdersFormState.context.isView) {
+        if (hasPhoto('BEFORE')) options.push(buildOption('BEFORE', 'Antes'));
+        if (hasPhoto('DURING')) options.push(buildOption('DURING', 'Durante'));
+        if (hasPhoto('AFTER')) options.push(buildOption('AFTER', 'Después'));
+    } else {
+        const labelForStage = (stage) => {
+            const label = hasPhoto(stage) ? 'Ver' : 'Añadir';
+            if (stage === 'BEFORE') return `${label} Antes`;
+            if (stage === 'DURING') return `${label} Durante`;
+            if (stage === 'AFTER') return `${label} Después`;
+            return label;
+        };
+
+        options = [
+            { label: labelForStage('BEFORE'), onClick: () => onOpenServiceImageModal(serviceId, 'BEFORE') },
+            { label: labelForStage('DURING'), onClick: () => onOpenServiceImageModal(serviceId, 'DURING') },
+            { label: labelForStage('AFTER'), onClick: () => onOpenServiceImageModal(serviceId, 'AFTER') }
+        ];
+
+    }
+    if (serviceData.idWorkOrderService) {
+        options.push({ label: 'Reporte de servicio', onClick: () => generateServiceReport(serviceData) });
+    }
+
+    if (options.length === 0) return;
+    showFloatingMenu(e, options);
+};
+
+const onDeleteServiceImage = () => {
+    const serviceId = workOrdersFormState.currentServiceForImage;
+    const imageType = workOrdersFormState.currentTypeForImage;
+    if (!serviceId || !imageType) return;
+    const service = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
+    if (!service) return;
+    const existingPhotoIndex = service.photos.findIndex(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
+
+    let photoIdToDelete = null;
+    if (existingPhotoIndex >= 0) {
+        photoIdToDelete = service.photos[existingPhotoIndex].idPhoto;
+        service.photos.splice(existingPhotoIndex, 1);
+    }
+
+    if (service.idWorkOrderService && photoIdToDelete) {
+        workOrdersFormState.data.servicePhotosToDelete.push(photoIdToDelete);
+    }
+    renderPreview(null, DOMRefs.refs);
+};
+
 const initializeUI = async (Refs) => {
     // Inicialización de componentes UI
     initStaticRows();
@@ -558,6 +650,14 @@ const initializeUI = async (Refs) => {
     });
 
     initializeModalListeners(workOrdersFormState.data, workOrdersFormState.context.isView);
+
+    // Inicializar los event listeners del modal
+    initServiceImageModalEvents({
+        Refs,
+        onImageSelect: onSelectServiceImage,
+        onCloseModalImageServices,
+        onDeleteServiceImage
+    });
 
     if (workOrdersFormState.context.idWorkOrder) {
         initCancelSale(workOrdersFormState.context.idWorkOrder, cancelWorkOrder, ROUTES.WORK_ORDERS, "orden de trabajo");
