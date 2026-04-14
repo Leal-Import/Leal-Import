@@ -1,7 +1,7 @@
-import { updateModalContent, DOMRefs, closeLightbox, setReceiptBtnState } from "../../../core/dom/picAmounts.dom.js";
-import { picsAmountState } from "../../../core/state/picsAmount.state.js";
-import { $, hideElement } from "../../../utils/dom.js";
-import { initModalListeners } from "../event/picsAmount.event.js";
+import { updateModalContent, DOMRefs, closeLightbox, setReceiptBtnState } from "./picAmounts.dom.js";
+import { picsAmountState } from "./picsAmount.state.js";
+import { $, hideElement } from "../../utils/dom.js";
+import { initModalListeners } from "./picsAmount.event.js";
 
 export const clearCurrentFile = () => {
     const paymentId = DOMRefs.refs.modalContainer.dataset.paymentId;

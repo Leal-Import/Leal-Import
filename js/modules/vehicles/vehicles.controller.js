@@ -1,7 +1,7 @@
 import { resetVehiclesListState, vehiclesListState } from './vehicles.state.js';
-import { DOMRefs, insertVehicles, resetVehiclesFilters } from './vehicles.dom.js';
+import { DOMRefs, insertVehicles, renderVehicleStats, resetVehiclesFilters } from './vehicles.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
-import { getVehicles, getStatus } from './vehicles.service.js';
+import { getVehicles, getStatus, getVehicleStats } from './vehicles.service.js';
 import { fillSelect, showElement, hideElement, createModuleInitializer } from '../../utils/dom.js';
 import { initVehicleEvents } from './vehicles.events.js';
 import { handleApiError } from '../../utils/api.utils.js';
@@ -23,6 +23,16 @@ const loadStatusSelect = async () => {
         fillSelect('cmbSearchByStatus', vehiclesListState.statusList, 'idStatus', 'statusName', null, 'Buscar por estado');
     } catch (error) {
         await handleApiError(error, 'No se pudieron cargar los estados de los vehículos. Por favor, inténtalo de nuevo.');
+    }
+};
+
+const loadVehicleStats = async () => {
+    try {
+        const stats = await getVehicleStats();
+        vehiclesListState.stats = stats;
+        renderVehicleStats(stats, DOMRefs.refs);
+    } catch (error) {
+        await handleApiError(error, 'No se pudieron cargar las estadísticas de los vehículos. Por favor, inténtalo de nuevo.');
     }
 };
 
@@ -72,7 +82,7 @@ const onSearchVehicles = (filters) => {
 
 const workOrderBtn = () => {
     if (!DOMRefs.refs.btnAddVehicle) return;
-    DOMRefs.refs.btnAddVehicle.href = `${ROUTES.VEHICLE_DETAILS}?workOrder=${vehiclesListState.context.hasWorkOrder}`;
+    DOMRefs.refs.btnAddVehicle.href = `${ROUTES.VEHICLES_FORM}?workOrder=${vehiclesListState.context.hasWorkOrder}`;
 };
 const hydrateContextFromURL = () => {
     const params = new URLSearchParams(window.location.search);
@@ -88,7 +98,7 @@ const initializeUI = (Refs) => {
 };
 
 const loadDataFlow = async () => {
-    await Promise.all([loadStatusSelect(), loadVehicles()]);
+    await Promise.all([loadStatusSelect(), loadVehicles(), loadVehicleStats()]);
 };
 
 const init = createModuleInitializer({

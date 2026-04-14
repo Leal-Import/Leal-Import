@@ -1,4 +1,4 @@
-import { qs } from "./dom.js";
+import { qs, applyPrivilegesToUI } from "./dom.js";
 
 /* Menu flotante para tablas */
 export const showFloatingMenu = (event, actions) => {
@@ -18,6 +18,7 @@ export const showFloatingMenu = (event, actions) => {
         const btn = document.createElement('button');
         btn.textContent = action.label;
         btn.classList.add('floatingMenuButton');
+        if (action.privilege) btn.dataset.privilege = action.privilege;
 
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -34,6 +35,8 @@ export const showFloatingMenu = (event, actions) => {
     });
 
     document.body.appendChild(menu);
+    // Escanear privilegios del menú recién inyectado
+    applyPrivilegesToUI(menu);
 
     const positionMenu = () => {
         if (!document.body.contains(menu)) return;

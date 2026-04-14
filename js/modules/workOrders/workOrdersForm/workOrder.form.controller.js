@@ -1,19 +1,24 @@
-import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice } from "./workOrder.form.dom.js";
+import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice, openServiceImageModal, renderPreview } from "./workOrder.form.dom.js";
 import { resetWorkOrdersFormState, workOrdersFormState } from "./workOrder.form.state.js";
-import { getDataVehicleById, getServices, getSpareParts, getWorkOrderById, patchWorkOrder, postWorkOrder, putWorkOrder } from "./workOrder.form.service.js";
+import { approveOrder, getDataVehicleById, getServices, getSpareParts, getWorkOrderById, completeWorkOrder, postWorkOrder, putWorkOrder, cancelWorkOrder } from "./workOrder.form.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
 import { buildParams, cleanOneShotParams, disableElement, hideElement, qsa, removeDisable, showElement, showMessage, createModuleInitializer, toggleModal } from "../../../utils/dom.js";
 import { DraftManager } from "../../../utils/draft.manager.js";
 import { navigateTo, replaceTo, ROUTES } from "../../../utils/router.js";
-import { initializeModalListeners } from "../../picsAmounts/controller/picsAmount.controller.js";
-import { initWorkOrdersEvents } from "./workOrder.form.event.js";
+import { initializeModalListeners } from "../../picsAmounts/picsAmount.controller.js";
+import { initWorkOrdersEvents, initServiceImageModalEvents } from "./workOrder.form.event.js";
 import { pushService, pushSparePart, hydrateContextFromURL, calculateWorkOrderTotals, validateOrder, buildOrderFormData } from "./workOrder.form.logic.js";
 import { addNewPayment, initPaymentsController } from "../../payments/payments.controller.js";
-import { createBtnUrl } from "../../../core/dom/picAmounts.dom.js";
+import { createBtnUrl } from "../../picsAmounts/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
 import { generateWorkOrderReport } from "../../../core/reports/workorders/workorders.report.js";
 import { handleApiError } from "../../../utils/api.utils.js";
 import { getActiveEmployees } from "../../employees/employees.service.js";
+import { canAccess } from "../../../utils/privilegesValidator.js";
+
+import { initCancelSale, saleCancelledUIUpdate } from "../../cancelSale/cancelSale.controller.js";
+import { showFloatingMenu } from "../../../utils/floatingMenu.js";
+import { generateServiceReport } from "../../../core/reports/workorders/workorderService.report.js";
 
 // Centralizar manejo de borradores con DraftManager
 const workOrderDraft = new DraftManager(workOrdersFormState.saleKey, {
@@ -36,7 +41,8 @@ const addNewPartToTable = () => {
         arrayDelete: workOrdersFormState.data.sparePartsToDelete,
         onWritePrice,
         onDelete,
-        renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
+        renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts),
+        onClickCreatePerson
     });
 };
 
@@ -56,7 +62,8 @@ const onAddService = (service) => {
         arrayDelete: workOrdersFormState.data.servicesToDelete,
         onWritePrice,
         onDelete,
-        onClickCreatePerson
+        onClickCreatePerson,
+        onActionsServices
     });
 
     DOMRefs.refs.txtAddService.value = '';
@@ -87,10 +94,10 @@ const onAddSparePart = (sparePart) => {
 };
 
 const onClickCreatePerson = async (itemName, arraySelected, id, cell) => {
+    if (workOrdersFormState.context.isView) return;
     const itemSelected = arraySelected.find(i => i.id === id);
-    let employeeSelected = null;
     if (itemSelected?.assignedEmployee) {
-        employeeSelected = {
+        workOrdersFormState.employeeContext.employeeSelected = {
             idEmployee: itemSelected.idEmployee,
             fullName: itemSelected.assignedEmployee
         };
@@ -102,12 +109,16 @@ const onClickCreatePerson = async (itemName, arraySelected, id, cell) => {
     } else {
         employees = await loadEmployees('');
     }
-    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee, employeeSelected);
+    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee, workOrdersFormState.employeeContext.employeeSelected);
     DOMRefs.refs.modalPersonItemName.textContent = itemName;
     workOrdersFormState.employeeContext = {
         selectedArray: arraySelected,
         idItem: id,
-        cell: cell
+        cell: cell,
+        employeeSelected: {
+            idEmployee: itemSelected.idEmployee,
+            fullName: itemSelected.assignedEmployee
+        }
     };
 };
 
@@ -117,14 +128,53 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
         arraySelected.splice(index, 1);
     }
 
-    if (item.idWorkOrdersServices || item.idWorkOrdersSpareParts) {
-        arrayDelete.push(item.idWorkOrdersServices || item.idWorkOrdersSpareParts);
+    if (item.idWorkOrderService || item.idWorkOrdersSpareParts) {
+        arrayDelete.push(item.idWorkOrderService || item.idWorkOrdersSpareParts);
     }
 
     cleanRow(row);
     calculateAllTotals();
     reindexTable(tBody);
     renderButton?.(DOMRefs.refs.tBodySpareParts, onImportSparePart);
+};
+const onOpenServiceImageModal = (serviceId, imageType) => {
+    // Obtener la imagen actual si existe
+    const currentService = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
+    const currentImages = currentService?.photos || [];
+    const currentPhoto = currentImages.find(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
+    const currentImage = currentPhoto ? (currentPhoto.photoUrl || currentPhoto.photo || null) : null;
+    workOrdersFormState.currentServiceForImage = serviceId;
+    workOrdersFormState.currentTypeForImage = imageType;
+    // Abrir el modal
+    openServiceImageModal(currentService.name, imageType, currentImage);
+    if (workOrdersFormState.context.isView) {
+        hideElement(DOMRefs.refs.btnSelectServiceImage);
+        hideElement(DOMRefs.refs.btnDeleteServiceImage);
+    }
+};
+
+// Callback para cuando se selecciona una imagen
+const onSelectServiceImage = (e) => {
+    const file = e.target.files[0];
+    const serviceId = workOrdersFormState.currentServiceForImage;
+    const imageType = workOrdersFormState.currentTypeForImage;
+    if (!file) return;
+    const service = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
+    if (!service) return;
+
+    const existingPhotoIndex = service.photos.findIndex(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
+    const newObj = {
+        stage: imageType,
+        imageStage: imageType,
+        photo: file
+    };
+    if (existingPhotoIndex >= 0) {
+        service.photos[existingPhotoIndex] = newObj;
+    } else {
+        service.photos.push(newObj);
+    }
+    console.log(file);
+    renderPreview(file, DOMRefs.refs);
 };
 
 const onSearchService = (e) => {
@@ -286,7 +336,8 @@ const loadDraftData = (Refs) => {
                 arrayDelete: workOrdersFormState.data.sparePartsToDelete,
                 onWritePrice,
                 onDelete,
-                renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts)
+                renderButton: () => renderImportButton(DOMRefs.refs.tBodySpareParts, onImportSparePart, DOMRefs.refs.tBodyServices, DOMRefs.refs.tBodySpareParts),
+                onClickCreatePerson
             });
         });
 
@@ -300,7 +351,9 @@ const loadDraftData = (Refs) => {
                 arraySelected: workOrdersFormState.data.selectedServices,
                 arrayDelete: workOrdersFormState.data.servicesToDelete,
                 onWritePrice,
-                onDelete
+                onDelete,
+                onClickCreatePerson,
+                onActionsServices
             });
         });
 
@@ -350,7 +403,8 @@ const loadWorkOrder = async (Refs) => {
             onWritePrice,
             onDelete,
             isView: workOrdersFormState.context.isView,
-            onClickCreatePerson
+            onClickCreatePerson,
+            onActionsServices
         });
     });
     workOrder.workOrdersPayments.forEach(payment => {
@@ -360,15 +414,27 @@ const loadWorkOrder = async (Refs) => {
             payment
         });
     });
+
+    if (workOrder.status === "Cancelada") {
+        saleCancelledUIUpdate(workOrder.cancellationReason);
+    }
+
+    if (workOrder.status === "Espera de Aprobación") {
+        if (canAccess(['WRITE_WORK_ORDERS'])) showElement(Refs.btnApproveOrder);
+        hideElement(Refs.btnCompleteOrder);
+    } else if (workOrder.status !== "Finalizada" && workOrder.status !== "Cancelada") {
+        if (canAccess(['WRITE_WORK_ORDERS'])) showElement(Refs.btnCompleteOrder);
+        hideElement(Refs.btnApproveOrder);
+    }
 };
 
-const onCompleteOrder = async () => {
+const onPatchOrder = async (patchOrder, loader, succesWord, errorWord) => {
     const camps = qsa(".txtInputs, .btnPrimary, .btnTrash, .btnEdit, .btnImport, .btnSecondary");
-    showElement(DOMRefs.refs.loaderCompleteOrder);
+    showElement(loader);
     camps.forEach(disableElement);
     try {
-        const answer = await patchWorkOrder(workOrdersFormState.context.idWorkOrder);
-        await showMessage("Exito", "Orden completada", "success", true);
+        const answer = await patchOrder(workOrdersFormState.context.idWorkOrder);
+        await showMessage("Exito", `Orden ${succesWord}`, "success", true);
         if (answer) {
             const params = buildParams({
                 idVehicle: workOrdersFormState.context.idVehicle,
@@ -377,11 +443,19 @@ const onCompleteOrder = async () => {
             replaceTo(ROUTES.WORK_ORDER_HISTORY, Object.fromEntries(params.entries()));
         }
     } catch (error) {
-        await handleApiError(error, 'No se pudo completar la orden. Por favor, inténtalo de nuevo.');
+        await handleApiError(error, `No se pudo ${errorWord.toLowerCase()}. Por favor, inténtalo de nuevo.`);
     } finally {
-        hideElement(DOMRefs.refs.loaderCompleteOrder);
+        hideElement(loader);
         camps.forEach(removeDisable);
     }
+};
+
+const onApproveOrder = async () => {
+    await onPatchOrder(approveOrder, DOMRefs.refs.loaderApproveOrder, 'aprobada', 'aprobar');
+};
+
+const onCompleteOrder = async () => {
+    await onPatchOrder(completeWorkOrder, DOMRefs.refs.loaderCompleteOrder, 'completada', 'completar');
 };
 
 const loadEmployees = async (query) => {
@@ -402,7 +476,7 @@ const onSearchEmployee = async (e) => {
     } else {
         employees = await loadEmployees(query);
     }
-    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee);
+    insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee, workOrdersFormState.employeeContext.employeeSelected);
 };
 
 const onSelectEmployee = (employee) => {
@@ -416,6 +490,8 @@ const onSelectEmployee = (employee) => {
     }
 
     cell.querySelector('span').textContent = employee.fullName;
+    // Cerrar el modal después de seleccionar
+    onClosePersonModal();
 };
 
 const onSearch = async (e, getData, renderData, box, onAdd, selected) => {
@@ -450,16 +526,15 @@ const initNewPartFlow = async (Refs) => {
 
 const initEditOrderFlow = async (Refs) => {
     await loadWorkOrder(Refs);
+    if (canAccess(['WRITE_WORK_ORDERS'])) showElement(Refs.btnOpenCancelSale);
 
     if (workOrdersFormState.context.isView) {
         loadViewDom(Refs);
-        showElement(Refs.btnCompleteOrder);
-        showElement(Refs.btnGeneratePdf);
+        if (canAccess(['READ_WORK_ORDERS'])) showElement(Refs.btnGeneratePdf);
         hideElement(Refs.btnSaveOrder);
         hideElement(Refs.paymentForm);
         hideElement(Refs.txtSearchSparePart);
         hideElement(Refs.txtAddService);
-        hideElement(Refs.separator);
     } else {
         validateDate(Refs.dtEstimated, Refs.dtEstimated.value || new Date());
     }
@@ -474,6 +549,75 @@ const onClosePersonModal = () => {
     toggleModal(DOMRefs.refs.modalPersonContainer, false);
     DOMRefs.refs.txtSearchEmployee.value = '';
     DOMRefs.refs.employeeList.innerHTML = '';
+    // Limpiar el contexto del empleado para evitar estado residual
+    workOrdersFormState.employeeContext = {};
+};
+
+const onCloseModalImageServices = () => {
+    toggleModal(DOMRefs.refs.modalServiceImages, false);
+    workOrdersFormState.currentServiceForImage = null;
+    workOrdersFormState.currentTypeForImage = null;
+};
+
+const onActionsServices = (e, serviceData) => {
+    e.stopPropagation();
+    const serviceId = serviceData.idService;
+    const servicePhotos = serviceData.photos || [];
+    const hasPhoto = (stage) => servicePhotos.some(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === stage);
+
+    const buildOption = (stage, labelSuffix) => ({
+        label: `Ver ${labelSuffix}`,
+        onClick: () => onOpenServiceImageModal(serviceId, stage)
+    });
+
+    let options = [];
+
+    if (workOrdersFormState.context.isView) {
+        if (hasPhoto('BEFORE')) options.push(buildOption('BEFORE', 'Antes'));
+        if (hasPhoto('DURING')) options.push(buildOption('DURING', 'Durante'));
+        if (hasPhoto('AFTER')) options.push(buildOption('AFTER', 'Después'));
+    } else {
+        const labelForStage = (stage) => {
+            const label = hasPhoto(stage) ? 'Ver' : 'Añadir';
+            if (stage === 'BEFORE') return `${label} Antes`;
+            if (stage === 'DURING') return `${label} Durante`;
+            if (stage === 'AFTER') return `${label} Después`;
+            return label;
+        };
+
+        options = [
+            { label: labelForStage('BEFORE'), onClick: () => onOpenServiceImageModal(serviceId, 'BEFORE') },
+            { label: labelForStage('DURING'), onClick: () => onOpenServiceImageModal(serviceId, 'DURING') },
+            { label: labelForStage('AFTER'), onClick: () => onOpenServiceImageModal(serviceId, 'AFTER') }
+        ];
+
+    }
+    if (serviceData.idWorkOrderService) {
+        options.push({ label: 'Reporte de servicio', onClick: () => generateServiceReport(serviceData) });
+    }
+
+    if (options.length === 0) return;
+    showFloatingMenu(e, options);
+};
+
+const onDeleteServiceImage = () => {
+    const serviceId = workOrdersFormState.currentServiceForImage;
+    const imageType = workOrdersFormState.currentTypeForImage;
+    if (!serviceId || !imageType) return;
+    const service = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
+    if (!service) return;
+    const existingPhotoIndex = service.photos.findIndex(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
+
+    let photoIdToDelete = null;
+    if (existingPhotoIndex >= 0) {
+        photoIdToDelete = service.photos[existingPhotoIndex].idPhoto;
+        service.photos.splice(existingPhotoIndex, 1);
+    }
+
+    if (service.idWorkOrderService && photoIdToDelete) {
+        workOrdersFormState.data.servicePhotosToDelete.push(photoIdToDelete);
+    }
+    renderPreview(null, DOMRefs.refs);
 };
 
 const initializeUI = async (Refs) => {
@@ -498,11 +642,24 @@ const initializeUI = async (Refs) => {
         onSaveDate,
         onCompleteOrder,
         onClosePersonModal,
+        onApproveOrder,
         onGeneratePdf: () => generateWorkOrderReport(workOrdersFormState.workOrder),
         onSearchEmployee
     });
 
     initializeModalListeners(workOrdersFormState.data, workOrdersFormState.context.isView);
+
+    // Inicializar los event listeners del modal
+    initServiceImageModalEvents({
+        Refs,
+        onImageSelect: onSelectServiceImage,
+        onCloseModalImageServices,
+        onDeleteServiceImage
+    });
+
+    if (workOrdersFormState.context.idWorkOrder) {
+        initCancelSale(workOrdersFormState.context.idWorkOrder, cancelWorkOrder, ROUTES.WORK_ORDERS, "orden de trabajo");
+    }
 };
 
 const loadDataFlow = async (Refs) => {

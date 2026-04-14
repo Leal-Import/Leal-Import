@@ -4,7 +4,7 @@ import { insertSales, selectLineButton, DOMRefs, resetSalesFilters } from "./sal
 import { resetSalesListState, salesListState } from "./sales.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
 import { getSales, getStateSales } from "./sales.service.js";
-import { fillSelect, hideElement, showElement, toggleModal, createModuleInitializer } from "../../utils/dom.js";
+import { fillSelect, hideElement, showElement, toggleModal, createModuleInitializer, applyPrivilegesToUI } from "../../utils/dom.js";
 import { initSalesEvents } from "./sales.event.js";
 import { handleApiError } from "../../utils/api.utils.js";
 
@@ -43,7 +43,7 @@ const loadSales = async() => {
         salesListState.pagination.total = data.page.totalElements;
         salesListState.pagination.totalPages = data.page.totalPages;
         insertSales(DOMRefs.refs.panelContainer, salesListState.list);
-
+        applyPrivilegesToUI();
         pagination.setTotal({
             totalElements: data.page.totalElements,
             totalPages: data.page.totalPages,

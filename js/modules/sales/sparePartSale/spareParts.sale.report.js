@@ -1,25 +1,4 @@
-// js/core/reports/vehicleSale/vehicles.sales.report.js
-
-const urlToBase64 = (url) => {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            canvas.getContext('2d').drawImage(img, 0, 0);
-            resolve(canvas.toDataURL('image/jpeg'));
-        };
-        img.onerror = () => resolve(null);
-        img.src = url;
-    });
-};
-
-const loadPhotos = async (photos = [], max = 4) => {
-    const results = await Promise.all(photos.slice(0, max).map(p => urlToBase64(p.photoUrl)));
-    return results.filter(Boolean);
-};
+// js/core/reports/sparePartsSale/spare.parts.sale.report.js
 
 const fmt = (val) =>
     `$${Number(val ?? 0).toLocaleString('es-SV', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -61,22 +40,18 @@ const drawSectionHeader = (doc, label, y, margin, contentW, rightText = '') => {
     return y + 9;
 };
 
-// Firma: generateVehicleSaleReport(sale, vehicle)
-// vehicle es el objeto del vehículo con vehiclePhotos[], brand, model, year, vin, mileage
-export const generateVehicleSaleReport = async (sale, vehicle) => {
+export const generateSparePartsSaleReport = (sale) => {
     const { jsPDF } = window.jspdf;
-    const doc     = new jsPDF();
-    const pageW   = doc.internal.pageSize.getWidth();
-    const pageH   = doc.internal.pageSize.getHeight();
-    const margin  = 14;
+    const doc      = new jsPDF();
+    const pageW    = doc.internal.pageSize.getWidth();
+    const pageH    = doc.internal.pageSize.getHeight();
+    const margin   = 14;
     const contentW = pageW - margin * 2;
 
-    const photos   = await loadPhotos(vehicle?.vehiclePhotos || [], 4);
-    const hasDebt  = Number(sale.amountDue ?? 0) > 0;
-    const payments = sale.vehiclePayments || [];
-    const activePayments    = payments.filter(p => !p.isCancelled);
-    const cancelledPayments = payments.filter(p => p.isCancelled);
-    const totalPaid = activePayments.reduce((acc, p) => acc + Number(p.amount ?? 0), 0);
+    const payments          = sale.sparePartsPayments || [];
+    const items             = sale.sparePartsSaleItems || [];
+    const hasDebt           = Number(sale.amountDue ?? 0) > 0;
+    const estadoLabel       = sale.statusSaleName || '—';
 
     // ═══════════════════════════════════════
     // HEADER
@@ -99,12 +74,12 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
-    doc.text('REPORTE DE VENTA', pageW - margin, 20, { align: 'right' });
+    doc.text('REPORTE DE VENTA DE REPUESTOS', pageW - margin, 20, { align: 'right' });
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 200, 200);
-    doc.text(`N° ${String(sale.idVehicleSale).slice(0, 8).toUpperCase()}`, pageW - margin, 28, { align: 'right' });
+    doc.text(`N° ${String(sale.idSparePartsSales).slice(0, 8).toUpperCase()}`, pageW - margin, 28, { align: 'right' });
 
     // ═══════════════════════════════════════
     // META — fecha + badges
@@ -131,8 +106,7 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     doc.setFont('helvetica', 'bold');
     doc.text(hasDebt ? 'CON DEUDA' : 'SALDADO', pageW - margin - badgeW / 2, y, { align: 'center' });
 
-    // Badge estado venta
-    const estadoLabel = sale.statusSaleName || '—';
+    // Badge estado
     const estadoColor = estadoLabel === 'Reservado' ? [245, 158, 11] : [46, 125, 50];
     const estadoW = 36;
     doc.setFillColor(...estadoColor);
@@ -147,7 +121,7 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     y += 10;
 
     // ═══════════════════════════════════════
-    // DOS COLUMNAS — Cliente | Vehículo
+    // DOS COLUMNAS — Cliente | Info venta
     // ═══════════════════════════════════════
     const colW  = (contentW - 6) / 2;
     const col2X = margin + colW + 6;
@@ -175,26 +149,36 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     doc.text(`Estado: ${estadoLabel}`, margin + 4, y + 27);
     doc.text(`Fecha venta: ${sale.saleDate || '—'}`, margin + 4, y + 35);
 
-    // Vehículo
+    // Info venta
     doc.setFillColor(250, 250, 250);
     doc.roundedRect(col2X, y, colW, boxH, 3, 3, 'F');
     doc.setDrawColor(235, 235, 235);
     doc.roundedRect(col2X, y, colW, boxH, 3, 3, 'S');
     doc.setFillColor(211, 24, 19);
-    doc.roundedRect(col2X + 4, y + 4, 24, 5, 1, 1, 'F');
+    doc.roundedRect(col2X + 4, y + 4, 28, 5, 1, 1, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(6);
     doc.setFont('helvetica', 'bold');
-    doc.text('VEHÍCULO', col2X + 16, y + 7.5, { align: 'center' });
-    doc.setTextColor(30, 30, 30);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${vehicle?.brand || '—'} ${vehicle?.model || ''} ${vehicle?.year || ''}`, col2X + 4, y + 18);
+    doc.text('INFO DE VENTA', col2X + 18, y + 7.5, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100, 100, 100);
-    doc.text(`VIN: ${vehicle?.vin || '—'}`, col2X + 4, y + 27);
-    doc.text(`Millaje: ${vehicle?.mileage || '—'}`, col2X + 4, y + 35);
+    doc.text('Precio de venta:', col2X + 4, y + 18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 30, 30);
+    doc.text(fmt(sale.salePrice), col2X + colW - 4, y + 18, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    doc.text('Total abonado:', col2X + 4, y + 27);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(109, 190, 69);
+    doc.text(fmt(sale.totalPaid), col2X + colW - 4, y + 27, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    doc.text('Deuda:', col2X + 4, y + 36);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(hasDebt ? 211 : 109, hasDebt ? 24 : 190, hasDebt ? 19 : 69);
+    doc.text(fmt(sale.amountDue), col2X + colW - 4, y + 36, { align: 'right' });
 
     y += boxH + 10;
 
@@ -203,8 +187,8 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     // ═══════════════════════════════════════
     if (sale.cancellationReason?.trim()) {
         y = checkPageBreak(doc, y, 22, pageH, margin, pageW);
-        const lines  = doc.splitTextToSize(sale.cancellationReason.trim(), contentW - 12);
-        const cancelH = Math.max(18, lines.length * 5 + 14);
+        const lines    = doc.splitTextToSize(sale.cancellationReason.trim(), contentW - 12);
+        const cancelH  = Math.max(18, lines.length * 5 + 14);
 
         doc.setFillColor(255, 235, 235);
         doc.setDrawColor(211, 24, 19);
@@ -225,60 +209,72 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     }
 
     // ═══════════════════════════════════════
-    // GALERÍA DE FOTOS
-    // ═══════════════════════════════════════
-    if (photos.length > 0) {
-        const imgW   = (contentW - 4) / 2;
-        const imgH   = imgW * 0.62;
-        const gapX   = 4;
-        const gapY   = 4;
-        const rows   = Math.ceil(photos.length / 2);
-        const totalH = 9 + rows * (imgH + gapY);
-
-        y = checkPageBreak(doc, y, totalH, pageH, margin, pageW);
-        y = drawSectionHeader(doc, 'FOTOS DEL VEHÍCULO', y, margin, contentW, `${photos.length} foto${photos.length !== 1 ? 's' : ''}`);
-        y += 2;
-
-        photos.forEach((b64, i) => {
-            const col = i % 2;
-            const row = Math.floor(i / 2);
-            const x   = margin + col * (imgW + gapX);
-            const iy  = y + row * (imgH + gapY);
-            doc.setDrawColor(220, 220, 220);
-            doc.setLineWidth(0.3);
-            doc.roundedRect(x, iy, imgW, imgH, 2, 2, 'S');
-            doc.addImage(b64, 'JPEG', x, iy, imgW, imgH, undefined, 'FAST');
-        });
-
-        y += rows * (imgH + gapY) + 10;
-    }
-
-    // ═══════════════════════════════════════
-    // TABLA DE ABONOS ACTIVOS
+    // REPUESTOS VENDIDOS
     // ═══════════════════════════════════════
     y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
     y = drawSectionHeader(
-        doc,
-        'ABONOS REALIZADOS',
-        y, margin, contentW,
-        `${activePayments.length} abono${activePayments.length !== 1 ? 's' : ''}`
+        doc, 'REPUESTOS VENDIDOS', y, margin, contentW,
+        `${items.length} item${items.length !== 1 ? 's' : ''}`
     );
 
-    const activeBody = activePayments.length
-        ? activePayments
-            .sort((a, b) => a.paymentNumber - b.paymentNumber)
-            .map(p => [
-                `#${String(p.paymentNumber).padStart(2, '0')}`,
-                p.paymentMethodName || '—',
-                p.employeeName || '—',
-                p.paymentDate || '—',
-                fmt(p.amount)
+    doc.autoTable({
+        head: [['Repuesto', 'Costo total', 'Precio aplicado']],
+        body: items.length
+            ? items.map(item => [
+                item.sparePartName || '—',
+                fmt(item.totalCost),
+                fmt(item.priceApplied)
             ])
-        : [['—', 'Sin abonos registrados', '—', '—', '$0.00']];
+            : [['Sin repuestos registrados', '—', '—']],
+        startY: y,
+        margin: { left: margin, right: margin },
+        theme: 'plain',
+        styles: {
+            fontSize: 8,
+            cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
+            textColor: [60, 60, 60],
+            lineColor: [235, 235, 235],
+            lineWidth: 0.3
+        },
+        headStyles: {
+            fillColor: [245, 245, 245],
+            textColor: [130, 130, 130],
+            fontStyle: 'bold',
+            fontSize: 7,
+            lineWidth: 0
+        },
+        columnStyles: {
+            0: { cellWidth: 'auto' },
+            1: { cellWidth: 40, halign: 'right', textColor: [100, 100, 100] },
+            2: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
+        },
+        alternateRowStyles: { fillColor: [252, 252, 252] }
+    });
+
+    y = doc.lastAutoTable.finalY + 10;
+
+    // ═══════════════════════════════════════
+    // ABONOS ACTIVOS
+    // ═══════════════════════════════════════
+    y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
+    y = drawSectionHeader(
+        doc, 'ABONOS REALIZADOS', y, margin, contentW,
+        `${payments.length} abono${payments.length !== 1 ? 's' : ''}`
+    );
 
     doc.autoTable({
         head: [['#', 'Método', 'Registrado por', 'Fecha', 'Monto']],
-        body: activeBody,
+        body: payments.length
+            ? payments
+                .sort((a, b) => a.paymentNumber - b.paymentNumber)
+                .map(p => [
+                    `#${String(p.paymentNumber).padStart(2, '0')}`,
+                    p.paymentMethodName || '—',
+                    p.employeeName || '—',
+                    p.paymentDate || '—',
+                    fmt(p.amount)
+                ])
+            : [['—', 'Sin abonos registrados', '—', '—', '$0.00']],
         startY: y,
         margin: { left: margin, right: margin },
         theme: 'plain',
@@ -309,74 +305,11 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     y = doc.lastAutoTable.finalY + 6;
 
     // ═══════════════════════════════════════
-    // TABLA DE ABONOS CANCELADOS (si hay)
-    // ═══════════════════════════════════════
-    if (cancelledPayments.length > 0) {
-        y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
-        y = drawSectionHeader(
-            doc,
-            'ABONOS CANCELADOS',
-            y, margin, contentW,
-            `${cancelledPayments.length} cancelado${cancelledPayments.length !== 1 ? 's' : ''}`
-        );
-
-        doc.autoTable({
-            head: [['#', 'Método', 'Registrado por', 'Fecha', 'Monto']],
-            body: cancelledPayments
-                .sort((a, b) => a.paymentNumber - b.paymentNumber)
-                .map(p => [
-                    `#${String(p.paymentNumber).padStart(2, '0')}`,
-                    p.paymentMethodName || '—',
-                    p.employeeName || '—',
-                    p.paymentDate || '—',
-                    fmt(p.amount)
-                ]),
-            startY: y,
-            margin: { left: margin, right: margin },
-            theme: 'plain',
-            styles: {
-                fontSize: 8,
-                cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
-                textColor: [160, 80, 80],
-                lineColor: [245, 220, 220],
-                lineWidth: 0.3
-            },
-            headStyles: {
-                fillColor: [255, 240, 240],
-                textColor: [180, 100, 100],
-                fontStyle: 'bold',
-                fontSize: 7,
-                lineWidth: 0
-            },
-            columnStyles: {
-                0: { cellWidth: 16, halign: 'center' },
-                1: { cellWidth: 32 },
-                2: { cellWidth: 'auto' },
-                3: { cellWidth: 26 },
-                4: { cellWidth: 30, halign: 'right', fontStyle: 'bold' }
-            },
-            alternateRowStyles: { fillColor: [255, 248, 248] }
-        });
-
-        y = doc.lastAutoTable.finalY + 6;
-    }
-
-    // ═══════════════════════════════════════
     // RESUMEN FINANCIERO
     // ═══════════════════════════════════════
-    y = checkPageBreak(doc, y, 60, pageH, margin, pageW);
+    y = checkPageBreak(doc, y, 50, pageH, margin, pageW);
 
-    // Comisión fuera del box oscuro
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(150, 150, 150);
-    doc.text('Comisión del vendedor:', margin, y);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(180, 180, 180);
-    doc.text(fmt(sale.commission), margin + 42, y);
-    y += 10;
-
-    const summaryBoxH = 50;
+    const summaryBoxH = 42;
     doc.setFillColor(22, 22, 22);
     doc.roundedRect(margin, y, contentW, summaryBoxH, 3, 3, 'F');
     doc.setFillColor(211, 24, 19);
@@ -392,9 +325,8 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     doc.line(margin + 8, y + 11, pageW - margin - 4, y + 11);
 
     const summaryRows = [
-        { label: 'Precio de venta',  value: fmt(sale.salePrice),    color: [220, 220, 220] },
-        { label: 'Costo total',      value: fmt(sale.fullTotalCost), color: [220, 220, 220] },
-        { label: 'Total abonado',    value: fmt(totalPaid),          color: [109, 190, 69]  }
+        { label: 'Precio de venta', value: fmt(sale.salePrice),  color: [220, 220, 220] },
+        { label: 'Total abonado',   value: fmt(sale.totalPaid),  color: [109, 190, 69]  }
     ];
 
     summaryRows.forEach((row, i) => {
@@ -408,7 +340,7 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
         doc.text(row.value, pageW - margin - 4, rowY, { align: 'right' });
     });
 
-    const deudaY = y + 40;
+    const deudaY = y + 33;
     doc.setDrawColor(50, 50, 50);
     doc.line(margin + 8, deudaY - 3, pageW - margin - 4, deudaY - 3);
     doc.setFontSize(10);
@@ -446,5 +378,5 @@ export const generateVehicleSaleReport = async (sale, vehicle) => {
     }
 
     drawFooter(doc, pageW, pageH, margin);
-    doc.save(`venta-${String(sale.idVehicleSale).slice(0, 8).toUpperCase()}.pdf`);
+    doc.save(`venta-repuestos-${String(sale.idSparePartsSales).slice(0, 8).toUpperCase()}.pdf`);
 };

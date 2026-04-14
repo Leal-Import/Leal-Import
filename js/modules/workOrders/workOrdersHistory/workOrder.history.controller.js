@@ -76,19 +76,23 @@ const handleOrdersActions = (e, order) => {
     e.stopPropagation();
 
     const woId = order.idWorkOrder ?? crypto.randomUUID();
-
-    showFloatingMenu(e, [
+    const options = [
         {
             label: "Ver orden",
             id: `btnViewWO-${woId}`,
             onClick: () => viewWorkOrder(order.idWorkOrder, order.idVehicle)
-        },
-        {
+        }
+    ];
+    if (order.statusName !== "Cancelada") {
+        options.push({
             label: "Editar orden",
             id: `btnEditWO-${woId}`,
+            privilege: "WRITE_WORK_ORDERS",
             onClick: () => editWorkOrder(order.idWorkOrder, order.idVehicle)
-        }
-    ]);
+        });
+    }
+
+    showFloatingMenu(e, options);
 };
 
 const viewWorkOrder = (idWorkOrder, idVehicle) => {

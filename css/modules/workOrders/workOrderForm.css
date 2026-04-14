@@ -265,7 +265,7 @@
 }
 
 .tdPerson{
-    max-width: 130px;
+    max-width: 180px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis
@@ -366,6 +366,10 @@ tr {
     color: var(--text-color-secondary);
     font-size: var(--font-size-sm);
     font-style: italic;
+}
+
+.tdName {
+    width: 100%;
 }
 
 
@@ -546,4 +550,243 @@ tr {
     display: flex;
     justify-content: center;
     padding: 30px 0;
+}
+
+.actionButtons button{
+    flex: 1;
+    flex-basis: 150px;
+    transition: all 0.2s ease;
+}
+
+.actionButtons button:hover{
+    transform: translateY(-2px);
+    opacity: .9;
+    box-shadow: 0 4px 12px rgb(211 24 19 / 0.15);
+}
+
+/* =======================
+   Modal Fotos de Servicios
+======================= */
+.modalServicePhotos {
+    max-width: 600px;
+    width: 90vw;
+}
+
+.headerModalServicePhotos {
+    padding: 20px 24px;
+    border-bottom: var(--border);
+    background-color: var(--bg-color-white);
+}
+
+.headerModalServicePhotos .headerContent h2 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    margin: 0 0 4px;
+}
+
+.headerModalServicePhotos .headerSubtitle {
+    font-size: var(--font-size-sm);
+    color: var(--text-color-secondary);
+    margin: 0;
+}
+
+.bodyModalServicePhotos {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* =======================
+   Botón Imágenes Servicio
+======================= */
+.btnServiceImages {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background-color: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+    color: var(--text-color);
+}
+
+.btnServiceImages:hover {
+    background-color: var(--bg-color);
+    transform: scale(1.15);
+    color: var(--danger-color);
+}
+
+.btnServiceImages:active {
+    transform: scale(1.05);
+}
+
+.btnServiceImages:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(220 53 69 / 0.2);
+    border-radius: 8px;
+}
+
+.btnServiceImages:focus:not(:focus-visible) {
+    box-shadow: none;
+}
+
+.tdImages {
+    width: 60px;
+    text-align: center;
+    padding: 8px;
+}
+
+.photoPreview {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.photoNavigation {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navBtn {
+    background: var(--bg-color);
+    border: var(--border);
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-color-secondary);
+    transition: all 0.2s ease;
+}
+
+.navBtn:hover:not(:disabled) {
+    background-color: var(--bg-danger-badge);
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+}
+
+.navBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.photoContainer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    border: var(--border);
+}
+
+.photoImage {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.photoInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+#photoCounter {
+    font-size: var(--font-size-sm);
+    color: var(--text-color-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.btnRemovePhoto {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--danger-color);
+    color: var(--text-color-light);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btnRemovePhoto:hover {
+    background-color: var(--dark-danger-color);
+    transform: translateY(-1px);
+}
+
+.btnRemovePhoto svg {
+    width: 14px;
+    height: 14px;
+}
+
+
+.tdPhotos {
+    min-width: 180px;
+    vertical-align: top;
+}
+
+
+@media screen and (max-width: 660px) {
+    .tableContainer thead{
+        display: none;
+    }
+
+    .tableContainer tbody tr {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1px;
+        grid-auto-rows: 20px;
+        align-items: center;
+        min-height: 35px;
+        height: fit-content !important;
+        padding: 5px 0;
+    }
+
+    .tableContainer tbody tr td {
+        max-width: 100%;
+    }
+
+    .tableContainer tbody tr td:first-child {
+        grid-column: span 5;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .tableContainer tbody tr td:nth-child(2) {
+        grid-column: span 5;
+        grid-row: 2;
+    }
+
+    .tableContainer tbody tr td:nth-child(3) {
+        grid-column: span 5;
+        grid-row: 3;
+    }
+
+    .tdTrash{
+        grid-column: 6;
+        justify-self: end;
+        grid-row: 1;
+    }
+
+    .tdImages{
+        grid-row: 3;
+        grid-column: 6;
+    }
 }

@@ -12,9 +12,10 @@ export const initWorkOrdersEvents = ({
     onCompleteOrder,
     onGeneratePdf,
     onClosePersonModal,
-    onSearchEmployee
+    onSearchEmployee,
+    onApproveOrder
 }) => {
-    const { txtAmount, txtSearchSparePart, txtAddService, txtNotes, frmWorkOrder, dtEstimated, btnCompleteOrder, btnGeneratePdf, btnClosePersonModal, modalPersonContainer, txtSearchEmployee } = Refs;
+    const { txtAmount, txtSearchSparePart, txtAddService, txtNotes, frmWorkOrder, dtEstimated, btnCompleteOrder, btnGeneratePdf, btnClosePersonModal, modalPersonContainer, txtSearchEmployee, btnApproveOrder } = Refs;
 
     const search = debounce((e, onSearch) => {
         const value = e.target.value;
@@ -51,6 +52,23 @@ export const initWorkOrdersEvents = ({
     dtEstimated.addEventListener("change", onSaveDate);
 
     btnCompleteOrder.addEventListener("click", onCompleteOrder);
+    btnApproveOrder.addEventListener("click", onApproveOrder);
 
     btnGeneratePdf?.addEventListener("click", onGeneratePdf);
+};
+
+/**
+ * Inicializa los listeners del modal de imágenes de servicio
+ */
+export const initServiceImageModalEvents = ({ Refs, onImageSelect, onDeleteServiceImage, onCloseModalImageServices }) => {
+    const { serviceImagePreview, serviceImageFileInput, btnDeleteServiceImage, btnSelectServiceImage, btnCloseServiceImages, modalServiceImages } = Refs;
+    const onClickAddImage = () => serviceImageFileInput.click();
+
+    addModalCloseEvents(modalServiceImages, onCloseModalImageServices);
+    // Agregar listeners
+    serviceImagePreview.addEventListener('click', onClickAddImage);
+    btnSelectServiceImage.addEventListener('click', onClickAddImage);
+    serviceImageFileInput.addEventListener('change', onImageSelect);
+    btnDeleteServiceImage.addEventListener('click', onDeleteServiceImage);
+    btnCloseServiceImages.addEventListener('click', onCloseModalImageServices);
 };

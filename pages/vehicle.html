@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../css/utils/darkMode.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
-    <title>Vehiculos</title>
+    <title>Vehículos</title>
 </head>
 
 <body>
@@ -30,13 +30,13 @@
                 <div class="statItem stockVehicles">
                     <div class="statInfo">
                         <p class="statTitle">Vehículos en stock</p>
-                        <h2 class="statValue" id="activeVehicles">0</h2>
+                        <h2 class="statValue" id="stockVehicles">0</h2>
                     </div>
                 </div>
                 <div class="statItem soldVehicles">
                     <div class="statInfo">
                         <p class="statTitle">Vehículos vendidos</p>
-                        <h2 class="statValue" id="inactiveVehicles">0</h2>
+                        <h2 class="statValue" id="soldVehicles">0</h2>
                     </div>
                 </div>
                 <div class="statItem externalVehicles">
@@ -48,7 +48,7 @@
                 <div class="statItem nonExternalVehicles">
                     <div class="statInfo">
                         <p class="statTitle">Vehículos no externos</p>
-                        <h2 class="statValue" id="nonExternalVehicles">0</h2>
+                        <h2 class="statValue" id="noExternalVehicles">0</h2>
                     </div>
                 </div>
             </div>
@@ -78,14 +78,14 @@
                     <option value="INVENTORY">No externos</option>
                     <option value="EXTERNAL">Externos</option>
                 </select>
-                <a class="btnPrimary btnOpenModal" id="btnAddVehicle" href="vehiclesForm.html">Añadir</a>
+                <a class="btnPrimary btnOpenModal hide" id="btnAddVehicle" href="vehiclesForm.html" data-privilege="WRITE_VEHICLES">Añadir</a>
             </div>
 
             <!-- Cards Container -->
             <div class="containerVehicles">
                 <div class="containerLoader show" style="z-index: 20;" id="loaderVehicles">
                     <div class="loader"></div>
-                    <div>Cargando lista de vehiculos...</div>
+                    <div>Cargando lista de vehículos...</div>
                 </div>
                 <div class="cardContainer"></div>
             </div>
@@ -116,7 +116,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/vehicles/vehicles.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

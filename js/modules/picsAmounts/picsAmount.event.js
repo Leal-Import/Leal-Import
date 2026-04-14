@@ -1,4 +1,4 @@
-import { addModalCloseEvents } from "../../../utils/dom.js";
+import { addModalCloseEvents } from "../../utils/dom.js";
 
 /*Esta funcion inicializa los listeners del modal de comprobantes */
 export const initModalListeners = ({ Refs, clearCurrentFile, onCloseModalAndClean, onClickBtnSelect, onCloseLightbox }) => {

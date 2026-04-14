@@ -17,12 +17,50 @@
     <link rel="stylesheet" href="../css/utils/showData/tableSelected.css">
     <link rel="stylesheet" href="../css/utils/loaders/loader.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/utils/modals/modalCancelSale.css">
+    <link rel="stylesheet" href="../css/utils/floatingMenu.css">
 
     <script src="../js/utils/dark.mode.init.js"></script>
     <title>Crear orden</title>
 </head>
 
 <body>
+    <div id="modalCancelSale" class="containerModal hide">
+        <form class="modalAdd modalNewPasswordCard" id="frmCancelSale">
+            <!-- Header -->
+            <div class="modalNewPasswordHeader">
+                <div class="modalNewPasswordHeaderLeft">
+                    <div>
+                        <h2 class="modalNewPasswordTitle">Cancelar orden</h2>
+                        <p class="modalNewPasswordSubtitle">Esta acción no se puede deshacer</p>
+                    </div>
+                </div>
+                <button type="button" class="btnClose" id="btnCloseCancelSale" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Motivo -->
+            <div class="modalNewPasswordFieldWrap">
+                <label class="modalNewPasswordLabel" for="txtCancelReason">Motivo de cancelación</label>
+                <textarea id="txtCancelReason" class="txtInputs txtCancelReason"
+                    placeholder="Describe el motivo de la cancelación..." maxlength="500" required></textarea>
+                <div class="cancelReasonFooter">
+                    <span class="modalNewPasswordMatchHint" id="cancelReasonHint"></span>
+                    <span class="cancelReasonCount"><span id="cancelReasonCount">0</span>/500</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btnDanger btnPrimary" id="btnConfirmCancelSale" disabled>
+                <span>Confirmar cancelación</span>
+                <div class="loader hide" id="btnConfirmCancelSaleLoader"></div>
+            </button>
+        </form>
+    </div>
+
     <div class="containerModal hide" id="modalPersonContainer">
         <div class="modalPerson modalAdd">
             <button id="btnClosePersonModal" class="btnClose" type="button">
@@ -132,6 +170,66 @@
             <input type="file" id="fileInputHidden" accept="image/*,.pdf" style="display: none;">
         </div>
     </div>
+
+    <!-- Modal Imágenes de Servicios -->
+    <div class="containerModal hide" id="modalServiceImages">
+        <div class="modalPerson modalAdd">
+            <button id="btnCloseServiceImages" class="btnClose" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
+            </button>
+
+            <div class="headerModalPerson">
+                <div class="headerContent">
+                    <h2 id="serviceImageTitle">Imagen del Servicio</h2>
+                    <p class="headerSubtitle" id="serviceImageSubtitle">
+                        Carga una imagen del servicio
+                    </p>
+                </div>
+            </div>
+
+            <div class="bodyModalPerson">
+                <!-- Preview área -->
+                <div id="serviceImagePreview" class="previewArea" style="
+                    width: 100%;
+                    height: 300px;
+                    border: 2px dashed #ccc;
+                    border-radius: 4px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 1rem;
+                    background: #f9f9f9;
+                    position: relative;
+                    overflow: hidden;
+                    cursor: pointer;
+                ">
+                    <p style="color: #999; text-align: center;">Sin imagen - Haz clic para seleccionar</p>
+                </div>
+
+                <!-- Hidden file input -->
+                <input type="file" id="serviceImageFileInput" accept="image/*" style="display: none;">
+
+                <!-- Botones -->
+                <div class="modalActions" style="
+                    display: flex;
+                    gap: 1rem;
+                    justify-content: flex-end;
+                    margin-top: 1rem;
+                ">
+                    <button id="btnDeleteServiceImage" class="btnSecondary" type="button">
+                        <span>Eliminar imagen</span>
+                    </button>
+                    <button id="btnSelectServiceImage" class="btnPrimary" type="button" style="padding: 5px 10px;">
+                        <span>Seleccionar Imagen</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="containerMobileHeader"></div>
     <div class="bodyContent">
         <div id="sidebar"></div>
@@ -140,13 +238,14 @@
                 <div class="leftColumn">
                     <div class="headerContent">
                         <div class="breadCrumbSection">
-                            <a href="workOrders.html" class="breadcrumb" id="firstBread">Ordenes &#62; </a>
+                            <a href="workOrders.html" class="breadcrumb" id="firstBread">Órdenes &#62; </a>
                             <a class="breadcrumb" id="secondBread">Presupuesto</a>
+                            <a class="breadcrumb hide" id="cancelledBreadcrumb"> &#62; Orden cancelada</a>
                         </div>
                     </div>
                     <div class="bodyLeftPart">
                         <div class="moreDataContainer">
-                            <h2>Datos del vehiculo</h2>
+                            <h2>Datos del vehículo</h2>
 
                             <!-- Datos principales del vehículo -->
                             <div class="rowInfo rowVehicle">
@@ -205,7 +304,7 @@
                                 <div class="tableContainer">
                                     <h2>Repuestos</h2>
                                     <div class="containerInput">
-                                        <input type="text" id="txtSearchSparePart" class="txtInputs"
+                                        <input type="text" id="txtSearchSparePart" data-privilege="WRITE_WORK_ORDERS" class="txtInputs"
                                             placeholder="Buscar repuestos">
                                         <div class="suggestions hide" id="suggestionsSpareParts"></div>
                                     </div>
@@ -228,16 +327,17 @@
                                 <div class="tableContainer">
                                     <h2>Servicios</h2>
                                     <div class="containerInput">
-                                        <input type="text" id="txtAddService" class="txtInputs"
+                                        <input type="text" id="txtAddService" class="txtInputs" data-privilege="WRITE_WORK_ORDERS"
                                             placeholder="Añadir servicios">
                                         <div class="suggestions hide" id="suggestionsService"></div>
                                     </div>
                                     <table class="tableSelected">
                                         <thead>
                                             <tr>
-                                                <th class="tdPerson">Mecanico</th>
+                                                <th class="tdPerson">Mecánico</th>
                                                 <th class="tdName">Servicio</th>
                                                 <th class="tdPrice">Precio</th>
+                                                <th class="tdImages">Fotos</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -313,17 +413,24 @@
                         </div>
 
                         <div class="actionButtons">
-                            <div id="separator"></div>
+                            <button class="btnPrimary hide" id="btnOpenCancelSale" type="button">
+                                <span>Cancelar orden</span>
+                                <div class="loader hide" id="loaderCancelOrder"></div>
+                            </button>
+                            <button class="btnPrimary hide" id="btnCompleteOrder" type="button">
+                                <span>Completar orden</span>
+                                <div class="loader hide" id="loaderCompleteOrder"></div>
+                            </button>
+                            <button class="btnPrimary hide" id="btnGeneratePdf" type="button">
+                                <span>Generar PDF</span>
+                            </button>
+                            <button class="btnPrimary hide" id="btnApproveOrder" type="button">
+                                <span>Aprobar orden</span>
+                                <div class="loader hide" id="loaderApproveOrder"></div>
+                            </button>
                             <button class="btnPrimary" id="btnSaveOrder">
                                 <span>Crear orden</span>
                                 <div class="loader hide" id="loaderAddOrder"></div>
-                            </button>
-                            <button class="btnPrimary hide" id="btnGeneratePdf">
-                                <span>Generar PDF</span>
-                            </button>
-                            <button class="btnPrimary hide" id="btnCompleteOrder">
-                                <span>Completar orden</span>
-                                <div class="loader hide" id="loaderCompleteOrder"></div>
                             </button>
                         </div>
                     </form>
@@ -335,7 +442,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/workOrders/workOrdersForm/workOrder.form.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

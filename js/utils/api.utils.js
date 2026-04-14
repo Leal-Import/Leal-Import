@@ -2,6 +2,8 @@ import { getAuthMe } from '../modules/login/login.service.js';
 import { showMessage } from './dom.js';
 import { navigateTo, ROUTES } from './router.js';
 import { DraftManager } from './draft.manager.js';
+import { canAccess, setUserPrivileges, clearUserPrivileges } from './privilegesValidator.js';
+import { initSidebar } from '../components/sidebar.js';
 
 export class APIError extends Error {
     constructor(message, status = 500, cause = null, endpoint = null) {
@@ -15,6 +17,7 @@ export class APIError extends Error {
 
 export const handleApiError = async (error) => {
     console.error('[API Error]', error);
+    initSidebar();
     if (error instanceof APIError) {
         if (error.status === 401) {
             await forceLogout('Sesión expirada');
@@ -22,7 +25,7 @@ export const handleApiError = async (error) => {
         }
 
         if (error.status === 403) {
-            await showMessage('Acceso Denegado', 'No tienes permiso para esta acción.', 'error');
+            await showMessage('Acceso Denegado', error.message || 'No tienes permiso para esta acción.', 'error');
             return;
         }
 
@@ -38,7 +41,11 @@ export const handleApiError = async (error) => {
     await showMessage('Error', error?.message || 'Error desconocido', 'error');
 };
 
-export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de API') => {
+export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de API', requiredPrivileges = []) => {
+    if (!canAccess(requiredPrivileges)) {
+        throw new APIError('No tienes permiso para esta acción.', 403, null, url);
+    }
+
     try {
         const response = await fetch(url, options);
         let data = null;
@@ -51,8 +58,9 @@ export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de 
         }
 
         if (!response.ok) {
-            let errorMessage = `${friendlyMessage}. Código: ${response.status}`;
+            initSidebar();
 
+            let errorMessage = `${friendlyMessage}. Código: ${response.status}`;
             if (data && typeof data === 'object') {
                 // Manejar errores de validación de Spring Boot (DTO errors)
                 if (data.errors && typeof data.errors === 'object') {
@@ -70,6 +78,7 @@ export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de 
 
         return data;
     } catch (error) {
+        initSidebar();
         if (error instanceof APIError) {
             throw error;
         }
@@ -89,13 +98,14 @@ export const initSession = async () => {
         const response = await getAuthMe();
         if (response.status === "OK") {
             currentUser = response.data;
-            localStorage.setItem("app.user.name", currentUser.fullName || 'Usuario');
-            localStorage.setItem("app.user.role", currentUser.role || 'Rol');
+            const privileges = currentUser.privileges || currentUser.privilegeList || currentUser.directPrivileges || [];
+            setUserPrivileges(Array.isArray(privileges) ? privileges : []);
             return currentUser;
         } else {
             await forceLogout("Sesión no válida");
         }
     } catch (error) {
+        initSidebar();
         if (error?.status === 401) {
             await forceLogout("Sesión expirada");
         } else {
@@ -109,8 +119,7 @@ export const initSession = async () => {
 const forceLogout = async (reason = 'Sesión finalizada') => {
     // Limpiar usuario
     currentUser = null;
-    localStorage.removeItem('app.user.name');
-    localStorage.removeItem('app.user.role');
+    clearUserPrivileges();
 
     // Limpiar tokens/auth
     localStorage.removeItem('app.auth.token');

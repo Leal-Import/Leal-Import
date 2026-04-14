@@ -2,7 +2,7 @@ import { validateReason } from './cancelSale.logic.js';
 import { DOMRefs } from './cancelSale.dom.js';
 import { initCancelSaleEvents } from './cancelSale.event.js';
 import { cancelSaleState } from './cancelSale.state.js';
-import { navigateTo, ROUTES } from '../../utils/router.js';
+import { navigateTo } from '../../utils/router.js';
 import { handleApiError } from '../../utils/api.utils.js';
 import { toggleModal, showMessage, showElement, hideElement, disableElement, removeDisable } from '../../utils/dom.js';
 
@@ -19,6 +19,8 @@ const onOpenCancelSale = () => {
 
 const onCancelSale = async (e) => {
     e.preventDefault();
+    const confirmation = await showMessage(`¿Estás seguro de que deseas cancelar la ${cancelSaleState.messageWord}?`, 'Esta accion no se puede deshacer', 'warning', false, true);
+    if (!confirmation.isConfirmed) return;
     const reason = DOMRefs.refs.txtCancelReason.value.trim();
     const isNotReasonValid = validateReason(reason);
 
@@ -30,10 +32,10 @@ const onCancelSale = async (e) => {
     disableElement(DOMRefs.refs.btnConfirmCancelSale);
     try {
         await cancelSaleState.onPatchSale(cancelSaleState.idSale, reason);
-        await showMessage('Venta cancelada', 'Éxito', 'success');
-        navigateTo(ROUTES.SALES);
+        await showMessage(`${cancelSaleState.messageWord} cancelada`, 'Éxito', 'success');
+        navigateTo(cancelSaleState.urlToNavigate);
     } catch (error) {
-        await handleApiError(error, 'No se pudo cancelar la venta. Por favor, inténtalo de nuevo.');
+        await handleApiError(error, `No se pudo cancelar la ${cancelSaleState.messageWord}. Por favor, inténtalo de nuevo.`);
     } finally {
         hideElement(DOMRefs.refs.btnConfirmCancelSaleLoader);
         removeDisable(DOMRefs.refs.btnConfirmCancelSale);
@@ -58,10 +60,12 @@ const onVerifyCancelReason = (e) => {
     }
 };
 
-export const initCancelSale = (idSale, onPatchSale) => {
+export const initCancelSale = (idSale, onPatchSale, urlToNavigate, messageWord) => {
     const refs = DOMRefs.init();
     cancelSaleState.onPatchSale = onPatchSale;
     cancelSaleState.idSale = idSale;
+    cancelSaleState.urlToNavigate = urlToNavigate;
+    cancelSaleState.messageWord = messageWord;
     showElement(refs.btnOpenCancelSale);
     initCancelSaleEvents({ Refs: refs, onOpenCancelSale, onCancelSale, onVerifyCancelReason, onCloseCancelSale: () => toggleModal(refs.modalCancelSale, false) });
 };

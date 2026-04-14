@@ -7,6 +7,7 @@
         "keyframes-name-pattern": "^[a-z][a-zA-Z0-9]*$",
         "container-name-pattern": null,
         "color-function-alias-notation": null,
+        "color-function-notation": null,
         "alpha-value-notation": null,
         "declaration-property-value-no-unknown": null,
         "no-descending-specificity": null,
@@ -18,7 +19,8 @@
                 "font-size": ["/^var\\(--/", "inherit"],
                 "font-weight": ["/^var\\(--/", "inherit"]
             }
-        ]
+        ],
+        "media-feature-range-notation": null
     },
     "overrides": [
         {

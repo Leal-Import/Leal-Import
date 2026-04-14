@@ -1,11 +1,11 @@
-import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, insertPaymentMethods, resetInputType, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "./configuration.dom.js";
-import { validatePaymentMethod, validateProfile, validateUsernameChange } from "./configuration.logic.js";
+import { changePasswordType, changeStyleTogglePassword, cleanCampsNewPassword, cleanCampsToggleUsername, cleanTxtVerifyPassword, DOMRefs, fillProfileForm, filltxtUsername, insertPaymentMethods, resetInputType, renderRolePrivileges, renderRolesList, setReq, toggleDarkMode, toggleSwitch, updateLabel } from "./configuration.dom.js";
+import { getAllPrivileges, validatePaymentMethod, validateProfile, validateUsernameChange } from "./configuration.logic.js";
 import { configurationState, resetConfigurationState } from "./configuration.state.js";
 import { getCurrentEmployee, handleApiError } from "../../utils/api.utils.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal, createModuleInitializer, qsa } from "../../utils/dom.js";
 import { navigateTo, ROUTES } from "../../utils/router.js";
 import { initConfigurationEvents } from "./configuration.event.js";
-import { changePassword, deletePaymentMethod, editProfile, getPaymentMethods, logout, postPaymentMethod, putPaymentMethod, verifyCurrentPassword } from "./configuration.service.js";
+import { changePassword, deletePaymentMethod, editProfile, getPaymentMethods, logout, postPaymentMethod, putPaymentMethod, putUsername, verifyCurrentPassword, getSystemRoles, addPrivilegeToRole, removePrivilegeFromRole } from "./configuration.service.js";
 import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword } from "../../core/logic/new.password.logic.js";
 
 const onChangeDarkMode = () => {
@@ -383,11 +383,18 @@ const onChangeUsername = async (e) => {
     disableElement(txtNewUsername);
     disableElement(txtPassword);
     disableElement(DOMRefs.refs.btnSaveUsername);
+    const payload = {
+        currentUsername: txtCurrentUsername.value.trim(),
+        newUsername: txtNewUsername.value.trim(),
+        password: txtPassword.value.trim()
+    };
 
     try {
-        //await new Promise(resolve => setTimeout(resolve, 1500)); // Simula llamada al backend
+        await putUsername(payload);
         await showMessage('Éxito', 'Nombre de usuario actualizado correctamente', 'success', true);
         configurationState.profile.username = txtNewUsername.value.trim();
+        toggleModal(DOMRefs.refs.modalChangeUsername, false);
+        cleanCampsToggleUsername(DOMRefs.refs, DOMRefs.refs.togglePasswordForUsername.querySelector('svg'));
     } catch (error) {
         await handleApiError(error, 'No se pudo cambiar el nombre de usuario. Por favor, inténtalo de nuevo.');
     } finally {
@@ -396,8 +403,6 @@ const onChangeUsername = async (e) => {
         removeDisable(DOMRefs.refs.togglePasswordForUsername);
         removeDisable(txtNewUsername);
         removeDisable(txtPassword);
-        cleanCampsToggleUsername(DOMRefs.refs, DOMRefs.refs.togglePasswordForUsername.querySelector('svg'));
-        toggleModal(DOMRefs.refs.modalChangeUsername, false);
     }
 };
 
@@ -416,6 +421,123 @@ const onVerifyPaymentMethod = (e) => {
         removeDisable(DOMRefs.refs.btnAddPaymentMethod);
         hideElement(DOMRefs.refs.pmHint);
     }
+};
+
+const getRolePrivilegesKey = (role) => {
+    if (!role) return 'privileges';
+    if (Array.isArray(role.rolePrivileges)) return 'rolePrivileges';
+    if (Array.isArray(role.privileges)) return 'privileges';
+    if (Array.isArray(role.privilegeList)) return 'privilegeList';
+    return 'privileges';
+};
+
+const updateSelectedRole = (updatedRole) => {
+    configurationState.roles = configurationState.roles.map(role =>
+        role.idRole === updatedRole.idRole ? updatedRole : role
+    );
+    configurationState.selectedRole = updatedRole;
+    renderRoleManagement();
+};
+
+const renderRoleManagement = () => {
+    const allPrivileges = getAllPrivileges(configurationState.roles);
+    const selectedRoleId = configurationState.selectedRole.idRole;
+
+    renderRolesList(configurationState.roles, selectedRoleId, DOMRefs.refs.rolesList, onSelectRole);
+    renderRolePrivileges(
+        configurationState.selectedRole,
+        allPrivileges,
+        DOMRefs.refs.privilegesList,
+        DOMRefs.refs.rolePrivilegeCount,
+        DOMRefs.refs.selectedRoleName,
+        DOMRefs.refs.privilegeButtons,
+        onRemoveRolePrivilege,
+        onAddRolePrivilege
+    );
+};
+
+const onSelectRole = (role) => {
+    configurationState.selectedRole = role;
+    renderRoleManagement();
+};
+
+const loadRolesForManagement = async () => {
+    try {
+        const roles = await getSystemRoles();
+        configurationState.roles = Array.isArray(roles) ? roles : roles?.data ?? [];
+        configurationState.selectedRole = configurationState.roles[0] || null;
+        renderRoleManagement();
+    } catch (error) {
+        await handleApiError(error, 'No se pudieron cargar los roles. Por favor, inténtalo de nuevo más tarde.');
+        toggleModal(DOMRefs.refs.modalRoleManagement, false);
+    }
+};
+
+const onAddRolePrivilege = async (privilege) => {
+    if (!configurationState.selectedRole) return;
+    const roleId = configurationState.selectedRole.idRole;
+    const privilegeId = privilege.idPrivilege;
+    if (!roleId || !privilegeId) return;
+
+    const controls = qsa('#modalRoleManagement button');
+    controls.forEach(disableElement);
+    try {
+        await addPrivilegeToRole(roleId, privilegeId);
+
+        const privilegesKey = getRolePrivilegesKey(configurationState.selectedRole);
+        const updatedPrivileges = [...configurationState.selectedRole.privileges, privilege];
+        const updatedRole = {
+            ...configurationState.selectedRole,
+            [privilegesKey]: updatedPrivileges
+        };
+
+        await showMessage('Éxito', 'Privilegio asignado correctamente.', 'success', true);
+        updateSelectedRole(updatedRole);
+    } catch (error) {
+        await handleApiError(error, 'No se pudo agregar el privilegio al rol. Por favor, inténtalo de nuevo.');
+    } finally {
+        controls.forEach(removeDisable);
+    }
+};
+
+const onRemoveRolePrivilege = async (privilege) => {
+    if (!configurationState.selectedRole) return;
+    const roleId = configurationState.selectedRole.idRole;
+    const privilegeId = privilege.idPrivilege;
+    if (!roleId || !privilegeId) return;
+
+    const controls = qsa('#modalRoleManagement button');
+    controls.forEach(disableElement);
+    try {
+        await removePrivilegeFromRole(roleId, privilegeId);
+
+        const privilegesKey = getRolePrivilegesKey(configurationState.selectedRole);
+        const updatedPrivileges = configurationState.selectedRole.privileges.filter(p => p.idPrivilege !== privilegeId);
+        const updatedRole = {
+            ...configurationState.selectedRole,
+            [privilegesKey]: updatedPrivileges
+        };
+
+        await showMessage('Éxito', 'Privilegio removido correctamente.', 'success', true);
+        updateSelectedRole(updatedRole);
+    } catch (error) {
+        await handleApiError(error, 'No se pudo eliminar el privilegio del rol. Por favor, inténtalo de nuevo.');
+    } finally {
+        controls.forEach(removeDisable);
+    }
+};
+
+const onOpenModalManageRoles = async () => {
+    toggleModal(DOMRefs.refs.modalRoleManagement, true);
+    if (configurationState.roles.length === 0) {
+        await loadRolesForManagement();
+        return;
+    }
+    renderRoleManagement();
+};
+
+const onCloseModalManageRoles = () => {
+    toggleModal(DOMRefs.refs.modalRoleManagement, false);
 };
 
 const initializeUi = (Refs) => {
@@ -444,12 +566,17 @@ const initializeUi = (Refs) => {
         onVerifyConfirmPassword: () => {
             validateMatch(DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword, DOMRefs.refs.passwordMatchHint);
             checkBtn(getScore(DOMRefs.refs.txtNewPassword.value), DOMRefs.refs.txtNewPassword, DOMRefs.refs.txtConfirmPassword);
-        }
+        },
+        onOpenModalManageRoles,
+        onCloseModalManageRoles
     });
 };
 
 const loadDataFlow = (Refs) => {
     toggleSwitch(Refs.darkModeToggle, configurationState.isDarkMode);
+    if (!configurationState.isAdmin && Refs.btnOpenManageRoles) {
+        Refs.btnOpenManageRoles.style.display = 'none';
+    }
 };
 
 const loadState = async () => {

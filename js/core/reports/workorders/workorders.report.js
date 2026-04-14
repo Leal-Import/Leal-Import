@@ -1,5 +1,32 @@
 // js/core/reports/workorders/work.order.report.js
 
+const urlToBase64 = (url) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            resolve({
+                data: canvas.toDataURL('image/jpeg', 0.92),
+                w: img.width,
+                h: img.height
+            });
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+    });
+};
+
+const fmt = (val) =>
+    `$${Number(val ?? 0).toLocaleString('es-SV', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const stageLabel = (stage) => ({ BEFORE: 'Antes', DURING: 'Durante', AFTER: 'Después' })[stage] ?? stage ?? '—';
+const stageColor = (stage) => ({ BEFORE: [245, 158, 11], DURING: [59, 130, 246], AFTER: [46, 125, 50] })[stage] ?? [150, 150, 150];
+const stageOrder = { BEFORE: 0, DURING: 1, AFTER: 2 };
+
 const drawFooter = (doc, pageW, pageH, margin) => {
     doc.setDrawColor(220, 220, 220);
     doc.setLineWidth(0.3);
@@ -23,18 +50,130 @@ const checkPageBreak = (doc, y, needed, pageH, margin, pageW) => {
 const sectionHeader = (doc, y, contentW, margin, pageW, title, sub = '') => {
     doc.setFillColor(30, 30, 30);
     doc.rect(margin, y, contentW, 9, 'F');
+    doc.setFillColor(211, 24, 19);
+    doc.rect(margin, y, 3, 9, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, margin + 4, y + 6);
+    doc.text(title, margin + 7, y + 6);
     if (sub) {
         doc.setTextColor(160, 160, 160);
+        doc.setFontSize(7);
         doc.text(sub, pageW - margin - 4, y + 6, { align: 'right' });
     }
     return y + 9;
 };
 
-export const generateWorkOrderReport = (order) => {
+const drawInfoBox = (doc, rows, x, y, w, title) => {
+    const rowH = 9;
+    const boxH = rows.length * rowH + 16;
+
+    doc.setFillColor(250, 250, 250);
+    doc.roundedRect(x, y, w, boxH, 3, 3, 'F');
+    doc.setDrawColor(235, 235, 235);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(x, y, w, boxH, 3, 3, 'S');
+
+    const tagW = title.length * 2.2 + 6;
+    doc.setFillColor(211, 24, 19);
+    doc.roundedRect(x + 4, y + 4, tagW, 5, 1, 1, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, x + 4 + tagW / 2, y + 7.5, { align: 'center' });
+
+    rows.forEach((row, i) => {
+        const rowY = y + 16 + i * rowH;
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(130, 130, 130);
+        doc.text(row.label, x + 4, rowY);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(30, 30, 30);
+        const val = doc.splitTextToSize(String(row.value ?? '—'), w - 10)[0];
+        doc.text(val, x + w - 4, rowY, { align: 'right' });
+        if (i < rows.length - 1) {
+            doc.setDrawColor(240, 240, 240);
+            doc.setLineWidth(0.2);
+            doc.line(x + 4, rowY + 3, x + w - 4, rowY + 3);
+        }
+    });
+
+    return y + boxH;
+};
+
+const loadServicePhotos = async (photos = []) => {
+    const sorted = [...photos].sort(
+        (a, b) => (stageOrder[a.imageStage] ?? 99) - (stageOrder[b.imageStage] ?? 99)
+    );
+    const results = await Promise.all(
+        sorted.map(async (p) => {
+            const result = await urlToBase64(p.photoUrl);
+            if (!result) return null;
+            return {
+                b64: result.data,
+                naturalW: result.w,
+                naturalH: result.h,
+                stage: p.imageStage
+            };
+        })
+    );
+    return results.filter(Boolean);
+};
+
+const drawServicePhotos = (doc, photos, y, contentW, margin, pageH, pageW) => {
+    if (!photos.length) return y;
+
+    const gap     = 4;
+    const badgeH  = 8;
+    const MAX_H   = 65;
+    const cols    = Math.min(photos.length, 3);
+    const MAX_W   = photos.length === 1
+        ? contentW * 0.48
+        : (contentW - (cols - 1) * gap) / cols;
+
+    const sized = photos.map(p => {
+        const ratio = p.naturalH / p.naturalW;
+        let imgW = MAX_W;
+        let imgH = imgW * ratio;
+        if (imgH > MAX_H) {
+            imgH = MAX_H;
+            imgW = imgH / ratio;
+        }
+        return { ...p, imgW, imgH };
+    });
+
+    const rowMaxH = Math.max(...sized.map(p => p.imgH));
+
+    y = checkPageBreak(doc, y, rowMaxH + gap + badgeH + 6, pageH, margin, pageW);
+
+    sized.forEach((p, i) => {
+        const colX = photos.length === 1
+            ? margin + (contentW - p.imgW) / 2
+            : margin + i * (MAX_W + gap) + (MAX_W - p.imgW) / 2;
+
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(colX, y, p.imgW, p.imgH, 2, 2, 'S');
+        doc.addImage(p.b64, 'JPEG', colX, y, p.imgW, p.imgH, undefined, 'NONE');
+
+        const [br, bg, bb] = stageColor(p.stage);
+        const badgeX = photos.length === 1
+            ? margin + (contentW - p.imgW) / 2
+            : margin + i * (MAX_W + gap);
+
+        doc.setFillColor(br, bg, bb);
+        doc.roundedRect(badgeX, y + rowMaxH + gap, MAX_W, badgeH, 2, 2, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(6.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text(stageLabel(p.stage), badgeX + MAX_W / 2, y + rowMaxH + gap + 5.5, { align: 'center' });
+    });
+
+    return y + rowMaxH + gap + badgeH + 10;
+};
+
+export const generateWorkOrderReport = async (order) => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const pageW = doc.internal.pageSize.getWidth();
@@ -42,9 +181,29 @@ export const generateWorkOrderReport = (order) => {
     const margin = 14;
     const contentW = pageW - margin * 2;
 
-    const isCompleted = order.orderStatusName === 'Completada';
-    const isPaid = order.paymentStatus === 'Pagado';
-    const hasDebt = Number(order.amountDue) > 0;
+    const isCompleted = order.status === 'Completada';
+    const isCancelled = !!order.cancellationReason;
+    const hasDebt = Number(order.amountDue ?? 0) > 0;
+
+    const paymentStatusColor = {
+        'PAGADO': [46, 125, 50],
+        'PARCIAL': [245, 158, 11],
+        'PENDIENTE': [211, 24, 19]
+    }[order.paymentStatus?.toUpperCase()] ?? [150, 150, 150];
+
+    const statusColor = isCompleted ? [46, 125, 50] : isCancelled ? [100, 100, 100] : [211, 24, 19];
+
+    const activePayments    = (order.workOrdersPayments || []).filter(p => !p.isCancelled);
+    const cancelledPayments = (order.workOrdersPayments || []).filter(p => p.isCancelled);
+    const totalPaid         = activePayments.reduce((a, p) => a + Number(p.amount ?? 0), 0);
+
+    // Precargar fotos con dimensiones naturales
+    const servicePhotosMap = {};
+    for (const s of order.workOrdersServices || []) {
+        if (s.photos?.length) {
+            servicePhotosMap[s.idWorkOrderService] = await loadServicePhotos(s.photos);
+        }
+    }
 
     // ═══════════════════════════════════════
     // HEADER
@@ -72,10 +231,10 @@ export const generateWorkOrderReport = (order) => {
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(255, 200, 200);
-    doc.text(`${order.vehicleInfo.brand} ${order.vehicleInfo.model} ${order.vehicleInfo.year}`, pageW - margin, 28, { align: 'right' });
+    doc.text(`${order.vehicleInfo.brand} ${order.vehicleInfo.model} · ${order.vehicleInfo.year}`, pageW - margin, 28, { align: 'right' });
 
     // ═══════════════════════════════════════
-    // META — fecha + badges
+    // META
     // ═══════════════════════════════════════
     let y = 48;
 
@@ -90,20 +249,16 @@ export const generateWorkOrderReport = (order) => {
         margin + 32, y
     );
 
-    // Badge estado orden
-    const b1W = 28;
-    const b1Color = isCompleted ? [46, 125, 50] : [211, 24, 19];
-    doc.setFillColor(...b1Color);
+    const b1W = 30;
+    doc.setFillColor(...statusColor);
     doc.roundedRect(pageW - margin - b1W, y - 5, b1W, 8, 2, 2, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.text(order.orderStatusName?.toUpperCase() || '—', pageW - margin - b1W / 2, y, { align: 'center' });
+    doc.text(order.status?.toUpperCase() || '—', pageW - margin - b1W / 2, y, { align: 'center' });
 
-    // Badge pago
-    const b2W = 24;
-    const b2Color = isPaid ? [46, 125, 50] : hasDebt ? [211, 24, 19] : [245, 158, 11];
-    doc.setFillColor(...b2Color);
+    const b2W = 28;
+    doc.setFillColor(...paymentStatusColor);
     doc.roundedRect(pageW - margin - b1W - b2W - 4, y - 5, b2W, 8, 2, 2, 'F');
     doc.setTextColor(255, 255, 255);
     doc.text(order.paymentStatus?.toUpperCase() || '—', pageW - margin - b1W - b2W - 4 + b2W / 2, y, { align: 'center' });
@@ -115,87 +270,60 @@ export const generateWorkOrderReport = (order) => {
     y += 10;
 
     // ═══════════════════════════════════════
-    // DOS COLUMNAS — Vehículo | Cliente & Mecánico
+    // RAZÓN DE CANCELACIÓN
     // ═══════════════════════════════════════
-    const colW = (contentW - 6) / 2;
+    if (order.cancellationReason?.trim()) {
+        y = checkPageBreak(doc, y, 22, pageH, margin, pageW);
+        const lines    = doc.splitTextToSize(order.cancellationReason.trim(), contentW - 12);
+        const cancelH  = Math.max(18, lines.length * 5 + 14);
+
+        doc.setFillColor(255, 235, 235);
+        doc.setDrawColor(211, 24, 19);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(margin, y, contentW, cancelH, 2, 2, 'FD');
+        doc.setFillColor(211, 24, 19);
+        doc.roundedRect(margin + 4, y + 4, 38, 5, 1, 1, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(6);
+        doc.setFont('helvetica', 'bold');
+        doc.text('RAZÓN DE CANCELACIÓN', margin + 23, y + 7.5, { align: 'center' });
+        doc.setTextColor(120, 20, 20);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(lines, margin + 4, y + 14);
+        y += cancelH + 10;
+    }
+
+    // ═══════════════════════════════════════
+    // DOS COLUMNAS — Vehículo | Orden
+    // ═══════════════════════════════════════
+    const colW  = (contentW - 6) / 2;
     const col2X = margin + colW + 6;
-    const boxH = 46;
-
-    y = checkPageBreak(doc, y, boxH, pageH, margin, pageW);
-
-    // Col izquierda — Vehículo
-    doc.setFillColor(250, 250, 250);
-    doc.roundedRect(margin, y, colW, boxH, 3, 3, 'F');
-    doc.setDrawColor(235, 235, 235);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(margin, y, colW, boxH, 3, 3, 'S');
-
-    doc.setFillColor(211, 24, 19);
-    doc.roundedRect(margin + 4, y + 4, 22, 5, 1, 1, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'bold');
-    doc.text('VEHÍCULO', margin + 15, y + 7.5, { align: 'center' });
 
     const vehicleRows = [
-        { label: 'Marca / Modelo', value: `${order.vehicleInfo.brand} ${order.vehicleInfo.model}` },
-        { label: 'Año', value: String(order.vehicleInfo.year) },
-        { label: 'VIN', value: order.vehicleInfo.vin || '—' }
+        { label: 'VIN',           value: order.vehicleInfo.vin },
+        { label: 'Marca / Modelo',value: `${order.vehicleInfo.brand} ${order.vehicleInfo.model}` },
+        { label: 'Año',           value: order.vehicleInfo.year }
     ];
-
-    vehicleRows.forEach((row, i) => {
-        const rowY = y + 17 + i * 9;
-        doc.setFontSize(7.5);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(130, 130, 130);
-        doc.text(row.label, margin + 4, rowY);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(30, 30, 30);
-        doc.text(row.value, margin + colW - 4, rowY, { align: 'right' });
-        if (i < vehicleRows.length - 1) {
-            doc.setDrawColor(240, 240, 240);
-            doc.setLineWidth(0.2);
-            doc.line(margin + 4, rowY + 3, margin + colW - 4, rowY + 3);
-        }
-    });
-
-    // Col derecha — Fechas y mecánico
-    doc.setFillColor(250, 250, 250);
-    doc.roundedRect(col2X, y, colW, boxH, 3, 3, 'F');
-    doc.setDrawColor(235, 235, 235);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(col2X, y, colW, boxH, 3, 3, 'S');
-
-    doc.setFillColor(211, 24, 19);
-    doc.roundedRect(col2X + 4, y + 4, 20, 5, 1, 1, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'bold');
-    doc.text('ORDEN', col2X + 14, y + 7.5, { align: 'center' });
 
     const orderRows = [
-        { label: 'Fecha de orden', value: order.orderDate || '—' },
-        { label: 'Fecha estimada', value: order.estimatedDate || '—' },
-        { label: 'Mecánico a cargo', value: order.payments?.[0]?.employeeName || '—' }
+        { label: 'Fecha de orden',  value: order.workOrderDate },
+        { label: 'Fecha estimada',  value: order.estimatedDate },
+        { label: 'Fecha de cierre', value: order.closureDate || 'Sin cerrar' }
     ];
 
-    orderRows.forEach((row, i) => {
-        const rowY = y + 17 + i * 9;
-        doc.setFontSize(7.5);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(130, 130, 130);
-        doc.text(row.label, col2X + 4, rowY);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(30, 30, 30);
-        doc.text(row.value, col2X + colW - 4, rowY, { align: 'right' });
-        if (i < orderRows.length - 1) {
-            doc.setDrawColor(240, 240, 240);
-            doc.setLineWidth(0.2);
-            doc.line(col2X + 4, rowY + 3, col2X + colW - 4, rowY + 3);
-        }
-    });
+    const leftH  = vehicleRows.length * 9 + 16;
+    const rightH = orderRows.length  * 9 + 16;
+    const colsH  = Math.max(leftH, rightH);
 
-    y += boxH + 10;
+    y = checkPageBreak(doc, y, colsH + 12, pageH, margin, pageW);
+    y = sectionHeader(doc, y, contentW, margin, pageW, 'INFORMACIÓN DE LA ORDEN');
+    y += 4;
+
+    drawInfoBox(doc, vehicleRows, margin, y, colW, 'VEHÍCULO');
+    drawInfoBox(doc, orderRows,   col2X,  y, colW, 'ORDEN');
+
+    y += colsH + 10;
 
     // ═══════════════════════════════════════
     // SERVICIOS
@@ -203,46 +331,54 @@ export const generateWorkOrderReport = (order) => {
     y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
     y = sectionHeader(doc, y, contentW, margin, pageW,
         'SERVICIOS REALIZADOS',
-        `${order.services?.length || 0} servicio${order.services?.length !== 1 ? 's' : ''}`
+        `${order.workOrdersServices?.length || 0} servicio${order.workOrdersServices?.length !== 1 ? 's' : ''}`
     );
 
-    const servicesBody = order.services?.length
-        ? order.services.map((s, i) => [
+    const servicesBody = order.workOrdersServices?.length
+        ? order.workOrdersServices.map((s, i) => [
             `#${String(i + 1).padStart(2, '0')}`,
-            s.nameService || '—',
-            `$${Number(s.priceApplied).toFixed(2)}`
+            s.serviceName || '—',
+            s.assignedEmployee || '—',
+            fmt(s.priceApplied)
         ])
-        : [['—', 'Sin servicios registrados', '$0.00']];
+        : [['—', 'Sin servicios registrados', '—', '$0.00']];
 
     doc.autoTable({
-        head: [['#', 'Servicio', 'Precio']],
+        head: [['#', 'Servicio', 'Asignado a', 'Precio']],
         body: servicesBody,
         startY: y,
         margin: { left: margin, right: margin },
         theme: 'plain',
-        styles: {
-            fontSize: 9,
-            cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
-            textColor: [60, 60, 60],
-            lineColor: [235, 235, 235],
-            lineWidth: 0.3
-        },
-        headStyles: {
-            fillColor: [245, 245, 245],
-            textColor: [130, 130, 130],
-            fontStyle: 'bold',
-            fontSize: 7.5,
-            lineWidth: 0
-        },
+        styles: { fontSize: 9, cellPadding: { top: 5, bottom: 5, left: 4, right: 4 }, textColor: [60, 60, 60], lineColor: [235, 235, 235], lineWidth: 0.3 },
+        headStyles: { fillColor: [245, 245, 245], textColor: [130, 130, 130], fontStyle: 'bold', fontSize: 7.5, lineWidth: 0 },
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
             1: { cellWidth: 'auto' },
-            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
+            2: { cellWidth: 52, textColor: [100, 100, 100] },
+            3: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
         alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
-    y = doc.lastAutoTable.finalY + 10;
+    y = doc.lastAutoTable.finalY + 6;
+
+    // Fotos por servicio
+    for (const s of order.workOrdersServices || []) {
+        const photos = servicePhotosMap[s.idWorkOrderService] || [];
+        if (!photos.length) continue;
+
+        y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
+
+        doc.setFillColor(245, 245, 245);
+        doc.rect(margin, y, contentW, 7, 'F');
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Fotos: ${s.serviceName}`, margin + 4, y + 5);
+        y += 9;
+
+        y = drawServicePhotos(doc, photos, y, contentW, margin, pageH, pageW);
+    }
 
     // ═══════════════════════════════════════
     // REPUESTOS
@@ -250,41 +386,31 @@ export const generateWorkOrderReport = (order) => {
     y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
     y = sectionHeader(doc, y, contentW, margin, pageW,
         'REPUESTOS UTILIZADOS',
-        `${order.spareParts?.length || 0} repuesto${order.spareParts?.length !== 1 ? 's' : ''}`
+        `${order.workOrdersSpareParts?.length || 0} repuesto${order.workOrdersSpareParts?.length !== 1 ? 's' : ''}`
     );
 
-    const spareBody = order.spareParts?.length
-        ? order.spareParts.map((p, i) => [
+    const spareBody = order.workOrdersSpareParts?.length
+        ? order.workOrdersSpareParts.map((p, i) => [
             `#${String(i + 1).padStart(2, '0')}`,
             p.sparePartName || '—',
-            `$${Number(p.priceApplied).toFixed(2)}`
+            p.assignedEmployee || '—',
+            fmt(p.priceApplied)
         ])
-        : [['—', 'Sin repuestos registrados', '$0.00']];
+        : [['—', 'Sin repuestos registrados', '—', '$0.00']];
 
     doc.autoTable({
-        head: [['#', 'Repuesto', 'Precio']],
+        head: [['#', 'Repuesto', 'Asignado a', 'Precio']],
         body: spareBody,
         startY: y,
         margin: { left: margin, right: margin },
         theme: 'plain',
-        styles: {
-            fontSize: 9,
-            cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
-            textColor: [60, 60, 60],
-            lineColor: [235, 235, 235],
-            lineWidth: 0.3
-        },
-        headStyles: {
-            fillColor: [245, 245, 245],
-            textColor: [130, 130, 130],
-            fontStyle: 'bold',
-            fontSize: 7.5,
-            lineWidth: 0
-        },
+        styles: { fontSize: 9, cellPadding: { top: 5, bottom: 5, left: 4, right: 4 }, textColor: [60, 60, 60], lineColor: [235, 235, 235], lineWidth: 0.3 },
+        headStyles: { fillColor: [245, 245, 245], textColor: [130, 130, 130], fontStyle: 'bold', fontSize: 7.5, lineWidth: 0 },
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
             1: { cellWidth: 'auto' },
-            2: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
+            2: { cellWidth: 52, textColor: [100, 100, 100] },
+            3: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
         alternateRowStyles: { fillColor: [252, 252, 252] }
     });
@@ -292,69 +418,92 @@ export const generateWorkOrderReport = (order) => {
     y = doc.lastAutoTable.finalY + 10;
 
     // ═══════════════════════════════════════
-    // ABONOS
+    // ABONOS ACTIVOS
     // ═══════════════════════════════════════
     y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
     y = sectionHeader(doc, y, contentW, margin, pageW,
         'ABONOS REALIZADOS',
-        `${order.payments?.length || 0} abono${order.payments?.length !== 1 ? 's' : ''}`
+        `${activePayments.length} abono${activePayments.length !== 1 ? 's' : ''}`
     );
-
-    const paymentsBody = order.payments?.length
-        ? order.payments.map(p => [
-            `#${p.paymentNumber}`,
-            p.paymentMethod || '—',   // 👈 nuevo
-            p.employeeName || '—',
-            p.paymentDate || '—',
-            `$${Number(p.amount).toFixed(2)}`
-        ])
-        : [['—', '—', 'Sin abonos registrados', '$0.00']];
 
     doc.autoTable({
         head: [['#', 'Método', 'Registrado por', 'Fecha', 'Monto']],
-        body: paymentsBody,
+        body: activePayments.length
+            ? activePayments.map(p => [
+                `#${p.paymentNumber}`,
+                p.paymentMethodName || '—',
+                p.employeeName || '—',
+                p.paymentDate || '—',
+                fmt(p.amount)
+            ])
+            : [['—', '—', 'Sin abonos registrados', '—', '$0.00']],
         startY: y,
         margin: { left: margin, right: margin },
         theme: 'plain',
-        styles: {
-            fontSize: 9,
-            cellPadding: { top: 5, bottom: 5, left: 4, right: 4 },
-            textColor: [60, 60, 60],
-            lineColor: [235, 235, 235],
-            lineWidth: 0.3
-        },
-        headStyles: {
-            fillColor: [245, 245, 245],
-            textColor: [130, 130, 130],
-            fontStyle: 'bold',
-            fontSize: 7.5,
-            lineWidth: 0
-        },
+        styles: { fontSize: 9, cellPadding: { top: 5, bottom: 5, left: 4, right: 4 }, textColor: [60, 60, 60], lineColor: [235, 235, 235], lineWidth: 0.3 },
+        headStyles: { fillColor: [245, 245, 245], textColor: [130, 130, 130], fontStyle: 'bold', fontSize: 7.5, lineWidth: 0 },
         columnStyles: {
             0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
-            1: { cellWidth: 30 },          // 👈 método
-            2: { cellWidth: 'auto' },      // registrado por
+            1: { cellWidth: 30 },
+            2: { cellWidth: 'auto' },
             3: { cellWidth: 26, halign: 'center', textColor: [130, 130, 130] },
             4: { cellWidth: 32, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
         alternateRowStyles: { fillColor: [252, 252, 252] }
     });
 
-    y = doc.lastAutoTable.finalY + 10;
+    y = doc.lastAutoTable.finalY + 6;
+
+    // ═══════════════════════════════════════
+    // ABONOS CANCELADOS
+    // ═══════════════════════════════════════
+    if (cancelledPayments.length > 0) {
+        y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
+        y = sectionHeader(doc, y, contentW, margin, pageW,
+            'ABONOS CANCELADOS',
+            `${cancelledPayments.length} cancelado${cancelledPayments.length !== 1 ? 's' : ''}`
+        );
+
+        doc.autoTable({
+            head: [['#', 'Método', 'Registrado por', 'Fecha', 'Monto']],
+            body: cancelledPayments.map(p => [
+                `#${p.paymentNumber}`,
+                p.paymentMethodName || '—',
+                p.employeeName || '—',
+                p.paymentDate || '—',
+                fmt(p.amount)
+            ]),
+            startY: y,
+            margin: { left: margin, right: margin },
+            theme: 'plain',
+            styles: { fontSize: 9, cellPadding: { top: 5, bottom: 5, left: 4, right: 4 }, textColor: [160, 80, 80], lineColor: [245, 220, 220], lineWidth: 0.3 },
+            headStyles: { fillColor: [255, 240, 240], textColor: [180, 100, 100], fontStyle: 'bold', fontSize: 7.5, lineWidth: 0 },
+            columnStyles: {
+                0: { cellWidth: 14, halign: 'center' },
+                1: { cellWidth: 30 },
+                2: { cellWidth: 'auto' },
+                3: { cellWidth: 26, halign: 'center' },
+                4: { cellWidth: 32, halign: 'right', fontStyle: 'bold' }
+            },
+            alternateRowStyles: { fillColor: [255, 248, 248] }
+        });
+
+        y = doc.lastAutoTable.finalY + 10;
+    }
 
     // ═══════════════════════════════════════
     // RESUMEN FINANCIERO
     // ═══════════════════════════════════════
-    y = checkPageBreak(doc, y, 50, pageH, margin, pageW);
+    y = checkPageBreak(doc, y, 56, pageH, margin, pageW);
 
-    const totalServices = order.services?.reduce((a, s) => a + Number(s.priceApplied), 0) ?? 0;
-    const totalSpareParts = order.spareParts?.reduce((a, p) => a + Number(p.priceApplied), 0) ?? 0;
-    const totalPaid = order.payments?.reduce((a, p) => a + Number(p.amount), 0) ?? 0;
+    const totalServices   = (order.workOrdersServices   || []).reduce((a, s) => a + Number(s.priceApplied ?? 0), 0);
+    const totalSpareParts = (order.workOrdersSpareParts || []).reduce((a, p) => a + Number(p.priceApplied ?? 0), 0);
 
+    const summaryBoxH = 54;
     doc.setFillColor(22, 22, 22);
-    doc.roundedRect(margin, y, contentW, 52, 3, 3, 'F');
+    doc.roundedRect(margin, y, contentW, summaryBoxH, 3, 3, 'F');
     doc.setFillColor(211, 24, 19);
-    doc.rect(margin, y, 3, 52, 'F');
+    doc.rect(margin, y, 3, summaryBoxH, 'F');
 
     doc.setTextColor(180, 180, 180);
     doc.setFontSize(7);
@@ -366,10 +515,10 @@ export const generateWorkOrderReport = (order) => {
     doc.line(margin + 8, y + 11, pageW - margin - 4, y + 11);
 
     const finRows = [
-        { label: 'Total servicios', value: `$${totalServices.toFixed(2)}`, color: [220, 220, 220] },
-        { label: 'Total repuestos', value: `$${totalSpareParts.toFixed(2)}`, color: [220, 220, 220] },
-        { label: 'Costo de reparación', value: `$${Number(order.repairCost).toFixed(2)}`, color: [220, 220, 220] },
-        { label: 'Total abonado', value: `$${totalPaid.toFixed(2)}`, color: [109, 190, 69] }
+        { label: 'Total servicios',     value: fmt(totalServices),      color: [220, 220, 220] },
+        { label: 'Total repuestos',      value: fmt(totalSpareParts),    color: [220, 220, 220] },
+        { label: 'Costo de reparación', value: fmt(order.repairCost),   color: [220, 220, 220] },
+        { label: 'Total abonado',        value: fmt(totalPaid),          color: [109, 190, 69]  }
     ];
 
     finRows.forEach((row, i) => {
@@ -383,8 +532,7 @@ export const generateWorkOrderReport = (order) => {
         doc.text(row.value, pageW - margin - 4, rowY, { align: 'right' });
     });
 
-    // Deuda pendiente
-    const deudaY = y + 44;
+    const deudaY = y + 46;
     doc.setDrawColor(50, 50, 50);
     doc.line(margin + 8, deudaY - 3, pageW - margin - 4, deudaY - 3);
     doc.setFontSize(10);
@@ -393,41 +541,34 @@ export const generateWorkOrderReport = (order) => {
     doc.text('Deuda pendiente', margin + 8, deudaY + 3);
     doc.setTextColor(hasDebt ? 211 : 109, hasDebt ? 24 : 190, hasDebt ? 19 : 69);
     doc.setFontSize(12);
-    doc.text(`$${Number(order.amountDue).toFixed(2)}`, pageW - margin - 4, deudaY + 3, { align: 'right' });
+    doc.text(fmt(order.amountDue), pageW - margin - 4, deudaY + 3, { align: 'right' });
 
-    y += 52 + 10;
+    y += summaryBoxH + 10;
 
     // ═══════════════════════════════════════
     // NOTAS
     // ═══════════════════════════════════════
     if (order.notes?.trim()) {
         y = checkPageBreak(doc, y, 24, pageH, margin, pageW);
-
-        const notasLines = doc.splitTextToSize(order.notes.trim(), contentW - 30);
-        const notasH = Math.max(20, notasLines.length * 5 + 16);
+        const notasLines = doc.splitTextToSize(order.notes.trim(), contentW - 12);
+        const notasH     = Math.max(20, notasLines.length * 5 + 16);
 
         doc.setFillColor(255, 251, 235);
         doc.setDrawColor(245, 158, 11);
         doc.setLineWidth(0.3);
         doc.roundedRect(margin, y, contentW, notasH, 2, 2, 'FD');
-
         doc.setFillColor(245, 158, 11);
         doc.roundedRect(margin + 4, y + 4, 38, 5, 1, 1, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(6);
         doc.setFont('helvetica', 'bold');
         doc.text('NOTAS DE LA ORDEN', margin + 23, y + 7.5, { align: 'center' });
-
         doc.setTextColor(100, 80, 20);
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
         doc.text(notasLines, margin + 4, y + 16);
     }
 
-    // ═══════════════════════════════════════
-    // PIE DE PÁGINA
-    // ═══════════════════════════════════════
     drawFooter(doc, pageW, pageH, margin);
-
     doc.save(`orden-${order.idWorkOrder.slice(0, 8)}.pdf`);
 };

@@ -1,4 +1,5 @@
 import { $ } from "../../utils/dom.js";
+import { getPrivilegeNameInSpanish } from "./configuration.logic.js";
 
 export const DOMRefs = {
     refs: {},
@@ -57,7 +58,15 @@ export const DOMRefs = {
             btnAddPaymentMethod: $('btnAddPaymentMethod'),
             pmHint: $('pmHint'),
             btnLogout: $('btnLogout'),
-            segs: [1, 2, 3, 4, 5].map(i => document.getElementById('strengthSeg' + i))
+            segs: [1, 2, 3, 4, 5].map(i => document.getElementById('strengthSeg' + i)),
+            btnOpenManageRoles: $('btnOpenManageRoles'),
+            btnCloseRoleManagement: $('btnCloseRoleManagement'),
+            rolesList: $('rolesList'),
+            selectedRoleName: $('selectedRoleName'),
+            rolePrivilegeCount: $('rolePrivilegeCount'),
+            privilegesList: $('privilegesList'),
+            privilegeButtons: $('privilegeButtons'),
+            modalRoleManagement: $('modalRoleManagement')
         };
         return this.refs;
     }
@@ -138,7 +147,99 @@ export const filltxtUsername = (username, txtUsername) => {
     txtUsername.value = username || '';
 };
 
-export const  changeStyleTogglePassword = (icon) => {
+export const renderRolesList = (roles, selectedRoleId, listEl, onSelectRole) => {
+    listEl.innerHTML = '';
+    if (!Array.isArray(roles) || roles.length === 0) {
+        listEl.textContent = 'No se encontraron roles.';
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    roles.forEach(role => {
+        const roleId = role.idRole;
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'roleItem';
+        item.textContent = role.roleName;
+        if (roleId === selectedRoleId) {
+            item.classList.add('active');
+        }
+        item.addEventListener('click', () => onSelectRole(role));
+        fragment.appendChild(item);
+    });
+    listEl.appendChild(fragment);
+};
+
+export const renderRolePrivileges = (role, allPrivileges, privilegesEl, countEl, selectedRoleNameEl, privilegeButtonsEl, onRemove, onAdd) => {
+    const rolePrivileges = role ? role.privileges : [];
+    const selectedRoleName = role ? role.roleName : 'Selecciona un rol';
+    const currentPrivilegeIds = rolePrivileges.map(p => p.idPrivilege).filter(Boolean);
+    const availablePrivileges = (Array.isArray(allPrivileges) ? allPrivileges : []).filter(privilege => !currentPrivilegeIds.includes(privilege.idPrivilege));
+
+    selectedRoleNameEl.textContent = selectedRoleName;
+    countEl.textContent = `${currentPrivilegeIds.length}/${Array.isArray(allPrivileges) ? allPrivileges.length : 0}`;
+
+    privilegesEl.classList.toggle('empty', rolePrivileges.length === 0);
+    privilegesEl.innerHTML = '';
+    if (!role) {
+        privilegesEl.textContent = 'Selecciona un rol para ver sus privilegios.';
+    } else if (rolePrivileges.length === 0) {
+        privilegesEl.textContent = 'Este rol no tiene privilegios asignados.';
+    } else {
+        const fragment = document.createDocumentFragment();
+        rolePrivileges.forEach(privilege => {
+            const item = document.createElement('div');
+            item.className = 'privilegeTag';
+
+            const text = document.createElement('span');
+            text.textContent = getPrivilegeNameInSpanish(privilege.name);
+            let removeButton = null;
+            if (role.roleName !== "Administrador") {
+                removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btnClos btnRemovePrivilege';
+                removeButton.title = `Remover ${privilege.name}`;
+                removeButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" stroke="var(--text-color)" fill="none">
+                        <line x1 = "10" y1 = "10" x2 = "22" y2 = "22" stroke - width="2.5" stroke - linecap="round" ></line >
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round"></line>
+                    </svg > `;
+                removeButton.addEventListener('click', () => onRemove(privilege));
+            }
+
+            item.appendChild(text);
+            if (removeButton) item.appendChild(removeButton);
+            fragment.appendChild(item);
+        });
+        privilegesEl.appendChild(fragment);
+    }
+
+    privilegeButtonsEl.innerHTML = '';
+    if (!role) {
+        return;
+    }
+
+    if (availablePrivileges.length === 0) {
+        const note = document.createElement('div');
+        note.className = 'modalNewPasswordSubtitle';
+        note.textContent = 'Todos los privilegios ya están asignados a este rol.';
+        privilegeButtonsEl.appendChild(note);
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    availablePrivileges.forEach(privilege => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btnSecondary';
+        button.textContent = `+ ${getPrivilegeNameInSpanish(privilege.name)}`;
+        button.addEventListener('click', () => onAdd(privilege));
+        fragment.appendChild(button);
+    });
+    privilegeButtonsEl.appendChild(fragment);
+};
+
+export const changeStyleTogglePassword = (icon) => {
     const current = parseFloat(icon.dataset.rotate || '0');
     const next = current + 180;
     icon.dataset.rotate = next;

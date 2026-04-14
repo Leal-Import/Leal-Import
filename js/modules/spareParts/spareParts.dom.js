@@ -12,7 +12,11 @@ export const DOMRefs = {
             txtSearchData: $('txtSearchData'),
             cmbSearchByStatus: $('cmbSearchByStatus'),
             fromDt: $('fromDt'),
-            toDt: $('toDt')
+            toDt: $('toDt'),
+            stock: $('stock'),
+            installed: $('installed'),
+            waiting: $('waiting'),
+            sold: $('sold')
         };
         return this.refs;
     }
@@ -24,6 +28,14 @@ export const resetSparePartsFilters = (Refs) => {
     cmbSearchByStatus.value = '';
     fromDt.value = '';
     toDt.value = '';
+};
+
+export const renderSparePartStats = (stats, refs) => {
+    const { stock, installed, waiting, sold } = refs;
+    stock.querySelector('.statValue').textContent = stats.stockCount || 0;
+    installed.querySelector('.statValue').textContent = stats.installedCount || 0;
+    waiting.querySelector('.statValue').textContent = stats.waitingCount || 0;
+    sold.querySelector('.statValue').textContent = stats.soldCount || 0;
 };
 
 export const insertSpareParts = (container, spareParts) => {
@@ -120,6 +132,7 @@ const createCardFooter = (sparePart) => {
     const btnEdit = document.createElement("a");
     btnEdit.classList.add("btnSecondary");
     btnEdit.textContent = "Editar";
+    btnEdit.dataset.privilege = "WRITE_SPAREPARTS";
     btnEdit.href = `${ROUTES.SPARE_PART_FORM}?id=${sparePart.idSparePart}`;
 
     footer.append(btnView, btnEdit);

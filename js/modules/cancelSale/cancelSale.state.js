@@ -1,4 +1,6 @@
 export const cancelSaleState = {
     onPatchSale: null,
-    idSale: null
+    idSale: null,
+    urlToNavigate: null,
+    messageWord: ""
 };

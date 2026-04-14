@@ -1,12 +1,12 @@
 // modules/employees/employees.controller.js
 
 import { employeesListState, resetEmployeesListState } from './employees.state.js';
-import { insertEmployees, fillEmployeesForm, DOMRefs, rewriteModalElements, resetEmployeesFilters } from './employees.dom.js';
+import { insertEmployees, fillEmployeesForm, renderEmployeePrivileges, DOMRefs, rewriteModalElements, resetEmployeesFilters } from './employees.dom.js';
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { validateEmployee, mapEmployeeForm } from './employees.logic.js';
-import { getActiveEmployees, postEmployee, putEmployee, getRoles, patchEmployee } from './employees.service.js';
+import { getActiveEmployees, postEmployee, putEmployee, getRoles, patchEmployee, addPrivilegeToEmployee, removePrivilegeFromEmployee } from './employees.service.js';
 import { initEmployeeEvents } from './employees.events.js';
-import { showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable, fillSelect, createModuleInitializer } from '../../utils/dom.js';
+import { showMessage, toggleModal, setFormReadOnly, hideElement, showElement, disableElement, removeDisable, fillSelect, createModuleInitializer, qsa } from '../../utils/dom.js';
 import { showFloatingMenu } from '../../utils/floatingMenu.js';
 import { handleApiError } from '../../utils/api.utils.js';
 
@@ -15,6 +15,53 @@ import { handleApiError } from '../../utils/api.utils.js';
 ================================ */
 
 const STATUS = { ACTIVE: 'ACTIVE', INACTIVE: 'INACTIVE' };
+
+const employeePrivilegesState = {
+    selectedEmployee: null,
+    allPrivileges: []
+};
+
+const getAllPrivilegesFromRoles = (roles) => {
+    if (!Array.isArray(roles)) {
+        return [];
+    }
+
+    const adminRole = roles.find(role => role.roleName === 'Administrador');
+    const privilegesFromAdmin = adminRole
+        ? (adminRole.privileges || adminRole.privilegeList || adminRole.rolePrivileges || [])
+        : null;
+
+    if (Array.isArray(privilegesFromAdmin) && privilegesFromAdmin.length > 0) {
+        return privilegesFromAdmin;
+    }
+
+    const privilegeCandidates = roles.flatMap(role => {
+        return [
+            ...(Array.isArray(role.privileges) ? role.privileges : []),
+            ...(Array.isArray(role.privilegeList) ? role.privilegeList : []),
+            ...(Array.isArray(role.rolePrivileges) ? role.rolePrivileges : [])
+        ];
+    });
+
+    const uniquePrivileges = [];
+    const seenIds = new Set();
+    privilegeCandidates.forEach(privilege => {
+        if (privilege && privilege.idPrivilege && !seenIds.has(privilege.idPrivilege)) {
+            seenIds.add(privilege.idPrivilege);
+            uniquePrivileges.push(privilege);
+        }
+    });
+
+    return uniquePrivileges;
+};
+
+const updateEmployeeInList = (updatedEmployee) => {
+    employeesListState.list = employeesListState.list.map(employee =>
+        employee.idEmployee === updatedEmployee.idEmployee ? updatedEmployee : employee
+    );
+};
+
+const getSelectedEmployee = () => employeePrivilegesState.selectedEmployee;
 
 const pagination = createPagination({
     initialSize: employeesListState.pagination.size,
@@ -115,27 +162,39 @@ export const onSubmitEmployee = async (e) => {
 
 const handleEmployeeActions = (event, employee) => {
     event.stopPropagation();
-
-    showFloatingMenu(event, [
+    const options = [
         {
             label: 'Actualizar empleado',
+            privilege: 'WRITE_EMPLOYEES',
             onClick: () => editEmployee(employee)
         },
         {
             label: 'Ver detalles',
             onClick: () => viewEmployee(employee)
-        },
-        {
+        }
+    ];
+
+    if (employee.roleName !== 'Administrador') {
+        options.push({
+            label: 'Editar permisos',
+            privilege: 'WRITE_EMPLOYEES',
+            onClick: () => openEmployeePrivilegesModal(employee)
+        });
+        options.push({
             label: employee.user.status === STATUS.ACTIVE
                 ? 'Desactivar empleado'
                 : 'Activar empleado',
+            privilege: 'WRITE_EMPLOYEES',
             onClick: () =>
                 toggleEmployeeStatus(
                     employee.user.idUser,
-                    employee.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
+                    employee.user.status === STATUS.ACTIVE ? STATUS.INACTIVE : STATUS.ACTIVE
                 )
-        }
-    ]);
+        });
+
+    }
+
+    showFloatingMenu(event, options);
 };
 
 /* ===============================
@@ -147,6 +206,7 @@ const editEmployee = (employee) => {
     fillEmployeesForm(employee);
     rewriteModalElements(DOMRefs.refs.btnAddEmployee, DOMRefs.refs.titleModal, 'Actualizar');
     setFormReadOnly('#frmEmployees', false);
+    disableElement(DOMRefs.refs.txtUsername);
     toggleModal(DOMRefs.refs.modalEmployees, true);
 };
 
@@ -169,6 +229,96 @@ const onOpenModal = () => {
     toggleModal(DOMRefs.refs.modalEmployees, true);
 };
 
+const openEmployeePrivilegesModal = async (employee) => {
+    employeePrivilegesState.selectedEmployee = employee;
+    if (employeesListState.roles.length === 0) {
+        await loadRoles();
+    }
+    employeePrivilegesState.allPrivileges = getAllPrivilegesFromRoles(employeesListState.roles);
+
+    DOMRefs.refs.employeePrivilegesName.textContent = employee.fullName;
+    DOMRefs.refs.employeePrivilegesRole.textContent = employee.roleName;
+    renderEmployeePrivileges(
+        employee,
+        employeePrivilegesState.allPrivileges,
+        DOMRefs.refs.employeePrivilegesList,
+        DOMRefs.refs.employeePrivilegeButtons,
+        onRemoveEmployeePrivilege,
+        onAddEmployeePrivilege
+    );
+
+    toggleModal(DOMRefs.refs.modalEmployeePrivileges, true);
+};
+
+const onClosePrivilegesModal = () => {
+    employeePrivilegesState.selectedEmployee = null;
+    toggleModal(DOMRefs.refs.modalEmployeePrivileges);
+};
+
+const onAddEmployeePrivilege = async (privilege) => {
+    const employee = getSelectedEmployee();
+    if (!employee) return;
+
+    const controls = qsa('#modalEmployeePrivileges button');
+    controls.forEach(disableElement);
+    try {
+        await addPrivilegeToEmployee(employee.idEmployee, privilege.idPrivilege);
+
+        const updatedEmployee = {
+            ...employee,
+            directPrivileges: [...(employee.directPrivileges || []), privilege]
+        };
+        employeePrivilegesState.selectedEmployee = updatedEmployee;
+        updateEmployeeInList(updatedEmployee);
+
+        await showMessage('Éxito', 'Permiso agregado correctamente.', 'success', true);
+        renderEmployeePrivileges(
+            updatedEmployee,
+            employeePrivilegesState.allPrivileges,
+            DOMRefs.refs.employeePrivilegesList,
+            DOMRefs.refs.employeePrivilegeButtons,
+            onRemoveEmployeePrivilege,
+            onAddEmployeePrivilege
+        );
+    } catch (error) {
+        await handleApiError(error, 'No se pudo agregar el permiso al empleado. Por favor, inténtalo de nuevo.');
+    } finally {
+        controls.forEach(removeDisable);
+    }
+};
+
+const onRemoveEmployeePrivilege = async (privilege) => {
+    const employee = getSelectedEmployee();
+    if (!employee) return;
+
+    const controls = qsa('#modalEmployeePrivileges button');
+    controls.forEach(disableElement);
+    try {
+        await removePrivilegeFromEmployee(employee.idEmployee, privilege.idPrivilege);
+
+        const updatedEmployee = {
+            ...employee,
+            directPrivileges: (employee.directPrivileges || []).filter(p => p.idPrivilege !== privilege.idPrivilege)
+        };
+        employeePrivilegesState.selectedEmployee = updatedEmployee;
+        updateEmployeeInList(updatedEmployee);
+
+        await showMessage('Éxito', 'Permiso eliminado correctamente.', 'success', true);
+        renderEmployeePrivileges(
+            updatedEmployee,
+            employeePrivilegesState.allPrivileges,
+            DOMRefs.refs.employeePrivilegesList,
+            DOMRefs.refs.employeePrivilegeButtons,
+            onRemoveEmployeePrivilege,
+            onAddEmployeePrivilege
+        );
+    } catch (error) {
+        await handleApiError(error, 'No se pudo eliminar el permiso del empleado. Por favor, inténtalo de nuevo.');
+    } finally {
+        controls.forEach(removeDisable);
+    }
+};
+
 /* ===============================
    ACTIVAR / DESACTIVAR
 ================================ */
@@ -177,7 +327,6 @@ const toggleEmployeeStatus = async (userId, status) => {
     try {
         await patchEmployee(userId, status);
         showMessage('Empleado', status === STATUS.ACTIVE ? 'Empleado activado' : 'Empleado desactivado', 'success');
-
         loadEmployees();
     } catch (error) {
         await handleApiError(error, 'No se pudo actualizar el estado del empleado. Por favor, inténtalo de nuevo.');
@@ -203,7 +352,7 @@ const onSearchEmployee = async (filters) => {
 
 const initializeUI = (Refs) => {
     resetEmployeesFilters(Refs);
-    initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal });
+    initEmployeeEvents({ Refs, onSubmitEmployee, onSearchEmployee, onCloseModal, onOpenModal, onClosePrivilegesModal });
 };
 
 const loadDataFlow = async () => {

@@ -1,6 +1,6 @@
 import { asNumber, asUUID, existsById, getNullableParam, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal, safeParseFloat } from "../../../utils/validators.js";
-import { normalizePayments, validatePayments } from "../../../core/logic/payments.logic.js";
+import { normalizePayments, validatePayments } from "../../payments/payments.logic.js";
 
 export const verifyIds = (state, idSparePart) => {
     return state.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
@@ -12,11 +12,14 @@ export const hydrateContextFromURL = async (state) => {
     const idCustomer = asUUID(getNullableParam(params.get('idCustomer')));
     const idVehicle = asUUID(params.get("idVehicle"));
     const idWorkOrder = asUUID(getNullableParam(params.get('idWorkOrder')));
+    const fromInventory = params.get('fromInventory') === 'true';
 
-    if (!idVehicle) {
-        await showMessage("Vehiculo no seleccionado", "Acceso inválido. Falta el vehiculo.", "warning");
-        history.back();
-        return false;
+    if (!fromInventory) {
+        if (!idVehicle) {
+            await showMessage("Vehiculo no seleccionado", "Acceso inválido. Falta el vehiculo.", "warning");
+            history.back();
+            return false;
+        }
     }
 
     state.context.idVehicle = idVehicle;
@@ -54,16 +57,17 @@ export const pushSparePart = (state, sparePart) => {
 };
 
 export const pushService = (state, service) => {
-    const id = service.id || service.idService || null;
+    const id = crypto.randomUUID() || null;
     if (id && existsById(state, id, 'id')) return null;
     const normalizedPart = {
-        id: id || crypto.randomUUID(),
+        id,
         idService: service.idService || null,
         name: service.serviceName || service.name || '',
         priceApplied: service.priceApplied || 0.00,
-        idWorkOrdersServices: service.idWorkOrdersServices || null,
+        idWorkOrderService: service.idWorkOrderService || null,
         idEmployee: service.idEmployee || null,
-        assignedEmployee: service.assignedEmployee || null
+        assignedEmployee: service.assignedEmployee || null,
+        photos: service.photos || []
     };
     state.push(normalizedPart);
     return normalizedPart;
@@ -157,6 +161,7 @@ export const buildOrderFormData = (state, isEditing) => {
     fd.append('workOrderData', JSON.stringify(payload));
 
     appendPaymentFiles(fd, state.data.payments, isEditing);
+    appendServicePhotos(fd, state.data.selectedServices);
 
     return fd;
 };
@@ -173,7 +178,8 @@ const buildPutWorkOrderPayload = (state) => {
         paymentsSaveToUpdate: normalizePayments(data.payments),
         serviceToDelete: data.servicesToDelete,
         sparePartsToDelete: data.sparePartsToDelete,
-        paymentsToDelete: data.paymentsToDelete
+        paymentsToDelete: data.paymentsToDelete,
+        servicePhotosToDelete: data.servicePhotosToDelete
     };
 };
 
@@ -195,18 +201,28 @@ const appendPaymentFiles = (fd, payments) => {
     });
 };
 
+const appendServicePhotos = (fd, services) => {
+    services.forEach((service) => {
+        (service.photos || []).forEach((photo) => {
+            if (photo.photo instanceof File) {
+                fd.append(
+                    `servicePhoto_${service.idWorkOrderService || service.id}_${photo.stage}`,
+                    photo.photo
+                );
+            }
+        });
+    });
+};
+
 const normalizeServices = (services) => {
     return services.map(s => {
         const obj = {
-            idService: s.idService ?? null,
+            idWorkOrderService: s.idWorkOrderService || s.id,
+            idService: s.idService,
             serviceName: s.name,
             priceApplied: Number(s.priceApplied),
             idEmployee: s.idEmployee
         };
-
-        if (s.idWorkOrdersServices) {
-            obj.idWorkOrdersServices = s.idWorkOrdersServices;
-        }
 
         return obj;
     });

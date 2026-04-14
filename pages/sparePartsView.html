@@ -111,7 +111,7 @@
 
             <!-- BARRA DE ACCIONES -->
             <div class="actionsBarSparePart">
-                <div class="statusBadgeSparePart aviable">
+                <div class="statusBadgeSparePart">
                     <span class="statusDotSparePart"></span>
                     <span class="statusTextSparePart">Disponible</span>
                 </div>
@@ -130,7 +130,7 @@
                         </span>
                         <span>Reporte del repuesto</span>
                     </button>
-                    <a type="button" class="btnActionSparePart btnSecondarySparePart" id="btnEditSparePart">
+                    <a type="button" class="btnActionSparePart btnSecondarySparePart" id="btnEditSparePart" data-privilege="WRITE_SPAREPARTS">
                         <span class="btnIconSparePart">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -141,7 +141,7 @@
                         </span>
                         <span>Editar</span>
                     </a>
-                    <a type="button" class="btnActionSparePart btnDangerSparePart" id="btnSellSparePart">
+                    <a type="button" class="btnActionSparePart btnDangerSparePart hide" id="btnSparePartAction" data-privilege="READ_SALES">
                         <span class="btnIconSparePart">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -150,16 +150,18 @@
                                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                             </svg>
                         </span>
-                        <span>Vender</span>
+                        <span class="actionName">Vender</span>
                     </a>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/spareParts/sparePartsView/spareParts.view.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

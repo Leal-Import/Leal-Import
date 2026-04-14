@@ -14,7 +14,6 @@ export const DOMRefs = {
             boxSparePart: $("suggestionsSpareParts"),
             txtSearchSparePart: $("txtSearchSparePart"),
             txtAddService: $("txtAddService"),
-            separator: $("separator"),
             loaderAddOrder: $("loaderAddOrder"),
             btnSaveOrder: $("btnSaveOrder"),
             btnAddPayment: $("btnAddPayment"),
@@ -46,7 +45,20 @@ export const DOMRefs = {
             modalPersonItemName: $("modalPersonItemName"),
             btnClosePersonModal: $("btnClosePersonModal"),
             employeeList: $("employeeList"),
-            txtSearchEmployee: $("txtSearchEmployee")
+            txtSearchEmployee: $("txtSearchEmployee"),
+            btnApproveOrder: $("btnApproveOrder"),
+            loaderApproveOrder: $("loaderApproveOrder"),
+            btnOpenCancelSale: $("btnOpenCancelSale"),
+            loaderCancelOrder: $("loaderCancelOrder"),
+            // Modal de imágenes de servicios
+            modalServiceImages: $("modalServiceImages"),
+            btnCloseServiceImages: $("btnCloseServiceImages"),
+            serviceImageTitle: $("serviceImageTitle"),
+            serviceImageSubtitle: $("serviceImageSubtitle"),
+            serviceImagePreview: $("serviceImagePreview"),
+            serviceImageFileInput: $("serviceImageFileInput"),
+            btnSelectServiceImage: $("btnSelectServiceImage"),
+            btnDeleteServiceImage: $("btnDeleteServiceImage")
         };
         return this.refs;
     }
@@ -56,10 +68,12 @@ const SELECTORS = {
     TD_PERSON: '.tdPerson',
     TD_NAME: '.tdName',
     TD_PRICE: '.tdPrice',
+    TD_IMAGES: '.tdImages',
     TD_TRASH: '.tdTrash',
     TBODY_DATA: '.tBodyData',
     BTN_IMPORT: '.btnImport',
-    BTN_TRASH: '.btnTrash'
+    BTN_TRASH: '.btnTrash',
+    BTN_SERVICE_IMAGES: '.btnServiceImages'
 };
 
 export const loadViewUpdateOrder = (vin, Refs) => {
@@ -97,7 +111,11 @@ export const initStaticRows = () => {
         if (tBody.querySelectorAll('tr').length >= MIN_STATIC_ROWS) return;
         const frag = document.createDocumentFragment();
         for (let i = 0; i < MIN_STATIC_ROWS; i++) {
-            frag.appendChild(createEmptyRow());
+            if (tBody.id === 'tBodyServices') {
+                frag.appendChild(createEmptyRow(true));
+            } else {
+                frag.appendChild(createEmptyRow());
+            }
         }
         tBody.appendChild(frag);
     });
@@ -149,7 +167,11 @@ const findOrCreateEmptyRow = (tBody) => {
         .find(r => r.querySelector(SELECTORS.TD_NAME)?.textContent.trim() === '');
 
     if (!emptyRow) {
-        emptyRow = createEmptyRow();
+        if (tBody.id === 'tBodyServices') {
+            emptyRow = createEmptyRow(true);
+        } else {
+            emptyRow = createEmptyRow();
+        }
         tBody.appendChild(emptyRow);
     }
 
@@ -172,6 +194,7 @@ const setupPriceCell = (priceCell, data, onWritePrice, isView) => {
 const onCreateBtnPerson = (onClickCreatePerson, employeeName, itemName, arraySelected, id, cell) => {
     const span = document.createElement('span');
     span.classList.add('btnPerson');
+    span.dataset.privilege = 'WRITE_WORK_ORDERS';
     span.textContent = employeeName ?? 'Agregar';
     span.addEventListener('click', () => onClickCreatePerson(itemName, arraySelected, id, cell));
     return span;
@@ -267,7 +290,8 @@ export const appendToDom = ({
     onDelete,
     renderButton,
     isView,
-    onClickCreatePerson
+    onClickCreatePerson,
+    onActionsServices
 }) => {
     if (!tBody) return false;
 
@@ -277,6 +301,7 @@ export const appendToDom = ({
     const personCell = row.querySelector(SELECTORS.TD_PERSON);
     const nameCell = row.querySelector(SELECTORS.TD_NAME);
     const priceCell = row.querySelector(SELECTORS.TD_PRICE);
+    const tdImages = row.querySelector(SELECTORS.TD_IMAGES);
     const tdTrash = row.querySelector(SELECTORS.TD_TRASH);
 
     const employeeName = onCreateBtnPerson(onClickCreatePerson, data.assignedEmployee, data.name, arraySelected, data.id, personCell);
@@ -284,8 +309,13 @@ export const appendToDom = ({
 
     nameCell.textContent = data.name;
     setupPriceCell(priceCell, data, onWritePrice, isView);
-
+    // Botón para gestionar imágenes del servicio
+    if (tdImages && onActionsServices) {
+        const btnImages = createServiceImagesButton(data, onActionsServices);
+        tdImages.appendChild(btnImages);
+    }
     if (!isView) {
+
         const btn = createTrashOption({
             row,
             item: data,
@@ -312,6 +342,7 @@ export const createTrashOption = ({
 }) => {
     const btn = document.createElement('button');
     btn.classList.add(SELECTORS.BTN_TRASH.slice(1));
+    btn.dataset.privilege = 'WRITE_WORK_ORDERS';
     btn.type = 'button';
     btn.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -347,11 +378,34 @@ export const reindexTable = (tBody) => {
         }
     });
 
-    const frag = document.createDocumentFragment();
-    [...active, ...empty].forEach(r => frag.appendChild(r));
+    const desiredTotalRows = Math.max(active.length, MIN_STATIC_ROWS);
+    const currentTotalRows = active.length + empty.length;
+    const extraRows = currentTotalRows - desiredTotalRows;
+    const rowsToKeep = [...active];
+
+    if (extraRows > 0) {
+        // Eliminar filas vacías sobrantes
+        rowsToKeep.push(...empty.slice(0, empty.length - extraRows));
+    } else {
+        rowsToKeep.push(...empty);
+    }
+
+    const fragment = document.createDocumentFragment();
+    rowsToKeep.forEach(row => fragment.appendChild(row));
+
+    if (rowsToKeep.length < desiredTotalRows) {
+        const missing = desiredTotalRows - rowsToKeep.length;
+        for (let i = 0; i < missing; i++) {
+            if (tBody.id === 'tBodyServices') {
+                fragment.appendChild(createEmptyRow(true));
+            } else {
+                fragment.appendChild(createEmptyRow());
+            }
+        }
+    }
 
     tBody.innerHTML = '';
-    tBody.appendChild(frag);
+    tBody.appendChild(fragment);
 };
 
 export const renderImportButton = (tBody, onImport, tBodyServices, tBodySpareParts) => {
@@ -375,6 +429,7 @@ export const renderImportButton = (tBody, onImport, tBodyServices, tBodySparePar
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.classList.add(SELECTORS.BTN_IMPORT.slice(1));
+    btn.dataset.privilege = 'WRITE_WORK_ORDERS';
     btn.textContent = 'IMPORTAR';
     btn.addEventListener('click', onImport);
 
@@ -397,11 +452,15 @@ export const cleanRow = (row) => {
     const tdPerson = row.querySelector(SELECTORS.TD_PERSON);
     const tdName = row.querySelector(SELECTORS.TD_NAME);
     const tdPrice = row.querySelector(SELECTORS.TD_PRICE);
+    const tdImages = row.querySelector(SELECTORS.TD_IMAGES);
     const btnTrash = row.querySelector(SELECTORS.BTN_TRASH);
 
     tdPerson.textContent = "";
     tdName.textContent = "";
     tdPrice.textContent = "";
+    if (tdImages) {
+        tdImages.innerHTML = "";
+    }
     tdPrice.removeAttribute("contenteditable");
     btnTrash.remove();
 };
@@ -447,7 +506,7 @@ export const renderVehiclePrice = (vehiclePrice, spanVehiclePrice) => {
     if (spanVehiclePrice) spanVehiclePrice.textContent = formatWithCommas(vehiclePrice) || 0.00;
 };
 
-const createEmptyRow = () => {
+const createEmptyRow = (isService) => {
     const tr = document.createElement('tr');
     const tdPerson = document.createElement('td');
     tdPerson.classList.add(SELECTORS.TD_PERSON.slice(1));
@@ -457,11 +516,108 @@ const createEmptyRow = () => {
     tdPrice.classList.add(SELECTORS.TD_PRICE.slice(1));
     const tdTrash = document.createElement("td");
     tdTrash.classList.add(SELECTORS.TD_TRASH.slice(1));
-    tr.append(tdPerson, tdName, tdPrice, tdTrash);
+    tr.append(tdPerson, tdName, tdPrice);
+
+    if (isService) {
+        const tdImages = document.createElement('td');
+        tdImages.classList.add(SELECTORS.TD_IMAGES.slice(1));
+        tr.appendChild(tdImages);
+    }
+    tr.appendChild(tdTrash);
+
     return tr;
 };
 
 export const addRowToBothTables = (tBodyServices, tBodySpareParts) => {
-    if (tBodyServices) tBodyServices.appendChild(createEmptyRow());
+    if (tBodyServices) tBodyServices.appendChild(createEmptyRow(true));
     if (tBodySpareParts) tBodySpareParts.appendChild(createEmptyRow());
+};
+
+/**
+ * Crea el botón flotante (3 puntitos) para gestionar imágenes del servicio
+ */
+const createServiceImagesButton = (serviceData, onServiceImages) => {
+    const btn = document.createElement('button');
+    btn.classList.add(SELECTORS.BTN_SERVICE_IMAGES.slice(1));
+    btn.type = 'button';
+    btn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="2"/>
+            <circle cx="12" cy="5" r="2"/>
+            <circle cx="12" cy="19" r="2"/>
+        </svg>
+    `;
+    btn.addEventListener('click', (e) => onServiceImages(e, serviceData));
+    return btn;
+};
+
+/**
+ * Abre el modal para seleccionar/cargar una imagen
+ */
+export const openServiceImageModal = (serviceName, type, currentImage) => {
+    const refs = DOMRefs.refs;
+
+    // Actualizar títulos
+    let typeSpanish;
+    switch (type) {
+    case 'BEFORE':
+        typeSpanish = 'Antes';
+        break;
+    case 'DURING':
+        typeSpanish = 'Durante';
+        break;
+    case 'AFTER':
+        typeSpanish = 'Después';
+        break;
+    default:
+        typeSpanish = '';
+        break;
+    }
+
+    refs.serviceImageTitle.textContent = `Imagen - ${typeSpanish}`;
+    refs.serviceImageSubtitle.textContent = `Carga una imagen del servicio - ${serviceName}`;
+
+    // Limpiar y renderizar preview
+    refs.serviceImagePreview.innerHTML = '';
+
+    if (currentImage) {
+        renderPreview(currentImage, refs);
+    } else {
+        const placeholder = document.createElement('p');
+        placeholder.textContent = 'Sin imagen - Haz clic para seleccionar';
+        placeholder.style.cssText = 'color: #999; text-align: center;';
+        refs.serviceImagePreview.appendChild(placeholder);
+    }
+
+    // Resetear input file
+    refs.serviceImageFileInput.value = '';
+
+    // Mostrar modal
+    refs.modalServiceImages.classList.remove('hide');
+};
+
+export const renderPreview = (image, refs) => {
+    refs.serviceImagePreview.innerHTML = '';
+    if (image) {
+        const img = document.createElement('img');
+        img.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain;';
+
+        if (image instanceof File) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                img.src = event.target.result;
+                refs.serviceImagePreview.appendChild(img);
+            };
+            reader.readAsDataURL(image);
+            return;
+        }
+
+        img.src = image;
+        refs.serviceImagePreview.appendChild(img);
+    } else {
+        const placeholder = document.createElement('p');
+        placeholder.textContent = 'Sin imagen - Haz clic para seleccionar';
+        placeholder.style.cssText = 'color: #999; text-align: center;';
+        refs.serviceImagePreview.appendChild(placeholder);
+    }
 };

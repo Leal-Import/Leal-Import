@@ -1,8 +1,8 @@
 import { debounce } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus } from "../../../utils/formatters.js";
 
-export const initSpareSaleEvents = ({ Refs, onSubmitSpareSale, onSearchSparePart, onOrderPart, onSaveNotes }) => {
-    const { txtSearchData, txtAmount, txtNotes, frmSparePartSale, btnOrderPart } = Refs;
+export const initSpareSaleEvents = ({ Refs, onSubmitSpareSale, onSearchSparePart, onOrderPart, onSaveNotes, onGeneratePdf }) => {
+    const { txtSearchData, txtAmount, txtNotes, frmSparePartSale, btnOrderPart, btnGeneratePdf } = Refs;
 
     const handleSearch = debounce(() => {
         onSearchSparePart({
@@ -20,5 +20,6 @@ export const initSpareSaleEvents = ({ Refs, onSubmitSpareSale, onSearchSparePart
     txtSearchData.addEventListener("input", handleSearch);
 
     btnOrderPart.addEventListener("click", onOrderPart);
+    btnGeneratePdf.addEventListener("click", onGeneratePdf);
 
 };

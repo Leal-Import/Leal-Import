@@ -32,7 +32,8 @@ export const DOMRefs = {
             paymentForm: qs(".paymentForm"),
             headerPanel: qs(".headerPanel"),
             tableContainerSelected: qs(".tableContainerSelected"),
-            btnGeneratePdf: $("btnGeneratePdf")
+            btnGeneratePdf: $("btnGeneratePdf"),
+            content: qs(".content")
         };
 
         return this.refs;
@@ -61,7 +62,7 @@ export const insertSpareParts = (
         const td = document.createElement("td");
 
         td.colSpan = 5;
-        td.textContent = "No hay datos disponibles";
+        td.textContent = "No hay repuestos disponibles";
         td.classList.add("noDataMessage");
         td.style.textAlign = "center";
         td.style.padding = "15px";
@@ -241,4 +242,8 @@ export const renderTotals = ({ total, due, totalPaid }, Refs) => {
     if (Refs.totalSale) {
         Refs.totalSale.textContent = formatWithCommas(total);
     }
+};
+
+export const uiContent = (content) => {
+    content.classList.add("vierModeContent");
 };

@@ -30,17 +30,17 @@
                         <h2 class="statValue">0</h2>
                         <p class="statTitle">En Stock</p>
                     </div>
-                    <div class="seccionCard" id="requested">
+                    <div class="seccionCard" id="installed">
                         <h2 class="statValue">0</h2>
-                        <p class="statTitle">Reservadas</p>
+                        <p class="statTitle">Instalado</p>
                     </div>
                     <div class="seccionCard" id="sold">
                         <h2 class="statValue">0</h2>
                         <p class="statTitle">Vendidas</p>
                     </div>
-                    <div class="seccionCard" id="returned">
+                    <div class="seccionCard" id="waiting">
                         <h2 class="statValue">0</h2>
-                        <p class="statTitle">Devueltas</p>
+                        <p class="statTitle">Espera</p>
                     </div>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                 <select id="cmbSearchByStatus" class="cmbFilterData">
                     <option value="">Cargando...</option>
                 </select>
-                <a href="sparePartsForm.html" class="btnPrimary btnOpenModal">Añadir</a>
+                <a href="sparePartsForm.html" class="btnPrimary btnOpenModal hide" data-privilege="WRITE_SPAREPARTS">Añadir</a>
             </div>
 
             <div class="containerSpareParts">
@@ -95,7 +95,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/spareParts/spareParts.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

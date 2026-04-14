@@ -10,6 +10,11 @@ export const workOrdersListState = {
     filters: {
         search: '',
         idStatus: ''
+    },
+    stats: {
+        finalizedCount: 0,
+        pendingCount: 0,
+        delayedCount: 0
     }
 };
 
@@ -25,5 +30,10 @@ export const resetWorkOrdersListState = () => {
     workOrdersListState.filters = {
         search: '',
         idStatus: ''
+    };
+    workOrdersListState.stats = {
+        finalizedCount: 0,
+        pendingCount: 0,
+        delayedCount: 0
     };
 };

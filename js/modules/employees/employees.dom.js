@@ -1,5 +1,6 @@
 // modules/employees/employees.view.js
 import { fillForm, $, qs, qsa } from '../../utils/dom.js';
+import { getPrivilegeNameInSpanish } from '../config/configuration.logic.js';
 
 export const DOMRefs = {
     refs: {},
@@ -10,6 +11,12 @@ export const DOMRefs = {
             frmEmployees: $('frmEmployees'),
             loaderEmployees: $("loaderEmployees"),
             btnCloseModalEmployee: $("btnCloseModalEmployee"),
+            modalEmployeePrivileges: $('modalEmployeePrivileges'),
+            btnCloseModalEmployeePrivileges: $("btnCloseModalEmployeePrivileges"),
+            employeePrivilegesName: $("employeePrivilegesName"),
+            employeePrivilegesRole: $("employeePrivilegesRole"),
+            employeePrivilegesList: $("employeePrivilegesList"),
+            employeePrivilegeButtons: $("employeePrivilegeButtons"),
             btnOpenModalEmployees: $("btnOpenModalEmployees"),
             txtEmployeePhone: $('txtEmployeePhone'),
             txtSearchData: $('txtSearchData'),
@@ -18,7 +25,8 @@ export const DOMRefs = {
             btnAddEmployee: $("btnAddEmployee"),
             btnAddEmployeeLoader: $("btnAddEmployeeLoader"),
             titleModal: qs('.titleModal'),
-            campsModal: qsa('#frmEmployees .txtInputs')
+            campsModal: qsa('#frmEmployees .txtInputs'),
+            txtUsername: $('txtUsername')
         };
         return this.refs;
     }
@@ -59,6 +67,72 @@ export const fillEmployeesForm = (employee) => {
         txtUsername: employee.user.username,
         cmbUserRole: employee.idRole
     });
+};
+
+export const renderEmployeePrivileges = (employee, allPrivileges, privilegesEl, buttonsEl, onRemove, onAdd) => {
+    const directPrivileges = employee && Array.isArray(employee.directPrivileges) ? employee.directPrivileges : [];
+    const currentPrivilegeIds = directPrivileges.map(privilege => privilege.idPrivilege).filter(Boolean);
+    const availablePrivileges = Array.isArray(allPrivileges)
+        ? allPrivileges.filter(privilege => !currentPrivilegeIds.includes(privilege.idPrivilege))
+        : [];
+
+    privilegesEl.classList.toggle('empty', directPrivileges.length === 0);
+    privilegesEl.innerHTML = '';
+
+    if (!employee) {
+        privilegesEl.textContent = 'Selecciona un empleado para ver sus permisos.';
+    } else if (directPrivileges.length === 0) {
+        privilegesEl.textContent = 'Este empleado no tiene permisos directos asignados.';
+    } else {
+        const fragment = document.createDocumentFragment();
+        directPrivileges.forEach(privilege => {
+            const item = document.createElement('div');
+            item.className = 'privilegeTag';
+
+            const text = document.createElement('span');
+            text.textContent = getPrivilegeNameInSpanish(privilege.name);
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btnRemovePrivilege';
+            removeButton.title = `Remover ${getPrivilegeNameInSpanish(privilege.name)}`;
+            removeButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 32 32" stroke="var(--text-color)" fill="none">
+                <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round"></line>
+                <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round"></line>
+            </svg>`;
+            removeButton.addEventListener('click', () => onRemove(privilege));
+
+            item.appendChild(text);
+            item.appendChild(removeButton);
+            fragment.appendChild(item);
+        });
+        privilegesEl.appendChild(fragment);
+    }
+
+    buttonsEl.innerHTML = '';
+    if (!employee) {
+        return;
+    }
+
+    if (availablePrivileges.length === 0) {
+        const note = document.createElement('div');
+        note.className = 'modalNewPasswordSubtitle';
+        note.textContent = 'No hay permisos disponibles para asignar.';
+        buttonsEl.appendChild(note);
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    availablePrivileges.forEach(privilege => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btnSecondary';
+        button.textContent = getPrivilegeNameInSpanish(privilege.name);
+        button.addEventListener('click', () => onAdd(privilege));
+        fragment.appendChild(button);
+    });
+    buttonsEl.appendChild(fragment);
 };
 
 export const rewriteModalElements = (button, title, text) => {

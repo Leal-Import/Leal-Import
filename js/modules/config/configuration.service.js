@@ -4,7 +4,7 @@ import { apiRequest } from "../../utils/api.utils.js";
 const APIPAY_URL = `${config.API_BASE_URL}/PaymentMethod`;
 const API_URL = `${config.API_BASE_URL}/auth`;
 const APIPW_URL = `${config.API_BASE_URL}/passwordReset`;
-const APIME_URL = `${config.API_BASE_URL}/me`;
+const API_ROLES_URL = `${config.API_BASE_URL}/Roles`;
 
 export const getPaymentMethods = async () => {
     return await apiRequest(
@@ -38,9 +38,22 @@ export const verifyCurrentPassword = async (currentPassword) => {
     );
 };
 
+export const putUsername = async (payload) => {
+    return await apiRequest(
+        `${APIPW_URL}/changeUsername`,
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        },
+        'Error al verificar contraseña actual'
+    );
+};
+
 export const editProfile = async (profile) => {
     return await apiRequest(
-        `${APIME_URL}/profile`,
+        `${API_URL}/profile`,
         {
             method: 'PUT',
             credentials: 'include',
@@ -98,5 +111,35 @@ export const deletePaymentMethod = async (id) => {
             credentials: 'include'
         },
         'Error al eliminar método de pago'
+    );
+};
+
+export const getSystemRoles = async () => {
+    return await apiRequest(
+        `${API_ROLES_URL}/getRoles`,
+        { method: 'GET', credentials: 'include' },
+        'Error al obtener los roles del sistema'
+    );
+};
+
+export const addPrivilegeToRole = async (roleId, privilegeId) => {
+    return await apiRequest(
+        `${API_ROLES_URL}/${roleId}/privileges/${privilegeId}`,
+        {
+            method: 'PATCH',
+            credentials: 'include'
+        },
+        'Error al asignar privilegio al rol'
+    );
+};
+
+export const removePrivilegeFromRole = async (roleId, privilegeId) => {
+    return await apiRequest(
+        `${API_ROLES_URL}/${roleId}/privileges/${privilegeId}`,
+        {
+            method: 'DELETE',
+            credentials: 'include'
+        },
+        'Error al eliminar privilegio del rol'
     );
 };

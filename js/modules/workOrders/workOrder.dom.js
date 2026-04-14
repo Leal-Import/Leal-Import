@@ -11,7 +11,10 @@ export const DOMRefs = {
             txtSearchData: $('txtSearchData'),
             cmbSearchByStatus: $('cmbSearchByStatus'),
             fromDt: $('fromDt'),
-            toDt: $('toDt')
+            toDt: $('toDt'),
+            finalized: $('finalized'),
+            pending: $('pending'),
+            delayed: $('delayed')
         };
 
         return this.refs;
@@ -24,6 +27,14 @@ export const resetWorkOrdersFilters = (refs) => {
     cmbSearchByStatus.value = '';
     fromDt.value = '';
     toDt.value = '';
+};
+
+export const renderStats = (stats, refs) => {
+    const { finalizedCount, pendingCount, delayedCount } = stats;
+    const { finalized, pending, delayed } = refs;
+    finalized.textContent = finalizedCount;
+    pending.textContent = pendingCount;
+    delayed.textContent = delayedCount;
 };
 
 export const insertWorkOrders = (container, workOrders) => {
@@ -73,14 +84,22 @@ export const insertWorkOrders = (container, workOrders) => {
                 orderColor.classList.add("colorPending");
                 orderStatus.classList.add("pendingOrder");
                 orderStatus.textContent = "Pendiente";
-            } else if (workOrder.statusName === "Completada") {
+            } else if (workOrder.statusName === "Finalizada") {
                 orderColor.classList.add("colorCompleted");
                 orderStatus.classList.add("completedOrder");
-                orderStatus.textContent = "Completada";
-            } else {
+                orderStatus.textContent = "Finalizada";
+            } else if (workOrder.statusName === "Cancelada") {
+                orderColor.classList.add("colorCancelled");
+                orderStatus.classList.add("cancelledOrder");
+                orderStatus.textContent = "Cancelada";
+            } else if (workOrder.statusName === "Retraso") {
                 orderColor.classList.add("colorDelay");
                 orderStatus.classList.add("delayOrder");
                 orderStatus.textContent = "Retraso";
+            } else if (workOrder.statusName === "Espera de Aprobación") {
+                orderColor.classList.add("colorWaitingApproval");
+                orderStatus.classList.add("waitingApprovalOrder");
+                orderStatus.textContent = "Espera de Aprobación";
             }
 
             containerOrderStatus.append(orderColor, orderStatus);
@@ -106,9 +125,7 @@ export const insertWorkOrders = (container, workOrders) => {
             const moreInfoContainer = document.createElement("div");
             moreInfoContainer.classList.add("moreInfoContainer");
 
-            const moreInfoText = document.createElement("div");
-            moreInfoText.classList.add("moreInfoInfo");
-            moreInfoText.textContent = "Ver más →";
+            const spaceDiv = document.createElement("div");
 
             const btnView = document.createElement("a");
             btnView.classList.add("btnPrimary");
@@ -120,7 +137,7 @@ export const insertWorkOrders = (container, workOrders) => {
             });
             btnView.href = `${ROUTES.WORK_ORDER_HISTORY}?${params.toString()}`;
 
-            moreInfoContainer.append(moreInfoText, btnView);
+            moreInfoContainer.append(spaceDiv, btnView);
 
             footerCard.append(vehicleName, containerInfoVehicle, moreInfoContainer);
             card.append(containerImgVehicle, footerCard);

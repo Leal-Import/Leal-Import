@@ -1,50 +1,35 @@
-document.addEventListener('DOMContentLoaded', () => {
+import { createModuleInitializer } from '../../utils/dom.js';
+import { dashboardState } from './dashboard.state.js';
+import { dashPeriods, periodMapping } from './dashboard.logic.js';
+import { DOMRefs, renderDashboardData, renderCounters, renderTopSellers, renderTopVehicleSale, renderRecentWorkOrders, renderUrgentCollections } from './dashboard.dom.js';
+import { initDashboardEvents } from './dashboard.event.js';
+import { getCounters, getTopSellers, getTopVehicleSales, getRecentWorkOrders, getMetrics, getUrgentCollections } from './dashboard.service.js';
 
-    document.querySelectorAll('.dashPeriodBtn').forEach(btn => {
-        btn.addEventListener('click', () => dashSetPeriod(btn, btn.dataset.period));
-    });
+const resetState = () => {
+    dashboardState.currentPeriod = 'mes';
+    if (dashboardState.chart) {
+        dashboardState.chart.destroy();
+        dashboardState.chart = null;
+    }
+};
 
-    const dashPeriods = {
-        hoy: { k: ['6', '$4,820', '$18,420', '1'], c: ['+5%', 'up', '+2%', 'up', '+1%', 'down', '±0%', 'flat'], labels: ['8am', '10am', '12pm', '2pm', '4pm', '6pm'], vals: [800, 1200, 900, 1500, 700, 420], sub: 'Horas del día' },
-        semana: { k: ['18', '$21,400', '$18,420', '3'], c: ['+12%', 'up', '+5%', 'up', '+3%', 'down', '+2%', 'up'], labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], vals: [3200, 4100, 2800, 5200, 4300, 1800], sub: 'Días de la semana' },
-        mes: { k: ['38', '$53,203', '$18,420', '5'], c: ['+18%', 'up', '+8%', 'up', '+3%', 'down', '±0%', 'flat'], labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'], vals: [12400, 15800, 13200, 11803], sub: 'Semanas del mes' },
-        trimestre: { k: ['94', '$142,800', '$18,420', '14'], c: ['+22%', 'up', '+11%', 'up', '+5%', 'down', '+4%', 'up'], labels: ['Enero', 'Febrero', 'Marzo'], vals: [42100, 53203, 47500], sub: 'Meses del trimestre' },
-        año: { k: ['284', '$383,210', '$18,420', '42'], c: ['+31%', 'up', '+19%', 'up', '+2%', 'down', '+8%', 'up'], labels: ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'], vals: [28400, 42100, 53203, 31200, 28400, 25800, 31200, 27400, 24800, 22100, 26400, null], sub: 'Meses del año' }
-    };
-
-    const dashSetPeriod = (btn, key) => {
-        document.querySelectorAll('.dashPeriodBtn').forEach(b => b.classList.remove('dashPeriodBtnActive'));
-        btn.classList.add('dashPeriodBtnActive');
-        const d = dashPeriods[key];
-        ['kpiOrders', 'kpiSales', 'kpiDebt', 'kpiClients'].forEach((id, i) => {
-            document.getElementById(id).textContent = d.k[i];
-        });
-        ['chipOrders', 'chipSales', 'chipDebt', 'chipClients'].forEach((id, i) => {
-            const el = document.getElementById(id);
-            el.textContent = d.c[i * 2];
-            el.className = 'dashChip ' + { up: 'dashChipUp', down: 'dashChipDown', flat: 'dashChipFlat' }[d.c[i * 2 + 1]];
-        });
-        document.getElementById('chartSub').textContent = d.sub;
-        dashChart.data.labels = d.labels;
-        dashChart.data.datasets[0].data = d.vals;
-        dashChart.update();
-    };
-
-    const dashCtx = document.getElementById('earningsChart').getContext('2d');
-    const dashChart = new Chart(dashCtx, {
+const initialize = (refs) => {
+    // Inicializar Gráfico
+    const dashCtx = refs.earningsChart.getContext('2d');
+    dashboardState.chart = new Chart(dashCtx, {
         type: 'line',
         data: {
-            labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+            labels: [],
             datasets: [{
                 label: 'Ventas',
-                data: [12400, 15800, 13200, 11803],
+                data: [],
                 borderColor: '#D31813',
                 borderWidth: 2,
                 backgroundColor: 'rgba(211,24,19,0.06)',
                 fill: true,
                 pointBackgroundColor: '#D31813',
-                pointRadius: 4,
-                pointHoverRadius: 6,
+                pointRadius: 0,
+                pointHoverRadius: 5,
                 lineTension: 0.4
             }]
         },
@@ -66,4 +51,61 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // Eventos
+    initDashboardEvents(refs, {
+        onPeriodChange: async (period) => {
+            dashboardState.currentPeriod = period;
+            try {
+                const apiPeriod = periodMapping[period] || 'MONTH';
+                const metrics = await getMetrics(apiPeriod);
+                renderDashboardData(refs, metrics, dashboardState.chart);
+            } catch (error) {
+                console.error('Error cargando métricas:', error);
+                // Fallback to mock data if API fails
+                const data = dashPeriods[period] || dashPeriods.mes;
+                renderDashboardData(refs, data, dashboardState.chart);
+            }
+        }
+    });
+};
+
+const load = async (refs) => {
+    // 1. Carga inicial de métricas desde API
+    try {
+        const apiPeriod = periodMapping[dashboardState.currentPeriod] || 'MONTH';
+        const metrics = await getMetrics(apiPeriod);
+        renderDashboardData(refs, metrics, dashboardState.chart);
+    } catch (error) {
+        console.error('Error cargando métricas iniciales:', error);
+        // Fallback to mock data
+        const data = dashPeriods[dashboardState.currentPeriod] || dashPeriods.mes;
+        renderDashboardData(refs, data, dashboardState.chart);
+    }
+
+    // 2. Carga de datos reales desde API
+    try {
+        const [counters, sellers, topVehicle, workOrders, urgentCollections] = await Promise.all([
+            getCounters(),
+            getTopSellers(),
+            getTopVehicleSales(),
+            getRecentWorkOrders(),
+            getUrgentCollections()
+        ]);
+
+        renderCounters(refs, counters);
+        renderTopSellers(refs, sellers);
+        renderTopVehicleSale(refs, topVehicle);
+        renderRecentWorkOrders(refs, workOrders);
+        renderUrgentCollections(refs, urgentCollections);
+    } catch (error) {
+        console.error('Error cargando datos del API:', error);
+    }
+};
+
+createModuleInitializer({
+    resetState,
+    initialize,
+    load,
+    DOMRefs
 });

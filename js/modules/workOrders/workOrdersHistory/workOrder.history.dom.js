@@ -30,15 +30,15 @@ export const resetWorkOrderHistoryFilters = (refs) => {
 };
 
 export const loadStats = (data, Refs) => {
-    const { finalized, pending, delayed } = data.statistics;
+    const { finalizedCount, pendingCount, delayedCount } = data;
     const { finalized: finalizedRef, pending: pendingRef, delayed: delayedRef } = Refs;
-    finalizedRef.textContent = finalized;
-    pendingRef.textContent = pending;
-    delayedRef.textContent = delayed;
+    finalizedRef.textContent = finalizedCount;
+    pendingRef.textContent = pendingCount;
+    delayedRef.textContent = delayedCount;
 };
 
 export const loadVehicleInfo = (data, Refs) => {
-    const { brand, model, year, vin } = data.vehicleInfo;
+    const { brand, model, year, vin } = data.vehicleHeader;
     const { infoItem, vin: vinRef } = Refs;
     infoItem.textContent = `${brand} ${model} ${year}`;
     vinRef.textContent = vin;
@@ -93,12 +93,23 @@ export const insertWorkOrderHistory = (container, workOrders, onActions, tableHi
         if (wo.statusName === "Pendiente") {
             orderColor.classList.add("colorPending");
             statusBadge.classList.add("pendingOrder");
-        } else if (wo.statusName === "Completada") {
+            statusBadge.textContent = "Pendiente";
+        } else if (wo.statusName === "Finalizada") {
             orderColor.classList.add("colorCompleted");
             statusBadge.classList.add("completedOrder");
-        } else {
+            statusBadge.textContent = "Finalizada";
+        } else if (wo.statusName === "Cancelada") {
+            orderColor.classList.add("colorCancelled");
+            statusBadge.classList.add("cancelledOrder");
+            statusBadge.textContent = "Cancelada";
+        } else if (wo.statusName === "Retraso") {
             orderColor.classList.add("colorDelay");
             statusBadge.classList.add("delayOrder");
+            statusBadge.textContent = "Retraso";
+        } else if (wo.statusName === "Espera de Aprobación") {
+            orderColor.classList.add("colorWaitingApproval");
+            statusBadge.classList.add("waitingApprovalOrder");
+            statusBadge.textContent = "Espera de Aprobación";
         }
 
         const tdCost = document.createElement("td");

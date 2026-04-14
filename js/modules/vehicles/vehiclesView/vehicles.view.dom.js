@@ -1,7 +1,6 @@
-import { $, buildParams, hideElement, qsa } from "../../../utils/dom.js";
+import { $, qsa } from "../../../utils/dom.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
 import { renderAndInitViewCarousel } from "../../carousel/carousel.dom.js";
-import { ROUTES } from "../../../utils/router.js";
 
 export const DOMRefs = {
     refs: {},
@@ -42,7 +41,6 @@ export const DOMRefs = {
 
 export const loadVehicleData = (vehicle, Refs) => {
     loadVehicleInfo(vehicle, Refs);
-    loadDownButtons(vehicle, Refs);
     renderAndInitViewCarousel({
         photos: vehicle.vehiclePhotos,
         mainWrapper: Refs.mainSwiperWrapper,
@@ -53,23 +51,6 @@ export const loadVehicleData = (vehicle, Refs) => {
 
 const removeSkeletonLoad = (skeletonElements) => {
     skeletonElements.forEach(el => el.classList.remove("skeleton"));
-};
-
-const loadDownButtons = (vehicle, Refs) => {
-    const { btnEdit, btnSell, btnHistorial, vehicleStatus } = Refs;
-    btnEdit.href = `${ROUTES.VEHICLES_FORM}?id=${vehicle.idVehicle}`;
-    const paramsHistorial = buildParams({ idVehicle: vehicle.idVehicle, idCustomer: vehicle.idOwnerCustomer });
-    btnHistorial.href = `${ROUTES.WORK_ORDER_HISTORY}?${paramsHistorial.toString()}`;
-    if (vehicle.status === "Disponible") {
-        vehicleStatus.querySelector(".statusText").textContent = "Disponible";
-        vehicleStatus.classList.add("aviable");
-        const paramsSell = buildParams({ type: "vehicle", id: vehicle.idVehicle });
-        btnSell.href = `${ROUTES.CUSTOMER_SALE}?${paramsSell.toString()}`;
-    } else if (vehicle.status === "Vendido") {
-        vehicleStatus.querySelector(".statusText").textContent = "Vendido";
-        vehicleStatus.classList.add("sold");
-        hideElement(btnSell);
-    }
 };
 
 const loadVehicleInfo = (vehicle, Refs) => {

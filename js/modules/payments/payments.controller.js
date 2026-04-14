@@ -1,9 +1,9 @@
 // payments.controller.js
 
-import { addPayment, getMethodNameById, validatePayment } from '../../core/logic/payments.logic.js';
-import { cleanPaymentCamps, DOMRefs, renderPayments, resetDomPayments } from '../../core/dom/payments.dom.js';
+import { addPayment, getMethodNameById, validatePayment } from './payments.logic.js';
+import { cleanPaymentCamps, DOMRefs, renderPayments, resetDomPayments } from './payments.dom.js';
 import { getPaymentMethods } from '../config/configuration.service.js';
-import { paymentsState } from '../../core/state/payments.state.js';
+import { paymentsState } from './payments.state.js';
 import { $, fillSelect, hideElement, showElement, showMessage } from '../../utils/dom.js';
 import { initPaymentsEvents } from './payments.event.js';
 import { safeParseFloat } from '../../utils/validators.js';
@@ -18,7 +18,7 @@ export const loadPayMethods = async (Refs) => {
         paymentsState.paymentMethods = Array.isArray(roles) ? roles : (roles?.content || []);
         const cmbPaymentMethod = Refs.paymentMethod;
         if (cmbPaymentMethod) {
-            fillSelect(cmbPaymentMethod, paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Metodo de pago");
+            fillSelect(cmbPaymentMethod, paymentsState.paymentMethods, "idPaymentMethod", "methodName", null, "Método de pago");
         }
     } catch (error) {
         await handleApiError(error, 'No se pudieron cargar los métodos de pago. Por favor, inténtalo de nuevo.');

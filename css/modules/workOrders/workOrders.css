@@ -152,20 +152,20 @@
     font-weight: var(--font-weight-medium);
 }
 
-.colorPending {
+.colorPending, .colorWaitingApproval {
     background-color: var(--warning-color);
 }
 
-.pendingOrder {
+.pendingOrder, .waitingApprovalOrder {
     color: var(--warning-color);
     font-weight: var(--font-weight-medium);
 }
 
-.colorDelay {
+.colorDelay, .colorCancelled {
     background-color: var(--danger-color);
 }
 
-.delayOrder {
+.delayOrder, .cancelledOrder {
     color: var(--danger-color);
     font-weight: var(--font-weight-medium);
 }

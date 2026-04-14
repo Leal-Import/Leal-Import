@@ -18,6 +18,73 @@
 </head>
 
 <body>
+    <!-- Modal Gestión de roles -->
+    <div id="modalRoleManagement" class="containerModal hide">
+        <div class="modalAdd modalRolesCard">
+            <!-- Header -->
+            <div class="modalNewPasswordHeader">
+                <div class="modalNewPasswordHeaderLeft">
+                    <div class="modalNewPasswordIconWrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 2a5 5 0 0 1 5 5v1h2a2 2 0 0 1 2 2v3a7 7 0 0 1-7 7h-4a7 7 0 0 1-7-7v-3a2 2 0 0 1 2-2h2V7a5 5 0 0 1 5-5z"
+                                stroke="currentColor" stroke-width="1.8" />
+                            <path d="M8 14h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                            <path d="M12 11v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="modalNewPasswordTitle">Gestión de roles</h2>
+                        <p class="modalNewPasswordSubtitle">Selecciona un rol para administrar sus privilegios</p>
+                    </div>
+                </div>
+                <button type="button" class="btnClose" id="btnCloseRoleManagement" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="modalRolesBody">
+                <div class="modalRolesPanel">
+                    <h3 class="modalSectionTitle">Roles</h3>
+                    <div class="rolesList" id="rolesList">
+                        <!-- Ejemplo de role -->
+                        <!-- <button type="button" class="roleItem active" data-role-id="mechanic">Mecánico</button> -->
+                    </div>
+                </div>
+
+                <div class="modalRolesDetails">
+                    <div class="modalRolesDetailsHeader">
+                        <div>
+                            <span class="modalSectionLabel">Privilegios</span>
+                            <h3 class="modalSectionSubtitle" id="selectedRoleName">Selecciona un rol</h3>
+                        </div>
+                        <span class="roleBadge" id="rolePrivilegeCount">0/0</span>
+                    </div>
+
+                    <div class="rolesPrivilegesList" id="privilegesList">
+                        <!-- Ejemplo de privilegio -->
+                        <!--
+                    <div class="privilegeTag">
+                        <span>Leer vehículos</span>
+                        <button type="button" class="btnClose btnRemovePrivilege" data-privilege-id="read_vehicles"></button>
+                    </div>
+                    -->
+                    </div>
+
+                    <div class="modalSectionLabel">Agregar privilegio</div>
+                    <div class="privilegeButtons" id="privilegeButtons">
+                        <!-- Botones generados dinámicamente -->
+                        <!-- <button type="button" class="btnSecondary">+ Editar vehículos</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Métodos de Pago -->
     <div id="modalPaymentMethods" class="containerModal hide">
         <div class="modalAdd modalPaymentMethodsCard">
@@ -270,7 +337,7 @@
                             <polyline points="1.5,5 4,7.5 8.5,2.5" />
                         </svg>
                     </div>
-                    <span>Una letra minuscula</span>
+                    <span>Una letra minúscula</span>
                 </div>
                 <div class="modalNewPasswordReqItem" id="reqNumber">
                     <div class="modalNewPasswordReqDot">
@@ -335,7 +402,7 @@
                     <input type="text" class="txtInputs" name="txtFullName" id="txtFullName" required maxlength="256">
                 </div>
                 <div class="formGroup">
-                    <label for="txtEmployeeEmail" class="lblInputs">Correo electronico</label>
+                    <label for="txtEmployeeEmail" class="lblInputs">Correo electrónico</label>
                     <input type="text" class="txtInputs" name="txtEmployeeEmail" id="txtEmployeeEmail" required
                         maxlength="100">
                 </div>
@@ -433,32 +500,58 @@
                     </div>
                 </div>
 
-                <div class="configSectionTitle">Sistema</div>
-                <div class="configCard">
-                    <div class="configRow" id="btnOpenPaymentMethods">
-                        <div class="containerIconDarkMode">
-                            <div class="configItemIcon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="1" y="4" width="22" height="16" rx="3" stroke="currentColor"
-                                        stroke-width="1.8" />
-                                    <path d="M1 9h22" stroke="currentColor" stroke-width="1.8" />
-                                    <rect x="4" y="13" width="5" height="2.5" rx="1" fill="currentColor"
-                                        opacity="0.5" />
-                                    <circle cx="18" cy="14" r="2.5" stroke="currentColor" stroke-width="1.5" />
-                                    <circle cx="20.2" cy="14" r="2.5" stroke="currentColor" stroke-width="1.5"
-                                        opacity="0.5" />
-                                </svg>
+                <div class="hide" style="flex-direction: column;" data-privilege="MANAGE_SECURITY">
+                    <div class="configSectionTitle" style="margin-bottom: 10px;">Sistema</div>
+                    <div class="configCard">
+                        <div class="configRow" id="btnOpenPaymentMethods">
+                            <div class="containerIconDarkMode">
+                                <div class="configItemIcon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="1" y="4" width="22" height="16" rx="3" stroke="currentColor"
+                                            stroke-width="1.8" />
+                                        <path d="M1 9h22" stroke="currentColor" stroke-width="1.8" />
+                                        <rect x="4" y="13" width="5" height="2.5" rx="1" fill="currentColor"
+                                            opacity="0.5" />
+                                        <circle cx="18" cy="14" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                                        <circle cx="20.2" cy="14" r="2.5" stroke="currentColor" stroke-width="1.5"
+                                            opacity="0.5" />
+                                    </svg>
+                                </div>
+                                <div class="configItemText">
+                                    <span class="configItemLabel">Métodos de pago</span>
+                                    <span class="configItemSub">Administra tus métodos de pago</span>
+                                </div>
                             </div>
-                            <div class="configItemText">
-                                <span class="configItemLabel">Metodos de pago</span>
-                                <span class="configItemSub">Administra tus métodos de pago</span>
-                            </div>
+                            <svg class="configChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
                         </div>
-                        <svg class="configChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
+                        <div class="configDivider"></div>
+                        <div class="configRow" id="btnOpenManageRoles">
+                            <div class="containerIconDarkMode">
+                                <div class="configItemIcon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 3l7 3v5c0 4-2.7 7.5-7 8-4.3-.5-7-4-7-8V6l7-3z"
+                                            stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                                        <circle cx="12" cy="11" r="2.2" stroke="currentColor" stroke-width="1.8" />
+                                        <path d="M9 15c0-1 1.5-1.5 3-1.5s3 .5 3 1.5c0 1.5-1.5 2.5-3 2.5s-3-1-3-2.5z"
+                                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                            fill="none" />
+                                    </svg>
+                                </div>
+                                <div class="configItemText">
+                                    <span class="configItemLabel">Administrar Roles</span>
+                                    <span class="configItemSub">Gestiona los roles y permisos de los usuarios</span>
+                                </div>
+                            </div>
+                            <svg class="configChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
@@ -513,7 +606,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="../js/modules/config/configuration.controller.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>

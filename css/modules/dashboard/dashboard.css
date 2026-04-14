@@ -107,10 +107,13 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    max-width: 100%;
+    flex-wrap: wrap;
 }
 
 .dashPeriodBtns {
     display: flex;
+    flex-wrap: wrap;
     gap: 4px;
     background-color: var(--bg-color-white);
     border: var(--border);
@@ -119,6 +122,7 @@
 }
 
 .dashPeriodBtn {
+    flex: 1;
     padding: 6px 14px;
     border-radius: 6px;
     font-size: var(--font-size-sm);
@@ -253,6 +257,7 @@
 
 /* ── CARD BASE ── */
 .dashCard {
+    min-width: 0;
     background-color: var(--bg-color-white);
     border: var(--border);
     border-radius: var(--border-radius-table);
@@ -270,6 +275,7 @@
 
 .dashCardChart {
     flex-basis: 500px !important;
+    min-width: 0;
 }
 
 .dashCardHeader {
@@ -813,70 +819,4 @@
     .dashAlerts {
         grid-template-columns: 1fr;
     }
-}
-
-/* ── DATE RANGE CHART FILTER ── */
-.dateRangeChartContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding-top: 4px;
-}
-
-.dateRangeBtn {
-    width: 28px;
-    height: 28px;
-    border-radius: var(--border-radius-btn);
-    border: var(--border);
-    background-color: var(--bg-color);
-    color: var(--text-color-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.15s ease;
-}
-
-.dateRangeBtn:hover {
-    border-color: var(--danger-color);
-    color: var(--danger-color);
-    background-color: var(--bg-color);
-}
-
-.dateRangeBtn svg {
-    width: 14px;
-    height: 14px;
-}
-
-.dateRangeSelects {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.dateRangeSelect {
-    padding: 5px 10px;
-    border: var(--border);
-    border-radius: var(--border-radius-btn);
-    background-color: var(--bg-color);
-    color: var(--text-color-secondary);
-    font-size: var(--font-size-sh);
-    font-family: var(--font-text);
-    cursor: pointer;
-    outline: none;
-    transition: border-color 0.15s ease;
-}
-
-.dateRangeSelect:hover,
-.dateRangeSelect:focus {
-    border-color: var(--danger-color);
-    color: var(--text-color);
-}
-
-.dateRangeSeparator {
-    font-size: var(--font-size-sh);
-    color: var(--text-color-secondary);
-    user-select: none;
 }

@@ -1,9 +1,9 @@
 // modules/workOrders/workOrders.controller.js
 
-import { DOMRefs, insertWorkOrders, resetWorkOrdersFilters } from "./workOrder.dom.js";
+import { DOMRefs, insertWorkOrders, renderStats, resetWorkOrdersFilters } from "./workOrder.dom.js";
 import { resetWorkOrdersListState, workOrdersListState } from "./workOrders.state.js";
 import { createPagination } from "../../pagination/pagination.controller.js";
-import { getVehiclesWOrders, getWOStatus } from "./workOrders.service.js";
+import { getVehiclesWOrders, getWOStatus, getOrderStats } from "./workOrders.service.js";
 
 import { fillSelect, hideElement, showElement, createModuleInitializer } from "../../utils/dom.js";
 import { initWorkOrdersEvents } from "./workOrder.event.js";
@@ -22,7 +22,7 @@ const pagination = createPagination({
     }
 });
 
-const loadStateWorkOrders = async() => {
+const loadStateWorkOrders = async () => {
     try {
         const states = await getWOStatus();
         workOrdersListState.stateList = states;
@@ -32,7 +32,17 @@ const loadStateWorkOrders = async() => {
     }
 };
 
-const loadWorkOrders = async() => {
+const loadOrderStats = async () => {
+    try {
+        const stats = await getOrderStats();
+        workOrdersListState.stats = stats;
+        renderStats(workOrdersListState.stats, DOMRefs.refs);
+    } catch (error) {
+        await handleApiError(error, 'No se pudieron cargar las estadísticas de las órdenes de trabajo. Por favor, inténtalo de nuevo.');
+    }
+};
+
+const loadWorkOrders = async () => {
     try {
         showElement(DOMRefs.refs.loaderWorkOrders);
         const { page, size } = workOrdersListState.pagination;
@@ -78,8 +88,8 @@ const initializeUI = (Refs) => {
     initWorkOrdersEvents({ Refs, onSearchWorkOrder });
 };
 
-const loadDataFlow = async() => {
-    await Promise.all([loadWorkOrders(), loadStateWorkOrders()]);
+const loadDataFlow = async () => {
+    await Promise.all([loadWorkOrders(), loadStateWorkOrders(), loadOrderStats()]);
 };
 
 const init = createModuleInitializer({

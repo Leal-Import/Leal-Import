@@ -34,7 +34,6 @@ export const loadCustomers = async () => {
         customersListState.list = data.content;
         customersListState.pagination.total = data.page.totalElements;
         customersListState.pagination.totalPages = data.page.totalPages;
-
         insertCustomers(
             DOMRefs.refs.CustomersTableBody,
             customersListState.list,
@@ -61,6 +60,7 @@ const handleCustomerActions = (event, customer) => {
     showFloatingMenu(event, [
         {
             label: 'Actualizar cliente',
+            privilege: 'WRITE_CUSTOMERS',
             onClick: () => editCustomer(customer)
         },
         {
@@ -71,6 +71,7 @@ const handleCustomerActions = (event, customer) => {
             label: customer.status === STATUS.ACTIVE
                 ? 'Desactivar cliente'
                 : 'Activar cliente',
+            privilege: 'WRITE_CUSTOMERS',
             onClick: () =>
                 toggleCustomerStatus(
                     customer.idCustomer,
@@ -136,22 +137,22 @@ const onSubmitCustomer = async (e) => {
     try {
         if (customersListState.selectedId) {
             await putCustomer(customer, customersListState.selectedId);
-            showMessage('Exito', 'Cliente actualizado exitosamente', 'success');
+            await showMessage('Exito', 'Cliente actualizado exitosamente', 'success', true);
         } else {
             await postCustomer(customer);
-            showMessage('Exito', 'Cliente agregado exitosamente', 'success');
+            await showMessage('Exito', 'Cliente agregado exitosamente', 'success', true);
         }
 
+        toggleModal(DOMRefs.refs.modalCustomers, false);
+        customersListState.selectedId = null;
     } catch (err) {
         await handleApiError(err, 'No se pudo guardar el cliente. Por favor, inténtalo de nuevo.');
     } finally {
         hideElement(DOMRefs.refs.loaderAddCustomer);
         DOMRefs.refs.campsModal.forEach(removeDisable);
-        customersListState.selectedId = null;
         DOMRefs.refs.frmCustomers.reset();
         removeDisable(DOMRefs.refs.btnAddNewCustomer);
         pagination.update({});
-        toggleModal(DOMRefs.refs.modalCustomers, false);
     }
 };
 

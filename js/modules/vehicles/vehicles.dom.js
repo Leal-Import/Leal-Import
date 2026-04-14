@@ -16,10 +16,22 @@ export const DOMRefs = {
             cmbSearchByStatus: $('cmbSearchByStatus'),
             cmbSearchByIsExternal: $('cmbSearchByIsExternal'),
             fromDt: $('fromDt'),
-            toDt: $('toDt')
+            toDt: $('toDt'),
+            stockVehicles: $('stockVehicles'),
+            soldVehicles: $('soldVehicles'),
+            externalVehicles: $('externalVehicles'),
+            noExternalVehicles: $('noExternalVehicles')
         };
         return this.refs;
     }
+};
+
+export const renderVehicleStats = (stats, refs) => {
+    const { stockVehicles, soldVehicles, externalVehicles, noExternalVehicles } = refs;
+    stockVehicles.textContent = stats.stockCount || 0;
+    soldVehicles.textContent = stats.soldCount || 0;
+    externalVehicles.textContent = stats.externalCount || 0;
+    noExternalVehicles.textContent = stats.inventoryCount || 0;
 };
 
 export const resetVehiclesFilters = (Refs) => {
@@ -170,6 +182,7 @@ const createButtons = (vehicle, hasWorkOrder) => {
 
         const btnEdit = document.createElement('a');
         btnEdit.textContent = 'Editar';
+        btnEdit.dataset.privilege = 'WRITE_VEHICLES';
         btnEdit.classList.add('btnSecondary');
         btnEdit.href = `${ROUTES.VEHICLES_FORM}?id=${vehicle.idVehicle}`;
 

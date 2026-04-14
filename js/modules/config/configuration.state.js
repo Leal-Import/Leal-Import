@@ -9,7 +9,9 @@ export const configurationState = {
         phone: '',
         username: ''
     },
-    paymentMethods: []
+    paymentMethods: [],
+    roles: [],
+    selectedRole: null
 };
 
 export const resetConfigurationState = () => {
@@ -24,4 +26,6 @@ export const resetConfigurationState = () => {
         username: ''
     };
     configurationState.paymentMethods = [];
+    configurationState.roles = [];
+    configurationState.selectedRole = null;
 };

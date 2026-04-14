@@ -1,6 +1,6 @@
 import { asBoolean, asNumber, asUUID, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal } from "../../../utils/validators.js";
-import { normalizePayments, validatePayments } from "../../../core/logic/payments.logic.js";
+import { normalizePayments, validatePayments } from "../../payments/payments.logic.js";
 import { sanitizeURLParam } from "../../../utils/sanitizer.js";
 
 export const hydrateContextFromURL = async (state) => {
@@ -8,14 +8,17 @@ export const hydrateContextFromURL = async (state) => {
 
     // 🔴 Obligatorio
     const idCustomer = asUUID(params.get('idCustomer'));
-    if (!idCustomer) {
-        await showMessage(
-            "Cliente no seleccionado",
-            "Acceso inválido. Falta el cliente.",
-            "warning"
-        );
-        history.back();
-        return false;
+    const fromInventory = asBoolean(params.get('fromInventory'));
+    if (!fromInventory) {
+        if (!idCustomer) {
+            await showMessage(
+                "Cliente no seleccionado",
+                "Acceso inválido. Falta el cliente.",
+                "warning"
+            );
+            history.back();
+            return false;
+        }
     }
 
     state.context.idCustomer = idCustomer;

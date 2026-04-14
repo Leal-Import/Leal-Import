@@ -37,7 +37,7 @@
                         <p class="dashAlertTitle">Órdenes atrasadas</p>
                         <p class="dashAlertSub">Superaron la fecha estimada de entrega</p>
                     </div>
-                    <span class="dashAlertVal dashAlertValDanger" id="alertOrders">7</span>
+                    <span class="dashAlertVal dashAlertValDanger" id="delayedOrdersCount"></span>
                 </div>
                 <div class="dashAlertItem dashAlertWarning">
                     <div class="dashAlertIcon dashAlertIconWarning">
@@ -50,10 +50,9 @@
                         </svg>
                     </div>
                     <div class="dashAlertBody">
-                        <p class="dashAlertTitle">Clientes sin abono reciente</p>
-                        <p class="dashAlertSub">Sin movimiento en más de 30 días</p>
+                        <p class="dashAlertTitle">Clientes que no han saldado deudas</p>
                     </div>
-                    <span class="dashAlertVal dashAlertValWarning" id="alertClients">4</span>
+                    <span class="dashAlertVal dashAlertValWarning" id="inactiveCustomersCount"></span>
                 </div>
                 <div class="dashAlertItem dashAlertSuccess">
                     <div class="dashAlertIcon dashAlertIconSuccess">
@@ -69,19 +68,19 @@
                         <p class="dashAlertTitle">Vehículos en stock</p>
                         <p class="dashAlertSub">Disponibles para venta inmediata</p>
                     </div>
-                    <span class="dashAlertVal dashAlertValSuccess" id="alertVehicles">12</span>
+                    <span class="dashAlertVal dashAlertValSuccess" id="stockVehiclesCount"></span>
                 </div>
             </div>
 
             <!-- PERÍODO -->
             <div class="dashPeriodBar">
                 <div class="dashPeriodBtns">
-                    <button class="dashPeriodBtn" data-period="hoy">Hoy</button>
-                    <button class="dashPeriodBtn" data-period="semana">Esta semana</button>
-                    <button class="dashPeriodBtn dashPeriodBtnActive" data-period="mes">Este
+                    <button class="dashPeriodBtn" data-period="TODAY">Hoy</button>
+                    <button class="dashPeriodBtn" data-period="WEEK">Esta semana</button>
+                    <button class="dashPeriodBtn dashPeriodBtnActive" data-period="MONTH">Este
                         mes</button>
-                    <button class="dashPeriodBtn" data-period="trimestre">Trimestre</button>
-                    <button class="dashPeriodBtn" data-period="año">Este año</button>
+                    <button class="dashPeriodBtn" data-period="QUARTER">Trimestre</button>
+                    <button class="dashPeriodBtn" data-period="YEAR">Este año</button>
                 </div>
                 <span class="dashPeriodLabel">Comparado con el período anterior</span>
             </div>
@@ -98,17 +97,9 @@
                 </div>
                 <div class="dashKpiItem dashKpiSuccess">
                     <p class="dashKpiLabel">Ventas</p>
-                    <h2 class="dashKpiValue dashKpiValueSuccess" id="kpiSales">$53,203</h2>
+                    <h2 class="dashKpiValue dashKpiValueSuccess" id="kpiSales">60</h2>
                     <div class="dashKpiFoot">
                         <span class="dashChip dashChipUp" id="chipSales">+8%</span>
-                        <span class="dashKpiSub">vs período anterior</span>
-                    </div>
-                </div>
-                <div class="dashKpiItem dashKpiWarning">
-                    <p class="dashKpiLabel">Deuda activa</p>
-                    <h2 class="dashKpiValue dashKpiValueWarning" id="kpiDebt">$18,420</h2>
-                    <div class="dashKpiFoot">
-                        <span class="dashChip dashChipDown" id="chipDebt">+3%</span>
                         <span class="dashKpiSub">vs período anterior</span>
                     </div>
                 </div>
@@ -129,63 +120,12 @@
                 <div class="dashCard dashCardChart">
                     <div class="dashCardHeader">
                         <div>
-                            <h3 class="dashCardTitle">Tendencia de ventas</h3>
+                            <h3 class="dashCardTitle">Tendencia de ingresos</h3>
                             <p class="dashCardSub" id="chartSub">Semanas del mes</p>
                         </div>
                     </div>
                     <div class="dashCanvasWrap">
                         <canvas id="earningsChart"></canvas>
-                    </div>
-                    <div class="dateRangeChartContainer">
-                        <button class="dateRangeBtn" id="btnPrevRange">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="15 18 9 12 15 6" />
-                            </svg>
-                        </button>
-                        <div class="dateRangeSelects">
-                            <select class="dateRangeSelect" id="selectFromMonth">
-                                <option value="2025-01">Enero 2025</option>
-                                <option value="2025-02">Febrero 2025</option>
-                                <option value="2025-03">Marzo 2025</option>
-                                <option value="2025-04">Abril 2025</option>
-                                <option value="2025-05">Mayo 2025</option>
-                                <option value="2025-06">Junio 2025</option>
-                                <option value="2025-07">Julio 2025</option>
-                                <option value="2025-08">Agosto 2025</option>
-                                <option value="2025-09">Septiembre 2025</option>
-                                <option value="2025-10">Octubre 2025</option>
-                                <option value="2025-11" selected>Noviembre 2025</option>
-                                <option value="2025-12">Diciembre 2025</option>
-                                <option value="2026-01">Enero 2026</option>
-                                <option value="2026-02">Febrero 2026</option>
-                                <option value="2026-03">Marzo 2026</option>
-                            </select>
-                            <span class="dateRangeSeparator">—</span>
-                            <select class="dateRangeSelect" id="selectToMonth">
-                                <option value="2025-01">Enero 2025</option>
-                                <option value="2025-02">Febrero 2025</option>
-                                <option value="2025-03">Marzo 2025</option>
-                                <option value="2025-04">Abril 2025</option>
-                                <option value="2025-05">Mayo 2025</option>
-                                <option value="2025-06">Junio 2025</option>
-                                <option value="2025-07">Julio 2025</option>
-                                <option value="2025-08">Agosto 2025</option>
-                                <option value="2025-09">Septiembre 2025</option>
-                                <option value="2025-10">Octubre 2025</option>
-                                <option value="2025-11">Noviembre 2025</option>
-                                <option value="2025-12">Diciembre 2025</option>
-                                <option value="2026-01">Enero 2026</option>
-                                <option value="2026-02">Febrero 2026</option>
-                                <option value="2026-03" selected>Marzo 2026</option>
-                            </select>
-                        </div>
-                        <button class="dateRangeBtn" id="btnNextRange">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                        </button>
                     </div>
                 </div>
 
@@ -200,60 +140,16 @@
                     </div>
 
                     <div class="dashSellerHero">
-                        <div class="dashSellerAvatar">VG</div>
+                        <div class="dashSellerAvatar"></div>
                         <div class="dashSellerInfo">
-                            <p class="dashSellerName">Vladimir Gómez</p>
-                            <p class="dashSellerRole">Vendedor · Mecánico</p>
-                            <p class="dashSellerAmount">$18,400</p>
+                            <p class="dashSellerName"></p>
+                            <p class="dashSellerRole"></p>
+                            <p class="dashSellerAmount"></p>
                             <p class="dashSellerAmtLabel">en ventas este período</p>
                         </div>
                     </div>
 
-                    <div class="dashRankList">
-                        <div class="dashRankRow">
-                            <span class="dashRankNum dashRankSilver">#2</span>
-                            <div class="dashRankAvatar dashRankAvatarTop">MA</div>
-                            <div class="dashRankInfo">
-                                <p class="dashRankName">Mario Avelar</p>
-                                <div class="dashRankBar">
-                                    <div class="dashRankFill dashRankFillTop" style="width:72%"></div>
-                                </div>
-                            </div>
-                            <span class="dashRankAmt">$13,200</span>
-                        </div>
-                        <div class="dashRankRow">
-                            <span class="dashRankNum dashRankBronze">#3</span>
-                            <div class="dashRankAvatar dashRankAvatarTop">CL</div>
-                            <div class="dashRankInfo">
-                                <p class="dashRankName">Camila Lazo</p>
-                                <div class="dashRankBar">
-                                    <div class="dashRankFill dashRankFillTop" style="width:52%"></div>
-                                </div>
-                            </div>
-                            <span class="dashRankAmt">$9,500</span>
-                        </div>
-                        <div class="dashRankRow">
-                            <span class="dashRankNum dashRankNormal">#4</span>
-                            <div class="dashRankAvatar dashRankAvatarDim">EA</div>
-                            <div class="dashRankInfo">
-                                <p class="dashRankName">Edwin Adrian</p>
-                                <div class="dashRankBar">
-                                    <div class="dashRankFill dashRankFillDim" style="width:34%"></div>
-                                </div>
-                            </div>
-                            <span class="dashRankAmt dashRankAmtDim">$6,200</span>
-                        </div>
-                        <div class="dashRankRow">
-                            <span class="dashRankNum dashRankNormal">#5</span>
-                            <div class="dashRankAvatar dashRankAvatarDim">JR</div>
-                            <div class="dashRankInfo">
-                                <p class="dashRankName">Jose Ramirez</p>
-                                <div class="dashRankBar">
-                                    <div class="dashRankFill dashRankFillDim" style="width:22%"></div>
-                                </div>
-                            </div>
-                            <span class="dashRankAmt dashRankAmtDim">$4,100</span>
-                        </div>
+                    <div class="dashRankList" id="topSellersList">
                     </div>
                 </div>
 
@@ -268,114 +164,6 @@
                     </div>
 
                     <div class="dashSaleList">
-                        <div class="dashSaleItem">
-                            <span class="dashSaleNum">01</span>
-                            <div class="dashSaleIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="1.6" stroke-linecap="round">
-                                    <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3" />
-                                    <rect x="9" y="11" width="14" height="10" rx="1" />
-                                    <circle cx="12" cy="21" r="1" />
-                                    <circle cx="20" cy="21" r="1" />
-                                </svg></div>
-                            <div class="dashSaleInfo">
-                                <p class="dashSaleName">Kawasaki Z400 2023</p>
-                                <p class="dashSaleClient">Edwin Adrian</p>
-                            </div>
-                            <div class="dashSaleRight">
-                                <p class="dashSaleAmt">$5,000</p>
-                                <p class="dashSaleDebt dashSaleDebtPending">Debe $4,970</p>
-                            </div>
-                        </div>
-                        <div class="dashSaleItem">
-                            <span class="dashSaleNum">02</span>
-                            <div class="dashSaleIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="1.6" stroke-linecap="round">
-                                    <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3" />
-                                    <rect x="9" y="11" width="14" height="10" rx="1" />
-                                    <circle cx="12" cy="21" r="1" />
-                                    <circle cx="20" cy="21" r="1" />
-                                </svg></div>
-                            <div class="dashSaleInfo">
-                                <p class="dashSaleName">Suzuki GSX-R 2024</p>
-                                <p class="dashSaleClient">Christian Gómez</p>
-                            </div>
-                            <div class="dashSaleRight">
-                                <p class="dashSaleAmt">$4,200</p>
-                                <p class="dashSaleDebt dashSaleDebtPaid">Saldado</p>
-                            </div>
-                        </div>
-                        <div class="dashSaleItem">
-                            <span class="dashSaleNum">03</span>
-                            <div class="dashSaleIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="1.6" stroke-linecap="round">
-                                    <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3" />
-                                    <rect x="9" y="11" width="14" height="10" rx="1" />
-                                    <circle cx="12" cy="21" r="1" />
-                                    <circle cx="20" cy="21" r="1" />
-                                </svg></div>
-                            <div class="dashSaleInfo">
-                                <p class="dashSaleName">Kawasaki R7 2025</p>
-                                <p class="dashSaleClient">José M. Fernández</p>
-                            </div>
-                            <div class="dashSaleRight">
-                                <p class="dashSaleAmt">$3,500</p>
-                                <p class="dashSaleDebt dashSaleDebtPending">Debe $1,500</p>
-                            </div>
-                        </div>
-                        <div class="dashSaleItem">
-                            <span class="dashSaleNum">04</span>
-                            <div class="dashSaleIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="1.6" stroke-linecap="round">
-                                    <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3" />
-                                    <rect x="9" y="11" width="14" height="10" rx="1" />
-                                    <circle cx="12" cy="21" r="1" />
-                                    <circle cx="20" cy="21" r="1" />
-                                </svg></div>
-                            <div class="dashSaleInfo">
-                                <p class="dashSaleName">Honda CBR500R 2025</p>
-                                <p class="dashSaleClient">Mario Monroy</p>
-                            </div>
-                            <div class="dashSaleRight">
-                                <p class="dashSaleAmt">$3,500</p>
-                                <p class="dashSaleDebt dashSaleDebtPending">Debe $3,490</p>
-                            </div>
-                        </div>
-                        <div class="dashSaleItem">
-                            <span class="dashSaleNum">05</span>
-                            <div class="dashSaleIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="1.6" stroke-linecap="round">
-                                    <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3" />
-                                    <rect x="9" y="11" width="14" height="10" rx="1" />
-                                    <circle cx="12" cy="21" r="1" />
-                                    <circle cx="20" cy="21" r="1" />
-                                </svg></div>
-                            <div class="dashSaleInfo">
-                                <p class="dashSaleName">Yamaha MT-03 2022</p>
-                                <p class="dashSaleClient">Juan Peña</p>
-                            </div>
-                            <div class="dashSaleRight">
-                                <p class="dashSaleAmt">$2,800</p>
-                                <p class="dashSaleDebt dashSaleDebtPaid">Saldado</p>
-                            </div>
-                        </div>
-                        <div class="dashSaleItem">
-                            <span class="dashSaleNum">06</span>
-                            <div class="dashSaleIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="1.6" stroke-linecap="round">
-                                    <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3" />
-                                    <rect x="9" y="11" width="14" height="10" rx="1" />
-                                    <circle cx="12" cy="21" r="1" />
-                                    <circle cx="20" cy="21" r="1" />
-                                </svg></div>
-                            <div class="dashSaleInfo">
-                                <p class="dashSaleName">Suzuki V-Strom 2023</p>
-                                <p class="dashSaleClient">Alejandro Ramírez</p>
-                            </div>
-                            <div class="dashSaleRight">
-                                <p class="dashSaleAmt">$2,600</p>
-                                <p class="dashSaleDebt dashSaleDebtPaid">Saldado</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -406,54 +194,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Kawasaki R7 2025</td>
-                                    <td class="dashTdMuted">V. Gómez</td>
-                                    <td class="dashTdMono">10/03</td>
-                                    <td class="dashTdMono">$1,344</td>
-                                    <td class="dashTdMono dashTdDanger">$644</td>
-                                    <td><span class="dashBadge dashBadgeWarning">Pendiente</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Yamaha MT-03</td>
-                                    <td class="dashTdMuted">M. Avelar</td>
-                                    <td class="dashTdMono">12/03</td>
-                                    <td class="dashTdMono">$688</td>
-                                    <td class="dashTdMono dashTdSuccess">—</td>
-                                    <td><span class="dashBadge dashBadgeWarning">Pendiente</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Honda CBR</td>
-                                    <td class="dashTdMuted">V. Gómez</td>
-                                    <td class="dashTdMono">05/03</td>
-                                    <td class="dashTdMono">$275</td>
-                                    <td class="dashTdMono dashTdDanger">$206</td>
-                                    <td><span class="dashBadge dashBadgeDanger">Atrasada</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Suzuki GSX-R</td>
-                                    <td class="dashTdMuted">E. Adrian</td>
-                                    <td class="dashTdMono">15/03</td>
-                                    <td class="dashTdMono">$512</td>
-                                    <td class="dashTdMono dashTdSuccess">—</td>
-                                    <td><span class="dashBadge dashBadgeWarning">Pendiente</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Kawasaki Z400</td>
-                                    <td class="dashTdMuted">M. Avelar</td>
-                                    <td class="dashTdMono">02/03</td>
-                                    <td class="dashTdMono">$890</td>
-                                    <td class="dashTdMono dashTdSuccess">—</td>
-                                    <td><span class="dashBadge dashBadgeSuccess">Completada</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Honda Forza 2024</td>
-                                    <td class="dashTdMuted">J. Ramirez</td>
-                                    <td class="dashTdMono">01/03</td>
-                                    <td class="dashTdMono">$430</td>
-                                    <td class="dashTdMono dashTdDanger">$430</td>
-                                    <td><span class="dashBadge dashBadgeDanger">Atrasada</span></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -469,70 +209,16 @@
                         <span class="dashTag dashTagWarning">Prioritario</span>
                     </div>
                     <div class="dashCobroList">
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">MM</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">Mario Monroy</p>
-                                <p class="dashCobroSub">Honda CBR500R · Venta</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$3,490</p>
-                                <p class="dashCobroDays dashCobroDaysCritical">Sin abono 48 días</p>
-                            </div>
-                        </div>
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">EA</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">Edwin Adrian</p>
-                                <p class="dashCobroSub">Kawasaki Z400 · Venta</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$4,970</p>
-                                <p class="dashCobroDays dashCobroDaysCritical">Sin abono 38 días</p>
-                            </div>
-                        </div>
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">DA</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">Daniel Alfaro</p>
-                                <p class="dashCobroSub">Yamaha MT-03 · Orden</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$644</p>
-                                <p class="dashCobroDays dashCobroDaysWarning">Sin abono 32 días</p>
-                            </div>
-                        </div>
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">JF</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">José M. Fernández</p>
-                                <p class="dashCobroSub">Kawasaki R7 · Venta</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$1,500</p>
-                                <p class="dashCobroDays dashCobroDaysWarning">Sin abono 31 días</p>
-                            </div>
-                        </div>
-                        <div class="dashCobroItem">
-                            <div class="dashCobroAvatar">RG</div>
-                            <div class="dashCobroInfo">
-                                <p class="dashCobroName">Roberto Guzmán</p>
-                                <p class="dashCobroSub">Honda Forza · Orden</p>
-                            </div>
-                            <div class="dashCobroRight">
-                                <p class="dashCobroAmt">$430</p>
-                                <p class="dashCobroDays">Sin abono 18 días</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <script src="../js/modules/dashboard/controller.dashboard.js"></script>
-    <script src="../js/components/sidebar.js"></script>
+    <script type="module" src="../js/modules/dashboard/controller.dashboard.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
 </body>
 
 </html>
