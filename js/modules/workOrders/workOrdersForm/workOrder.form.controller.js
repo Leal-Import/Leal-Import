@@ -151,8 +151,6 @@ const onOpenServiceImageModal = (serviceId, imageType) => {
         hideElement(DOMRefs.refs.btnSelectServiceImage);
         hideElement(DOMRefs.refs.btnDeleteServiceImage);
     }
-
-
 };
 
 // Callback para cuando se selecciona una imagen

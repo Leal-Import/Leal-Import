@@ -217,7 +217,7 @@ const appendServicePhotos = (fd, services) => {
 const normalizeServices = (services) => {
     return services.map(s => {
         const obj = {
-            idWorkOrdersServices: s.idWorkOrderService || s.id,
+            idWorkOrderService: s.idWorkOrderService || s.id,
             idService: s.idService,
             serviceName: s.name,
             priceApplied: Number(s.priceApplied),
