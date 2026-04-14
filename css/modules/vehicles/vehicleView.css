@@ -14,6 +14,8 @@
 .breadCrumbSection {
     width: 100%;
     gap: 10px;
+    display: inline-flex;
+    flex-wrap: wrap;
     background-color: var(--bg-color-white);
     padding: 20px 30px;
     border-radius: 12px;
@@ -462,6 +464,10 @@
 
     .infoRow {
         flex-direction: column;
+    }
+
+    .infoRow .data {
+        max-width: 100%;
     }
 
     .data {
