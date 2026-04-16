@@ -501,7 +501,7 @@ const onSearch = async (e, getData, renderData, box, onAdd, selected) => {
         return;
     }
     try {
-        const res = await getData(query);
+        const res = await getData(0, 15, query);
         renderData(selected, box, res.content || [], onAdd);
     } catch (err) { await handleApiError(err, 'No se pudieron cargar los datos. Por favor, inténtalo de nuevo.'); }
 };

@@ -6,9 +6,10 @@ const API_URL = `${config.API_BASE_URL}/WorkOrders`;
 const API_URLVE = `${config.API_BASE_URL}/Vehicle`;
 const API_URLSPA = `${config.API_BASE_URL}/SpareParts`;
 
-export const getServices = async (search) => {
+export const getServices = async (page = 0, size = 15, search = "") => {
+    const params = buildParams({ page, size, search });
     return await apiRequest(
-        `${API_URL}/getServicesCatalog?search=${encodeURIComponent(search)}`,
+        `${API_URL}/getServicesCatalog?${params.toString()}`,
         { method: 'GET', credentials: 'include' },
         'Error al obtener la lista de servicios'
     );
@@ -67,9 +68,10 @@ export const getWorkOrderById = async (id) => {
     );
 };
 
-export const getSpareParts = async () => {
+export const getSpareParts = async (page = 0, size = 15, search = "") => {
+    const params = buildParams({ page, size, search });
     return await apiRequest(
-        `${API_URLSPA}/getWorkOrderSpareParts`,
+        `${API_URLSPA}/getWorkOrderSpareParts?${params.toString()}`,
         { method: 'GET', credentials: 'include' },
         'Error al obtener los repuestos'
     );
