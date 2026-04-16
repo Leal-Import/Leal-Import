@@ -48,7 +48,7 @@ export const pushSparePart = (state, sparePart) => {
         idSparePart: sparePart.idSparePart || sparePart.idSpareParts,
         name: sparePart.sparePartName || sparePart.nameSpareParts || sparePart.name || '',
         priceApplied: sparePart.priceApplied || sparePart.suggestedPrice || 0,
-        idWorkOrdersSpareParts: sparePart.idWorkOrdersSpareParts || null,
+        idWorkOrderSpareParts: sparePart.idWorkOrderSpareParts || null,
         idEmployee: sparePart.idEmployee || null,
         assignedEmployee: sparePart.assignedEmployee || null
     };
@@ -236,8 +236,8 @@ const normalizeSpareParts = (spareParts) => {
             idEmployee: p.idEmployee
         };
 
-        if (p.idWorkOrdersSpareParts) {
-            obj.idWorkOrdersSpareParts = p.idWorkOrdersSpareParts;
+        if (p.idWorkOrderSpareParts) {
+            obj.idWorkOrderSpareParts = p.idWorkOrderSpareParts;
         }
 
         return obj;

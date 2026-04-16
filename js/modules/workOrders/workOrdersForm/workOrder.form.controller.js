@@ -128,8 +128,8 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
         arraySelected.splice(index, 1);
     }
 
-    if (item.idWorkOrderService || item.idWorkOrdersSpareParts) {
-        arrayDelete.push(item.idWorkOrderService || item.idWorkOrdersSpareParts);
+    if (item.idWorkOrderService || item.idWorkOrderSpareParts) {
+        arrayDelete.push(item.idWorkOrderService || item.idWorkOrderSpareParts);
     }
 
     cleanRow(row);
@@ -205,7 +205,6 @@ const onSubmitOrder = async (e) => {
 
     showElement(DOMRefs.refs.loaderAddOrder);
     camps.forEach(disableElement);
-
     try {
         let response;
         if (workOrdersFormState.context.idWorkOrder) {
