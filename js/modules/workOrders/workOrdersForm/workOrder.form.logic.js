@@ -203,13 +203,28 @@ const appendPaymentFiles = (fd, payments) => {
 
 const appendServicePhotos = (fd, services) => {
     services.forEach((service) => {
-        (service.photos || []).forEach((photo) => {
-            if (photo.photo instanceof File) {
+        const stageGroups = (service.photos || []).reduce((groups, photo) => {
+            if (!(photo.photo instanceof File)) return groups;
+            const stage = String(photo.stage || photo.imageStage || '').toUpperCase();
+            if (!stage) return groups;
+            groups[stage] = groups[stage] || [];
+            groups[stage].push(photo);
+            return groups;
+        }, {});
+
+        Object.entries(stageGroups).forEach(([stage, photos]) => {
+            photos.sort((a, b) => {
+                const slotA = Number.isInteger(a.slot) ? a.slot : 99;
+                const slotB = Number.isInteger(b.slot) ? b.slot : 99;
+                return slotA - slotB;
+            });
+
+            photos.forEach((photo) => {
                 fd.append(
-                    `servicePhoto_${service.idWorkOrderService || service.id}_${photo.stage}`,
+                    `servicePhoto_${service.idWorkOrderService || service.id}_${stage}`,
                     photo.photo
                 );
-            }
+            });
         });
     });
 };

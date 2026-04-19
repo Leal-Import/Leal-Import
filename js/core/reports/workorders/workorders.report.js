@@ -25,7 +25,7 @@ const fmt = (val) =>
 
 const stageLabel = (stage) => ({ BEFORE: 'Antes', DURING: 'Durante', AFTER: 'Después' })[stage] ?? stage ?? '—';
 const stageColor = (stage) => ({ BEFORE: [245, 158, 11], DURING: [59, 130, 246], AFTER: [46, 125, 50] })[stage] ?? [150, 150, 150];
-const stageOrder = { BEFORE: 0, DURING: 1, AFTER: 2 };
+const STAGE_ORDER = { BEFORE: 0, DURING: 1, AFTER: 2 };
 
 const drawFooter = (doc, pageW, pageH, margin) => {
     doc.setDrawColor(220, 220, 220);
@@ -104,7 +104,7 @@ const drawInfoBox = (doc, rows, x, y, w, title) => {
 
 const loadServicePhotos = async (photos = []) => {
     const sorted = [...photos].sort(
-        (a, b) => (stageOrder[a.imageStage] ?? 99) - (stageOrder[b.imageStage] ?? 99)
+        (a, b) => (STAGE_ORDER[a.imageStage] ?? 99) - (STAGE_ORDER[b.imageStage] ?? 99)
     );
     const results = await Promise.all(
         sorted.map(async (p) => {
@@ -121,73 +121,93 @@ const loadServicePhotos = async (photos = []) => {
     return results.filter(Boolean);
 };
 
+/**
+ * Dibuja fotos de un servicio agrupadas por etapa.
+ * Cada etapa (BEFORE, DURING, AFTER) tiene max 3 fotos en una fila.
+ * Un badge del color de la etapa se pone debajo de cada fila.
+ */
 const drawServicePhotos = (doc, photos, y, contentW, margin, pageH, pageW) => {
     if (!photos.length) return y;
 
-    const gap     = 4;
-    const badgeH  = 8;
-    const MAX_H   = 65;
-    const cols    = Math.min(photos.length, 3);
-    const MAX_W   = photos.length === 1
-        ? contentW * 0.48
-        : (contentW - (cols - 1) * gap) / cols;
+    const gap    = 4;
+    const badgeH = 8;
+    const MAX_H  = 60;
 
-    const sized = photos.map(p => {
-        const ratio = p.naturalH / p.naturalW;
-        let imgW = MAX_W;
-        let imgH = imgW * ratio;
-        if (imgH > MAX_H) {
-            imgH = MAX_H;
-            imgW = imgH / ratio;
-        }
-        return { ...p, imgW, imgH };
+    // Agrupar por etapa
+    const groups = {};
+    photos.forEach(p => {
+        if (!groups[p.stage]) groups[p.stage] = [];
+        groups[p.stage].push(p);
     });
 
-    const rowMaxH = Math.max(...sized.map(p => p.imgH));
+    const stageKeys = Object.keys(groups).sort(
+        (a, b) => (STAGE_ORDER[a] ?? 99) - (STAGE_ORDER[b] ?? 99)
+    );
 
-    y = checkPageBreak(doc, y, rowMaxH + gap + badgeH + 6, pageH, margin, pageW);
+    for (const stage of stageKeys) {
+        const stagePics = groups[stage];
+        const cols      = Math.min(stagePics.length, 3);
+        const MAX_W     = stagePics.length === 1
+            ? contentW * 0.38
+            : (contentW - (cols - 1) * gap) / cols;
 
-    sized.forEach((p, i) => {
-        const colX = photos.length === 1
-            ? margin + (contentW - p.imgW) / 2
-            : margin + i * (MAX_W + gap) + (MAX_W - p.imgW) / 2;
+        const sized = stagePics.map(p => {
+            const ratio = p.naturalH / p.naturalW;
+            let imgW = MAX_W;
+            let imgH = imgW * ratio;
+            if (imgH > MAX_H) { imgH = MAX_H; imgW = imgH / ratio; }
+            return { ...p, imgW, imgH };
+        });
 
-        doc.setDrawColor(220, 220, 220);
-        doc.setLineWidth(0.3);
-        doc.roundedRect(colX, y, p.imgW, p.imgH, 2, 2, 'S');
-        doc.addImage(p.b64, 'JPEG', colX, y, p.imgW, p.imgH, undefined, 'NONE');
+        const rowMaxH = Math.max(...sized.map(p => p.imgH));
 
-        const [br, bg, bb] = stageColor(p.stage);
-        const badgeX = photos.length === 1
-            ? margin + (contentW - p.imgW) / 2
-            : margin + i * (MAX_W + gap);
+        y = checkPageBreak(doc, y, rowMaxH + gap + badgeH + 6, pageH, margin, pageW);
+
+        sized.forEach((p, i) => {
+            const colX = stagePics.length === 1
+                ? margin + (contentW - p.imgW) / 2
+                : margin + i * (MAX_W + gap) + (MAX_W - p.imgW) / 2;
+
+            doc.setDrawColor(220, 220, 220);
+            doc.setLineWidth(0.3);
+            doc.roundedRect(colX, y, p.imgW, p.imgH, 2, 2, 'S');
+            doc.addImage(p.b64, 'JPEG', colX, y, p.imgW, p.imgH, undefined, 'NONE');
+        });
+
+        // Badge unificado por etapa
+        const [br, bg, bb] = stageColor(stage);
+        const badgeY = y + rowMaxH + gap;
+        const totalW = stagePics.length === 1 ? sized[0].imgW : cols * MAX_W + (cols - 1) * gap;
+        const badgeX = stagePics.length === 1 ? margin + (contentW - sized[0].imgW) / 2 : margin;
 
         doc.setFillColor(br, bg, bb);
-        doc.roundedRect(badgeX, y + rowMaxH + gap, MAX_W, badgeH, 2, 2, 'F');
+        doc.roundedRect(badgeX, badgeY, totalW, badgeH, 2, 2, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(6.5);
         doc.setFont('helvetica', 'bold');
-        doc.text(stageLabel(p.stage), badgeX + MAX_W / 2, y + rowMaxH + gap + 5.5, { align: 'center' });
-    });
+        doc.text(stageLabel(stage), badgeX + totalW / 2, badgeY + 5.5, { align: 'center' });
 
-    return y + rowMaxH + gap + badgeH + 10;
+        y += rowMaxH + gap + badgeH + 6;
+    }
+
+    return y;
 };
 
 export const generateWorkOrderReport = async (order) => {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const margin = 14;
-    const contentW = pageW - margin * 2;
+    const doc       = new jsPDF();
+    const pageW     = doc.internal.pageSize.getWidth();
+    const pageH     = doc.internal.pageSize.getHeight();
+    const margin    = 14;
+    const contentW  = pageW - margin * 2;
 
     const isCompleted = order.status === 'Completada';
     const isCancelled = !!order.cancellationReason;
-    const hasDebt = Number(order.amountDue ?? 0) > 0;
+    const hasDebt     = Number(order.amountDue ?? 0) > 0;
 
     const paymentStatusColor = {
-        'PAGADO': [46, 125, 50],
-        'PARCIAL': [245, 158, 11],
+        'PAGADO':    [46, 125, 50],
+        'PARCIAL':   [245, 158, 11],
         'PENDIENTE': [211, 24, 19]
     }[order.paymentStatus?.toUpperCase()] ?? [150, 150, 150];
 
@@ -197,7 +217,7 @@ export const generateWorkOrderReport = async (order) => {
     const cancelledPayments = (order.workOrdersPayments || []).filter(p => p.isCancelled);
     const totalPaid         = activePayments.reduce((a, p) => a + Number(p.amount ?? 0), 0);
 
-    // Precargar fotos con dimensiones naturales
+    // Precargar fotos
     const servicePhotosMap = {};
     for (const s of order.workOrdersServices || []) {
         if (s.photos?.length) {
@@ -274,8 +294,8 @@ export const generateWorkOrderReport = async (order) => {
     // ═══════════════════════════════════════
     if (order.cancellationReason?.trim()) {
         y = checkPageBreak(doc, y, 22, pageH, margin, pageW);
-        const lines    = doc.splitTextToSize(order.cancellationReason.trim(), contentW - 12);
-        const cancelH  = Math.max(18, lines.length * 5 + 14);
+        const lines   = doc.splitTextToSize(order.cancellationReason.trim(), contentW - 12);
+        const cancelH = Math.max(18, lines.length * 5 + 14);
 
         doc.setFillColor(255, 235, 235);
         doc.setDrawColor(211, 24, 19);
@@ -301,20 +321,17 @@ export const generateWorkOrderReport = async (order) => {
     const col2X = margin + colW + 6;
 
     const vehicleRows = [
-        { label: 'VIN',           value: order.vehicleInfo.vin },
-        { label: 'Marca / Modelo',value: `${order.vehicleInfo.brand} ${order.vehicleInfo.model}` },
-        { label: 'Año',           value: order.vehicleInfo.year }
+        { label: 'VIN',            value: order.vehicleInfo.vin },
+        { label: 'Marca / Modelo', value: `${order.vehicleInfo.brand} ${order.vehicleInfo.model}` },
+        { label: 'Año',            value: order.vehicleInfo.year }
     ];
-
     const orderRows = [
         { label: 'Fecha de orden',  value: order.workOrderDate },
         { label: 'Fecha estimada',  value: order.estimatedDate },
         { label: 'Fecha de cierre', value: order.closureDate || 'Sin cerrar' }
     ];
 
-    const leftH  = vehicleRows.length * 9 + 16;
-    const rightH = orderRows.length  * 9 + 16;
-    const colsH  = Math.max(leftH, rightH);
+    const colsH = Math.max(vehicleRows.length * 9 + 16, orderRows.length * 9 + 16);
 
     y = checkPageBreak(doc, y, colsH + 12, pageH, margin, pageW);
     y = sectionHeader(doc, y, contentW, margin, pageW, 'INFORMACIÓN DE LA ORDEN');
@@ -326,59 +343,91 @@ export const generateWorkOrderReport = async (order) => {
     y += colsH + 10;
 
     // ═══════════════════════════════════════
-    // SERVICIOS
+    // SERVICIOS — cada uno con sus fotos inline
     // ═══════════════════════════════════════
     y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
     y = sectionHeader(doc, y, contentW, margin, pageW,
         'SERVICIOS REALIZADOS',
         `${order.workOrdersServices?.length || 0} servicio${order.workOrdersServices?.length !== 1 ? 's' : ''}`
     );
+    y += 4;
 
-    const servicesBody = order.workOrdersServices?.length
-        ? order.workOrdersServices.map((s, i) => [
-            `#${String(i + 1).padStart(2, '0')}`,
-            s.serviceName || '—',
-            s.assignedEmployee || '—',
-            fmt(s.priceApplied)
-        ])
-        : [['—', 'Sin servicios registrados', '—', '$0.00']];
+    if (!order.workOrdersServices?.length) {
+        doc.setFillColor(250, 250, 250);
+        doc.roundedRect(margin, y, contentW, 16, 2, 2, 'F');
+        doc.setDrawColor(235, 235, 235);
+        doc.roundedRect(margin, y, contentW, 16, 2, 2, 'S');
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(180, 180, 180);
+        doc.text('Sin servicios registrados.', pageW / 2, y + 10, { align: 'center' });
+        y += 24;
+    } else {
+        for (let idx = 0; idx < order.workOrdersServices.length; idx++) {
+            const s      = order.workOrdersServices[idx];
+            const photos = servicePhotosMap[s.idWorkOrderService] || [];
 
-    doc.autoTable({
-        head: [['#', 'Servicio', 'Asignado a', 'Precio']],
-        body: servicesBody,
-        startY: y,
-        margin: { left: margin, right: margin },
-        theme: 'plain',
-        styles: { fontSize: 9, cellPadding: { top: 5, bottom: 5, left: 4, right: 4 }, textColor: [60, 60, 60], lineColor: [235, 235, 235], lineWidth: 0.3 },
-        headStyles: { fillColor: [245, 245, 245], textColor: [130, 130, 130], fontStyle: 'bold', fontSize: 7.5, lineWidth: 0 },
-        columnStyles: {
-            0: { cellWidth: 14, halign: 'center', textColor: [180, 180, 180] },
-            1: { cellWidth: 'auto' },
-            2: { cellWidth: 52, textColor: [100, 100, 100] },
-            3: { cellWidth: 36, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
-        },
-        alternateRowStyles: { fillColor: [252, 252, 252] }
-    });
+            y = checkPageBreak(doc, y, 28, pageH, margin, pageW);
 
-    y = doc.lastAutoTable.finalY + 6;
+            // Fila del servicio
+            const rowH = 22;
+            doc.setFillColor(idx % 2 === 0 ? 252 : 248, idx % 2 === 0 ? 252 : 248, idx % 2 === 0 ? 252 : 248);
+            doc.roundedRect(margin, y, contentW, rowH, 2, 2, 'F');
+            doc.setDrawColor(235, 235, 235);
+            doc.setLineWidth(0.3);
+            doc.roundedRect(margin, y, contentW, rowH, 2, 2, 'S');
 
-    // Fotos por servicio
-    for (const s of order.workOrdersServices || []) {
-        const photos = servicePhotosMap[s.idWorkOrderService] || [];
-        if (!photos.length) continue;
+            doc.setFontSize(7);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(180, 180, 180);
+            doc.text(`#${String(idx + 1).padStart(2, '0')}`, margin + 4, y + 13);
 
-        y = checkPageBreak(doc, y, 20, pageH, margin, pageW);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(30, 30, 30);
+            doc.text(s.serviceName || '—', margin + 18, y + 9);
 
-        doc.setFillColor(245, 245, 245);
-        doc.rect(margin, y, contentW, 7, 'F');
-        doc.setTextColor(100, 100, 100);
-        doc.setFontSize(7);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`Fotos: ${s.serviceName}`, margin + 4, y + 5);
-        y += 9;
+            doc.setFontSize(7.5);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 100, 100);
+            doc.text(s.assignedEmployee || '—', margin + 18, y + 17);
 
-        y = drawServicePhotos(doc, photos, y, contentW, margin, pageH, pageW);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(30, 30, 30);
+            doc.text(fmt(s.priceApplied), pageW - margin - 4, y + 13, { align: 'right' });
+
+            // Badge de fotos
+            if (photos.length > 0) {
+                const pbW = 22;
+                const pbX = pageW - margin - 4 - 36 - pbW - 4;
+                doc.setFillColor(46, 125, 50);
+                doc.roundedRect(pbX, y + 5, pbW, 7, 2, 2, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(6);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`${photos.length} foto${photos.length !== 1 ? 's' : ''}`, pbX + pbW / 2, y + 10, { align: 'center' });
+            }
+
+            y += rowH + 6;
+
+            // Fotos del servicio agrupadas por etapa
+            if (photos.length) {
+                y = drawServicePhotos(doc, photos, y, contentW, margin, pageH, pageW);
+                y += 4;
+            }
+
+            // Separador entre servicios
+            if (idx < order.workOrdersServices.length - 1) {
+                doc.setDrawColor(230, 230, 230);
+                doc.setLineWidth(0.2);
+                doc.line(margin, y, pageW - margin, y);
+                y += 8;
+            }
+        }
     }
+
+    y += 6;
 
     // ═══════════════════════════════════════
     // REPUESTOS
@@ -389,18 +438,13 @@ export const generateWorkOrderReport = async (order) => {
         `${order.workOrdersSpareParts?.length || 0} repuesto${order.workOrdersSpareParts?.length !== 1 ? 's' : ''}`
     );
 
-    const spareBody = order.workOrdersSpareParts?.length
-        ? order.workOrdersSpareParts.map((p, i) => [
-            `#${String(i + 1).padStart(2, '0')}`,
-            p.sparePartName || '—',
-            p.assignedEmployee || '—',
-            fmt(p.priceApplied)
-        ])
-        : [['—', 'Sin repuestos registrados', '—', '$0.00']];
-
     doc.autoTable({
         head: [['#', 'Repuesto', 'Asignado a', 'Precio']],
-        body: spareBody,
+        body: order.workOrdersSpareParts?.length
+            ? order.workOrdersSpareParts.map((p, i) => [
+                `#${String(i + 1).padStart(2, '0')}`, p.sparePartName || '—', p.assignedEmployee || '—', fmt(p.priceApplied)
+            ])
+            : [['—', 'Sin repuestos registrados', '—', '$0.00']],
         startY: y,
         margin: { left: margin, right: margin },
         theme: 'plain',
@@ -430,11 +474,7 @@ export const generateWorkOrderReport = async (order) => {
         head: [['#', 'Método', 'Registrado por', 'Fecha', 'Monto']],
         body: activePayments.length
             ? activePayments.map(p => [
-                `#${p.paymentNumber}`,
-                p.paymentMethodName || '—',
-                p.employeeName || '—',
-                p.paymentDate || '—',
-                fmt(p.amount)
+                `#${p.paymentNumber}`, p.paymentMethodName || '—', p.employeeName || '—', p.paymentDate || '—', fmt(p.amount)
             ])
             : [['—', '—', 'Sin abonos registrados', '—', '$0.00']],
         startY: y,
@@ -467,11 +507,7 @@ export const generateWorkOrderReport = async (order) => {
         doc.autoTable({
             head: [['#', 'Método', 'Registrado por', 'Fecha', 'Monto']],
             body: cancelledPayments.map(p => [
-                `#${p.paymentNumber}`,
-                p.paymentMethodName || '—',
-                p.employeeName || '—',
-                p.paymentDate || '—',
-                fmt(p.amount)
+                `#${p.paymentNumber}`, p.paymentMethodName || '—', p.employeeName || '—', p.paymentDate || '—', fmt(p.amount)
             ]),
             startY: y,
             margin: { left: margin, right: margin },
@@ -514,14 +550,12 @@ export const generateWorkOrderReport = async (order) => {
     doc.setLineWidth(0.3);
     doc.line(margin + 8, y + 11, pageW - margin - 4, y + 11);
 
-    const finRows = [
-        { label: 'Total servicios',     value: fmt(totalServices),      color: [220, 220, 220] },
-        { label: 'Total repuestos',      value: fmt(totalSpareParts),    color: [220, 220, 220] },
-        { label: 'Costo de reparación', value: fmt(order.repairCost),   color: [220, 220, 220] },
-        { label: 'Total abonado',        value: fmt(totalPaid),          color: [109, 190, 69]  }
-    ];
-
-    finRows.forEach((row, i) => {
+    [
+        { label: 'Total servicios',     value: fmt(totalServices),    color: [220, 220, 220] },
+        { label: 'Total repuestos',      value: fmt(totalSpareParts),  color: [220, 220, 220] },
+        { label: 'Costo de reparación', value: fmt(order.repairCost), color: [220, 220, 220] },
+        { label: 'Total abonado',        value: fmt(totalPaid),        color: [109, 190, 69]  }
+    ].forEach((row, i) => {
         const rowY = y + 19 + i * 7;
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');

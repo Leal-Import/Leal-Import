@@ -25,7 +25,7 @@ const fmt = (val) =>
 
 const stageLabel = (stage) => ({ BEFORE: 'Antes', DURING: 'Durante', AFTER: 'Después' })[stage] ?? stage ?? '—';
 const stageColor = (stage) => ({ BEFORE: [245, 158, 11], DURING: [59, 130, 246], AFTER: [46, 125, 50] })[stage] ?? [150, 150, 150];
-const stageOrder = { BEFORE: 0, DURING: 1, AFTER: 2 };
+const STAGE_ORDER = { BEFORE: 0, DURING: 1, AFTER: 2 };
 
 const drawFooter = (doc, pageW, pageH, margin) => {
     doc.setDrawColor(220, 220, 220);
@@ -64,6 +64,78 @@ const sectionHeader = (doc, y, contentW, margin, pageW, title, sub = '') => {
     return y + 9;
 };
 
+/**
+ * Dibuja fotos agrupadas por etapa.
+ * Cada etapa (BEFORE, DURING, AFTER) tiene max 3 fotos en una fila.
+ * Un badge del color de la etapa se pone debajo de cada fila.
+ */
+const drawServicePhotos = (doc, photos, y, contentW, margin, pageH, pageW) => {
+    if (!photos.length) return y;
+
+    const gap    = 4;
+    const badgeH = 8;
+    const MAX_H  = 60;
+
+    // Agrupar por etapa
+    const groups = {};
+    photos.forEach(p => {
+        if (!groups[p.stage]) groups[p.stage] = [];
+        groups[p.stage].push(p);
+    });
+
+    const stageKeys = Object.keys(groups).sort(
+        (a, b) => (STAGE_ORDER[a] ?? 99) - (STAGE_ORDER[b] ?? 99)
+    );
+
+    for (const stage of stageKeys) {
+        const stagePics = groups[stage];
+        const cols      = Math.min(stagePics.length, 3);
+        const MAX_W     = stagePics.length === 1
+            ? contentW * 0.38
+            : (contentW - (cols - 1) * gap) / cols;
+
+        const sized = stagePics.map(p => {
+            const ratio = p.naturalH / p.naturalW;
+            let imgW = MAX_W;
+            let imgH = imgW * ratio;
+            if (imgH > MAX_H) { imgH = MAX_H; imgW = imgH / ratio; }
+            return { ...p, imgW, imgH };
+        });
+
+        const rowMaxH = Math.max(...sized.map(p => p.imgH));
+
+        y = checkPageBreak(doc, y, rowMaxH + gap + badgeH + 6, pageH, margin, pageW);
+
+        sized.forEach((p, i) => {
+            const colX = stagePics.length === 1
+                ? margin + (contentW - p.imgW) / 2
+                : margin + i * (MAX_W + gap) + (MAX_W - p.imgW) / 2;
+
+            doc.setDrawColor(220, 220, 220);
+            doc.setLineWidth(0.3);
+            doc.roundedRect(colX, y, p.imgW, p.imgH, 2, 2, 'S');
+            doc.addImage(p.b64, 'JPEG', colX, y, p.imgW, p.imgH, undefined, 'NONE');
+        });
+
+        // Badge unificado por etapa
+        const [br, bg, bb] = stageColor(stage);
+        const badgeY = y + rowMaxH + gap;
+        const totalW = stagePics.length === 1 ? sized[0].imgW : cols * MAX_W + (cols - 1) * gap;
+        const badgeX = stagePics.length === 1 ? margin + (contentW - sized[0].imgW) / 2 : margin;
+
+        doc.setFillColor(br, bg, bb);
+        doc.roundedRect(badgeX, badgeY, totalW, badgeH, 2, 2, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(6.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text(stageLabel(stage), badgeX + totalW / 2, badgeY + 5.5, { align: 'center' });
+
+        y += rowMaxH + gap + badgeH + 6;
+    }
+
+    return y;
+};
+
 export const generateServiceReport = async (service) => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -71,14 +143,12 @@ export const generateServiceReport = async (service) => {
     const pageH = doc.internal.pageSize.getHeight();
     const margin = 14;
     const contentW = pageW - margin * 2;
-    const gap = 4;
-    const badgeH = 8;
 
     const initials = (service.assignedEmployee || '')
         .trim().split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
 
     const sortedPhotos = [...(service.photos || [])].sort(
-        (a, b) => (stageOrder[a.imageStage] ?? 99) - (stageOrder[b.imageStage] ?? 99)
+        (a, b) => (STAGE_ORDER[a.imageStage] ?? 99) - (STAGE_ORDER[b.imageStage] ?? 99)
     );
 
     const photos = (await Promise.all(
@@ -269,58 +339,8 @@ export const generateServiceReport = async (service) => {
         doc.text('No hay fotos disponibles para este servicio.', pageW / 2, y + 13, { align: 'center' });
         y += 28;
     } else {
-        const cols = Math.min(photos.length, 3);
-        const MAX_IMG_H = 80;
-        const MAX_IMG_W = photos.length === 1
-            ? contentW * 0.48
-            : (contentW - (cols - 1) * gap) / cols;
-
-        // Pre-calcular dimensiones reales de cada foto respetando ratio
-        const sized = photos.map(p => {
-            const ratio = p.naturalH / p.naturalW;
-            let imgW = MAX_IMG_W;
-            let imgH = imgW * ratio;
-
-            // Si se pasa del alto máximo, escalar desde el alto
-            if (imgH > MAX_IMG_H) {
-                imgH = MAX_IMG_H;
-                imgW = imgH / ratio;
-            }
-
-            return { ...p, imgW, imgH };
-        });
-
-        const rowMaxH = Math.max(...sized.map(p => p.imgH));
-
-        y = checkPageBreak(doc, y, rowMaxH + gap + badgeH + 6, pageH, margin, pageW);
-
-        sized.forEach((p, i) => {
-            // Centrar cada imagen dentro de su columna
-            const colX = photos.length === 1
-                ? margin + (contentW - p.imgW) / 2
-                : margin + i * (MAX_IMG_W + gap) + (MAX_IMG_W - p.imgW) / 2;
-
-            doc.setDrawColor(220, 220, 220);
-            doc.setLineWidth(0.3);
-            doc.roundedRect(colX, y, p.imgW, p.imgH, 2, 2, 'S');
-            doc.addImage(p.b64, 'JPEG', colX, y, p.imgW, p.imgH, undefined, 'NONE');
-
-            const [br, bg, bb] = stageColor(p.stage);
-            doc.setFillColor(br, bg, bb);
-
-            // Badge centrado bajo la imagen
-            const badgeX = photos.length === 1
-                ? margin + (contentW - p.imgW) / 2
-                : margin + i * (MAX_IMG_W + gap);
-
-            doc.roundedRect(badgeX, y + rowMaxH + gap, MAX_IMG_W, badgeH, 2, 2, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(6.5);
-            doc.setFont('helvetica', 'bold');
-            doc.text(stageLabel(p.stage), badgeX + MAX_IMG_W / 2, y + rowMaxH + gap + 5.5, { align: 'center' });
-        });
-
-        y += rowMaxH + gap + badgeH + 10;
+        y = drawServicePhotos(doc, photos, y, contentW, margin, pageH, pageW);
+        y += 4;
     }
 
     // ═══════════════════════════════════════

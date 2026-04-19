@@ -56,6 +56,7 @@ export const DOMRefs = {
             serviceImageTitle: $("serviceImageTitle"),
             serviceImageSubtitle: $("serviceImageSubtitle"),
             serviceImagePreview: $("serviceImagePreview"),
+            serviceImageSlotList: $("serviceImageSlotList"),
             serviceImageFileInput: $("serviceImageFileInput"),
             btnSelectServiceImage: $("btnSelectServiceImage"),
             btnDeleteServiceImage: $("btnDeleteServiceImage")
@@ -551,10 +552,48 @@ const createServiceImagesButton = (serviceData, onServiceImages) => {
     return btn;
 };
 
-/**
- * Abre el modal para seleccionar/cargar una imagen
- */
-export const openServiceImageModal = (serviceName, type, currentImage) => {
+const createSlotButton = (index, isActive, hasImage, onClick) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = `${index + 1}`;
+    button.style.cssText = [
+        'min-width: 36px',
+        'height: 36px',
+        'border-radius: 6px',
+        'border: 1px solid #ccc',
+        'background: #fff',
+        'color: #333',
+        'cursor: pointer',
+        'font-weight: 600'
+    ].join(';');
+    if (isActive) {
+        button.style.background = '#dc2626';
+        button.style.color = '#fff';
+        button.style.borderColor = '#b91c1c';
+    }
+    if (hasImage && !isActive) {
+        button.style.boxShadow = '0 0 0 1px rgba(34,197,94,0.35) inset';
+    }
+    button.addEventListener('click', onClick);
+    return button;
+};
+
+const renderServiceImageSlots = (images, selectedSlot, refs, onSelectSlot) => {
+    refs.serviceImageSlotList.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+        const slotEntry = images[i];
+        const hasImage = Boolean(slotEntry);
+        const button = createSlotButton(i, selectedSlot === i, hasImage, () => {
+            onSelectSlot(i);
+            renderServiceImageSlots(images, i, refs, onSelectSlot);
+            const image = slotEntry ? (slotEntry.photo.photoUrl || slotEntry.photo.photo || null) : null;
+            renderPreview(image, refs);
+        });
+        refs.serviceImageSlotList.appendChild(button);
+    }
+};
+
+export const openServiceImageModal = (serviceName, type, currentImages, selectedSlot = 0, onSelectSlot = () => {}) => {
     const refs = DOMRefs.refs;
 
     // Actualizar títulos
@@ -577,22 +616,13 @@ export const openServiceImageModal = (serviceName, type, currentImage) => {
     refs.serviceImageTitle.textContent = `Imagen - ${typeSpanish}`;
     refs.serviceImageSubtitle.textContent = `Carga una imagen del servicio - ${serviceName}`;
 
-    // Limpiar y renderizar preview
-    refs.serviceImagePreview.innerHTML = '';
+    renderServiceImageSlots(currentImages, selectedSlot, refs, onSelectSlot);
 
-    if (currentImage) {
-        renderPreview(currentImage, refs);
-    } else {
-        const placeholder = document.createElement('p');
-        placeholder.textContent = 'Sin imagen - Haz clic para seleccionar';
-        placeholder.style.cssText = 'color: #999; text-align: center;';
-        refs.serviceImagePreview.appendChild(placeholder);
-    }
+    const currentImage = currentImages[selectedSlot] ? (currentImages[selectedSlot].photo.photoUrl || currentImages[selectedSlot].photo.photo || null) : null;
+    console.log('Current image for slot', selectedSlot, currentImages);
+    renderPreview(currentImage, refs);
 
-    // Resetear input file
     refs.serviceImageFileInput.value = '';
-
-    // Mostrar modal
     refs.modalServiceImages.classList.remove('hide');
 };
 

@@ -218,14 +218,13 @@ export const generateSparePartsSaleReport = (sale) => {
     );
 
     doc.autoTable({
-        head: [['Repuesto', 'Costo total', 'Precio aplicado']],
+        head: [['Repuesto', 'Precio aplicado']],
         body: items.length
             ? items.map(item => [
                 item.sparePartName || '—',
-                fmt(item.totalCost),
                 fmt(item.priceApplied)
             ])
-            : [['Sin repuestos registrados', '—', '—']],
+            : [['Sin repuestos registrados', '—']],
         startY: y,
         margin: { left: margin, right: margin },
         theme: 'plain',
@@ -245,8 +244,7 @@ export const generateSparePartsSaleReport = (sale) => {
         },
         columnStyles: {
             0: { cellWidth: 'auto' },
-            1: { cellWidth: 40, halign: 'right', textColor: [100, 100, 100] },
-            2: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
+            1: { cellWidth: 40, halign: 'right', fontStyle: 'bold', textColor: [30, 30, 30] }
         },
         alternateRowStyles: { fillColor: [252, 252, 252] }
     });

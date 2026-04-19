@@ -23,6 +23,7 @@ export const workOrdersFormState = {
     idEmployee: null,
     currentServiceForImage: null,
     currentTypeForImage: null,
+    currentServiceImageSlot: 0,
     data: {
         selectedServices: [],
         servicesToDelete: [],
@@ -61,6 +62,7 @@ export const resetWorkOrdersFormState = () => {
     workOrdersFormState.employeeList = [];
     workOrdersFormState.currentServiceForImage = null;
     workOrdersFormState.currentTypeForImage = null;
+    workOrdersFormState.currentServiceImageSlot = 0;
     workOrdersFormState.employeeContext = {
         selectedArray: null,
         idItem: null,
