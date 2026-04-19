@@ -1,4 +1,4 @@
-import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice, openServiceImageModal, renderPreview } from "./workOrder.form.dom.js";
+import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice, openServiceImageModal } from "./workOrder.form.dom.js";
 import { resetWorkOrdersFormState, workOrdersFormState } from "./workOrder.form.state.js";
 import { approveOrder, getDataVehicleById, getServices, getSpareParts, getWorkOrderById, completeWorkOrder, postWorkOrder, putWorkOrder, cancelWorkOrder } from "./workOrder.form.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
@@ -137,16 +137,65 @@ const onDelete = (item, arraySelected, arrayDelete, row, tBody, renderButton) =>
     reindexTable(tBody);
     renderButton?.(DOMRefs.refs.tBodySpareParts, onImportSparePart);
 };
+
+const getStagePhotoEntries = (service, stage) => {
+    return (service.photos || []).reduce((acc, photo, index) => {
+        if (String(photo.stage || photo.imageStage || '').toUpperCase() === stage) {
+            acc.push({ photo, sourceIndex: index });
+        }
+        return acc;
+    }, []);
+};
+
+const buildStagePhotoSlots = (service, stage) => {
+    const entries = getStagePhotoEntries(service, stage);
+    const slots = [null, null, null];
+    const assigned = new Set();
+
+    entries.forEach(entry => {
+        const slot = Number.isInteger(entry.photo.slot) && entry.photo.slot >= 0 && entry.photo.slot < 3
+            ? entry.photo.slot
+            : null;
+        if (slot !== null && !assigned.has(slot)) {
+            slots[slot] = entry;
+            assigned.add(slot);
+        }
+    });
+
+    let nextSlot = 0;
+    entries.forEach(entry => {
+        const slot = Number.isInteger(entry.photo.slot) && entry.photo.slot >= 0 && entry.photo.slot < 3
+            ? entry.photo.slot
+            : null;
+        if (slot === null || slots[slot] !== entry) {
+            while (nextSlot < 3 && slots[nextSlot]) nextSlot++;
+            if (nextSlot < 3) {
+                slots[nextSlot] = entry;
+                nextSlot++;
+            }
+        }
+    });
+
+    return slots;
+};
+
 const onOpenServiceImageModal = (serviceId, imageType) => {
-    // Obtener la imagen actual si existe
     const currentService = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
-    const currentImages = currentService?.photos || [];
-    const currentPhoto = currentImages.find(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
-    const currentImage = currentPhoto ? (currentPhoto.photoUrl || currentPhoto.photo || null) : null;
+    if (!currentService) return;
+
+    const currentStagePhotos = buildStagePhotoSlots(currentService, imageType);
+    const currentSlot = 0;
     workOrdersFormState.currentServiceForImage = serviceId;
     workOrdersFormState.currentTypeForImage = imageType;
-    // Abrir el modal
-    openServiceImageModal(currentService.name, imageType, currentImage);
+    workOrdersFormState.currentServiceImageSlot = currentSlot;
+    openServiceImageModal(
+        currentService.name,
+        imageType,
+        currentStagePhotos,
+        currentSlot,
+        (slot) => { workOrdersFormState.currentServiceImageSlot = slot; }
+    );
+
     if (workOrdersFormState.context.isView) {
         hideElement(DOMRefs.refs.btnSelectServiceImage);
         hideElement(DOMRefs.refs.btnDeleteServiceImage);
@@ -158,23 +207,41 @@ const onSelectServiceImage = (e) => {
     const file = e.target.files[0];
     const serviceId = workOrdersFormState.currentServiceForImage;
     const imageType = workOrdersFormState.currentTypeForImage;
+    const selectedSlot = workOrdersFormState.currentServiceImageSlot || 0;
     if (!file) return;
     const service = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
     if (!service) return;
 
-    const existingPhotoIndex = service.photos.findIndex(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
+    const currentStagePhotos = buildStagePhotoSlots(service, imageType);
+    const currentSlotEntry = currentStagePhotos[selectedSlot];
     const newObj = {
         stage: imageType,
         imageStage: imageType,
-        photo: file
+        photo: file,
+        slot: selectedSlot
     };
-    if (existingPhotoIndex >= 0) {
-        service.photos[existingPhotoIndex] = newObj;
-    } else {
+
+    service.photos = service.photos || [];
+    if (currentSlotEntry) {
+        service.photos[currentSlotEntry.sourceIndex] = {
+            ...service.photos[currentSlotEntry.sourceIndex],
+            ...newObj
+        };
+    } else if (currentStagePhotos.filter(Boolean).length < 3) {
         service.photos.push(newObj);
+    } else {
+        showMessage('Máximo alcanzado', 'Solo se permiten hasta 3 imágenes por etapa.', 'warning');
+        return;
     }
-    console.log(file);
-    renderPreview(file, DOMRefs.refs);
+
+    const updatedStagePhotos = buildStagePhotoSlots(service, imageType);
+    openServiceImageModal(
+        service.name,
+        imageType,
+        updatedStagePhotos,
+        selectedSlot,
+        (slot) => { workOrdersFormState.currentServiceImageSlot = slot; }
+    );
 };
 
 const onSearchService = (e) => {
@@ -556,6 +623,7 @@ const onCloseModalImageServices = () => {
     toggleModal(DOMRefs.refs.modalServiceImages, false);
     workOrdersFormState.currentServiceForImage = null;
     workOrdersFormState.currentTypeForImage = null;
+    workOrdersFormState.currentServiceImageSlot = 0;
 };
 
 const onActionsServices = (e, serviceData) => {
@@ -602,21 +670,33 @@ const onActionsServices = (e, serviceData) => {
 const onDeleteServiceImage = () => {
     const serviceId = workOrdersFormState.currentServiceForImage;
     const imageType = workOrdersFormState.currentTypeForImage;
+    let selectedSlot = workOrdersFormState.currentServiceImageSlot || 0;
     if (!serviceId || !imageType) return;
     const service = workOrdersFormState.data.selectedServices.find(s => s.idService === serviceId);
     if (!service) return;
-    const existingPhotoIndex = service.photos.findIndex(photo => String(photo.stage || photo.imageStage || '').toUpperCase() === imageType);
 
-    let photoIdToDelete = null;
-    if (existingPhotoIndex >= 0) {
-        photoIdToDelete = service.photos[existingPhotoIndex].idPhoto;
-        service.photos.splice(existingPhotoIndex, 1);
-    }
+    const currentStagePhotos = buildStagePhotoSlots(service, imageType);
+    const selectedEntry = currentStagePhotos[selectedSlot];
+    if (!selectedEntry) return;
 
-    if (service.idWorkOrderService && photoIdToDelete) {
-        workOrdersFormState.data.servicePhotosToDelete.push(photoIdToDelete);
+    const photoToDelete = selectedEntry.photo;
+    if (photoToDelete?.idPhoto) {
+        workOrdersFormState.data.servicePhotosToDelete.push(photoToDelete.idPhoto);
     }
-    renderPreview(null, DOMRefs.refs);
+    service.photos.splice(selectedEntry.sourceIndex, 1);
+
+    const updatedStagePhotos = buildStagePhotoSlots(service, imageType);
+    selectedSlot = Math.min(selectedSlot, updatedStagePhotos.filter(Boolean).length - 1);
+    if (selectedSlot < 0) selectedSlot = 0;
+    workOrdersFormState.currentServiceImageSlot = selectedSlot;
+
+    openServiceImageModal(
+        service.name,
+        imageType,
+        updatedStagePhotos,
+        selectedSlot,
+        (slot) => { workOrdersFormState.currentServiceImageSlot = slot; }
+    );
 };
 
 const initializeUI = async (Refs) => {
