@@ -125,7 +125,7 @@ export const onSubmitEmployee = async (e) => {
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmEmployees));
 
     const employee = mapEmployeeForm(formData);
-    const error = validateEmployee(employee);
+    const error = validateEmployee(employee, employeesListState.selectedId);
 
     if (error) {
         showMessage('Advertencia', error, 'warning');

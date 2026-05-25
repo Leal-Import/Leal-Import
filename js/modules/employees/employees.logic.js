@@ -2,7 +2,7 @@
 import { highlightAndFocus } from '../../utils/dom.js';
 import { isValidEmail, isValidFullName, isValidPhone } from '../../utils/validators.js';
 
-export const validateEmployee = (data) => {
+export const validateEmployee = (data, selectedId = null) => {
 
     if (data.fullName.length > 75 || data.fullName.length <= 3) {
         highlightAndFocus('txtFullName');
@@ -28,9 +28,11 @@ export const validateEmployee = (data) => {
         highlightAndFocus('cmbUserRole');
         return 'El rol es requerido';
     }
-    if (data.user?.username.length > 30 || data.user?.username.length < 6) {
-        highlightAndFocus('txtUsername');
-        return 'El nombre de usuario no puede tener más de 30 caracteres ni menos de 6';
+    if (selectedId === null) {
+        if (data.user?.username.length > 30 || data.user?.username.length < 6) {
+            highlightAndFocus('txtUsername');
+            return 'El nombre de usuario no puede tener más de 30 caracteres ni menos de 6';
+        }
     }
     return null;
 };
@@ -40,9 +42,6 @@ export const mapEmployeeForm = (formData) => {
         fullName: formData.txtFullName,
         email: formData.txtEmployeeEmail,
         phoneEmployee: formData.txtEmployeePhone,
-        user: {
-            username: formData.txtUsername
-        },
         idRole: formData.cmbUserRole
     };
 };
