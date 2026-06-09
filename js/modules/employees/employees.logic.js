@@ -42,6 +42,9 @@ export const mapEmployeeForm = (formData) => {
         fullName: formData.txtFullName,
         email: formData.txtEmployeeEmail,
         phoneEmployee: formData.txtEmployeePhone,
-        idRole: formData.cmbUserRole
+        idRole: formData.cmbUserRole,
+        user: {
+            username: formData.txtUsername
+        }
     };
 };
