@@ -455,6 +455,7 @@ const loadWorkOrder = async (Refs) => {
             .map(part => ({ ...part, priceApplied: 0 }));
 
         workOrder.workOrdersPayments = [];
+        hideElement(Refs.paymentForm);
     }
     workOrder.workOrdersSpareParts.forEach(part => {
         const normalizedPart = pushSparePart(workOrdersFormState.data.selectedSpareParts, part);
