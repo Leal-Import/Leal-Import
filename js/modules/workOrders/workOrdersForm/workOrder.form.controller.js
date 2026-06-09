@@ -259,8 +259,7 @@ const onSubmitOrder = async (e) => {
     const errorValidate = validateOrder(
         workOrdersFormState.data,
         workOrdersFormState.context.idVehicle,
-        workOrdersFormState.totals.total,
-        !isEditing // requirePayment solo en POST
+        workOrdersFormState.totals.total
     );
 
     if (errorValidate) {

@@ -129,7 +129,7 @@ const validateBaseOrder = (estimatedDate, notes, selectedServices, selectedSpare
     return null;
 };
 
-export const validateOrder = (data, idVehicle, total, requirePayment = false) => {
+export const validateOrder = (data, idVehicle, total) => {
     const {
         selectedServices,
         selectedSpareParts,
@@ -139,8 +139,6 @@ export const validateOrder = (data, idVehicle, total, requirePayment = false) =>
     } = data;
     const baseOrderError = validateBaseOrder(estimatedDate, notes, selectedServices, selectedSpareParts, payments, total, idVehicle);
     if (baseOrderError) return baseOrderError;
-
-    if (requirePayment && payments.length === 0) return 'Debe registrar al menos un abono.';
 
     const validatePaymentsError = validatePayments(payments);
     if (validatePaymentsError) return validatePaymentsError;
