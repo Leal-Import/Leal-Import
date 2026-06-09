@@ -1,5 +1,5 @@
 import { asNumber, asUUID, existsById, getNullableParam, highlightAndFocus, showMessage } from "../../../utils/dom.js";
-import { isValidDecimal, safeParseFloat } from "../../../utils/validators.js";
+import { safeParseFloat } from "../../../utils/validators.js";
 import { normalizePayments, validatePayments } from "../../payments/payments.logic.js";
 
 export const verifyIds = (state, idSparePart) => {
@@ -110,18 +110,6 @@ const validateBaseOrder = (estimatedDate, notes, selectedServices, selectedSpare
         return 'Las notas deben de tener un maximo de 500 caracteres.';
     }
     if (selectedServices.length === 0 && selectedSpareParts.length === 0) return 'Debe agregar al menos un servicio o un repuesto.';
-
-    // Validar precios de servicios
-    for (let i = 0; i < selectedServices.length; i++) {
-        const s = selectedServices[i];
-        if (!isValidDecimal(s.priceApplied) || Number(s.priceApplied) < 0) return `Precio inválido en el servicio ${i + 1}.`;
-    }
-
-    // Validar precios de repuestos
-    for (let i = 0; i < selectedSpareParts.length; i++) {
-        const p = selectedSpareParts[i];
-        if (!isValidDecimal(p.priceApplied) || Number(p.priceApplied) < 0) return `Precio inválido en el repuesto ${i + 1}.`;
-    }
 
     const totalAmounts = payments.reduce((acc, p) => acc + safeParseFloat(p.amount), 0);
     if (totalAmounts > total) return 'El total de los abonos no puede superar el total de la orden.';
