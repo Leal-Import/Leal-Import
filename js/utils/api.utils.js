@@ -91,7 +91,7 @@ export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de 
     }
 };
 
-let currentUser = null;
+export let currentUser = null;
 
 export const initSession = async () => {
     try {

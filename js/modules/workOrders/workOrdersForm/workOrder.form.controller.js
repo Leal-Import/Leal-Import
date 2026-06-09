@@ -12,7 +12,7 @@ import { addNewPayment, initPaymentsController } from "../../payments/payments.c
 import { createBtnUrl } from "../../picsAmounts/picAmounts.dom.js";
 import { calculateTotals } from "../../../core/logic/calculate.totals.logic.js";
 import { generateWorkOrderReport } from "../../../core/reports/workorders/workorders.report.js";
-import { handleApiError } from "../../../utils/api.utils.js";
+import { handleApiError, currentUser } from "../../../utils/api.utils.js";
 import { getActiveEmployees } from "../../employees/employees.service.js";
 import { canAccess } from "../../../utils/privilegesValidator.js";
 
@@ -445,6 +445,18 @@ const loadWorkOrder = async (Refs) => {
     loadViewUpdateOrder(workOrder.vehicleInfo.vin, Refs);
     renderVehicleData(workOrder.vehicleInfo, Refs);
     loadExtraInputs(workOrdersFormState.data.notes, workOrdersFormState.data.estimatedDate, Refs);
+    if (currentUser.role !== "Administrador") {
+        workOrder.workOrdersServices = workOrder.workOrdersServices
+            .filter(service => service.idEmployee === currentUser.idEmployee)
+            .map(service => ({ ...service, priceApplied: 0 }));
+
+        workOrder.workOrdersSpareParts = workOrder.workOrdersSpareParts
+            .filter(part => part.idEmployee === currentUser.idEmployee)
+            .map(part => ({ ...part, priceApplied: 0 }));
+
+        workOrder.workOrdersPayments = [];
+        hideElement(Refs.paymentForm);
+    }
     workOrder.workOrdersSpareParts.forEach(part => {
         const normalizedPart = pushSparePart(workOrdersFormState.data.selectedSpareParts, part);
         appendToDom({
@@ -536,12 +548,7 @@ const loadEmployees = async (query) => {
 
 const onSearchEmployee = async (e) => {
     const query = e.target.value.trim();
-    let employees;
-    if (workOrdersFormState.employeeList.length && query.length >= 3) {
-        employees = workOrdersFormState.employeeList.filter(emp => emp.fullName.toLowerCase().includes(query.toLowerCase()));
-    } else {
-        employees = await loadEmployees(query);
-    }
+    const employees = await loadEmployees(query);
     insertEmployees(DOMRefs.refs.employeeList, employees, onSelectEmployee, workOrdersFormState.employeeContext.employeeSelected);
 };
 
@@ -615,6 +622,7 @@ const onClosePersonModal = () => {
     toggleModal(DOMRefs.refs.modalPersonContainer, false);
     DOMRefs.refs.txtSearchEmployee.value = '';
     DOMRefs.refs.employeeList.innerHTML = '';
+    loadEmployees('');
     // Limpiar el contexto del empleado para evitar estado residual
     workOrdersFormState.employeeContext = {};
 };

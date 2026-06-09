@@ -236,7 +236,7 @@ export const insertEmployees = (container, employees, onSelect, employeeSelected
 
     container.innerHTML = '';
     const fragment = document.createDocumentFragment();
-    if (employeeSelected !== null && employeeSelected !== undefined) {
+    if (employeeSelected && employeeSelected.idEmployee !== null && employeeSelected !== undefined) {
         fragment.appendChild(createSelectEmployee(employeeSelected));
     }
 
