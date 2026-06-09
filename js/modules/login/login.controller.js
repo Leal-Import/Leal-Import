@@ -73,7 +73,7 @@ const onSubmitLogin = async (e) => {
     showElement(DOMRefs.refs.btnLoginLoader);
 
     try {
-        await login(username, password);
+        await login(username.trim(), password.trim());
         await showMessage("Bienvenido", `Hola, ${username.trim()}`, "success", true);
         localStorage.setItem("navItem", "dashItem");
         navigateTo(ROUTES.DASHBOARD);
