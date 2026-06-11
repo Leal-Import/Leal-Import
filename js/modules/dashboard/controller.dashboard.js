@@ -58,11 +58,9 @@ const initialize = (refs) => {
             dashboardState.currentPeriod = period;
             try {
                 const apiPeriod = periodMapping[period] || 'MONTH';
-                const metrics = await getMetrics(apiPeriod);
-                renderDashboardData(refs, metrics, dashboardState.chart);
+                await loadPeriodData(refs, apiPeriod);
             } catch (error) {
-                console.error('Error cargando métricas:', error);
-                // Fallback to mock data if API fails
+                console.error('Error cargando dashboard por período:', error);
                 const data = dashPeriods[period] || dashPeriods.mes;
                 renderDashboardData(refs, data, dashboardState.chart);
             }
@@ -71,36 +69,38 @@ const initialize = (refs) => {
 };
 
 const load = async (refs) => {
-    // 1. Carga inicial de métricas desde API
+    const apiPeriod = periodMapping[dashboardState.currentPeriod] || 'MONTH';
+
     try {
-        const apiPeriod = periodMapping[dashboardState.currentPeriod] || 'MONTH';
-        const metrics = await getMetrics(apiPeriod);
-        renderDashboardData(refs, metrics, dashboardState.chart);
+        const counters = await getCounters();
+        renderCounters(refs, counters);
     } catch (error) {
-        console.error('Error cargando métricas iniciales:', error);
-        // Fallback to mock data
+        console.error('Error cargando contadores:', error);
+    }
+
+    try {
+        await loadPeriodData(refs, apiPeriod);
+    } catch (error) {
+        console.error('Error cargando datos del dashboard:', error);
         const data = dashPeriods[dashboardState.currentPeriod] || dashPeriods.mes;
         renderDashboardData(refs, data, dashboardState.chart);
     }
+};
 
-    // 2. Carga de datos reales desde API
-    try {
-        const [counters, sellers, topVehicle, workOrders, urgentCollections] = await Promise.all([
-            getCounters(),
-            getTopSellers(),
-            getTopVehicleSales(),
-            getRecentWorkOrders(),
-            getUrgentCollections()
-        ]);
+const loadPeriodData = async (refs, apiPeriod) => {
+    const [metrics, sellers, topVehicle, workOrders, urgentCollections] = await Promise.all([
+        getMetrics(apiPeriod),
+        getTopSellers(apiPeriod),
+        getTopVehicleSales(apiPeriod),
+        getRecentWorkOrders(apiPeriod),
+        getUrgentCollections(apiPeriod)
+    ]);
 
-        renderCounters(refs, counters);
-        renderTopSellers(refs, sellers);
-        renderTopVehicleSale(refs, topVehicle);
-        renderRecentWorkOrders(refs, workOrders);
-        renderUrgentCollections(refs, urgentCollections);
-    } catch (error) {
-        console.error('Error cargando datos del API:', error);
-    }
+    renderDashboardData(refs, metrics, dashboardState.chart);
+    renderTopSellers(refs, sellers);
+    renderTopVehicleSale(refs, topVehicle);
+    renderRecentWorkOrders(refs, workOrders);
+    renderUrgentCollections(refs, urgentCollections);
 };
 
 createModuleInitializer({

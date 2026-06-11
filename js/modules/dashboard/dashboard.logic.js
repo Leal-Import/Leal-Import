@@ -37,11 +37,19 @@ export const dashPeriods = {
 };
 
 export const periodMapping = {
-    hoy: 'DAY',
+    hoy: 'TODAY',
     semana: 'WEEK',
     mes: 'MONTH',
     trimestre: 'QUARTER',
     año: 'YEAR'
+};
+
+export const periodApiToInternal = {
+    TODAY: 'hoy',
+    WEEK: 'semana',
+    MONTH: 'mes',
+    QUARTER: 'trimestre',
+    YEAR: 'año'
 };
 
 export const getChipClass = (type) => {
