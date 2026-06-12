@@ -94,8 +94,8 @@ const createHeader = (vehicle) => {
     brand.textContent = vehicle.brand;
 
     const price = document.createElement('span');
-    if (vehicle.total) {
-        price.textContent = formatWithCommas(vehicle.total || 0);
+    if (vehicle.suggestedPrice) {
+        price.textContent = formatWithCommas(vehicle.suggestedPrice || 0);
         price.classList.add('vehiclePrice');
     } else {
         price.textContent = 'E';

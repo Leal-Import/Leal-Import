@@ -113,7 +113,7 @@ const createMoreInfo = (sparePart) => {
 
     const price = document.createElement("span");
     price.classList.add("partPrice");
-    price.textContent = formatWithCommas(sparePart.totalCost);
+    price.textContent = formatWithCommas(sparePart.suggestedPrice);
 
     left.append(status, year);
     container.append(left, price);
