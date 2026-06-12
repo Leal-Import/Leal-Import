@@ -21,9 +21,15 @@
         <div id="sidebar"></div>
         <form class="content " id="frmVehicles">
             <div class="headerContent">
-                <div class="breadCrumbSection">
-                    <a href="vehicle.html" class="breadcrumb">Vehículos &#62; </a>
-                    <a class="breadcrumb" id="typeAction">Ver vehículo</a>
+                <div class="breadCrumbSection" style="justify-content: space-between;">
+                    <div style="display: flex; gap: 10px;">
+                        <a href="vehicle.html" class="breadcrumb">Vehículos &#62; </a>
+                        <a class="breadcrumb" id="typeAction">Ver vehículo</a>
+                    </div>
+                    <div class="hide" id="customerElement" style="gap:10px; align-items: center;">
+                        <span class="lblData" style="font-size: 1.3em;">Cliente: </span>
+                        <span class="values" id="customerName">sdsddwaafae</span>
+                    </div>
                 </div>
             </div>
             <div class="mainContent">
@@ -59,7 +65,8 @@
                             </div>
                             <div class="data skeleton">
                                 <span class="lblData">Lote:</span>
-                                <a id="lote" style="color: var(--danger-color);" aria-label="Numero de lote" class="values truncate"></a>
+                                <a id="lote" style="color: var(--danger-color);" aria-label="Numero de lote"
+                                    class="values truncate"></a>
                             </div>
                         </div>
                         <div class="infoRow">
@@ -72,7 +79,8 @@
                                 <span id="purchaseDate" class="values"></span>
                             </div>
                         </div>
-                        <div class="data skeleton" style="flex-direction: column; gap: 0; align-items: stretch; max-width: 100%;">
+                        <div class="data skeleton"
+                            style="flex-direction: column; gap: 0; align-items: stretch; max-width: 100%;">
                             <span class="lblData">Descripción:</span>
                             <textarea id="description" class="values txtAreaSpecific"></textarea>
                         </div>
@@ -198,7 +206,8 @@
                         </span>
                         <span>Vender</span>
                     </a>
-                    <a type="button" class="btnAction btnPrimary hide" id="btnHistorial" data-privilege="READ_WORK_ORDERS">
+                    <a type="button" class="btnAction btnPrimary hide" id="btnHistorial"
+                        data-privilege="READ_WORK_ORDERS">
                         <span class="btnIcon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"

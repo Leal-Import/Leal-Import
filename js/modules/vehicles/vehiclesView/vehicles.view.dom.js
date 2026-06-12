@@ -1,4 +1,4 @@
-import { $, qsa } from "../../../utils/dom.js";
+import { $, qsa, showElement } from "../../../utils/dom.js";
 import { formatWithCommas } from "../../../utils/formatters.js";
 import { renderAndInitViewCarousel } from "../../carousel/carousel.dom.js";
 
@@ -33,7 +33,9 @@ export const DOMRefs = {
             mainSwiperWrapper: $("mainSwiperWrapper"),
             thumbsWrapper: $("thumbsWrapper"),
             btnGeneratePdf: $("btnGeneratePdf"),
-            skeleton: qsa(".skeleton")
+            skeleton: qsa(".skeleton"),
+            customerElement: $("customerElement"),
+            customerName: $("customerName")
         };
         return this.refs;
     }
@@ -89,5 +91,9 @@ const loadVehicleInfo = (vehicle, Refs) => {
         pa.textContent = formatWithCommas(vehicle.vehicleCosts.pa);
         vehicle.vehicleCosts.suggestedPrice !== null ? suggestedPrice.textContent = formatWithCommas(vehicle.vehicleCosts.suggestedPrice) : suggestedPrice.style.display = "none";
         total.textContent = formatWithCommas(vehicle.vehicleCosts.total);
+    }
+    if (vehicle.customerName) {
+        showElement(Refs.customerElement);
+        Refs.customerName.textContent = vehicle.customerName;
     }
 };
