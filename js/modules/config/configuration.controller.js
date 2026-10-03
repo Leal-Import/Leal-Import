@@ -28,7 +28,7 @@ const onTogglePassword = (e, txtPassword) => {
 const onVerifyPassword = async (e) => {
     e.preventDefault();
 
-    const password = DOMRefs.refs.txtVerifyPassword.value.trim();
+    const password = DOMRefs.refs.txtVerifyPassword.value;
 
     if (!password) {
         await showMessage('Advertencia', 'Por favor ingresa tu contraseña actual.', 'warning');
@@ -175,7 +175,7 @@ const onVerifyButtonUsername = () => {
     const btn = DOMRefs.refs.btnSaveUsername;
     const currentUsername = DOMRefs.refs.txtCurrentUsername.value.trim();
     const newUsername = DOMRefs.refs.txtNewUsername.value.trim();
-    const password = DOMRefs.refs.txtPasswordForUsername.value.trim();
+    const password = DOMRefs.refs.txtPasswordForUsername.value;
 
     if (currentUsername && newUsername && password && newUsername !== currentUsername) {
         removeDisable(btn);
@@ -386,7 +386,7 @@ const onChangeUsername = async (e) => {
     const payload = {
         currentUsername: txtCurrentUsername.value.trim(),
         newUsername: txtNewUsername.value.trim(),
-        password: txtPassword.value.trim()
+        password: txtPassword.value
     };
 
     try {

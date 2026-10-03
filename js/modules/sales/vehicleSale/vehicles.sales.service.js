@@ -10,7 +10,8 @@ export const postVehicle = async(sale, id) => {
         `${API_URL}/postSale/${id}`,
         {
             method: 'POST',
-            body: sale,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sale),
             credentials: 'include'
         },
         'Error al ingresar la venta'
@@ -22,7 +23,8 @@ export const putVehicle = async(vehicleData, id) => {
         `${API_URL}/putSale/${id}`,
         {
             method: 'PUT',
-            body: vehicleData,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(vehicleData),
             credentials: 'include'
         },
         'Error al actualizar la venta del vehículo'

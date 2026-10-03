@@ -1,6 +1,7 @@
 import { asNumber, asUUID, existsById, getNullableParam, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { safeParseFloat } from "../../../utils/validators.js";
-import { normalizePayments, validatePayments } from "../../payments/payments.logic.js";
+import { normalizePayments, uploadPaymentReceipts, validatePayments } from "../../payments/payments.logic.js";
+import { uploadImage } from "../../../core/integrations/cloudinary/cloudinary-image.service.js";
 
 export const verifyIds = (state, idSparePart) => {
     return state.data.selectedItems.some(item => String(item.idSparePart) === String(idSparePart));
@@ -57,10 +58,19 @@ export const pushSparePart = (state, sparePart) => {
 };
 
 export const pushService = (state, service) => {
-    const id = crypto.randomUUID() || null;
-    if (id && existsById(state, id, 'id')) return null;
+
+    const localId =
+        service.localId ||
+        service.id || crypto.randomUUID();
+
+    if (existsById(state, localId, 'localId')) {
+        return null;
+    }
+
     const normalizedPart = {
-        id,
+        localId,
+        id: localId,
+
         idService: service.idService || null,
         name: service.serviceName || service.name || '',
         priceApplied: service.priceApplied || 0.00,
@@ -134,9 +144,9 @@ export const validateOrder = (data, idVehicle, total) => {
     return null;
 };
 
-export const buildOrderFormData = (state, isEditing) => {
-    const fd = new FormData();
-
+export const buildOrderFormData = async (state, isEditing) => {
+    await uploadPaymentReceipts(state.data.payments);
+    await uploadServicePhotos(state.data.selectedServices);
     let payload;
     if (isEditing) {
         payload = buildPutWorkOrderPayload(state);
@@ -144,12 +154,7 @@ export const buildOrderFormData = (state, isEditing) => {
         payload = buildPostWorkOrderPayload(state);
     }
 
-    fd.append('workOrderData', JSON.stringify(payload));
-
-    appendPaymentFiles(fd, state.data.payments, isEditing);
-    appendServicePhotos(fd, state.data.selectedServices);
-
-    return fd;
+    return payload;
 };
 
 const buildPutWorkOrderPayload = (state) => {
@@ -181,49 +186,36 @@ const buildPostWorkOrderPayload = (state) => {
     };
 };
 
-const appendPaymentFiles = (fd, payments) => {
-    payments.forEach(p => {
-        fd.append(p.id, p.file);
-    });
-};
+const uploadServicePhotos = (services) => Promise.all(
+    services.flatMap(service => (service.photos || []).map(uploadServicePhoto))
+);
 
-const appendServicePhotos = (fd, services) => {
-    services.forEach((service) => {
-        const stageGroups = (service.photos || []).reduce((groups, photo) => {
-            if (!(photo.photo instanceof File)) return groups;
-            const stage = String(photo.stage || photo.imageStage || '').toUpperCase();
-            if (!stage) return groups;
-            groups[stage] = groups[stage] || [];
-            groups[stage].push(photo);
-            return groups;
-        }, {});
+const uploadServicePhoto = async (photo) => {
+    if (!(photo.photo instanceof File)) {
+        return;
+    }
 
-        Object.entries(stageGroups).forEach(([stage, photos]) => {
-            photos.sort((a, b) => {
-                const slotA = Number.isInteger(a.slot) ? a.slot : 99;
-                const slotB = Number.isInteger(b.slot) ? b.slot : 99;
-                return slotA - slotB;
-            });
-
-            photos.forEach((photo) => {
-                fd.append(
-                    `servicePhoto_${service.idWorkOrderService || service.id}_${stage}`,
-                    photo.photo
-                );
-            });
-        });
-    });
+    photo.image = await uploadImage(photo.photo);
 };
 
 const normalizeServices = (services) => {
     return services.map(s => {
         const obj = {
-            idWorkOrderService: s.idWorkOrderService || s.id,
             idService: s.idService,
             serviceName: s.name,
             priceApplied: Number(s.priceApplied),
-            idEmployee: s.idEmployee
+            idEmployee: s.idEmployee,
+            photos: (s.photos || [])
+                .filter(photo => photo.image)
+                .map(photo => ({
+                    imageStage: String(photo.stage || photo.imageStage || '').toUpperCase(),
+                    image: photo.image
+                }))
         };
+
+        if (s.idWorkOrderService) {
+            obj.idWorkOrderService = s.idWorkOrderService;
+        }
 
         return obj;
     });
@@ -244,3 +236,4 @@ const normalizeSpareParts = (spareParts) => {
         return obj;
     });
 };
+

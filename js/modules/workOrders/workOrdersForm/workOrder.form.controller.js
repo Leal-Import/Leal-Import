@@ -267,17 +267,16 @@ const onSubmitOrder = async (e) => {
         return;
     }
 
-    const fd = buildOrderFormData(workOrdersFormState, isEditing);
-
     showElement(DOMRefs.refs.loaderAddOrder);
     camps.forEach(disableElement);
     try {
+        const payload = await buildOrderFormData(workOrdersFormState, isEditing);
         let response;
         if (workOrdersFormState.context.idWorkOrder) {
-            response = await putWorkOrder(fd, workOrdersFormState.context.idWorkOrder);
+            response = await putWorkOrder(payload, workOrdersFormState.context.idWorkOrder);
             await showMessage('Orden actualizada', 'Éxito', 'success');
         } else {
-            response = await postWorkOrder(fd, workOrdersFormState.context.idVehicle, workOrdersFormState.context.idSale);
+            response = await postWorkOrder(payload, workOrdersFormState.context.idVehicle, workOrdersFormState.context.idSale);
             await showMessage('Orden registrada', 'Éxito', 'success');
         }
 

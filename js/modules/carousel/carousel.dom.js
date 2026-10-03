@@ -17,6 +17,23 @@ export const DOMRefs = {
 let mainSwiperInstance = null;
 let thumbsSwiperInstance = null;
 
+const CLOSE_ICON = `
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round">
+        <path d="m6 6 12 12M18 6 6 18" />
+    </svg>`;
+
+const ADD_ICON = `
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M12 5v14M5 12h14" />
+    </svg>`;
+
+const IMAGE_PLACEHOLDER_ICON = `
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <path d="m21 15-5-5L5 21" />
+    </svg>`;
+
 const destroySwipers = () => {
     if (mainSwiperInstance) {
         mainSwiperInstance.destroy(true, true);
@@ -26,6 +43,45 @@ const destroySwipers = () => {
         thumbsSwiperInstance.destroy(true, true);
         thumbsSwiperInstance = null;
     }
+};
+
+const createImage = (url, className, alt) => {
+    const image = document.createElement('img');
+    image.src = url;
+    image.className = className;
+    image.alt = alt;
+    return image;
+};
+
+const createImageSlide = (url, className, alt) => {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    slide.appendChild(createImage(url, className, alt));
+    return slide;
+};
+
+const createDeleteButton = onDelete => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'thumb-delete';
+    button.setAttribute('aria-label', 'Eliminar imagen');
+    button.title = 'Eliminar imagen';
+    button.innerHTML = CLOSE_ICON;
+    button.addEventListener('click', event => {
+        event.stopPropagation();
+        onDelete();
+    });
+    return button;
+};
+
+const createThumbnail = (url, index, onDelete) => {
+    const thumbnail = document.createElement('div');
+    thumbnail.className = 'swiper-slide thumb-box';
+    thumbnail.append(
+        createImage(url, '', `Miniatura ${index + 1}`),
+        createDeleteButton(() => onDelete(index))
+    );
+    return thumbnail;
 };
 
 export const renderImages = (images, mainWrapper, thumbsWrapper, onDelete, onAddClick) => {
@@ -52,22 +108,8 @@ export const renderImages = (images, mainWrapper, thumbsWrapper, onDelete, onAdd
     }
 
     images.forEach((img, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `<img src="${img.url}" class="previewImg">`;
-        mainWrapper.appendChild(slide);
-
-        const thumb = document.createElement('div');
-        thumb.className = 'swiper-slide thumb-box';
-        thumb.innerHTML = `
-            <img src="${img.url}">
-            <div class="thumb-delete">X</div>
-        `;
-        thumb.querySelector('.thumb-delete').addEventListener('click', e => {
-            e.stopPropagation();
-            onDelete(index);
-        });
-        thumbsWrapper.appendChild(thumb);
+        mainWrapper.appendChild(createImageSlide(img.url, 'previewImg', `Imagen ${index + 1}`));
+        thumbsWrapper.appendChild(createThumbnail(img.url, index, onDelete));
     });
 
     _createPlusButton(thumbsWrapper, onAddClick);
@@ -75,10 +117,13 @@ export const renderImages = (images, mainWrapper, thumbsWrapper, onDelete, onAdd
 };
 
 const _createPlusButton = (wrapper, onAddClick) => {
-    const addThumb = document.createElement("div");
-    addThumb.classList.add("swiper-slide", "thumb-add");
-    addThumb.textContent = "+";
-    addThumb.addEventListener("click", onAddClick);
+    const addThumb = document.createElement('button');
+    addThumb.type = 'button';
+    addThumb.classList.add('swiper-slide', 'thumb-add');
+    addThumb.setAttribute('aria-label', 'Agregar imágenes');
+    addThumb.title = 'Agregar imágenes';
+    addThumb.innerHTML = ADD_ICON;
+    addThumb.addEventListener('click', onAddClick);
     wrapper.appendChild(addThumb);
 };
 
@@ -174,7 +219,7 @@ export const renderAndInitThumbsCarousel = ({
         mainWrapper.innerHTML = `
             <div class="swiper-slide">
                 <div class="no-image-container">
-                    <div class="no-image-icon">📷</div>
+                    <div class="no-image-icon">${IMAGE_PLACEHOLDER_ICON}</div>
                     <p>No hay imágenes disponibles</p>
                 </div>
             </div>
@@ -184,22 +229,8 @@ export const renderAndInitThumbsCarousel = ({
     }
 
     images.forEach((img, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `<img src="${img.url}" class="previewImg">`;
-        mainWrapper.appendChild(slide);
-
-        const thumb = document.createElement('div');
-        thumb.className = 'swiper-slide thumb-box';
-        thumb.innerHTML = `
-            <img src="${img.url}">
-            <div class="thumb-delete">×</div>
-        `;
-        thumb.querySelector('.thumb-delete').addEventListener('click', e => {
-            e.stopPropagation();
-            onDelete(index);
-        });
-        thumbsWrapper.appendChild(thumb);
+        mainWrapper.appendChild(createImageSlide(img.url, 'previewImg', `Imagen ${index + 1}`));
+        thumbsWrapper.appendChild(createThumbnail(img.url, index, onDelete));
     });
 
     _createPlusButton(thumbsWrapper, onAddClick);
@@ -218,18 +249,10 @@ export const renderAndInitViewCarousel = ({
     if (thumbsWrapper) thumbsWrapper.innerHTML = '';
 
     photos.forEach(img => {
-        mainWrapper.innerHTML += `
-            <div class="swiper-slide">
-                <img src="${img.photoUrl}" class="mainImage" alt="vehicle image">
-            </div>
-        `;
+        mainWrapper.appendChild(createImageSlide(img.photoUrl, 'mainImage', 'Imagen principal'));
 
         if (thumbsWrapper) {
-            thumbsWrapper.innerHTML += `
-                <div class="swiper-slide">
-                    <img src="${img.photoUrl}" class="thumbImage" alt="thumbnail">
-                </div>
-            `;
+            thumbsWrapper.appendChild(createImageSlide(img.photoUrl, 'thumbImage', 'Miniatura'));
         }
     });
 

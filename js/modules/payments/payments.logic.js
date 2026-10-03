@@ -1,21 +1,26 @@
 // payments.logic.js
-import { existsById, highlightAndFocus } from "../../utils/dom.js";
+import { highlightAndFocus } from "../../utils/dom.js";
 import { isValidDecimal, safeParseFloat } from "../../utils/validators.js";
 import { paymentsState } from "./payments.state.js";
+import { uploadImage } from "../../core/integrations/cloudinary/cloudinary-image.service.js";
 
 const normalizePayment = (payment) => {
-    const resolvedId = payment.id ?? payment.idPayment ?? crypto.randomUUID();
+
+    const localId = payment.localId || payment.idPayment || payment.id || crypto.randomUUID();
+
     return {
-        id:              resolvedId,
-        idPayment:       payment.idPayment       ?? null,
-        amount:          safeParseFloat(payment.amount),
+        localId,
+        idPayment: payment.idPayment ?? null,
+        amount: safeParseFloat(payment.amount),
         idPaymentMethod: payment.idPaymentMethod ?? null,
-        paymentURL:      payment.paymentURL      ?? null,
-        paymentMethod:   payment.paymentMethod   ?? getMethodNameById(payment) ?? null,
-        employeeName:    payment.employeeName    ?? null,
-        paymentDate:     payment.paymentDate     ?? null,
-        paymentNumber:   payment.paymentNumber   ?? null,
-        file:            null
+        paymentURL: payment.paymentURL ?? null,
+        paymentMethod: payment.paymentMethod ?? getMethodNameById(payment) ?? null,
+        employeeName: payment.employeeName ?? null,
+        paymentDate: payment.paymentDate ?? null,
+        paymentNumber: payment.paymentNumber ?? null,
+        file: payment.file instanceof File
+            ? payment.file
+            : null
     };
 };
 
@@ -24,7 +29,13 @@ export const addPayment = (state, payment) => {
 
     const normalized = normalizePayment(payment);
 
-    if (existsById(state.payments, normalized.id, 'id')) return null;
+    const alreadyExists = state.payments.some(
+        current => current.localId === normalized.localId
+    );
+
+    if (alreadyExists) {
+        return null;
+    }
 
     state.payments.push(normalized);
     return normalized;
@@ -67,15 +78,23 @@ export const validatePayment = (amount, method) => {
 };
 
 export const normalizePayments = (payments) => {
-    return payments.map(p => {
-        const payment = {
-            idPayment: p.id || crypto.randomUUID(),
-            amount: Number(p.amount),
-            idPaymentMethod: p.idPaymentMethod
-        };
-        if (p.idPayment) {
-            payment.idPayment = p.idPayment;
-        }
-        return payment;
-    });
+    return payments.map(payment => ({
+        idPayment: payment.idPayment ?? null,
+        amount: Number(payment.amount),
+        idPaymentMethod: payment.idPaymentMethod,
+        receipt: payment.receipt ?? null
+    }));
+};
+
+export const uploadPaymentReceipts = (payments = []) => Promise.all(
+    payments.map(uploadPaymentReceipt)
+);
+
+const uploadPaymentReceipt = async (payment) => {
+    if (!(payment.file instanceof File)) {
+        return;
+    }
+
+    payment.receipt = await uploadImage(payment.file);
+    payment.paymentURL = payment.receipt.url;
 };

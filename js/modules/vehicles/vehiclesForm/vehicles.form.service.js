@@ -16,7 +16,8 @@ export const postVehicle = async(vehicleData) => {
         `${API_URL}/postVehicle`,
         {
             method: 'POST',
-            body: vehicleData,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(vehicleData),
             credentials: 'include'
         },
         'Error al crear vehículo'
@@ -28,7 +29,8 @@ export const putVehicle = async(vehicleData, id) => {
         `${API_URL}/putVehicle/${id}`,
         {
             method: 'PUT',
-            body: vehicleData,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(vehicleData),
             credentials: 'include'
         },
         'Error al actualizar vehículo'

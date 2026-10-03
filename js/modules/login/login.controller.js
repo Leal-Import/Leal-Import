@@ -73,7 +73,7 @@ const onSubmitLogin = async (e) => {
     showElement(DOMRefs.refs.btnLoginLoader);
 
     try {
-        await login(username.trim(), password.trim());
+        await login(username.trim(), password);
         await showMessage("Bienvenido", `Hola, ${username.trim()}`, "success", true);
         localStorage.setItem("navItem", "dashItem");
         navigateTo(ROUTES.DASHBOARD);
@@ -81,9 +81,12 @@ const onSubmitLogin = async (e) => {
         let title = 'Error';
         let text = error?.message || 'Ocurrió un error';
 
-        if (text.includes("401") || text.toLowerCase().includes("credenciales")) {
-            title = "Usuario no encontrado";
-            text = "Credenciales inválidas. Inténtalo de nuevo.";
+        if (error?.status === 401) {
+            title = "No se pudo iniciar sesión";
+            text = "Usuario o contraseña incorrectos. Inténtalo de nuevo.";
+        } else if (error?.status === 429) {
+            title = "Demasiados intentos";
+            text = "Espera unos minutos antes de volver a intentarlo.";
         }
         await showMessage(title, text, "error");
     } finally {
@@ -182,8 +185,8 @@ const onSendCode = async (e) => {
 const onUpdatePassword = async () => {
     if (loginState.flags.pendingUpdate) return;
 
-    const newPass = DOMRefs.refs.txtNewPassword?.value?.trim() ?? '';
-    const confirmPass = DOMRefs.refs.txtConfirmPassword?.value?.trim() ?? '';
+    const newPass = DOMRefs.refs.txtNewPassword?.value ?? '';
+    const confirmPass = DOMRefs.refs.txtConfirmPassword?.value ?? '';
 
     if (!newPass || !confirmPass) {
         await showMessage("Campos incompletos", "Por favor, completa ambos campos.", "warning");

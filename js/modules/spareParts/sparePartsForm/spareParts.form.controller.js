@@ -9,8 +9,9 @@ import { DOMRefs, loadUpdateInfo, openLinkModal, saveLinkModal } from "./sparePa
 import { getSparePart, postSparePart, putSparePart } from "./spareParts.form.service.js";
 import { handleApiError } from "../../../utils/api.utils.js";
 import { handleAddImage, initCarouselController } from "../../carousel/carousel.controller.js";
-import { mapCarouselImages, validateBaseImages, validateEditImages } from "../../carousel/carousel.logic.js";
+import { validateBaseImages, validateEditImages } from "../../carousel/carousel.logic.js";
 import { canAccess } from "../../../utils/privilegesValidator.js";
+import { uploadImages } from "../../../core/integrations/cloudinary/cloudinary-image.service.js";
 
 const loadSparePart = async () => {
     try {
@@ -47,7 +48,6 @@ const onSubmitSparePart = async (e) => {
     }
 
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmSpareParts));
-    const fd = new FormData();
     const invalidate = validateBaseSparePart(formData, sparePartsFormState.links.bill, sparePartsFormState.links.tracking);
     if (invalidate) {
         showMessage('Datos no válidos', invalidate, 'warning');
@@ -66,15 +66,17 @@ const onSubmitSparePart = async (e) => {
         payloadSparePart.sparePartsCosts.idCostSparePart = sparePartsFormState.costsId;
     }
 
-    mapCarouselImages(fd, sparePartsFormState.sparePartPhotos);
-    fd.append("SparePartData", JSON.stringify(payloadSparePart));
     try {
+        payloadSparePart.photos = await uploadImages(
+            sparePartsFormState.sparePartPhotos.filter(image => image.isNew && image.file instanceof File).map(image => image.file)
+        );
+
         let response;
         if (sparePartsFormState.context.currentId !== null) {
-            await putSparePart(fd, sparePartsFormState.context.currentId);
+            await putSparePart(payloadSparePart, sparePartsFormState.context.currentId);
             await showMessage('Repuesto actualizado con éxito!', 'Éxito', 'success');
         } else {
-            response = await postSparePart(fd);
+            response = await postSparePart(payloadSparePart);
             await showMessage('Repuesto agregado con éxito!', 'Éxito', 'success');
         }
         if (sparePartsFormState.context.hasSale) {

@@ -37,7 +37,7 @@ const createPaymentRow = ({
     paymentItem.classList.add('paymentItem');
     paymentItem.dataset.index = index + 1;
 
-    paymentItem.id = `payment-${payment.idPayment ?? index}`; // Si no hay idPayment, usar el índice como fallback
+    paymentItem.id = `payment-${payment.localId}`;
 
     /* ===== INFO ===== */
     const paymentInfo = document.createElement('div');

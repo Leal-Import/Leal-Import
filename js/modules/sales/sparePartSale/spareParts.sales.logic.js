@@ -1,6 +1,6 @@
 import { asBoolean, asNumber, asUUID, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal } from "../../../utils/validators.js";
-import { normalizePayments, validatePayments } from "../../payments/payments.logic.js";
+import { normalizePayments, uploadPaymentReceipts, validatePayments } from "../../payments/payments.logic.js";
 import { sanitizeURLParam } from "../../../utils/sanitizer.js";
 
 export const hydrateContextFromURL = async (state) => {
@@ -84,9 +84,9 @@ export const validateSale = (state) => {
     return null;
 };
 
-export const buildPutSalePayload = (state) => {
+export const buildPutSalePayload = async (state) => {
     const { data, context } = state;
-    const fd = new FormData();
+    await uploadPaymentReceipts(data.payments);
     const saleData = {
         idCustomer: context.idCustomer,
         notes: data.notes || "",
@@ -95,27 +95,19 @@ export const buildPutSalePayload = (state) => {
         paymentsToDelete: data.paymentsToDelete,
         itemsToDelete: data.itemsToDelete
     };
-    data.payments.forEach(p => {
-        fd.append(p.id, p.file);
-    });
-    fd.append("saleData", JSON.stringify(saleData));
-    return fd;
+    return saleData;
 };
 
-export const buildPostSalePayload = (state) => {
+export const buildPostSalePayload = async (state) => {
     const { data, context } = state;
-    const fd = new FormData();
+    await uploadPaymentReceipts(data.payments);
     const saleData = {
         idCustomer: context.idCustomer,
         notes: data.notes || "",
         sparePartsPayments: normalizePayments(data.payments),
         sparePartItems: normalizedItems(data.selectedItems)
     };
-    data.payments.forEach(p => {
-        fd.append(p.id, p.file);
-    });
-    fd.append("saleData", JSON.stringify(saleData));
-    return fd;
+    return saleData;
 };
 
 const normalizedItems = (items) => {

@@ -173,6 +173,12 @@
     box-shadow: 0 2px 6px var(--bg-danger-badge);
 }
 
+.btnRemovePrivilege svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentcolor;
+}
+
 .privilegeButtons {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));

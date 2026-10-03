@@ -197,13 +197,13 @@ export const renderRolePrivileges = (role, allPrivileges, privilegesEl, countEl,
             if (role.roleName !== "Administrador") {
                 removeButton = document.createElement('button');
                 removeButton.type = 'button';
-                removeButton.className = 'btnClos btnRemovePrivilege';
+                removeButton.className = 'btnRemovePrivilege';
                 removeButton.title = `Remover ${privilege.name}`;
+                removeButton.setAttribute('aria-label', `Remover ${getPrivilegeNameInSpanish(privilege.name)}`);
                 removeButton.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" stroke="var(--text-color)" fill="none">
-                        <line x1 = "10" y1 = "10" x2 = "22" y2 = "22" stroke - width="2.5" stroke - linecap="round" ></line >
-                        <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round"></line>
-                    </svg > `;
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round">
+                        <path d="m6 6 12 12M18 6 6 18" />
+                    </svg>`;
                 removeButton.addEventListener('click', () => onRemove(privilege));
             }
 

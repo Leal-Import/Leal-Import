@@ -77,21 +77,21 @@ export const cleanupObjectUrls = (images) => {
 };
 
 export const validateBaseImages = (images) => {
-    // 🔹 Al menos una imagen
+    // Al menos una imagen
     if (images.length === 0) {
         return {
             title: "Imagen requerida",
             message: "Se debe incluir al menos una imagen."
         };
     }
-    // 🔹 Máximo permitido
+    // Máximo permitido
     if (images.length > 12) {
         return {
             title: "Límite de imágenes",
             message: "El máximo de imágenes permitidas es de 12."
         };
     }
-    // 🔹 Validar tamaño (usa normalización interna)
+    // Validar tamaño (usa normalización interna)
     const sizeError = validateImageSize(images);
     if (sizeError) {
         return {
@@ -99,7 +99,7 @@ export const validateBaseImages = (images) => {
             message: sizeError
         };
     }
-    // 🔹 Validar tipo (usa normalización interna)
+    // Validar tipo (usa normalización interna)
     const typeError = validateImageType(images);
     if (typeError) {
         return {
@@ -108,10 +108,6 @@ export const validateBaseImages = (images) => {
         };
     }
     return null;
-};
-
-export const mapCarouselImages = (fd, images ) => {
-    images.filter(img => img.isNew).forEach(img => fd.append("photos", img.file));
 };
 
 export const validateEditImages = (totalFinal) => {

@@ -1,6 +1,6 @@
 import { asUUID, getNullableParam, highlightAndFocus, showMessage } from "../../../utils/dom.js";
 import { isValidDecimal } from "../../../utils/validators.js";
-import { normalizePayments, validatePayments } from "../../payments/payments.logic.js";
+import { normalizePayments, uploadPaymentReceipts, validatePayments } from "../../payments/payments.logic.js";
 import { sanitizeURLParam } from "../../../utils/sanitizer.js";
 
 export const validateSale = (state, idVehicle, idCustomer, idSale) => {
@@ -49,9 +49,9 @@ export const hydrateContextFromURL = async (state) => {
     return true;
 };
 
-export const buildPostSalePayload = (state) => {
+export const buildPostSalePayload = async (state) => {
     const { data, context } = state;
-    const fd = new FormData();
+    await uploadPaymentReceipts(data.payments);
 
     /* ===== SALE DATA ===== */
     const saleData = {
@@ -62,19 +62,12 @@ export const buildPostSalePayload = (state) => {
         vehiclePayments: normalizePayments(data.payments)
     };
 
-    fd.append('saleData', JSON.stringify(saleData));
-
-    data.payments.forEach(p => {
-        fd.append(p.id, p.file);
-    });
-
-    return fd;
+    return saleData;
 };
 
-export const buildPutSalePayload = (state) => {
+export const buildPutSalePayload = async (state) => {
     const { data } = state;
-
-    const fd = new FormData();
+    await uploadPaymentReceipts(data.payments);
     const saleData = {
         salePrice: data.salePrice,
         commission: data.commission || 0,
@@ -83,9 +76,5 @@ export const buildPutSalePayload = (state) => {
         paymentsToDelete: data.paymentsToDelete
     };
 
-    fd.append('saleData', JSON.stringify(saleData));
-    data.payments.forEach(p => {
-        fd.append(p.id, p.file);
-    });
-    return fd;
+    return saleData;
 };

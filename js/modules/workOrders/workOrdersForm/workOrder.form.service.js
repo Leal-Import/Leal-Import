@@ -83,7 +83,8 @@ export const postWorkOrder = async (workOrderData, idVehicle, idSale) => {
         `${API_URL}/postWorkOrder/${idVehicle}?${params.toString()}`,
         {
             method: 'POST',
-            body: workOrderData,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(workOrderData),
             credentials: 'include'
         },
         'Error al crear la orden'
@@ -95,7 +96,8 @@ export const putWorkOrder = async (workOrderData, idWorkOrder) => {
         `${API_URL}/putWorkOrder/${idWorkOrder}`,
         {
             method: 'PUT',
-            body: workOrderData,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(workOrderData),
             credentials: 'include'
         },
         'Error al actualizar la orden'

@@ -122,9 +122,9 @@ const onSubmitSpareSale = async (e) => {
 
     let payload;
     if (spareSalesFormState.context.idSale) {
-        payload = buildPutSalePayload(spareSalesFormState);
+        payload = await buildPutSalePayload(spareSalesFormState);
     } else {
-        payload = buildPostSalePayload(spareSalesFormState);
+        payload = await buildPostSalePayload(spareSalesFormState);
     }
 
     showElement(DOMRefs.refs.loaderAddSale);

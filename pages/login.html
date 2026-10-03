@@ -93,7 +93,7 @@
             <div class="modalNewPasswordFieldWrap">
                 <label class="modalNewPasswordLabel" for="txtNewPassword">Nueva contraseña</label>
                 <div class="modalNewPasswordInputRow">
-                    <input type="password" id="txtNewPassword" class="txtInputs modalNewPasswordInput"
+                    <input type="password" id="txtNewPassword" class="txtInputs modalNewPasswordInput" maxlength="128"
                         placeholder="Mínimo 8 caracteres" />
                     <button type="button" class="modalNewPasswordToggle togglePassword" id="toggleNewPassword"
                         aria-label="Mostrar/ocultar contraseña">
@@ -172,7 +172,7 @@
             <div class="modalNewPasswordFieldWrap">
                 <label class="modalNewPasswordLabel" for="txtConfirmPassword">Confirmar contraseña</label>
                 <div class="modalNewPasswordInputRow">
-                    <input type="password" id="txtConfirmPassword" class="txtInputs modalNewPasswordInput"
+                    <input type="password" id="txtConfirmPassword" class="txtInputs modalNewPasswordInput" maxlength="128"
                         placeholder="Repite tu contraseña" />
                     <button type="button" class="modalNewPasswordToggle togglePassword" id="toggleConfirmPassword"
                         aria-label="Mostrar/ocultar contraseña">
@@ -252,7 +252,7 @@
                             <circle cx="12" cy="12" r="3" />
                         </svg>
                     </button>
-                    <input type="password" id="txtPassword" required>
+                    <input type="password" id="txtPassword" maxlength="128" required>
                     <label for="txtPassword">Contraseña</label>
                 </div>
                 <button type="submit" class="loginButton btnPrimary" id="btnLogin" style="margin: 30px 0 10px 0;">

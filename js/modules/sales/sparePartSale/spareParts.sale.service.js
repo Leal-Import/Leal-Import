@@ -28,7 +28,8 @@ export const postSparePart = async (sale) => {
         {
             method: 'POST',
             credentials: 'include',
-            body: sale
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sale)
         },
         'Error al ingresar la venta'
     );
@@ -53,7 +54,8 @@ export const putSparePart = async (sale, id) => {
         {
             method: 'PUT',
             credentials: 'include',
-            body: sale
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sale)
         },
         'Error al actualizar la venta'
     );

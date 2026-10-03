@@ -1,4 +1,5 @@
 import { getAuthMe } from '../modules/login/login.service.js';
+import config from '../config.js';
 import { showMessage } from './dom.js';
 import { navigateTo, ROUTES } from './router.js';
 import { DraftManager } from './draft.manager.js';
@@ -6,14 +7,62 @@ import { canAccess, setUserPrivileges, clearUserPrivileges } from './privilegesV
 import { initSidebar } from '../components/sidebar.js';
 
 export class APIError extends Error {
-    constructor(message, status = 500, cause = null, endpoint = null) {
+    constructor(message, status = 500, cause = null, endpoint = null, requestId = null) {
         super(message);
         this.name = 'APIError';
         this.status = status;
         this.cause = cause;
         this.endpoint = endpoint;
+        this.requestId = requestId;
     }
 }
+
+const REQUEST_ID_HEADER = 'X-Request-ID';
+
+const createRequestId = () => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 14)}`;
+};
+
+const parseResponsePayload = async (response) => {
+    if (response.status === 204) return null;
+
+    const body = await response.text();
+    if (!body) return null;
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!/(?:application\/json|application\/[^;]+\+json)/i.test(contentType)) return body;
+
+    try {
+        return JSON.parse(body);
+    } catch {
+        return body;
+    }
+};
+
+const getErrorMessage = (data, fallback) => {
+    if (!data || typeof data !== 'object') {
+        return typeof data === 'string' && data.trim() ? data.trim() : fallback;
+    }
+
+    if (Array.isArray(data.violations)) {
+        const violations = data.violations
+            .map(violation => violation?.message)
+            .filter(Boolean)
+            .join('. ');
+        if (violations) return violations;
+    }
+
+    if (data.errors && typeof data.errors === 'object') {
+        const validationErrors = Object.values(data.errors).join('. ');
+        if (validationErrors) return validationErrors;
+    }
+
+    return data.detail || data.message || data.error || fallback;
+};
 
 export const handleApiError = async (error) => {
     console.error('[API Error]', error);
@@ -47,33 +96,17 @@ export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de 
     }
 
     try {
-        const response = await fetch(url, options);
-        let data = null;
-
-        const contentType = response.headers.get('content-type') || '';
-        if (contentType.includes('application/json')) {
-            data = await response.json();
-        } else {
-            data = await response.text();
-        }
+        const headers = new Headers(options.headers || {});
+        headers.set('Accept', headers.get('Accept') || 'application/json');
+        headers.set(REQUEST_ID_HEADER, headers.get(REQUEST_ID_HEADER) || createRequestId());
+        const response = await fetch(url, { credentials: 'include', ...options, headers });
+        const data = await parseResponsePayload(response);
+        const requestId = response.headers.get(REQUEST_ID_HEADER);
 
         if (!response.ok) {
             initSidebar();
-
-            let errorMessage = `${friendlyMessage}. Código: ${response.status}`;
-            if (data && typeof data === 'object') {
-                // Manejar errores de validación de Spring Boot (DTO errors)
-                if (data.errors && typeof data.errors === 'object') {
-                    const validationErrors = Object.values(data.errors).join('. ');
-                    errorMessage = validationErrors || data.message || 'Errores de validación';
-                } else if (data.message || data.error) {
-                    errorMessage = data.message || data.error;
-                }
-            } else if (typeof data === 'string' && data.trim()) {
-                errorMessage = data.trim();
-            }
-
-            throw new APIError(errorMessage, response.status, null, url);
+            const errorMessage = getErrorMessage(data, `${friendlyMessage}. Código: ${response.status}`);
+            throw new APIError(errorMessage, response.status, null, url, requestId);
         }
 
         return data;

@@ -1,12 +1,11 @@
 import { createModuleInitializer } from '../../utils/dom.js';
 import { dashboardState } from './dashboard.state.js';
-import { dashPeriods, periodMapping } from './dashboard.logic.js';
 import { DOMRefs, renderDashboardData, renderCounters, renderTopSellers, renderTopVehicleSale, renderRecentWorkOrders, renderUrgentCollections } from './dashboard.dom.js';
 import { initDashboardEvents } from './dashboard.event.js';
-import { getCounters, getTopSellers, getTopVehicleSales, getRecentWorkOrders, getMetrics, getUrgentCollections } from './dashboard.service.js';
+import { getDashboard } from './dashboard.service.js';
 
 const resetState = () => {
-    dashboardState.currentPeriod = 'mes';
+    dashboardState.currentPeriod = 'MONTH';
     if (dashboardState.chart) {
         dashboardState.chart.destroy();
         dashboardState.chart = null;
@@ -57,50 +56,30 @@ const initialize = (refs) => {
         onPeriodChange: async (period) => {
             dashboardState.currentPeriod = period;
             try {
-                const apiPeriod = periodMapping[period] || 'MONTH';
-                await loadPeriodData(refs, apiPeriod);
+                await loadDashboard(refs, period);
             } catch (error) {
                 console.error('Error cargando dashboard por período:', error);
-                const data = dashPeriods[period] || dashPeriods.mes;
-                renderDashboardData(refs, data, dashboardState.chart);
             }
         }
     });
 };
 
 const load = async (refs) => {
-    const apiPeriod = periodMapping[dashboardState.currentPeriod] || 'MONTH';
-
     try {
-        const counters = await getCounters();
-        renderCounters(refs, counters);
-    } catch (error) {
-        console.error('Error cargando contadores:', error);
-    }
-
-    try {
-        await loadPeriodData(refs, apiPeriod);
+        await loadDashboard(refs, dashboardState.currentPeriod);
     } catch (error) {
         console.error('Error cargando datos del dashboard:', error);
-        const data = dashPeriods[dashboardState.currentPeriod] || dashPeriods.mes;
-        renderDashboardData(refs, data, dashboardState.chart);
     }
 };
 
-const loadPeriodData = async (refs, apiPeriod) => {
-    const [metrics, sellers, topVehicle, workOrders, urgentCollections] = await Promise.all([
-        getMetrics(apiPeriod),
-        getTopSellers(apiPeriod),
-        getTopVehicleSales(apiPeriod),
-        getRecentWorkOrders(apiPeriod),
-        getUrgentCollections(apiPeriod)
-    ]);
-
-    renderDashboardData(refs, metrics, dashboardState.chart);
-    renderTopSellers(refs, sellers);
-    renderTopVehicleSale(refs, topVehicle);
-    renderRecentWorkOrders(refs, workOrders);
-    renderUrgentCollections(refs, urgentCollections);
+const loadDashboard = async (refs, period) => {
+    const data = await getDashboard(period);
+    renderCounters(refs, data.counters);
+    renderDashboardData(refs, data.metrics, dashboardState.chart);
+    renderTopSellers(refs, data.topSellers);
+    renderTopVehicleSale(refs, data.topVehicleSales);
+    renderRecentWorkOrders(refs, data.recentWorkOrders);
+    renderUrgentCollections(refs, data.urgentCollections);
 };
 
 createModuleInitializer({

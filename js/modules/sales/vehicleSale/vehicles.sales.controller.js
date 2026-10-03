@@ -128,9 +128,9 @@ const createNewSale = async (isWorkOrder) => {
 
     let payload;
     if (vehicleSalesFormState.context.idSale) {
-        payload = buildPutSalePayload(vehicleSalesFormState);
+        payload = await buildPutSalePayload(vehicleSalesFormState);
     } else {
-        payload = buildPostSalePayload(vehicleSalesFormState);
+        payload = await buildPostSalePayload(vehicleSalesFormState);
     }
 
     if (isWorkOrder) {

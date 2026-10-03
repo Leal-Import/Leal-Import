@@ -9,7 +9,8 @@ export const postSparePart = async(sparePart) => {
         {
             method: 'POST',
             credentials: 'include',
-            body: sparePart
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sparePart)
         },
         'Error al ingresar el repuesto'
     );
@@ -21,7 +22,8 @@ export const putSparePart = async(sparePart, id) => {
         {
             method: 'PUT',
             credentials: 'include',
-            body: sparePart
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sparePart)
         },
         'Error al actualizar el repuesto'
     );

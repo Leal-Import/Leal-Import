@@ -8,6 +8,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: clamp(12px, 3vw, 32px);
+    overflow: auto;
+    overscroll-behavior: contain;
     animation-name: slideIn;
     animation-duration: 0.4s;
 }
@@ -18,7 +21,11 @@
     display: flex;
     box-shadow: var(--bx-shadow-modal);
     padding: 45px 50px;
-    width: var(--width-modal);
+    width: min(var(--width-modal), 100%);
+    max-width: 100%;
+    max-height: calc(100dvh - (2 * clamp(12px, 3vw, 32px)));
+    overflow: auto;
+    overscroll-behavior: contain;
     flex-direction: column;
     gap: 15px;
     background-color: var(--bg-color-white);
@@ -51,8 +58,11 @@
     border: var(--border);
 }
 
-.btnClose svg line {
-    stroke: var(--text-color);
+.btnClose svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    stroke: currentcolor;
 }
 
 .btnClose:hover {
@@ -61,20 +71,23 @@
 }
 
 @media screen and (width <= 500px) {
-    body .modalAdd {
-        padding: 20px;
-        position: absolute !important;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: fit-content;
-        width: 100% !important;
-        border-radius: 20px 20px 0 0;
-        overflow: auto;
+    body .containerModal {
+        align-items: flex-end;
+        padding: 0;
     }
 
-    .btnClose{
-        display: none;
+    body .modalAdd {
+        padding: 20px;
+        position: relative !important;
+        width: 100% !important;
+        max-height: 90dvh;
+        border-radius: 20px 20px 0 0;
+        overflow-y: auto;
+    }
+
+    .btnClose {
+        display: grid;
+        margin: 12px;
     }
 }
 
@@ -90,17 +103,6 @@
     }
 }
 
-@keyframes slideIn {
-    from {
-        bottom: -300px;
-        opacity: 0
-    }
-
-    to {
-        bottom: 0;
-        opacity: 1
-    }
-}
 
 @keyframes slideIn {
     from {

@@ -3,14 +3,15 @@ import { initVehicleDetailEvents } from "./events/vehicles.form.events.js";
 import { disableElement, hideElement, removeDisable, showElement, toggleModal, showMessage, buildParams, createModuleInitializer } from "../../../utils/dom.js";
 import { replaceTo, ROUTES } from "../../../utils/router.js";
 import { closeAndCleanUpdateModal, DOMRefs, loadDomData, renderCustomersSuggestions, renderExternalMode, renderUploadPreview, UPLOAD_CONFIG } from "./vehicles.form.dom.js";
-import { applyExternalMode, calculateTotal, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, mapExternalVehicle, mapVehicleData, mapVouchers, validateBaseVehicle, validateCustomer, validateSizeTypeImage, validateVehicle } from "./vehicles.form.logic.js";
+import { applyExternalMode, calculateTotal, fillVehicleCosts, fillVehiclesBaseForm, handleUploadFile, hydrateContextFromURL, mapExternalVehicle, mapVehicleData, validateBaseVehicle, validateCustomer, validateSizeTypeImage, validateVehicle } from "./vehicles.form.logic.js";
 import { getCustomers } from "../../customers/customers.service.js";
 import { isValidURL } from "../../../utils/validators.js";
 import { initUploadModalEvents } from "./events/vehicles.form.uploads.events.js";
 import { getVehicles, postVehicle, putVehicle } from "./vehicles.form.service.js";
 import { handleApiError } from "../../../utils/api.utils.js";
 import { handleAddImage, initCarouselController } from "../../carousel/carousel.controller.js";
-import { mapCarouselImages, validateBaseImages, validateEditImages } from "../../carousel/carousel.logic.js";
+import { validateBaseImages, validateEditImages } from "../../carousel/carousel.logic.js";
+import { uploadImage, uploadImages } from "../../../core/integrations/cloudinary/cloudinary-image.service.js";
 
 const loadVehicle = async () => {
     const vehicle = await getVehicles(vehiclesFormState.context.currentId);
@@ -77,7 +78,6 @@ const onSubmitVehicle = async (e) => {
         return;
     }
     const formData = Object.fromEntries(new FormData(DOMRefs.refs.frmVehicles));
-    const fd = new FormData();
     let payloadVehicle;
     if (vehiclesFormState.isExternal) {
         const error = validateBaseVehicle(formData);
@@ -97,7 +97,6 @@ const onSubmitVehicle = async (e) => {
             showMessage('Datos no validos', error, 'warning');
             return;
         }
-        mapVouchers(fd);
         payloadVehicle = mapVehicleData(formData);
         if (vehiclesFormState.costsId) {
             payloadVehicle.costs.idCost = vehiclesFormState.costsId;
@@ -114,15 +113,29 @@ const onSubmitVehicle = async (e) => {
         payloadVehicle.lot.idLot = vehiclesFormState.loteId;
     }
 
-    mapCarouselImages(fd, vehiclesFormState.images);
-    fd.append("vehicleData", JSON.stringify(payloadVehicle));
     try {
+        payloadVehicle.photos = await uploadImages(
+            vehiclesFormState.images.filter(image => image.isNew && image.file instanceof File).map(image => image.file)
+        );
+
+        if (payloadVehicle.costs) {
+            if (vehiclesFormState.uploads.bill instanceof File) {
+                payloadVehicle.costs.billPhoto = await uploadImage(vehiclesFormState.uploads.bill);
+            }
+            if (vehiclesFormState.uploads.taxes instanceof File) {
+                payloadVehicle.costs.taxesPhoto = await uploadImage(vehiclesFormState.uploads.taxes);
+            }
+            if (vehiclesFormState.uploads.ship instanceof File) {
+                payloadVehicle.costs.shipPhoto = await uploadImage(vehiclesFormState.uploads.ship);
+            }
+        }
+
         let response;
         if (vehiclesFormState.context.currentId !== null) {
-            response = await putVehicle(fd, vehiclesFormState.context.currentId);
+            response = await putVehicle(payloadVehicle, vehiclesFormState.context.currentId);
             await showMessage('Vehiculo actualizado con éxito!', 'Exito', 'success');
         } else {
-            response = await postVehicle(fd);
+            response = await postVehicle(payloadVehicle);
             await showMessage('Vehiculo agregado con éxito!', 'Exito', 'success');
         }
 

@@ -88,7 +88,7 @@ const openReceiptModal = (inputElement, receiptUrl, payment) => {
 
     // 1. CONEXIÓN: Guardar el ID del input dinámico
     currentReceiptInputId.value = inputElement.id;
-    modalContainer.dataset.paymentId = payment.id;
+    modalContainer.dataset.paymentKey = payment.localId;
     modalAbonoTitle.textContent = `${abonoIndex}`;
 
     // 2. ACTUALIZAR VISUALES del modal

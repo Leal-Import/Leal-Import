@@ -4,20 +4,30 @@ import { $, hideElement } from "../../utils/dom.js";
 import { initModalListeners } from "./picsAmount.event.js";
 
 export const clearCurrentFile = () => {
-    const paymentId = DOMRefs.refs.modalContainer.dataset.paymentId;
-    if (!paymentId) return;
+    const localId = DOMRefs.refs.modalContainer.dataset.paymentKey;
+    if (!localId) return;
 
     const payment = picsAmountState.paymentsState.payments
-        .find(p => String(p.id) === String(paymentId));
+        .find(item => item.localId === localId);
     if (!payment) return;
 
     payment.file = null;
+    payment.receipt = null;
+    payment.paymentURL = null;
 
     const inputElement = $(DOMRefs.refs.currentReceiptInputId.value);
-    if (inputElement) inputElement.value = '';
+    if (inputElement) {
+        inputElement.value = '';
+    }
 
     const btn = inputElement?.nextElementSibling;
-    if (btn) setReceiptBtnState(btn, btn.querySelector('.icon'), false); // ← guard + helper
+    if (btn) {
+        setReceiptBtnState(
+            btn,
+            btn.querySelector('.icon'),
+            false
+        );
+    }
 
     updateModalContent(null, payment, DOMRefs.refs);
 };
@@ -33,7 +43,7 @@ export const selectFile = (e, payment) => {
     updateModalContent(null, payment, DOMRefs.refs);
 
     // Actualizar botón del abono para indicar que hay archivo
-    $(inputId).dataset.payId = payment.id;
+    $(inputId).dataset.payId = payment.localId;
     const btn = paymentItem.querySelector('.btnAddPayment');
     btn.classList.add('receipt-loaded');
     btn.innerHTML = `<span class="icon">Ver comprobante</span>`;

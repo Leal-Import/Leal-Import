@@ -496,6 +496,12 @@
     color: var(--danger-color);
 }
 
+#modalRoleManagement .btnRemovePrivilege svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentcolor;
+}
+
 #modalRoleManagement .privilegeButtons {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -146,12 +146,6 @@ export const validateVehicle = ({
     return null;
 };
 
-export const mapVouchers = (fd) => {
-    if (vehiclesFormState.uploads.bill) fd.append("billPhoto", vehiclesFormState.uploads.bill);
-    if (vehiclesFormState.uploads.taxes) fd.append("taxesPhoto", vehiclesFormState.uploads.taxes);
-    if (vehiclesFormState.uploads.ship) fd.append("transferShipPhoto", vehiclesFormState.uploads.ship);
-};
-
 export const handleUploadFile = (file) => {
     const type = vehiclesFormState.currentUploadType;
     if (!type || !file) return;

@@ -14,6 +14,7 @@
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     padding: 0 !important;
     width: clamp(200px, 90%, 650px) !important;
+    max-height: calc(100dvh - (2 * clamp(12px, 3vw, 32px)));
     container-type: inline-size;
     container-name: modalvoucher;
 }
@@ -27,11 +28,12 @@
     padding: 7px 10px !important;
     font-size: var(--font-size-base);
     flex: 1;
+    min-width: 0;
 }
 
 .modalVoucher .btnSecondary span,
 .modalVoucher .btnPrimary span {
-    text-wrap: nowrap;
+    text-wrap: wrap;
 }
 
 .containerModal:not(.hide) .modalVoucher {
@@ -43,6 +45,7 @@
     background: linear-gradient(135deg, var(--danger-color) 0%, var(--dark-danger-color) 100%);
     padding: 32px 40px;
     position: relative;
+    flex: 0 0 auto;
     overflow: hidden;
 }
 
@@ -104,12 +107,14 @@
     width: 36px;
     height: 36px;
     border: 2px solid rgb(255 255 255 / 0.3);
+    color: var(--text-color-light);
     z-index: 10;
 }
 
 .modalVoucher .btnClose:hover {
     background: var(--text-color-light);
     border-color: var(--text-color-light);
+    color: var(--danger-color);
     transform: rotate(90deg) scale(1.05);
 }
 
@@ -117,21 +122,12 @@
     transform: rotate(90deg) scale(0.95);
 }
 
-.modalVoucher .btnClose img {
-    width: 12px;
-    height: 12px;
-    filter: brightness(0) invert(1);
-    opacity: 0.9;
-    transition: opacity 0.3s ease;
-}
-
-.modalVoucher .btnClose:hover img {
-    opacity: 1;
-}
-
 /* Body Modal */
 .bodyModalVoucher {
     padding: 32px 40px 40px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .viewAmountContainer{
@@ -552,22 +548,10 @@
     transform: rotate(90deg);
 }
 
-.lightboxClose::before,
-.lightboxClose::after {
-    content: '';
-    position: absolute;
+.lightboxClose svg {
     width: 20px;
-    height: 2px;
-    background: #fff;
-    border-radius: 2px;
-}
-
-.lightboxClose::before {
-    transform: rotate(45deg);
-}
-
-.lightboxClose::after {
-    transform: rotate(-45deg);
+    height: 20px;
+    stroke: var(--text-color-light);
 }
 
 @keyframes modalAppear {
@@ -597,5 +581,29 @@
 
     .modalVoucher .btnClose {
         margin: 0;
+    }
+}
+
+@media screen and (width <= 500px), screen and (height <= 700px) {
+    .headerModalVoucher {
+        padding: 20px 56px 20px 20px;
+    }
+
+    .bodyModalVoucher {
+        padding: 20px;
+    }
+
+    .previewArea {
+        min-height: 150px;
+        padding: 24px 16px;
+    }
+
+    .voucherLightbox {
+        padding: 16px;
+    }
+
+    .lightboxClose {
+        top: 12px;
+        right: 12px;
     }
 }
