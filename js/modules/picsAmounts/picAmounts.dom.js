@@ -41,44 +41,51 @@ export const createBtnUrl = (index, receiptUrl, payment) => {
     const span = document.createElement('span');
     span.classList.add('icon');
 
+    const createReceiptAction = (label) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.classList.add('btnAddPayment', 'btnSecondary');
+        button.appendChild(span);
+        span.textContent = label;
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            openReceiptModal(receiptInput, receiptUrl, payment);
+        });
+        return button;
+    };
+
     let btnReceipt;
-    if (!picsAmountState.isViewingReceipt && !payment.paymentURL) {
-        // mostrar input para subir comprobante
-        btnReceipt = document.createElement('button');
-        btnReceipt.type = 'button';
-        btnReceipt.classList.add('btnAddPayment', 'btnSecondary');
-        btnReceipt.appendChild(span);
-        btnReceipt.addEventListener('click', (e) => {
-            e.preventDefault();
-            openReceiptModal(receiptInput, receiptUrl, payment);
-        });
+    if (picsAmountState.isViewingReceipt) {
+        // En modo consulta siempre se puede abrir el detalle, aunque no exista comprobante.
+        btnReceipt = createReceiptAction(payment.paymentURL ? 'Ver comprobante' : 'Ver detalles');
     } else if (payment.paymentURL) {
-        // hay URL, mostrar botón para ver comprobante
+        // Hay URL: abrir el comprobante existente.
+        btnReceipt = createReceiptAction('Ver comprobante');
+    } else {
+        // Sin URL en modo edición: permitir cargar un comprobante.
         btnReceipt = document.createElement('button');
         btnReceipt.type = 'button';
         btnReceipt.classList.add('btnAddPayment', 'btnSecondary');
         btnReceipt.appendChild(span);
+        span.textContent = 'Añadir comprobante';
         btnReceipt.addEventListener('click', (e) => {
             e.preventDefault();
             openReceiptModal(receiptInput, receiptUrl, payment);
         });
-    } else {
-        // no hay URL ni se puede subir
-        btnReceipt = document.createElement('span');
-        btnReceipt.style.color = 'var(--text-color)';
-        btnReceipt.textContent = 'No hay comprobante';
     }
 
     const isLoaded = (receiptUrl?.startsWith('http')) || (payment?.file instanceof File);
-    setReceiptBtnState(btnReceipt, span, isLoaded);
+    setReceiptBtnState(btnReceipt, span, isLoaded, picsAmountState.isViewingReceipt);
 
     receiptContainer.append(receiptInput, btnReceipt);
     return receiptContainer;
 };
 
-export const setReceiptBtnState = (btn, span, isLoaded) => {
+export const setReceiptBtnState = (btn, span, isLoaded, isView = false) => {
     btn.classList.toggle('receiptLoaded', isLoaded);
-    span.textContent = isLoaded ? 'Ver comprobante' : 'Añadir comprobante';
+    span.textContent = isView
+        ? (isLoaded ? 'Ver comprobante' : 'Ver detalles')
+        : (isLoaded ? 'Ver comprobante' : 'Añadir comprobante');
 };
 
 // Función para abrir el modal de comprobante
@@ -199,15 +206,27 @@ export const updateModalContent = (receiptUrl, payment, Refs) => {
         modalPreviewArea.classList.remove('hasFile');
 
         // Restaurar estructura de estado vacío
+        const emptyState = picsAmountState.isViewingReceipt
+            ? {
+                title: 'Sin comprobante',
+                description: 'Este pago no tiene un comprobante adjunto.',
+                formats: ''
+            }
+            : {
+                title: 'Selecciona tu comprobante',
+                description: 'Arrastra y suelta tu archivo aquí o haz clic en el botón',
+                formats: 'JPG, PNG o PDF • Máximo 10MB'
+            };
+
         modalPreviewArea.innerHTML = `
             <div class="emptyState">
                 <div class="uploadIconWrapper">
                     <div class="uploadIcon"></div>
                 </div>
                 <div class="uploadContent">
-                    <h3 class="uploadTitle">Selecciona tu comprobante</h3>
-                    <p class="uploadDescription">Arrastra y suelta tu archivo aquí o haz clic en el botón</p>
-                    <p class="uploadFormats">JPG, PNG o PDF • Máximo 10MB</p>
+                    <h3 class="uploadTitle">${emptyState.title}</h3>
+                    <p class="uploadDescription">${emptyState.description}</p>
+                    <p class="uploadFormats">${emptyState.formats}</p>
                 </div>
             </div>
         `;
