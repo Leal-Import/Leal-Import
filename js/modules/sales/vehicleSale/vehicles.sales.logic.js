@@ -1,5 +1,5 @@
 import { asUUID, getNullableParam, highlightAndFocus, showMessage } from "../../../utils/dom.js";
-import { isValidDecimal } from "../../../utils/validators.js";
+import { isValidDecimal, safeParseFloat } from "../../../utils/validators.js";
 import { normalizePayments, uploadPaymentReceipts, validatePayments } from "../../payments/payments.logic.js";
 import { sanitizeURLParam } from "../../../utils/sanitizer.js";
 
@@ -55,8 +55,8 @@ export const buildPostSalePayload = async (state) => {
 
     /* ===== SALE DATA ===== */
     const saleData = {
-        salePrice: data.salePrice,
-        commission: data.commission || 0,
+        salePrice: safeParseFloat(data.salePrice),
+        commission: safeParseFloat(data.commission),
         notes: data.notes || '',
         idCustomer: context.idCustomer,
         vehiclePayments: normalizePayments(data.payments)
@@ -69,8 +69,8 @@ export const buildPutSalePayload = async (state) => {
     const { data } = state;
     await uploadPaymentReceipts(data.payments);
     const saleData = {
-        salePrice: data.salePrice,
-        commission: data.commission || 0,
+        salePrice: safeParseFloat(data.salePrice),
+        commission: safeParseFloat(data.commission),
         notes: data.notes || '',
         paymentsSaveToUpdate: normalizePayments(data.payments),
         paymentsToDelete: data.paymentsToDelete
