@@ -121,6 +121,12 @@ const validateBaseOrder = (estimatedDate, notes, selectedServices, selectedSpare
     }
     if (selectedServices.length === 0 && selectedSpareParts.length === 0) return 'Debe agregar al menos un servicio o un repuesto.';
 
+    const hasInvalidServicePrice = selectedServices.some(({ priceApplied }) => !isNonNegativePrice(priceApplied));
+    if (hasInvalidServicePrice) return 'El precio aplicado de los servicios no puede ser negativo.';
+
+    const hasInvalidSparePartPrice = selectedSpareParts.some(({ priceApplied }) => !isNonNegativePrice(priceApplied));
+    if (hasInvalidSparePartPrice) return 'El precio aplicado de los repuestos no puede ser negativo.';
+
     const totalAmounts = payments.reduce((acc, p) => acc + safeParseFloat(p.amount), 0);
     if (totalAmounts > total) return 'El total de los abonos no puede superar el total de la orden.';
 
@@ -135,10 +141,19 @@ export const validateOrder = (data, idVehicle, total) => {
         estimatedDate,
         notes
     } = data;
-    const baseOrderError = validateBaseOrder(estimatedDate, notes, selectedServices, selectedSpareParts, payments, total, idVehicle);
+    const safePayments = payments || [];
+    const baseOrderError = validateBaseOrder(
+        estimatedDate,
+        notes,
+        selectedServices,
+        selectedSpareParts,
+        safePayments,
+        total,
+        idVehicle
+    );
     if (baseOrderError) return baseOrderError;
 
-    const validatePaymentsError = validatePayments(payments);
+    const validatePaymentsError = validatePayments(safePayments);
     if (validatePaymentsError) return validatePaymentsError;
 
     return null;
@@ -196,6 +211,12 @@ const uploadServicePhoto = async (photo) => {
     }
 
     photo.image = await uploadImage(photo.photo);
+};
+
+const isNonNegativePrice = (value) => {
+    if (value === null || value === undefined || String(value).trim() === '') return true;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0;
 };
 
 const normalizeServices = (services) => {

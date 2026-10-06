@@ -4,9 +4,10 @@ import { normalizePayments, uploadPaymentReceipts, validatePayments } from "../.
 import { sanitizeURLParam } from "../../../utils/sanitizer.js";
 
 export const validateSale = (state, idVehicle, idCustomer, idSale) => {
+    const payments = state.payments || [];
+
     if (!idVehicle) return "Ningún vehículo seleccionado";
     if (!idCustomer && !idSale) return "Sin cliente seleccionado";
-    if (!state.payments || state.payments.length === 0) return "Debes agregar al menos un abono";
     if (!isValidDecimal(state.salePrice)) {
         highlightAndFocus("txtSalePrice");
         return "El precio final del vehículo no es válido";
@@ -16,10 +17,10 @@ export const validateSale = (state, idVehicle, idCustomer, idSale) => {
         return "La comisión no es válida";
     }
 
-    const validatePaymentsError = validatePayments(state.payments);
+    const validatePaymentsError = validatePayments(payments);
     if (validatePaymentsError) return validatePaymentsError;
 
-    const totalAmounts = state.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const totalAmounts = payments.reduce((sum, p) => sum + Number(p.amount), 0);
     if (totalAmounts > state.salePrice) return 'La suma de los abonos no puede superar el precio final del vehículo';
 
     return null;

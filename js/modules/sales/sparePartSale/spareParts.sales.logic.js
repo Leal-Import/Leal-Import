@@ -55,17 +55,17 @@ export const hydrateContextFromURL = async (state) => {
 
 export const validateSale = (state) => {
     const { data: { selectedItems, payments, notes }, context } = state;
+    const safePayments = payments || [];
 
     // Validar cliente
     if (!context.idCustomer) return 'No se ha seleccionado ningún cliente.';
     if (!selectedItems || selectedItems.length === 0) return 'Por favor, seleccione al menos un repuesto.';
-    if (!payments || payments.length === 0) return 'Por favor, ingrese al menos un abono.';
     if (notes.trim() !== "" && notes.length > 500) {
         highlightAndFocus("txtNotes");
         return 'Las notas no pueden exceder los 500 caracteres.';
     };
 
-    const validatePayment = validatePayments(payments);
+    const validatePayment = validatePayments(safePayments);
     if (validatePayment) return validatePayment;
 
     for (let i = 0; i < selectedItems.length; i++) {
@@ -76,7 +76,7 @@ export const validateSale = (state) => {
         }
     }
 
-    const totalAmount = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const totalAmount = safePayments.reduce((sum, p) => sum + Number(p.amount), 0);
     const totalItemsPrice = selectedItems.reduce((sum, item) => sum + (Number(item.priceApplied) || 0), 0);
     if (totalAmount > totalItemsPrice) return 'El total de los abonos no puede ser mayor al total de los repuestos.';
 
