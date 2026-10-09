@@ -443,7 +443,7 @@ const loadWorkOrder = async (Refs) => {
     loadViewUpdateOrder(workOrder.vehicleInfo.vin, Refs);
     renderVehicleData(workOrder.vehicleInfo, Refs);
     loadExtraInputs(workOrdersFormState.data.notes, workOrdersFormState.data.estimatedDate, Refs);
-    if (currentUser.role !== "Administrador") {
+    if (currentUser.role === "Mecánico") {
         workOrder.workOrdersServices = workOrder.workOrdersServices
             .filter(service => service.idEmployee === currentUser.idEmployee)
             .map(service => ({ ...service, priceApplied: 0 }));
