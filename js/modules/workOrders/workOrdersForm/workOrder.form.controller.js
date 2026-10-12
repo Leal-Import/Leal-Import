@@ -1,4 +1,4 @@
-import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice, openServiceImageModal } from "./workOrder.form.dom.js";
+import { appendToDom, cleanRow, DOMRefs, initStaticRows, insertEmployees, loadCustomerInfo, loadExtraInputs, loadViewDom, loadViewSaleInfo, loadViewUpdateOrder, reindexTable, renderImportButton, renderServiceSuggestions, renderSparePartSuggestions, renderTotals, renderTotalsPanel, renderVehicleData, renderVehiclePrice, openServiceImageModal } from "./workOrder.form.dom.js";
 import { resetWorkOrdersFormState, workOrdersFormState } from "./workOrder.form.state.js";
 import { approveOrder, getDataVehicleById, getServices, getSpareParts, getWorkOrderById, completeWorkOrder, postWorkOrder, putWorkOrder, cancelWorkOrder } from "./workOrder.form.service.js";
 import { safeParseFloat, validateDate } from "../../../utils/validators.js";
@@ -321,6 +321,7 @@ const loadDataVehicle = async (Refs) => {
             loadViewUpdateOrder(vehicle.vin, Refs);
         }
         renderVehicleData(vehicle, Refs);
+        loadCustomerInfo(vehicle.customer, vehicle.customerName, Refs);
         renderVehiclePrice(workOrdersFormState.context.vehiclePrice, Refs.vehiclePrice);
     } catch (error) {
         await handleApiError(error, 'No se pudo cargar la información del vehículo. Por favor, inténtalo de nuevo.');
@@ -442,6 +443,7 @@ const loadWorkOrder = async (Refs) => {
     workOrdersFormState.data.notes = workOrder.notes || "";
     loadViewUpdateOrder(workOrder.vehicleInfo.vin, Refs);
     renderVehicleData(workOrder.vehicleInfo, Refs);
+    loadCustomerInfo(workOrder.customer, workOrder.customerName, Refs);
     loadExtraInputs(workOrdersFormState.data.notes, workOrdersFormState.data.estimatedDate, Refs);
     if (currentUser.role === "Mecánico") {
         workOrder.workOrdersServices = workOrder.workOrdersServices

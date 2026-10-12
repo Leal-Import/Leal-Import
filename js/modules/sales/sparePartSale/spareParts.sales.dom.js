@@ -1,4 +1,4 @@
-import { $, existsById, qs } from "../../../utils/dom.js";
+import { $, existsById, qs, showElement } from "../../../utils/dom.js";
 import { formatDecimalInput, formatOnBlur, formatOnFocus, formatWithCommas } from "../../../utils/formatters.js";
 
 export const DOMRefs = {
@@ -17,7 +17,10 @@ export const DOMRefs = {
             btnOrderPart: $("btnOrderPart"),
             txtNotes: $("txtNotes"),
             txtAmount: $("txtAmount"),
+            customerElement: $("customerElement"),
             customerName: $("customerName"),
+            customerPhone: $("customerPhone"),
+            customerDui: $("customerDui"),
             due: $("due"),
             totalPaid: $("totalPaid"),
             totalSale: $("totalSale"),
@@ -218,8 +221,14 @@ export const createNoDataSelectedMessage = (container) => {
     container.appendChild(trNoData);
 };
 
-export const loadCustomerName = (spancustomerName, customerName) => {
-    spancustomerName.textContent = customerName;
+export const loadCustomerInfo = (customer, fallbackName, Refs) => {
+    const customerName = customer?.fullName || fallbackName;
+    if (!customerName) return;
+
+    showElement(Refs.customerElement);
+    Refs.customerName.textContent = customerName;
+    Refs.customerPhone.textContent = customer?.personalPhone ? `Tel. ${customer.personalPhone}` : '';
+    Refs.customerDui.textContent = customer?.dui ? `DUI ${customer.dui}` : '';
 };
 
 export const loadDomData = (txtNotes, btnSaveSale, notes) => {

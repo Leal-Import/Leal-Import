@@ -35,7 +35,9 @@ export const DOMRefs = {
             btnGeneratePdf: $("btnGeneratePdf"),
             skeleton: qsa(".skeleton"),
             customerElement: $("customerElement"),
-            customerName: $("customerName")
+            customerName: $("customerName"),
+            customerPhone: $("customerPhone"),
+            customerDui: $("customerDui")
         };
         return this.refs;
     }
@@ -92,8 +94,12 @@ const loadVehicleInfo = (vehicle, Refs) => {
         vehicle.vehicleCosts.suggestedPrice !== null ? suggestedPrice.textContent = formatWithCommas(vehicle.vehicleCosts.suggestedPrice) : suggestedPrice.style.display = "none";
         total.textContent = formatWithCommas(vehicle.vehicleCosts.total);
     }
-    if (vehicle.customerName) {
+    const customer = vehicle.customer;
+    const customerName = customer?.fullName || vehicle.customerName;
+    if (customerName) {
         showElement(Refs.customerElement);
-        Refs.customerName.textContent = vehicle.customerName;
+        Refs.customerName.textContent = customerName;
+        Refs.customerPhone.textContent = customer?.personalPhone ? `Tel. ${customer.personalPhone}` : '';
+        Refs.customerDui.textContent = customer?.dui ? `DUI ${customer.dui}` : '';
     }
 };

@@ -7,7 +7,7 @@ import { navigateTo, replaceTo, ROUTES } from '../../../utils/router.js';
 import { resetVehicleSalesFormState, vehicleSalesFormState } from "./vehicles.sales.state.js";
 import { initVehicleSaleEvents } from './vehicles.sales.events.js';
 import { createBtnUrl } from '../../picsAmounts/picAmounts.dom.js';
-import { DOMRefs, insertVehicles, loadCustomerName, loadDomData, loadVehicle, renderTotals, resetVehicleSaleFilters } from './vehicles.sales.dom.js';
+import { DOMRefs, insertVehicles, loadCustomerInfo, loadDomData, loadVehicle, renderTotals, resetVehicleSaleFilters } from './vehicles.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from './vehicles.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments, onResetPayments } from '../../payments/payments.controller.js';
@@ -192,6 +192,7 @@ const loadExistingSale = (sale, vehicle) => {
     showElement(DOMRefs.refs.addVehicleLoader);
     hideElement(DOMRefs.refs.btnCancelVehicle);
     loadVehicle(vehicle, vehicleSalesFormState.context.idSale, DOMRefs.refs);
+    loadCustomerInfo(sale.customer, sale.customerName, DOMRefs.refs);
     hideElement(DOMRefs.refs.addVehicleLoader);
     vehicleSalesFormState.data.notes = sale.notes || '';
     vehicleSalesFormState.data.salePrice = sale.fullTotalCost || 0;
@@ -241,7 +242,7 @@ const initializeUI = async (Refs) => {
         isView: vehicleSalesFormState.context.isView,
         state: vehicleSalesFormState
     });
-    loadCustomerName(DOMRefs.refs.customerName, vehicleSalesFormState.context.customerName);
+    loadCustomerInfo(null, vehicleSalesFormState.context.customerName, DOMRefs.refs);
     initVehicleSaleEvents({ Refs, onSubmitVehicleSale, onSearchVehicle, onSaveNotes, onSaveFinalPrice, onSaveComission, onImportVehicle, onCancelVehicle });
     if (vehicleSalesFormState.context.idSale) {
         initCancelSale(vehicleSalesFormState.context.idSale, patchVehicleSale, ROUTES.SALES, "venta de vehículo");

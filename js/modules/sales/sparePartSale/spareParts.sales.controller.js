@@ -5,7 +5,7 @@ import { showMessage, showElement, hideElement, disableElement, removeDisable, q
 import { DraftManager } from '../../../utils/draft.manager.js';
 import { resetSpareSalesFormState, spareSalesFormState } from "./spareParts.sales.state.js";
 import { initSpareSaleEvents } from './spareParts.sales.event.js';
-import { createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, insertViewParts, loadCustomerName, loadDomData, loadNotes, renderTotals, resetSparePartsFilters, uiContent } from './spareParts.sales.dom.js';
+import { createNoDataSelectedMessage, createRowTable, DOMRefs, insertSpareParts, insertViewParts, loadCustomerInfo, loadDomData, loadNotes, renderTotals, resetSparePartsFilters, uiContent } from './spareParts.sales.dom.js';
 import { buildPostSalePayload, buildPutSalePayload, hydrateContextFromURL, validateSale } from './spareParts.sales.logic.js';
 import { calculateTotals } from '../../../core/logic/calculate.totals.logic.js';
 import { addNewPayment, initPaymentsController, onResetDomPayments } from '../../payments/payments.controller.js';
@@ -200,6 +200,7 @@ const loadOrderSparePart = () => {
 
 const loadExistingSale = async (txtNotes, btnSaveSale) => {
     const sale = await getSparePartById(spareSalesFormState.context.idSale);
+    loadCustomerInfo(sale.customer, sale.customerName, DOMRefs.refs);
     if (sale.statusSaleName === "Cancelada") {
         showElement(DOMRefs.refs.btnOpenCancelSale);
         initCancelSale(spareSalesFormState.context.idSale, patchSparePart, ROUTES.SALES, "venta de repuestos");
@@ -277,7 +278,7 @@ const loadDraftData = (txtNotes, btnSaveSale) => {
 
 const initializeUI = async (Refs) => {
     resetSparePartsFilters(Refs.txtSearchData);
-    loadCustomerName(Refs.customerName, spareSalesFormState.context.customerName);
+    loadCustomerInfo(null, spareSalesFormState.context.customerName, Refs);
     initSpareSaleEvents({ Refs, onSubmitSpareSale, onSearchSparePart, onOrderPart, onSaveNotes });
     if (spareSalesFormState.context.isView) {
         uiContent(Refs.content);

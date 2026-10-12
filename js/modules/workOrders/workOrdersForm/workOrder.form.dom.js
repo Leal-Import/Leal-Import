@@ -31,6 +31,10 @@ export const DOMRefs = {
             due: $("due"),
             firstBread: $("firstBread"),
             secondBread: $("secondBread"),
+            customerElement: $("customerElement"),
+            customerName: $("customerName"),
+            customerPhone: $("customerPhone"),
+            customerDui: $("customerDui"),
             paymentForm: qs(".paymentForm"),
             year: $("year"),
             brand: $("brand"),
@@ -88,6 +92,16 @@ export const loadViewSaleInfo = (vin, Refs) => {
     Refs.firstBread.textContent = "Ventas >";
     Refs.firstBread.href = ROUTES.SALES;
     Refs.secondBread.textContent = vin;
+};
+
+export const loadCustomerInfo = (customer, fallbackName, Refs) => {
+    const customerName = customer?.fullName || fallbackName;
+    if (!customerName) return;
+
+    showElement(Refs.customerElement);
+    Refs.customerName.textContent = customerName;
+    Refs.customerPhone.textContent = customer?.personalPhone ? `Tel. ${customer.personalPhone}` : '';
+    Refs.customerDui.textContent = customer?.dui ? `DUI ${customer.dui}` : '';
 };
 
 export const renderVehicleData = (data, Refs) => {

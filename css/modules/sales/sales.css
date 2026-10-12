@@ -110,6 +110,13 @@
     gap: 5px
 }
 
+.customerContact {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    margin-left: 4px;
+    white-space: nowrap;
+}
+
 .moreParts {
     font-size: var(--font-size-sm);
     color: var(--danger-color);
@@ -575,6 +582,10 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 2px;
+    }
+
+    .customerContact {
+        margin-left: 0;
     }
 
     .lbl {

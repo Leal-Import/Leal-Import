@@ -157,8 +157,16 @@
             <div class="leftColumn">
                 <div class="headerContent">
                     <div class="breadCrumbSection">
-                        <a href="sales.html" class="breadcrumb">Ventas &#62; </a>
-                        <a class="breadcrumb truncate" id="customerName">Cargando...</a>
+                        <div class="breadcrumbTrail">
+                            <a href="sales.html" class="breadcrumb">Ventas &#62; </a>
+                            <span class="breadcrumb">Venta de repuestos</span>
+                        </div>
+                        <div class="hide customerQuickInfo" id="customerElement">
+                            <span class="customerLabel">Cliente</span>
+                            <span class="customerName" id="customerName"></span>
+                            <span class="customerMeta" id="customerPhone"></span>
+                            <span class="customerMeta" id="customerDui"></span>
+                        </div>
                         <a class="breadcrumb hide" id="cancelledBreadcrumb"> &#62; Venta cancelada</a>
                     </div>
                     <div class="filterSection">

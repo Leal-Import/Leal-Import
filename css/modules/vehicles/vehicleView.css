@@ -39,6 +39,24 @@
     font-weight: var(--font-weight-semibold);
 }
 
+.customerQuickInfo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.customerQuickInfo .values {
+    flex: 0 1 auto;
+}
+
+.customerMeta {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+}
+
 /* =======================
    Modal Enlace
 ======================= */
@@ -441,6 +459,11 @@
 
     .breadcrumbSection {
         padding: 15px 20px;
+    }
+
+    .customerQuickInfo {
+        width: 100%;
+        margin-left: 0;
     }
 
     .imgData,

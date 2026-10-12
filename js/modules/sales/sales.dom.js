@@ -142,9 +142,18 @@ export const insertSales = (container, sales) => {
             lblCustomer.classList.add("lbl");
             lblCustomer.textContent = "Cliente:";
             const customerSpan = document.createElement("span");
-            customerSpan.textContent = sale.customerName || "N/A"; // Cliente
+            customerSpan.textContent = sale.customer?.fullName || sale.customerName || "N/A";
             customerSpan.classList.add("truncate");
             customerDataSale.append(lblCustomer, customerSpan);
+
+            if (sale.customer?.personalPhone || sale.customer?.dui) {
+                const customerContact = document.createElement("span");
+                customerContact.classList.add("customerContact");
+                customerContact.textContent = [sale.customer.personalPhone, sale.customer.dui]
+                    .filter(Boolean)
+                    .join(" · ");
+                customerDataSale.appendChild(customerContact);
+            }
 
             downLeft.append(sellerDataSale, customerDataSale);
             bodyDataSale.appendChild(downLeft);
@@ -207,8 +216,8 @@ export const insertSales = (container, sales) => {
                 btnEdit.setAttribute("data-privilege", "WRITE_SALES");
             }
             const params = buildParams({
-                idCustomer: sale.idCustomer,
-                customerName: sale.customerName,
+                idCustomer: sale.customer?.idCustomer || sale.idCustomer,
+                customerName: sale.customer?.fullName || sale.customerName,
                 idVehicle: sale.idVehicle,
                 idSale: sale.idSale
             });

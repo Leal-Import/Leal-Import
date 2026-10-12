@@ -142,6 +142,11 @@ const createVehicleInfo = (vehicle) => {
     container.appendChild(createInfoItem('Vin', vehicle.vin));
     container.appendChild(createInfoItem('Año', vehicle.year));
     container.appendChild(createInfoItem('Modelo', vehicle.model));
+    container.appendChild(createInfoItem('Cliente', vehicle.customer?.fullName || vehicle.customerName));
+
+    if (vehicle.customer?.personalPhone) {
+        container.appendChild(createInfoItem('Teléfono', vehicle.customer.personalPhone));
+    }
 
     return container;
 };
@@ -171,7 +176,10 @@ const createButtons = (vehicle, hasWorkOrder) => {
         const btnSelect = document.createElement('a');
         btnSelect.textContent = 'Seleccionar';
         btnSelect.classList.add('btnPrimary');
-        const params = buildParams({ idVehicle: vehicle.idVehicle, idCustomer: vehicle.idOwnerCustomer });
+        const params = buildParams({
+            idVehicle: vehicle.idVehicle,
+            idCustomer: vehicle.customer?.idCustomer || vehicle.idOwnerCustomer
+        });
         btnSelect.href = `${ROUTES.WORK_ORDER_FORM}?${params.toString()}`;
         container.appendChild(btnSelect);
     } else {

@@ -21,7 +21,10 @@ export const DOMRefs = {
             txtTotal: $("txtTotal"),
             btnAddPayment: $("btnAddPayment"),
             btnImportVehicle: $("btnImportVehicle"),
+            customerElement: $("customerElement"),
             customerName: $("customerName"),
+            customerPhone: $("customerPhone"),
+            customerDui: $("customerDui"),
             due: $("due"),
             total: $("total"),
             totalPaid: $("totalPaid"),
@@ -176,8 +179,14 @@ export const loadVehicle = (vehicle, idSale, Refs) => {
     });
 };
 
-export const loadCustomerName = (spancustomerName, customerName) => {
-    spancustomerName.textContent = customerName;
+export const loadCustomerInfo = (customer, fallbackName, Refs) => {
+    const customerName = customer?.fullName || fallbackName;
+    if (!customerName) return;
+
+    showElement(Refs.customerElement);
+    Refs.customerName.textContent = customerName;
+    Refs.customerPhone.textContent = customer?.personalPhone ? `Tel. ${customer.personalPhone}` : '';
+    Refs.customerDui.textContent = customer?.dui ? `DUI ${customer.dui}` : '';
 };
 
 export const loadDomData = (data, Refs) => {

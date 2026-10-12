@@ -106,10 +106,22 @@ export const insertWorkOrders = (container, workOrders) => {
 
             const clientItem = document.createElement("div");
             clientItem.classList.add("infoVehicleItem");
-            if (!workOrder.customerName) {
-                clientItem.innerHTML = `<div>Sin cliente asociado</div>`;
-            } else {
-                clientItem.innerHTML = `<div>Cliente:</div> <span class="truncate">${workOrder.customerName}</span>`;
+            const clientLabel = document.createElement("div");
+            clientLabel.textContent = "Cliente:";
+            const clientName = document.createElement("span");
+            clientName.classList.add("truncate");
+            clientName.textContent = workOrder.customer?.fullName || workOrder.customerName || "Sin cliente asociado";
+            clientItem.append(clientLabel, clientName);
+
+            const phoneItem = workOrder.customer?.personalPhone ? document.createElement("div") : null;
+            if (phoneItem) {
+                phoneItem.classList.add("infoVehicleItem");
+                const phoneLabel = document.createElement("div");
+                phoneLabel.textContent = "Teléfono:";
+                const phone = document.createElement("span");
+                phone.classList.add("truncate");
+                phone.textContent = workOrder.customer.personalPhone;
+                phoneItem.append(phoneLabel, phone);
             }
 
             const vinItem = document.createElement("div");
@@ -120,7 +132,9 @@ export const insertWorkOrders = (container, workOrders) => {
             dateItem.classList.add("infoVehicleItem");
             dateItem.innerHTML = `<div>Ultima orden:</div> <span>${workOrder.orderDate}</span>`;
 
-            containerInfoVehicle.append(containerOrderStatus, clientItem, vinItem, dateItem);
+            containerInfoVehicle.append(containerOrderStatus, clientItem);
+            if (phoneItem) containerInfoVehicle.append(phoneItem);
+            containerInfoVehicle.append(vinItem, dateItem);
 
             const moreInfoContainer = document.createElement("div");
             moreInfoContainer.classList.add("moreInfoContainer");
@@ -132,8 +146,8 @@ export const insertWorkOrders = (container, workOrders) => {
             btnView.textContent = "Ver más";
             const params = buildParams({
                 idVehicle: workOrder.idVehicle,
-                idCustomer: workOrder.idCustomer,
-                customerName: workOrder.customerName
+                idCustomer: workOrder.customer?.idCustomer || workOrder.idCustomer,
+                customerName: workOrder.customer?.fullName || workOrder.customerName
             });
             btnView.href = `${ROUTES.WORK_ORDER_HISTORY}?${params.toString()}`;
 

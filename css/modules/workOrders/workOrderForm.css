@@ -5,6 +5,65 @@
     flex-flow: row wrap;
 }
 
+.breadCrumbSection {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 30px;
+    margin-bottom: 2em;
+    border-radius: 12px;
+    background-color: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.breadcrumbTrail,
+.customerQuickInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.customerQuickInfo {
+    margin-left: auto;
+    padding: 7px 10px;
+    border: var(--border);
+    border-radius: 8px;
+    background-color: var(--bg-color-white);
+}
+
+.customerLabel {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+}
+
+.customerName {
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.customerMeta {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+}
+
+@media (width <= 768px) {
+    .customerQuickInfo {
+        width: 100%;
+        margin-left: 0;
+        flex-wrap: wrap;
+    }
+}
+
 .wrapperColumns{
     display: flex;
     width: 100%;
