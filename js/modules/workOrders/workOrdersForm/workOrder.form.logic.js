@@ -121,6 +121,12 @@ const validateBaseOrder = (estimatedDate, notes, selectedServices, selectedSpare
     }
     if (selectedServices.length === 0 && selectedSpareParts.length === 0) return 'Debe agregar al menos un servicio o un repuesto.';
 
+    const hasUnassignedService = selectedServices.some(({ idEmployee }) => !idEmployee);
+    if (hasUnassignedService) return 'Cada servicio debe tener un empleado asignado.';
+
+    const hasUnassignedSparePart = selectedSpareParts.some(({ idEmployee }) => !idEmployee);
+    if (hasUnassignedSparePart) return 'Cada repuesto debe tener un empleado asignado.';
+
     const hasInvalidServicePrice = selectedServices.some(({ priceApplied }) => !isNonNegativePrice(priceApplied));
     if (hasInvalidServicePrice) return 'El precio aplicado de los servicios no puede ser negativo.';
 
