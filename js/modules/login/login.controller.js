@@ -4,7 +4,7 @@ import { changePasswordType, changeStyleTogglePassword, cleanAuthCamps, clearPas
 import { clearCountdown, clearCurrentFlow, maskEmailSimple, renderMaskedEmail, startCountdown } from "./login.logic.js";
 import { getPasswordStrengthOptions, getScore, validateMatch, validatePassword } from "../../core/logic/new.password.logic.js";
 import { loginState } from "./login.state.js";
-import { login, resetPassword, verifyEmail, verifyPIN } from "./login.service.js";
+import { getAuthMe, login, resetPassword, verifyEmail, verifyPIN } from "./login.service.js";
 import { disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from "../../utils/dom.js";
 import { navigateTo, ROUTES } from "../../utils/router.js";
 import { isValidEmail } from "../../utils/validators.js";
@@ -74,6 +74,24 @@ const onSubmitLogin = async (e) => {
 
     try {
         await login(username.trim(), password);
+
+        // El login usa una cookie HttpOnly. Validar /me antes de navegar evita
+        // enviar al usuario al dashboard cuando el navegador no pudo guardar
+        // la cookie o el servidor no pudo recuperar la sesión en Redis.
+        try {
+            const sessionResponse = await getAuthMe();
+            if (sessionResponse?.status !== "OK") {
+                throw new Error("La sesión no pudo ser validada por el servidor.");
+            }
+        } catch (sessionError) {
+            const validationError = new Error(
+                "No pudimos completar el inicio de sesión. Inténtalo nuevamente. Si el problema continúa, contacta al administrador."
+            );
+            validationError.isSessionValidationError = true;
+            validationError.cause = sessionError;
+            throw validationError;
+        }
+
         await showMessage("Bienvenido", `Hola, ${username.trim()}`, "success", true);
         localStorage.setItem("navItem", "dashItem");
         navigateTo(ROUTES.DASHBOARD);
@@ -81,7 +99,10 @@ const onSubmitLogin = async (e) => {
         let title = 'Error';
         let text = error?.message || 'Ocurrió un error';
 
-        if (error?.status === 401) {
+        if (error?.isSessionValidationError) {
+            title = "No se pudo iniciar sesión";
+            text = error.message;
+        } else if (error?.status === 401) {
             title = "No se pudo iniciar sesión";
             text = "Usuario o contraseña incorrectos. Inténtalo de nuevo.";
         } else if (error?.status === 429) {

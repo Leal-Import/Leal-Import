@@ -1,7 +1,6 @@
 import { getAuthMe } from '../modules/login/login.service.js';
-import config from '../config.js';
 import { showMessage } from './dom.js';
-import { navigateTo, ROUTES } from './router.js';
+import { replaceTo, ROUTES } from './router.js';
 import { DraftManager } from './draft.manager.js';
 import { canAccess, setUserPrivileges, clearUserPrivileges } from './privilegesValidator.js';
 import { initSidebar } from '../components/sidebar.js';
@@ -126,6 +125,8 @@ export const apiRequest = async (url, options = {}, friendlyMessage = 'Error de 
 
 export let currentUser = null;
 
+let logoutInProgress = false;
+
 export const initSession = async () => {
     try {
         const response = await getAuthMe();
@@ -143,13 +144,24 @@ export const initSession = async () => {
             await forceLogout("Sesión expirada");
         } else {
             console.error("Error verificando sesión:", error);
-            await forceLogout("Error de sesión");
+            const isServiceUnavailable = error?.status === 0 || error?.status >= 500;
+            await showMessage(
+                isServiceUnavailable ? "Servicio no disponible" : "No pudimos cargar tu información",
+                isServiceUnavailable
+                    ? "Revisa tu conexión e inténtalo de nuevo."
+                    : "Inténtalo de nuevo. Si el problema continúa, contacta al administrador.",
+                "error"
+            );
+            return null;
         }
     }
 };
 
 // Función auxiliar para sacar al usuario
 const forceLogout = async (reason = 'Sesión finalizada') => {
+    if (logoutInProgress) return;
+    logoutInProgress = true;
+
     // Limpiar usuario
     currentUser = null;
     clearUserPrivileges();
@@ -186,7 +198,7 @@ const forceLogout = async (reason = 'Sesión finalizada') => {
     // Mostrar mensaje y redirigir
     if (!window.location.pathname.includes("login.html")) {
         await showMessage("Sesión finalizada", reason, "warning");
-        navigateTo(ROUTES.LOGIN);
+        replaceTo(ROUTES.LOGIN);
     }
 };
 
