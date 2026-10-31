@@ -1,28 +1,39 @@
 .ticketValidationPage {
     min-height: 100vh;
+    min-width: 0;
+    overflow-x: hidden;
 }
 
 .ticketValidationGrid {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
-    gap: 1.25rem;
+    grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr);
+    gap: 1rem;
+    width: 100%;
     align-items: start;
 }
 
 .ticketValidationPanel {
     min-width: 0;
-    padding: 1.25rem;
+    padding: 1.35rem;
     border: var(--border);
     border-radius: var(--border-radius-card);
     background: var(--bg-color-white);
     box-shadow: var(--bx-shadow-primary);
+    color: var(--text-color);
+}
+
+.ticketValidationPanel .panelHeader {
+    margin-bottom: 1rem;
+}
+
+.ticketValidationPanel .panelTitle {
+    font-size: var(--font-size-title-lg);
 }
 
 .qrScanner {
     position: relative;
     display: grid;
-    min-height: 320px;
-    margin-top: 1.25rem;
+    min-height: 350px;
     overflow: hidden;
     place-items: center;
     border: 1px dashed var(--text-color-secondary);
@@ -33,35 +44,49 @@
 .qrVideo {
     display: block;
     width: 100%;
-    min-height: 320px;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
     object-fit: cover;
     background: #111;
 }
 
 .qrScannerPlaceholder {
     display: grid;
-    justify-items: center;
-    gap: .45rem;
-    max-width: 260px;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: .75rem 1rem;
+    width: min(100%, 400px);
     padding: 2rem;
     color: var(--text-color-secondary);
-    text-align: center;
 }
 
 .qrScannerIcon {
-    display: grid;
-    width: 3rem;
-    height: 3rem;
-    place-items: center;
-    border: 1px solid var(--danger-color);
-    border-radius: 50%;
+    display: inline-flex;
+    width: 4.25rem;
+    height: 4.25rem;
+    align-items: center;
+    justify-content: center;
     color: var(--danger-color);
-    font-size: 1.8rem;
+    font-size: var(--font-size-title-lg);
     line-height: 1;
 }
 
 .qrScannerPlaceholder strong {
+    display: block;
     color: var(--text-color);
+    font-size: var(--font-size-default);
+}
+
+.qrScannerStatus {
+    display: grid;
+    gap: .25rem;
+    min-width: 0;
+}
+
+.qrScannerStatus span {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
 }
 
 .ticketValidationActions {
@@ -71,6 +96,24 @@
     margin-top: 1rem;
 }
 
+.ticketValidationActions .btnPrimary,
+.ticketValidationActions .btnSecondary {
+    min-width: 150px;
+    min-height: 2.8rem;
+    padding: .7rem 1.2rem;
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-semibold);
+}
+
+.buttonIcon {
+    display: inline-block;
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: 0 0 1.1rem;
+    font-size: var(--font-size-lg);
+    line-height: 1;
+}
+
 .ticketValidationMessage {
     min-height: 1.4rem;
     margin: .75rem 0 0;
@@ -78,12 +121,16 @@
     font-size: var(--font-size-sm);
 }
 
-.ticketValidationMessage-warning {
+.ticketValidationMessageWarning {
     color: var(--warning-color, #ad7600);
 }
 
-.ticketValidationMessage-error {
+.ticketValidationMessageError {
     color: var(--danger-color);
+}
+
+.ticketValidationForm .txtInputs {
+    width: 100%;
 }
 
 .ticketManualPanel {
@@ -129,11 +176,12 @@
     display: grid;
     width: 2.25rem;
     height: 2.25rem;
+    flex: 0 0 2.25rem;
     place-items: center;
     border-radius: 50%;
     background: var(--success-color);
-    color: #fff;
-    font-size: 1.25rem;
+    color: var(--text-color-light);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
 }
 
@@ -169,20 +217,41 @@
     line-height: 1.5;
 }
 
-@media (max-width: 900px) {
+@container content (max-width: 1050px) {
     .ticketValidationGrid {
         grid-template-columns: 1fr;
     }
 }
 
-@media (max-width: 640px) {
+@container content (max-width: 620px) {
     .ticketValidationPanel {
         padding: .9rem;
     }
 
-    .qrScanner,
-    .qrVideo {
-        min-height: 260px;
+    .ticketValidationPanel .panelHeader {
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .ticketValidationPanel .panelHint {
+        max-width: none;
+        text-align: left;
+    }
+
+    .qrScannerPlaceholder {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        width: min(100%, 320px);
+        padding: 1.25rem;
+        text-align: center;
+    }
+
+    .qrScannerStatus {
+        justify-items: center;
+    }
+
+    .qrScanner {
+        min-height: 240px;
     }
 
     .ticketValidationActions .btnPrimary,
@@ -192,5 +261,16 @@
 
     .validationMeta {
         grid-template-columns: 1fr 1fr;
+    }
+}
+
+@container content (max-width: 420px) {
+    .ticketValidationActions .btnPrimary,
+    .ticketValidationActions .btnSecondary {
+        width: 100%;
+    }
+
+    .validationMeta {
+        grid-template-columns: 1fr;
     }
 }

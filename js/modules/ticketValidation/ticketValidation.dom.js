@@ -26,6 +26,12 @@ const createElement = (tagName, className, text) => {
     return element;
 };
 
+const createStatusIcon = (type) => {
+    const icon = createElement('span', 'validationResultIcon', type === 'success' ? '✓' : '!');
+    icon.setAttribute('aria-hidden', 'true');
+    return icon;
+};
+
 const formatDate = (value) => new Intl.DateTimeFormat('es-SV', {
     dateStyle: 'medium',
     timeStyle: 'short'
@@ -44,7 +50,8 @@ export const setCameraState = (active) => {
 export const setCameraMessage = (message, type = '') => {
     const { cameraMessage } = DOMRefs.refs;
     cameraMessage.textContent = message || '';
-    cameraMessage.className = `ticketValidationMessage ${type ? `ticketValidationMessage-${type}` : ''}`.trim();
+    const messageClass = type ? `ticketValidationMessage${type[0].toUpperCase()}${type.slice(1)}` : '';
+    cameraMessage.className = `ticketValidationMessage ${messageClass}`.trim();
 };
 
 export const setValidationBusy = (busy) => {
@@ -70,7 +77,7 @@ export const renderValidationSuccess = (ticket) => {
     const panel = createElement('article', 'validationResultCard validationResultSuccess');
     const heading = createElement('div', 'validationResultHeading');
     heading.append(
-        createElement('span', 'validationResultIcon', '✓'),
+        createStatusIcon('success'),
         createElement('div', '', 'Boleto válido')
     );
 
@@ -93,7 +100,7 @@ export const renderValidationError = (message) => {
     const panel = createElement('article', 'validationResultCard validationResultError');
     const heading = createElement('div', 'validationResultHeading');
     heading.append(
-        createElement('span', 'validationResultIcon', '!'),
+        createStatusIcon('error'),
         createElement('div', '', 'Boleto no válido')
     );
     panel.append(heading, createElement('p', 'validationResultNote', message));
