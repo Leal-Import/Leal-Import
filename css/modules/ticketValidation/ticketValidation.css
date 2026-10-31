@@ -1,0 +1,196 @@
+.ticketValidationPage {
+    min-height: 100vh;
+}
+
+.ticketValidationGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.ticketValidationPanel {
+    min-width: 0;
+    padding: 1.25rem;
+    border: var(--border);
+    border-radius: var(--border-radius-card);
+    background: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.qrScanner {
+    position: relative;
+    display: grid;
+    min-height: 320px;
+    margin-top: 1.25rem;
+    overflow: hidden;
+    place-items: center;
+    border: 1px dashed var(--text-color-secondary);
+    border-radius: var(--border-radius-card);
+    background: var(--bg-color);
+}
+
+.qrVideo {
+    display: block;
+    width: 100%;
+    min-height: 320px;
+    object-fit: cover;
+    background: #111;
+}
+
+.qrScannerPlaceholder {
+    display: grid;
+    justify-items: center;
+    gap: .45rem;
+    max-width: 260px;
+    padding: 2rem;
+    color: var(--text-color-secondary);
+    text-align: center;
+}
+
+.qrScannerIcon {
+    display: grid;
+    width: 3rem;
+    height: 3rem;
+    place-items: center;
+    border: 1px solid var(--danger-color);
+    border-radius: 50%;
+    color: var(--danger-color);
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.qrScannerPlaceholder strong {
+    color: var(--text-color);
+}
+
+.ticketValidationActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem;
+    margin-top: 1rem;
+}
+
+.ticketValidationMessage {
+    min-height: 1.4rem;
+    margin: .75rem 0 0;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.ticketValidationMessage-warning {
+    color: var(--warning-color, #ad7600);
+}
+
+.ticketValidationMessage-error {
+    color: var(--danger-color);
+}
+
+.ticketManualPanel {
+    display: grid;
+    gap: 1rem;
+}
+
+.ticketValidationForm {
+    display: grid;
+    gap: 1rem;
+}
+
+.validationResult {
+    margin-top: 1.25rem;
+}
+
+.validationResultCard {
+    padding: 1.25rem;
+    border: var(--border);
+    border-radius: var(--border-radius-card);
+    background: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.validationResultSuccess {
+    border-color: var(--success-color);
+}
+
+.validationResultError {
+    border-color: var(--danger-color);
+}
+
+.validationResultHeading {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    color: var(--text-color);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+}
+
+.validationResultIcon {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--success-color);
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-bold);
+}
+
+.validationResultError .validationResultIcon {
+    background: var(--danger-color);
+}
+
+.validationMeta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: var(--border);
+}
+
+.validationMetaItem dt {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+}
+
+.validationMetaItem dd {
+    margin: .25rem 0 0;
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+}
+
+.validationResultNote {
+    margin-top: 1rem;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+    .ticketValidationGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .ticketValidationPanel {
+        padding: .9rem;
+    }
+
+    .qrScanner,
+    .qrVideo {
+        min-height: 260px;
+    }
+
+    .ticketValidationActions .btnPrimary,
+    .ticketValidationActions .btnSecondary {
+        flex: 1 1 100%;
+    }
+
+    .validationMeta {
+        grid-template-columns: 1fr 1fr;
+    }
+}

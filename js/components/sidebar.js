@@ -206,6 +206,28 @@ const createSidebar = () => {
                         { tag: 'polyline', attrs: { points: '10 9 9 9 8 9' } }
                     ],
                     requiredPrivileges: ['READ_WORK_ORDERS', 'WRITE_WORK_ORDERS']
+                },
+                {
+                    href: '../pages/ticketing.html',
+                    id: 'ticketingItem',
+                    text: 'Boletería',
+                    iconData: [
+                        { tag: 'path', attrs: { d: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v14.5A2.5 2.5 0 0 0 17.5 15H4z' } },
+                        { tag: 'path', attrs: { d: 'M4 5.5v14A2.5 2.5 0 0 0 6.5 22H20V7H6.5A2.5 2.5 0 0 1 4 5.5z' } },
+                        { tag: 'line', attrs: { x1: '8', y1: '11', x2: '16', y2: '11' } }
+                    ],
+                    requiredPrivileges: ['READ_TICKETING', 'WRITE_TICKETING']
+                },
+                {
+                    href: '../pages/ticketValidation.html',
+                    id: 'ticketValidationItem',
+                    text: 'Validar ingreso',
+                    iconData: [
+                        { tag: 'path', attrs: { d: 'M3 7V4a1 1 0 0 1 1-1h3M17 3h3a1 1 0 0 1 1 1v3M21 17v3a1 1 0 0 1-1 1h-3M7 21H4a1 1 0 0 1-1-1v-3' } },
+                        { tag: 'rect', attrs: { x: '8', y: '8', width: '8', height: '8', rx: '1' } },
+                        { tag: 'path', attrs: { d: 'M10 10h1v1h-1zM13 10h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1z' } }
+                    ],
+                    requiredPrivileges: ['WRITE_TICKETING']
                 }
             ]
         },

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletería | Leal Import</title>
+    <link rel="icon" type="image/x-icon" href="../media/appMedia/Logo Lealimport.png">
+    <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
+    <link rel="stylesheet" href="../css/utils/showData/table.css">
+    <link rel="stylesheet" href="../css/utils/pagination.css">
+    <link rel="stylesheet" href="../css/utils/floatingMenu.css">
+    <link rel="stylesheet" href="../css/utils/modals/modal.css">
+    <link rel="stylesheet" href="../css/utils/loaders/loader.css">
+    <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/modules/ticketing/ticketing.css">
+    <script src="../js/utils/dark.mode.init.js"></script>
+</head>
+
+<body>
+    <div class="containerMobileHeader"></div>
+    <div id="darkMode" class="darkMode"></div>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+
+        <main class="content ticketingPage">
+        <header class="headerContent">
+            <div class="breadCrumbSection">
+                <a class="breadcrumb">Boletería</a>
+            </div>
+            <div class="filterSection">
+                <button id="btnOpenEventModal" class="btnPrimary hide" data-privilege="WRITE_TICKETING" type="button">
+                    Nuevo evento
+                </button>
+            </div>
+        </header>
+
+        <section class="ticketingGrid" aria-label="Administración de boletería">
+            <article class="ticketingPanel">
+                <div class="panelHeader">
+                    <div>
+                        <p class="panelEyebrow">Catálogo</p>
+                        <h1 class="panelTitle">Eventos</h1>
+                    </div>
+                    <span class="panelHint">Configura el evento antes de abrir la venta.</span>
+                </div>
+
+                <div class="containerTable ticketingTableContainer">
+                    <div class="containerLoader show" id="eventLoader">
+                        <div class="loader"></div>
+                        <div>Cargando eventos...</div>
+                    </div>
+                    <table class="table ticketingTable">
+                        <thead>
+                            <tr>
+                                <th>Evento</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventsTableBody"></tbody>
+                    </table>
+                    <div id="eventsEmptyState" class="ticketingEmptyState hide">
+                        <strong>No hay eventos registrados</strong>
+                        <span>Crea el primer evento para comenzar a definir sus zonas y boletos.</span>
+                    </div>
+                </div>
+
+                <div class="paginationContainer">
+                    <div class="paginationLeft">
+                        <span class="paginationInfo"></span>
+                        <div class="pageSize">
+                            <select class="txtInputs" id="eventPageSize" aria-label="Eventos por página">
+                                <option value="10">10</option>
+                                <option value="15" selected>15</option>
+                                <option value="30">30</option>
+                            </select>
+                            <span>por página</span>
+                        </div>
+                    </div>
+                    <div class="paginationRight"></div>
+                </div>
+            </article>
+
+            <article class="ticketingPanel ticketingDetailPanel" id="eventDetailPanel">
+                <div class="ticketingDetailEmpty" id="eventDetailEmpty">
+                    <div class="emptyIcon" aria-hidden="true">+</div>
+                    <strong>Selecciona un evento</strong>
+                    <span>Aquí administrarás el lugar, las zonas y los tipos de boleto.</span>
+                </div>
+
+                <div id="eventDetailContent" class="hide">
+                    <div class="panelHeader detailHeader">
+                        <div>
+                            <p class="panelEyebrow">Configuración del evento</p>
+                            <h2 id="selectedEventName" class="panelTitle"></h2>
+                            <p id="selectedEventMeta" class="panelHint ticketingEventMeta"></p>
+                        </div>
+                        <span id="selectedEventStatus" class="statusBadge"></span>
+                    </div>
+
+                    <div class="ticketingMetrics" id="eventMetrics"></div>
+
+                    <section class="ticketingSubsection">
+                        <div class="subsectionHeader">
+                            <div>
+                                <h3>Zonas</h3>
+                                <p>La capacidad del evento se configura por zona.</p>
+                            </div>
+                            <button id="btnOpenZoneModal" class="btnSecondary hide" data-privilege="WRITE_TICKETING" type="button">
+                                Añadir zona
+                            </button>
+                        </div>
+                        <div id="zonesList" class="ticketingList"></div>
+                    </section>
+
+                    <section class="ticketingSubsection ticketTypesSection">
+                        <div class="subsectionHeader">
+                            <div>
+                                <h3 id="selectedZoneTitle">Tipos de boleto</h3>
+                                <p id="selectedZoneHint">Selecciona una zona para administrar sus boletos.</p>
+                            </div>
+                            <button id="btnOpenTicketTypeModal" class="btnSecondary hide" data-privilege="WRITE_TICKETING" type="button">
+                                Añadir boleto
+                            </button>
+                        </div>
+                        <div id="ticketTypesList" class="ticketingList"></div>
+                    </section>
+                </div>
+            </article>
+        </section>
+        </main>
+
+        <div class="containerModal hide" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle" aria-describedby="eventModalIntro">
+        <form class="modalAdd ticketingModal" id="eventForm">
+            <button class="btnClose" id="btnCloseEventModal" type="button" aria-label="Cerrar formulario">×</button>
+            <h2 class="titleModal" id="eventModalTitle">Registrar evento</h2>
+            <p class="ticketingModalIntro" id="eventModalIntro">Define la información principal del evento. Las zonas y los boletos se configuran después.</p>
+            <div class="ticketingFormGrid">
+                <div class="formGroup">
+                    <label for="eventName" class="lblInputs">Nombre del evento</label>
+                    <input id="eventName" name="name" class="txtInputs" maxlength="150" required>
+                </div>
+                <div class="formGroup">
+                    <label for="eventVenue" class="lblInputs">Lugar</label>
+                    <input id="eventVenue" name="venue" class="txtInputs" maxlength="200" required>
+                </div>
+                <div class="formGroup">
+                    <label for="eventStartsAt" class="lblInputs">Inicio</label>
+                    <input id="eventStartsAt" name="startsAt" class="txtInputs" type="datetime-local" required>
+                </div>
+                <div class="formGroup">
+                    <label for="eventEndsAt" class="lblInputs">Finalización</label>
+                    <input id="eventEndsAt" name="endsAt" class="txtInputs" type="datetime-local" required>
+                </div>
+                <div class="formGroup ticketingFormFullWidth">
+                    <label for="eventRefundPolicy" class="lblInputs">Política de devolución</label>
+                    <textarea id="eventRefundPolicy" name="refundPolicy" class="txtInputs" maxlength="4000" rows="4" required></textarea>
+                </div>
+            </div>
+            <div class="ticketingModalActions">
+                <button class="btnPrimary btnSubmitData" id="btnSaveEvent" type="submit">
+                    <span id="eventSubmitLabel">Guardar evento</span>
+                    <div class="loader hide" id="eventSubmitLoader"></div>
+                </button>
+            </div>
+        </form>
+        </div>
+
+        <div class="containerModal hide" id="zoneModal" role="dialog" aria-modal="true" aria-labelledby="zoneModalTitle" aria-describedby="zoneModalIntro">
+        <form class="modalAdd ticketingModal" id="zoneForm">
+            <button class="btnClose" id="btnCloseZoneModal" type="button" aria-label="Cerrar formulario">×</button>
+            <h2 class="titleModal" id="zoneModalTitle">Registrar zona</h2>
+            <p class="ticketingModalIntro" id="zoneModalIntro">Una zona representa un espacio o categoría de acceso dentro del evento.</p>
+            <div class="ticketingFormGrid">
+                <div class="formGroup">
+                    <label for="zoneName" class="lblInputs">Nombre</label>
+                    <input id="zoneName" name="name" class="txtInputs" maxlength="100" required>
+                </div>
+                <div class="formGroup">
+                    <label for="zoneCapacity" class="lblInputs">Cupos de la zona</label>
+                    <input id="zoneCapacity" name="capacity" class="txtInputs" type="number" min="1" required>
+                    <small class="fieldHint">Límite total de boletos que pueden configurarse en esta zona.</small>
+                </div>
+            </div>
+            <div class="ticketingModalActions">
+                <button class="btnPrimary btnSubmitData" id="btnSaveZone" type="submit">
+                    <span id="zoneSubmitLabel">Guardar zona</span>
+                    <div class="loader hide" id="zoneSubmitLoader"></div>
+                </button>
+            </div>
+        </form>
+        </div>
+
+        <div class="containerModal hide" id="ticketTypeModal" role="dialog" aria-modal="true" aria-labelledby="ticketTypeModalTitle" aria-describedby="ticketTypeModalIntro">
+        <form class="modalAdd ticketingModal" id="ticketTypeForm">
+            <button class="btnClose" id="btnCloseTicketTypeModal" type="button" aria-label="Cerrar formulario">×</button>
+            <h2 class="titleModal" id="ticketTypeModalTitle">Registrar tipo de boleto</h2>
+            <p class="ticketingModalIntro" id="ticketTypeModalIntro">Define el nombre, precio y cupos que estarán disponibles para la zona seleccionada.</p>
+            <div class="ticketingFormGrid">
+                <div class="formGroup">
+                    <label for="ticketTypeName" class="lblInputs">Nombre</label>
+                    <input id="ticketTypeName" name="name" class="txtInputs" maxlength="100" required>
+                </div>
+                <div class="formGroup">
+                    <label for="ticketTypePrice" class="lblInputs">Precio (USD)</label>
+                    <input id="ticketTypePrice" name="price" class="txtInputs" type="number" min="0" step="0.01" placeholder="Ej.: 4.50" aria-describedby="ticketTypePriceHint" required>
+                    <small id="ticketTypePriceHint" class="fieldHint">Ingresa el precio como lo verá el cliente. Ej.: 4.50.</small>
+                </div>
+                <div class="formGroup">
+                    <label for="ticketTypeCapacity" class="lblInputs">Cupos disponibles</label>
+                    <input id="ticketTypeCapacity" name="capacity" class="txtInputs" type="number" min="1" required>
+                    <small class="fieldHint">La suma de los tipos no puede superar los cupos de la zona.</small>
+                </div>
+            </div>
+            <div class="ticketingModalActions">
+                <button class="btnPrimary btnSubmitData" id="btnSaveTicketType" type="submit">
+                    <span id="ticketTypeSubmitLabel">Guardar boleto</span>
+                    <div class="loader hide" id="ticketTypeSubmitLoader"></div>
+                </button>
+            </div>
+        </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/modules/ticketing/ticketing.controller.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
+</body>
+
+</html>

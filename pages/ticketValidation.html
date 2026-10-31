@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validar ingreso | Leal Import</title>
+    <link rel="icon" type="image/x-icon" href="../media/appMedia/Logo Lealimport.png">
+    <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
+    <link rel="stylesheet" href="../css/utils/loaders/loader.css">
+    <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/modules/ticketValidation/ticketValidation.css">
+    <script src="../js/utils/dark.mode.init.js"></script>
+</head>
+
+<body>
+    <div class="containerMobileHeader"></div>
+    <div id="darkMode" class="darkMode"></div>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+
+        <main class="content ticketValidationPage">
+            <header class="headerContent">
+                <div class="breadCrumbSection">
+                    <a class="breadcrumb">Validar ingreso</a>
+                </div>
+            </header>
+
+            <section class="ticketValidationGrid" aria-label="Validación de boletos">
+                <article class="ticketValidationPanel">
+                    <div class="panelHeader">
+                        <div>
+                            <p class="panelEyebrow">Acceso al evento</p>
+                            <h1 class="panelTitle">Validar boleto</h1>
+                        </div>
+                        <span class="panelHint">Escanea el código QR del boleto o ingrésalo manualmente.</span>
+                    </div>
+
+                    <div class="qrScanner" data-camera-container>
+                        <video id="qrVideo" class="qrVideo hide" autoplay muted playsinline aria-label="Vista de la cámara para escanear el código QR"></video>
+                        <div class="qrScannerPlaceholder show" data-camera-placeholder>
+                            <span class="qrScannerIcon" aria-hidden="true">⌗</span>
+                            <strong>Cámara apagada</strong>
+                            <span>Actívala para leer el QR desde el dispositivo.</span>
+                        </div>
+                    </div>
+
+                    <div class="ticketValidationActions">
+                        <button id="btnStartCamera" class="btnPrimary" type="button">Activar cámara</button>
+                        <button id="btnStopCamera" class="btnSecondary hide" type="button">Detener cámara</button>
+                    </div>
+
+                    <p id="cameraMessage" class="ticketValidationMessage" role="status" aria-live="polite"></p>
+                </article>
+
+                <article class="ticketValidationPanel ticketManualPanel">
+                    <div class="panelHeader">
+                        <div>
+                            <p class="panelEyebrow">Alternativa</p>
+                            <h2 class="panelTitle">Validación manual</h2>
+                        </div>
+                    </div>
+
+                    <form id="manualValidationForm" class="ticketValidationForm">
+                        <div class="formGroup">
+                            <label for="qrContent" class="lblInputs">Contenido del código QR</label>
+                            <textarea id="qrContent" name="qrContent" class="txtInputs" rows="4" maxlength="500" required placeholder="LEAL-TICKET:1:..." autocomplete="off"></textarea>
+                            <small class="fieldHint">Utiliza esta opción si la cámara no está disponible o el QR no puede leerse.</small>
+                        </div>
+                        <div class="ticketValidationActions">
+                            <button id="btnValidateManual" class="btnPrimary" type="submit">Validar boleto</button>
+                            <button id="btnClearValidation" class="btnSecondary" type="button">Limpiar</button>
+                        </div>
+                    </form>
+                </article>
+            </section>
+
+            <section id="validationResult" class="validationResult hide" aria-live="polite" aria-atomic="true"></section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/modules/ticketValidation/ticketValidation.controller.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
+</body>
+
+</html>
