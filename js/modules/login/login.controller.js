@@ -108,6 +108,9 @@ const onSubmitLogin = async (e) => {
         } else if (error?.status === 429) {
             title = "Demasiados intentos";
             text = "Espera unos minutos antes de volver a intentarlo.";
+        } else if (error?.status === 0 || error?.status >= 500) {
+            title = "Servicio no disponible";
+            text = "No pudimos completar el inicio de sesión. Intenta más tarde.";
         }
         await showMessage(title, text, "error");
     } finally {
