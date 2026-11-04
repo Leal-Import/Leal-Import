@@ -17,6 +17,17 @@ export class APIError extends Error {
 }
 
 const REQUEST_ID_HEADER = 'X-Request-ID';
+const HTML_DOCUMENT_PATTERN = /<(?:!doctype\s+html|html\b|head\b|body\b)/i;
+
+const isHtmlDocument = (value) => (
+    typeof value === 'string' && HTML_DOCUMENT_PATTERN.test(value.trim())
+);
+
+const safeErrorMessage = (value, fallback) => {
+    if (typeof value !== 'string') return value || fallback;
+    const message = value.trim();
+    return message && !isHtmlDocument(message) ? message : fallback;
+};
 
 const createRequestId = () => {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -44,7 +55,7 @@ const parseResponsePayload = async (response) => {
 
 const getErrorMessage = (data, fallback) => {
     if (!data || typeof data !== 'object') {
-        return typeof data === 'string' && data.trim() ? data.trim() : fallback;
+        return safeErrorMessage(data, fallback);
     }
 
     if (Array.isArray(data.violations)) {
@@ -52,15 +63,15 @@ const getErrorMessage = (data, fallback) => {
             .map(violation => violation?.message)
             .filter(Boolean)
             .join('. ');
-        if (violations) return violations;
+        if (violations) return safeErrorMessage(violations, fallback);
     }
 
     if (data.errors && typeof data.errors === 'object') {
         const validationErrors = Object.values(data.errors).join('. ');
-        if (validationErrors) return validationErrors;
+        if (validationErrors) return safeErrorMessage(validationErrors, fallback);
     }
 
-    return data.detail || data.message || data.error || fallback;
+    return safeErrorMessage(data.detail || data.message || data.error, fallback);
 };
 
 export const handleApiError = async (error) => {
