@@ -57,7 +57,6 @@
                             <tr>
                                 <th>Evento</th>
                                 <th>Fecha</th>
-                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -65,7 +64,7 @@
                     </table>
                     <div id="eventsEmptyState" class="ticketingEmptyState hide">
                         <strong>No hay eventos registrados</strong>
-                        <span>Crea el primer evento para comenzar a definir sus zonas y boletos.</span>
+                        <span>Crea el primer evento para comenzar a definir sus boletos.</span>
                     </div>
                 </div>
 
@@ -89,39 +88,50 @@
                 <div class="ticketingDetailEmpty" id="eventDetailEmpty">
                     <div class="emptyIcon" aria-hidden="true">+</div>
                     <strong>Selecciona un evento</strong>
-                    <span>Aquí administrarás el lugar, las zonas y los tipos de boleto.</span>
+                    <span>Aquí administrarás el evento y los tipos de boleto disponibles.</span>
                 </div>
 
                 <div id="eventDetailContent" class="hide">
-                    <div class="panelHeader detailHeader">
-                        <div>
-                            <p class="panelEyebrow">Configuración del evento</p>
-                            <h2 id="selectedEventName" class="panelTitle"></h2>
-                            <p id="selectedEventMeta" class="panelHint ticketingEventMeta"></p>
+                    <div class="ticketingDetailTop">
+                        <div class="panelHeader detailHeader">
+                            <div>
+                                <p class="panelEyebrow">Configuración del evento</p>
+                                <h2 id="selectedEventName" class="panelTitle"></h2>
+                                <p id="selectedEventMeta" class="panelHint ticketingEventMeta"></p>
+                            </div>
+                            <span id="selectedEventStatus" class="statusBadge"></span>
                         </div>
-                        <span id="selectedEventStatus" class="statusBadge"></span>
+
+                        <aside class="ticketingEventPreview" aria-labelledby="ticketingEventPreviewLabel">
+                            <p id="ticketingEventPreviewLabel" class="ticketingEventPreviewLabel">Vista previa de cartelera</p>
+                            <article class="ticketingEventPoster">
+                                <img id="ticketingPosterImage" class="ticketingPosterImage hide" alt="" width="320" height="260">
+                                <span class="ticketingPosterRule" aria-hidden="true"></span>
+                                <span class="ticketingPosterDate" aria-label="Fecha del evento">
+                                    <strong id="ticketingPosterDay"></strong>
+                                    <span id="ticketingPosterMonth"></span>
+                                </span>
+                                <svg class="ticketingPosterMotif" viewBox="0 0 320 260" aria-hidden="true">
+                                    <path d="M-15 224C72 72 131 80 180 190S280 282 342 60"></path>
+                                    <path d="M-20 248C64 112 123 111 171 204S275 302 350 91"></path>
+                                    <circle cx="242" cy="86" r="47"></circle>
+                                </svg>
+                                <div class="ticketingPosterContent">
+                                    <span>Evento en vivo</span>
+                                    <strong id="ticketingPosterName"></strong>
+                                    <span id="ticketingPosterVenue"></span>
+                                </div>
+                            </article>
+                        </aside>
                     </div>
 
                     <div class="ticketingMetrics" id="eventMetrics"></div>
 
-                    <section class="ticketingSubsection">
-                        <div class="subsectionHeader">
-                            <div>
-                                <h3>Zonas</h3>
-                                <p>La capacidad del evento se configura por zona.</p>
-                            </div>
-                            <button id="btnOpenZoneModal" class="btnSecondary hide" data-privilege="WRITE_TICKETING" type="button">
-                                Añadir zona
-                            </button>
-                        </div>
-                        <div id="zonesList" class="ticketingList"></div>
-                    </section>
-
                     <section class="ticketingSubsection ticketTypesSection">
                         <div class="subsectionHeader">
                             <div>
-                                <h3 id="selectedZoneTitle">Tipos de boleto</h3>
-                                <p id="selectedZoneHint">Selecciona una zona para administrar sus boletos.</p>
+                                <h3 id="ticketTypesTitle">Tipos de boleto</h3>
+                                <p id="ticketTypesHint">Configura el nombre, precio y cupos disponibles para este evento.</p>
                             </div>
                             <button id="btnOpenTicketTypeModal" class="btnSecondary hide" data-privilege="WRITE_TICKETING" type="button">
                                 Añadir boleto
@@ -138,7 +148,7 @@
         <form class="modalAdd ticketingModal" id="eventForm">
             <button class="btnClose" id="btnCloseEventModal" type="button" aria-label="Cerrar formulario">×</button>
             <h2 class="titleModal" id="eventModalTitle">Registrar evento</h2>
-            <p class="ticketingModalIntro" id="eventModalIntro">Define la información principal del evento. Las zonas y los boletos se configuran después.</p>
+            <p class="ticketingModalIntro" id="eventModalIntro">Define la información principal del evento. Los boletos se configuran después.</p>
             <div class="ticketingFormGrid">
                 <div class="formGroup">
                     <label for="eventName" class="lblInputs">Nombre del evento</label>
@@ -157,8 +167,17 @@
                     <input id="eventEndsAt" name="endsAt" class="txtInputs" type="datetime-local" required>
                 </div>
                 <div class="formGroup ticketingFormFullWidth">
-                    <label for="eventRefundPolicy" class="lblInputs">Política de devolución</label>
-                    <textarea id="eventRefundPolicy" name="refundPolicy" class="txtInputs" maxlength="4000" rows="4" required></textarea>
+                    <label for="eventImage" class="lblInputs">Imagen de cartelera <span class="optionalField">(opcional)</span></label>
+                    <input id="eventImage" class="txtInputs ticketImageInput" type="file" accept="image/*" aria-describedby="eventImageHint">
+                    <small id="eventImageHint" class="fieldHint">Se mostrará en la cartelera pública. Máximo 20 MB.</small>
+                    <div class="eventImagePreview" id="eventImagePreview">
+                        <img id="eventImagePreviewImage" class="hide" alt="Vista previa de la imagen del evento" width="180" height="104">
+                        <span id="eventImagePlaceholder">La imagen del evento aparecerá aquí</span>
+                    </div>
+                    <div id="eventImageActions" class="eventImageActions hide">
+                        <span id="eventImagePreviewName"></span>
+                        <button id="btnRemoveEventImage" class="btnSecondary ticketImageRemoveButton" type="button">Quitar imagen</button>
+                    </div>
                 </div>
             </div>
             <div class="ticketingModalActions">
@@ -170,36 +189,11 @@
         </form>
         </div>
 
-        <div class="containerModal hide" id="zoneModal" role="dialog" aria-modal="true" aria-labelledby="zoneModalTitle" aria-describedby="zoneModalIntro">
-        <form class="modalAdd ticketingModal" id="zoneForm">
-            <button class="btnClose" id="btnCloseZoneModal" type="button" aria-label="Cerrar formulario">×</button>
-            <h2 class="titleModal" id="zoneModalTitle">Registrar zona</h2>
-            <p class="ticketingModalIntro" id="zoneModalIntro">Una zona representa un espacio o categoría de acceso dentro del evento.</p>
-            <div class="ticketingFormGrid">
-                <div class="formGroup">
-                    <label for="zoneName" class="lblInputs">Nombre</label>
-                    <input id="zoneName" name="name" class="txtInputs" maxlength="100" required>
-                </div>
-                <div class="formGroup">
-                    <label for="zoneCapacity" class="lblInputs">Cupos de la zona</label>
-                    <input id="zoneCapacity" name="capacity" class="txtInputs" type="number" min="1" required>
-                    <small class="fieldHint">Límite total de boletos que pueden configurarse en esta zona.</small>
-                </div>
-            </div>
-            <div class="ticketingModalActions">
-                <button class="btnPrimary btnSubmitData" id="btnSaveZone" type="submit">
-                    <span id="zoneSubmitLabel">Guardar zona</span>
-                    <div class="loader hide" id="zoneSubmitLoader"></div>
-                </button>
-            </div>
-        </form>
-        </div>
-
         <div class="containerModal hide" id="ticketTypeModal" role="dialog" aria-modal="true" aria-labelledby="ticketTypeModalTitle" aria-describedby="ticketTypeModalIntro">
         <form class="modalAdd ticketingModal" id="ticketTypeForm">
             <button class="btnClose" id="btnCloseTicketTypeModal" type="button" aria-label="Cerrar formulario">×</button>
             <h2 class="titleModal" id="ticketTypeModalTitle">Registrar tipo de boleto</h2>
-            <p class="ticketingModalIntro" id="ticketTypeModalIntro">Define el nombre, precio y cupos que estarán disponibles para la zona seleccionada.</p>
+            <p class="ticketingModalIntro" id="ticketTypeModalIntro">Define el nombre, precio y cupos que estarán disponibles para este evento.</p>
             <div class="ticketingFormGrid">
                 <div class="formGroup">
                     <label for="ticketTypeName" class="lblInputs">Nombre</label>
@@ -213,7 +207,7 @@
                 <div class="formGroup">
                     <label for="ticketTypeCapacity" class="lblInputs">Cupos disponibles</label>
                     <input id="ticketTypeCapacity" name="capacity" class="txtInputs" type="number" min="1" required>
-                    <small class="fieldHint">La suma de los tipos no puede superar los cupos de la zona.</small>
+                    <small class="fieldHint">Este cupo se descuenta del inventario general del evento.</small>
                 </div>
             </div>
             <div class="ticketingModalActions">

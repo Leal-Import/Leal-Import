@@ -1,0 +1,235 @@
+.ticketOrdersPage {
+    min-width: 0;
+}
+
+.ticketOrdersLayout {
+    display: block;
+}
+
+.ticketOrdersPanel {
+    overflow: hidden;
+    background: var(--bg-color-white);
+    border: 1px solid var(--border-color, #d8d8df);
+    border-radius: var(--border-radius-table, 14px);
+    box-shadow: var(--bx-shadow-primary, 0 4px 20px rgb(0 0 0 / .06));
+}
+
+.ticketOrdersHeading {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 26px 18px;
+}
+
+.ticketOrdersHeading h1,
+.ticketOrderDetailHeader h2 {
+    margin: 5px 0 0;
+    color: var(--text-color);
+}
+
+.ticketOrdersHeading p {
+    max-width: 290px;
+    margin: 8px 0 0;
+    color: var(--text-color-secondary);
+}
+
+.ticketOrdersEyebrow {
+    color: var(--danger-color);
+    font-size: var(--font-size-very-sh);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: .1em;
+}
+
+.ticketOrdersTableWrap {
+    position: relative;
+    overflow-x: auto;
+}
+
+.ticketOrdersTable {
+    min-width: 760px;
+}
+
+.ticketOrdersTable td small {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+}
+
+.ticketOrderActions {
+    width: 34px;
+    height: 34px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.ticketOrderActions:hover,
+.ticketOrderActions:focus-visible {
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+    outline: none;
+}
+
+.ticketOrderBadge,
+.ticketOrderStatus {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    border-radius: 7px;
+    padding: 5px 9px;
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-semibold);
+}
+
+.ticketOrderBadge-paid,
+.ticketOrderBadge-approved {
+    color: #287b31;
+    background: #e4f2e5;
+}
+
+.ticketOrderBadge-reserved,
+.ticketOrderBadge-pending_payment,
+.ticketOrderBadge-pending {
+    color: #8a6500;
+    background: #fff2c7;
+}
+
+.ticketOrderBadge-expired,
+.ticketOrderBadge-declined,
+.ticketOrderBadge-voided,
+.ticketOrderBadge-error {
+    color: var(--danger-color);
+    background: rgb(211 24 19 / .1);
+}
+
+.ticketOrdersEmpty {
+    padding: 42px 24px;
+    color: var(--text-color-secondary);
+    text-align: center;
+}
+
+.ticketOrderModal {
+    width: min(720px, 100%);
+}
+
+.ticketOrderDetailHeader {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 44px 20px 0;
+    border-bottom: var(--border);
+}
+
+.ticketOrderDetailHeader p {
+    margin: 8px 0 0;
+    color: var(--text-color-secondary);
+}
+
+.ticketOrderFacts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    padding: 18px 0;
+}
+
+.ticketOrderFact {
+    min-width: 0;
+}
+
+.ticketOrderFact > span:first-child {
+    display: block;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+}
+
+.ticketOrderFact > span:last-child {
+    display: block;
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+    color: var(--text-color);
+}
+
+.ticketOrderSection {
+    padding: 18px 0;
+    border-top: var(--border);
+}
+
+.ticketOrderSectionHeading,
+.ticketOrderLine {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.ticketOrderSectionHeading h3 {
+    margin: 0;
+    color: var(--text-color);
+}
+
+.ticketOrderSectionHeading > span {
+    color: var(--text-color-secondary);
+}
+
+.ticketOrderLine,
+.ticketOrderRecord {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--bg-color);
+}
+
+.ticketOrderLine:last-child,
+.ticketOrderRecord:last-child {
+    border-bottom: 0;
+}
+
+.ticketOrderLine strong,
+.ticketOrderRecord strong {
+    display: block;
+    color: var(--text-color);
+}
+
+.ticketOrderLine span,
+.ticketOrderRecord span {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+}
+
+.ticketOrderLine b {
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+.ticketOrdersPagination {
+    margin: 0;
+    padding: 18px 26px;
+}
+
+@media screen and (width <= 700px) {
+    .ticketOrdersHeading {
+        display: block;
+    }
+
+    .ticketOrdersHeading p {
+        max-width: none;
+    }
+
+    .ticketOrderDetailHeader {
+        display: block;
+    }
+
+    .ticketOrderStatus {
+        margin-top: 12px;
+    }
+}
+
+@media screen and (width <= 500px) {
+    .ticketOrderFacts {
+        grid-template-columns: 1fr;
+    }
+}

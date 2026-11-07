@@ -15,7 +15,8 @@ export const ROUTES = {
     CUSTOMER_SALE: '/pages/customerSale.html',
     WORK_ORDERS: '/pages/workOrders.html',
     WORK_ORDER_FORM: '/pages/workOrderForm.html',
-    WORK_ORDER_HISTORY: '/pages/workOrderHistory.html'
+    WORK_ORDER_HISTORY: '/pages/workOrderHistory.html',
+    TICKET_ORDERS: '/pages/ticketOrders.html'
 };
 
 /**

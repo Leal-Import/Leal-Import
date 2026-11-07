@@ -32,26 +32,14 @@ export const updateTicketEvent = (eventId, payload) =>
 export const changeTicketEventStatus = (eventId, active) =>
     request(`${TICKETING_API}/events/${eventId}/active`, 'PATCH', TICKETING_WRITE, { active }, 'No se pudo actualizar el evento').then(getData);
 
-export const getTicketZones = (eventId, page = 0, size = 30) =>
-    request(`${TICKETING_API}/events/${eventId}/zones?page=${page}&size=${size}`, 'GET', TICKETING_READ, undefined, 'No se pudieron cargar las zonas');
+export const getTicketTypes = (eventId, page = 0, size = 30) =>
+    request(`${TICKETING_API}/events/${eventId}/ticket-types?page=${page}&size=${size}`, 'GET', TICKETING_READ, undefined, 'No se pudieron cargar los tipos de boleto');
 
-export const createTicketZone = (eventId, payload) =>
-    request(`${TICKETING_API}/events/${eventId}/zones`, 'POST', TICKETING_WRITE, payload, 'No se pudo registrar la zona').then(getData);
+export const createTicketType = (eventId, payload) =>
+    request(`${TICKETING_API}/events/${eventId}/ticket-types`, 'POST', TICKETING_WRITE, payload, 'No se pudo registrar el tipo de boleto').then(getData);
 
-export const updateTicketZone = (eventId, zoneId, payload) =>
-    request(`${TICKETING_API}/events/${eventId}/zones/${zoneId}`, 'PUT', TICKETING_WRITE, payload, 'No se pudo actualizar la zona').then(getData);
+export const updateTicketType = (eventId, ticketTypeId, payload) =>
+    request(`${TICKETING_API}/events/${eventId}/ticket-types/${ticketTypeId}`, 'PUT', TICKETING_WRITE, payload, 'No se pudo actualizar el tipo de boleto').then(getData);
 
-export const changeTicketZoneStatus = (eventId, zoneId, active) =>
-    request(`${TICKETING_API}/events/${eventId}/zones/${zoneId}/active`, 'PATCH', TICKETING_WRITE, { active }, 'No se pudo actualizar la zona').then(getData);
-
-export const getTicketTypes = (zoneId, page = 0, size = 30) =>
-    request(`${TICKETING_API}/zones/${zoneId}/ticket-types?page=${page}&size=${size}`, 'GET', TICKETING_READ, undefined, 'No se pudieron cargar los tipos de boleto');
-
-export const createTicketType = (zoneId, payload) =>
-    request(`${TICKETING_API}/zones/${zoneId}/ticket-types`, 'POST', TICKETING_WRITE, payload, 'No se pudo registrar el tipo de boleto').then(getData);
-
-export const updateTicketType = (zoneId, ticketTypeId, payload) =>
-    request(`${TICKETING_API}/zones/${zoneId}/ticket-types/${ticketTypeId}`, 'PUT', TICKETING_WRITE, payload, 'No se pudo actualizar el tipo de boleto').then(getData);
-
-export const changeTicketTypeStatus = (zoneId, ticketTypeId, active) =>
-    request(`${TICKETING_API}/zones/${zoneId}/ticket-types/${ticketTypeId}/active`, 'PATCH', TICKETING_WRITE, { active }, 'No se pudo actualizar el tipo de boleto').then(getData);
+export const changeTicketTypeStatus = (eventId, ticketTypeId, active) =>
+    request(`${TICKETING_API}/events/${eventId}/ticket-types/${ticketTypeId}/active`, 'PATCH', TICKETING_WRITE, { active }, 'No se pudo actualizar el tipo de boleto').then(getData);

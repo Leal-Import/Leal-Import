@@ -1,16 +1,16 @@
 export const ticketValidationState = {
     stream: null,
-    detector: null,
+    reader: null,
+    controls: null,
     scanning: false,
-    submitting: false,
-    scanRequestId: 0
+    submitting: false
 };
 
 export const resetTicketValidationState = () => {
     ticketValidationState.stream?.getTracks().forEach(track => track.stop());
     ticketValidationState.stream = null;
-    ticketValidationState.detector = null;
+    ticketValidationState.reader = null;
+    ticketValidationState.controls = null;
     ticketValidationState.scanning = false;
     ticketValidationState.submitting = false;
-    ticketValidationState.scanRequestId += 1;
 };

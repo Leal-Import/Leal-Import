@@ -13,26 +13,31 @@ export const DOMRefs = {
             selectedEventName: document.getElementById('selectedEventName'),
             selectedEventMeta: document.getElementById('selectedEventMeta'),
             selectedEventStatus: document.getElementById('selectedEventStatus'),
+            ticketingPosterDay: document.getElementById('ticketingPosterDay'),
+            ticketingPosterMonth: document.getElementById('ticketingPosterMonth'),
+            ticketingPosterName: document.getElementById('ticketingPosterName'),
+            ticketingPosterVenue: document.getElementById('ticketingPosterVenue'),
+            ticketingPosterImage: document.getElementById('ticketingPosterImage'),
             eventMetrics: document.getElementById('eventMetrics'),
-            zonesList: document.getElementById('zonesList'),
-            selectedZoneTitle: document.getElementById('selectedZoneTitle'),
-            selectedZoneHint: document.getElementById('selectedZoneHint'),
+            ticketTypesTitle: document.getElementById('ticketTypesTitle'),
+            ticketTypesHint: document.getElementById('ticketTypesHint'),
             ticketTypesList: document.getElementById('ticketTypesList'),
             eventModal: document.getElementById('eventModal'),
-            zoneModal: document.getElementById('zoneModal'),
             ticketTypeModal: document.getElementById('ticketTypeModal'),
             eventModalTitle: document.getElementById('eventModalTitle'),
-            zoneModalTitle: document.getElementById('zoneModalTitle'),
             ticketTypeModalTitle: document.getElementById('ticketTypeModalTitle'),
             eventForm: document.getElementById('eventForm'),
-            zoneForm: document.getElementById('zoneForm'),
             ticketTypeForm: document.getElementById('ticketTypeForm'),
             eventSubmitLabel: document.getElementById('eventSubmitLabel'),
-            zoneSubmitLabel: document.getElementById('zoneSubmitLabel'),
             ticketTypeSubmitLabel: document.getElementById('ticketTypeSubmitLabel'),
             eventSubmitLoader: document.getElementById('eventSubmitLoader'),
-            zoneSubmitLoader: document.getElementById('zoneSubmitLoader'),
-            ticketTypeSubmitLoader: document.getElementById('ticketTypeSubmitLoader')
+            ticketTypeSubmitLoader: document.getElementById('ticketTypeSubmitLoader'),
+            eventImage: document.getElementById('eventImage'),
+            eventImagePreviewImage: document.getElementById('eventImagePreviewImage'),
+            eventImagePreviewName: document.getElementById('eventImagePreviewName'),
+            eventImagePlaceholder: document.getElementById('eventImagePlaceholder'),
+            eventImageActions: document.getElementById('eventImageActions'),
+            btnRemoveEventImage: document.getElementById('btnRemoveEventImage')
         };
 
         return this.refs;
@@ -46,7 +51,7 @@ const escapeHtml = (value) => String(value ?? '')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 
-const money = (cents) => new Intl.NumberFormat('en-US', {
+export const formatTicketMoney = (cents) => new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
@@ -56,6 +61,17 @@ const money = (cents) => new Intl.NumberFormat('en-US', {
 const dateTime = (value) => value
     ? new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
     : 'Sin fecha';
+
+const eventPosterDate = (value) => {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return { day: '--', month: '---' };
+
+    const parts = new Intl.DateTimeFormat('es-SV', { day: '2-digit', month: 'short' }).formatToParts(date);
+    return {
+        day: parts.find(part => part.type === 'day')?.value || '--',
+        month: (parts.find(part => part.type === 'month')?.value || '---').replace('.', '').toUpperCase()
+    };
+};
 
 const status = (active) => `<span class="statusBadge ${active ? 'statusActive' : 'statusInactive'}">${active ? 'Activo' : 'Inactivo'}</span>`;
 
@@ -73,9 +89,8 @@ export const renderEvents = (events, selectedEventId, onSelect) => {
         const row = document.createElement('tr');
         row.className = event.id === selectedEventId ? 'selectedRow' : '';
         row.innerHTML = `
-            <td><button class="tableLink" type="button" data-action="select-event" data-id="${escapeHtml(event.id)}">${escapeHtml(event.name)}</button><span class="tableSecondaryText">${escapeHtml(event.venue)}</span></td>
+            <td><span class="ticketingEventName"><button class="tableLink" type="button" data-action="select-event" data-id="${escapeHtml(event.id)}">${escapeHtml(event.name)}</button>${status(event.active)}</span><span class="tableSecondaryText">${escapeHtml(event.venue)}</span></td>
             <td>${escapeHtml(dateTime(event.startsAt))}</td>
-            <td>${status(event.active)}</td>
             <td>${actionMenuButton('event-actions', event.id, `Acciones de ${event.name}`)}</td>
         `;
         row.addEventListener('click', (clickEvent) => {
@@ -93,7 +108,7 @@ export const renderEventsError = () => {
     DOMRefs.refs.eventsEmptyState.innerHTML = '<strong>No se pudieron cargar los eventos</strong><span>Revisa la conexión o tus permisos e inténtalo de nuevo.</span>';
 };
 
-export const renderEventDetail = (event, zones) => {
+export const renderEventDetail = (event, ticketTypes) => {
     DOMRefs.refs.eventDetailEmpty.classList.add('hide');
     DOMRefs.refs.eventDetailContent.classList.remove('hide');
     DOMRefs.refs.selectedEventName.textContent = event.name;
@@ -109,46 +124,30 @@ export const renderEventDetail = (event, zones) => {
     DOMRefs.refs.selectedEventStatus.className = `statusBadge ${event.active ? 'statusActive' : 'statusInactive'}`;
     DOMRefs.refs.selectedEventStatus.textContent = event.active ? 'Activo' : 'Inactivo';
 
-    const totalCapacity = zones.reduce((total, zone) => total + zone.capacity, 0);
-    DOMRefs.refs.eventMetrics.innerHTML = `
-        <div class="metricCard"><span>Zonas</span><strong>${zones.length}</strong></div>
-        <div class="metricCard"><span>Capacidad configurada</span><strong>${totalCapacity.toLocaleString('es-CO')}</strong></div>
-    `;
-};
-
-export const renderZones = (zones, selectedZoneId, onSelect) => {
-    const container = DOMRefs.refs.zonesList;
-    container.textContent = '';
-    if (!zones.length) {
-        container.innerHTML = '<div class="inlineEmptyState">Este evento todavía no tiene zonas configuradas.</div>';
-        return;
+    const posterDate = eventPosterDate(event.startsAt);
+    DOMRefs.refs.ticketingPosterDay.textContent = posterDate.day;
+    DOMRefs.refs.ticketingPosterMonth.textContent = posterDate.month;
+    DOMRefs.refs.ticketingPosterName.textContent = event.name;
+    DOMRefs.refs.ticketingPosterVenue.textContent = event.venue;
+    DOMRefs.refs.ticketingPosterImage.classList.toggle('hide', !event.imageUrl);
+    if (event.imageUrl) {
+        DOMRefs.refs.ticketingPosterImage.src = event.imageUrl;
+    } else {
+        DOMRefs.refs.ticketingPosterImage.removeAttribute('src');
     }
 
-    zones.forEach((zone) => {
-        const item = document.createElement('div');
-        item.className = `ticketingListItem ${zone.id === selectedZoneId ? 'selectedListItem' : ''}`;
-        item.innerHTML = `
-            <button class="listItemMain" type="button" data-zone-id="${escapeHtml(zone.id)}">
-                <span><strong>${escapeHtml(zone.name)}</strong><small>Cupos disponibles</small></span>
-                <span><strong>${escapeHtml(zone.capacity.toLocaleString('es-CO'))}</strong><small>cupos</small></span>
-                ${status(zone.active)}
-            </button>
-            <div class="listItemActions">${actionMenuButton('zone-actions', zone.id, `Acciones de ${zone.name}`)}</div>
-        `;
-        item.querySelector('[data-zone-id]').addEventListener('click', () => onSelect(zone.id));
-        container.appendChild(item);
-    });
-};
-
-export const renderZonesError = () => {
-    DOMRefs.refs.zonesList.innerHTML = '<div class="inlineEmptyState">No se pudieron cargar las zonas del evento.</div>';
+    const totalCapacity = ticketTypes.reduce((total, ticketType) => total + ticketType.capacity, 0);
+    DOMRefs.refs.eventMetrics.innerHTML = `
+        <div class="metricCard"><span>Tipos de boleto</span><strong>${ticketTypes.length}</strong></div>
+        <div class="metricCard"><span>Capacidad total</span><strong>${totalCapacity.toLocaleString('es-CO')}</strong></div>
+    `;
 };
 
 export const renderTicketTypes = (ticketTypes) => {
     const container = DOMRefs.refs.ticketTypesList;
     container.textContent = '';
     if (!ticketTypes.length) {
-        container.innerHTML = '<div class="inlineEmptyState">Esta zona todavía no tiene tipos de boleto.</div>';
+        container.innerHTML = '<div class="inlineEmptyState">Este evento todavía no tiene tipos de boleto.</div>';
         return;
     }
 
@@ -160,7 +159,7 @@ export const renderTicketTypes = (ticketTypes) => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td><strong>${escapeHtml(ticketType.name)}</strong></td>
-            <td>${escapeHtml(money(ticketType.priceInCents))}</td>
+            <td>${escapeHtml(formatTicketMoney(ticketType.priceInCents))}</td>
             <td>${escapeHtml(ticketType.capacity.toLocaleString('es-CO'))}</td>
             <td>${status(ticketType.active)}</td>
             <td>${actionMenuButton('ticket-type-actions', ticketType.id, `Acciones de ${ticketType.name}`)}</td>
@@ -174,15 +173,9 @@ export const renderTicketTypesError = () => {
     DOMRefs.refs.ticketTypesList.innerHTML = '<div class="inlineEmptyState">No se pudieron cargar los tipos de boleto.</div>';
 };
 
-export const renderSelectedZone = (zone, ticketTypes) => {
-    if (!zone) {
-        DOMRefs.refs.selectedZoneTitle.textContent = 'Tipos de boleto';
-        DOMRefs.refs.selectedZoneHint.textContent = 'Selecciona una zona para administrar sus boletos.';
-        DOMRefs.refs.ticketTypesList.textContent = '';
-        return;
-    }
-    DOMRefs.refs.selectedZoneTitle.textContent = `Tipos de boleto · ${zone.name}`;
-    DOMRefs.refs.selectedZoneHint.textContent = `${zone.capacity.toLocaleString('es-CO')} cupos configurados en esta zona.`;
+export const renderTicketTypesSummary = (ticketTypes) => {
+    DOMRefs.refs.ticketTypesTitle.textContent = 'Tipos de boleto';
+    DOMRefs.refs.ticketTypesHint.textContent = `${ticketTypes.reduce((total, item) => total + item.capacity, 0).toLocaleString('es-CO')} cupos configurados en este evento.`;
     renderTicketTypes(ticketTypes);
 };
 

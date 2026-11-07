@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import config from '../../config.js';
 import { setUserPrivileges, clearUserPrivileges } from '../../utils/privilegesValidator.js';
-import { updateTicketEvent, updateTicketZone, updateTicketType } from './ticketing.service.js';
+import { updateTicketEvent, updateTicketType } from './ticketing.service.js';
 
 const response = (data) => new Response(JSON.stringify({ data }), {
     status: 200,
@@ -21,8 +21,7 @@ describe('ticketing service update contract', () => {
             name: 'Evento actualizado',
             venue: 'Auditorio',
             startsAt: '2026-11-01T18:00:00.000Z',
-            endsAt: '2026-11-01T22:00:00.000Z',
-            refundPolicy: 'No reembolsable'
+            endsAt: '2026-11-01T22:00:00.000Z'
         };
 
         await updateTicketEvent('event-id', payload);
@@ -33,20 +32,14 @@ describe('ticketing service update contract', () => {
         );
     });
 
-    test('sends zone and ticket type updates to their scoped endpoints', async () => {
+    test('sends ticket type updates scoped directly to the event', async () => {
         setUserPrivileges(['WRITE_TICKETING']);
 
-        await updateTicketZone('event-id', 'zone-id', { name: 'General', capacity: 300 });
-        await updateTicketType('zone-id', 'ticket-id', { name: 'VIP', priceInCents: 450, capacity: 100 });
+        await updateTicketType('event-id', 'ticket-id', { name: 'General', priceInCents: 450, capacity: 100 });
 
         expect(fetch).toHaveBeenNthCalledWith(
             1,
-            `${config.API_BASE_URL}/admin/ticketing/events/event-id/zones/zone-id`,
-            expect.objectContaining({ method: 'PUT' })
-        );
-        expect(fetch).toHaveBeenNthCalledWith(
-            2,
-            `${config.API_BASE_URL}/admin/ticketing/zones/zone-id/ticket-types/ticket-id`,
+            `${config.API_BASE_URL}/admin/ticketing/events/event-id/ticket-types/ticket-id`,
             expect.objectContaining({ method: 'PUT' })
         );
     });

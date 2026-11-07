@@ -11,7 +11,7 @@ let signatureExpiresAt = 0;
 let signatureRequest = null;
 
 export const uploadImage = async (file) => {
-    validateFile(file);
+    validateImageFile(file);
     const signature = await getSignature();
     const response = await fetch(signature.uploadUrl, createUploadRequest(file, signature));
     const payload = await response.json().catch(() => null);
@@ -78,7 +78,7 @@ const toMediaReference = (response, payload) => {
     };
 };
 
-const validateFile = (file) => {
+export const validateImageFile = (file) => {
     if (!(file instanceof File)) {
         throw new Error('Debes seleccionar una imagen.');
     }

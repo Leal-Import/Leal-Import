@@ -1,10 +1,13 @@
 .ticketingPage {
     min-height: 100vh;
+    min-width: 0;
+    width: auto;
+    overflow-x: clip;
 }
 
 .ticketingGrid {
     display: grid;
-    grid-template-columns: minmax(360px, 0.85fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(420px, .95fr) minmax(0, 1.15fr);
     gap: 1.25rem;
     align-items: start;
 }
@@ -91,6 +94,9 @@
 .ticketingTableContainer {
     margin-top: 1.25rem;
     position: relative;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
 }
 
 .ticketingTable th,
@@ -112,6 +118,17 @@
 .tableLink:hover,
 .tableLink:focus-visible {
     color: var(--danger-color);
+}
+
+.ticketingEventName {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    min-width: 0;
+}
+
+.ticketingEventName .statusBadge {
+    flex: 0 0 auto;
 }
 
 .selectedRow td {
@@ -140,6 +157,130 @@
 
 .ticketingDetailPanel {
     min-height: 0;
+}
+
+.ticketingDetailTop {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.ticketingEventPreview {
+    min-width: 0;
+}
+
+.ticketingEventPreviewLabel {
+    margin: 0 0 .45rem;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-semibold);
+}
+
+.ticketingEventPoster {
+    position: relative;
+    display: flex;
+    min-height: 208px;
+    padding: 1rem;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    background: var(--danger-color);
+    color: var(--text-color-light);
+}
+
+.ticketingEventPoster::after {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(180deg, rgb(11 12 15 / .12), rgb(11 12 15 / .76));
+    content: '';
+}
+
+.ticketingPosterImage {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ticketingPosterRule {
+    position: absolute;
+    inset: 1rem;
+    z-index: 1;
+    border: 1px solid rgb(255 255 255 / .5);
+    border-radius: var(--border-radius-input);
+}
+
+.ticketingPosterDate {
+    position: absolute;
+    top: 1.35rem;
+    left: 1.35rem;
+    z-index: 1;
+    display: grid;
+    color: var(--warning-color);
+    line-height: .85;
+    text-transform: uppercase;
+}
+
+.ticketingPosterDate strong {
+    font-size: clamp(2.8rem, 4vw, 3.6rem);
+    letter-spacing: -.08em;
+}
+
+.ticketingPosterDate span {
+    padding-left: .15rem;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+}
+
+.ticketingPosterMotif {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: rgb(255 255 255 / .26);
+    stroke-width: 1.2;
+    z-index: 1;
+}
+
+.ticketingPosterMotif circle {
+    fill: rgb(255 178 53 / .22);
+    stroke: var(--warning-color);
+    stroke-width: 1;
+}
+
+.ticketingPosterContent {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: .45rem;
+}
+
+.ticketingPosterContent > :first-child {
+    color: var(--warning-color);
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.ticketingPosterContent strong {
+    max-width: 11ch;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.7rem, 3vw, 2.35rem);
+    letter-spacing: -.06em;
+    line-height: .92;
+}
+
+.ticketingPosterContent > :last-child {
+    max-width: 26ch;
+    overflow-wrap: anywhere;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
 }
 
 .ticketingDetailEmpty {
@@ -297,6 +438,86 @@
     line-height: 1.45;
 }
 
+.optionalField {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-regular);
+}
+
+.ticketImageInput {
+    min-height: 3rem;
+    padding: .35rem !important;
+    border-color: var(--border-color, #E8E8E8);
+    cursor: pointer;
+    line-height: 1.25;
+}
+
+.ticketImageInput::file-selector-button {
+    margin-right: .75rem;
+    padding: .55rem .85rem;
+    border: 0;
+    border-radius: calc(var(--border-radius-btn) - .15rem);
+    background: var(--danger-color);
+    color: var(--text-color-light);
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    transition: background-color .2s ease, transform .2s ease;
+}
+
+.ticketImageInput:hover::file-selector-button {
+    background: var(--dark-danger-color);
+}
+
+.ticketImageInput:active::file-selector-button {
+    transform: translateY(1px);
+}
+
+.ticketImageInput:focus-visible {
+    outline: 3px solid rgb(211 24 19 / .2);
+    outline-offset: 2px;
+}
+
+.eventImagePreview {
+    display: grid;
+    min-height: 10rem;
+    margin-top: .75rem;
+    place-items: center;
+    overflow: hidden;
+    border: 1px dashed var(--text-color-secondary);
+    border-radius: var(--border-radius-input);
+    background: var(--bg-color);
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+}
+
+.eventImagePreview img {
+    width: 100%;
+    height: 10rem;
+    object-fit: cover;
+}
+
+.eventImageActions {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 0;
+    margin-top: .65rem;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+}
+
+.eventImageActions > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ticketImageRemoveButton {
+    flex: 0 0 auto;
+}
+
 .ticketingFormFullWidth {
     grid-column: 1 / -1;
 }
@@ -343,7 +564,7 @@
     margin-top: 0;
 }
 
-@media (max-width: 1120px) {
+@container content (max-width: 1120px) {
     .ticketingGrid {
         grid-template-columns: 1fr;
     }
@@ -357,7 +578,73 @@
     }
 }
 
-@media (max-width: 640px) {
+@container content (max-width: 720px) {
+    .ticketingTable:not(.compactTable) thead {
+        display: none;
+    }
+
+    .ticketingTable:not(.compactTable),
+    .ticketingTable:not(.compactTable) tbody,
+    .ticketingTable:not(.compactTable) tr,
+    .ticketingTable:not(.compactTable) td {
+        display: block;
+        width: 100%;
+    }
+
+    .ticketingTable:not(.compactTable) tbody {
+        display: grid;
+        gap: .65rem;
+        padding: .65rem;
+    }
+
+    .ticketingTable:not(.compactTable) tbody tr,
+    .ticketingTable:not(.compactTable) tbody tr:nth-child(even) {
+        border: var(--border);
+        border-radius: var(--border-radius-input);
+        background: var(--bg-color-white);
+    }
+
+    .ticketingTable:not(.compactTable) tbody tr:hover {
+        transform: none;
+    }
+
+    .ticketingTable:not(.compactTable) td {
+        display: grid;
+        grid-template-columns: minmax(6.5rem, 38%) minmax(0, 1fr);
+        gap: .65rem;
+        max-width: none;
+        padding: .55rem .75rem;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .ticketingTable:not(.compactTable) td::before {
+        color: var(--text-color-secondary);
+        content: '';
+        font-size: var(--font-size-sh);
+        font-weight: var(--font-weight-bold);
+        text-transform: uppercase;
+    }
+
+    .ticketingTable:not(.compactTable) td:nth-child(1)::before {
+        content: 'Evento';
+    }
+
+    .ticketingTable:not(.compactTable) td:nth-child(2)::before {
+        content: 'Fecha';
+    }
+
+    .ticketingTable:not(.compactTable) td:nth-child(3)::before {
+        content: 'Acciones';
+    }
+
+    .ticketingTable:not(.compactTable) .tableLink,
+    .ticketingTable:not(.compactTable) .tableSecondaryText {
+        white-space: normal;
+    }
+}
+
+@container content (max-width: 640px) {
     .ticketingPanel {
         padding: .9rem;
     }
@@ -371,6 +658,10 @@
     .subsectionHeader,
     .detailHeader {
         flex-direction: column;
+    }
+
+    .ticketingDetailTop {
+        grid-template-columns: 1fr;
     }
 
     .panelHint {
@@ -387,11 +678,33 @@
         grid-column: auto;
     }
 
+    .ticketingPanel .paginationContainer,
+    .ticketingPanel .paginationLeft {
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .ticketingPanel .paginationContainer {
+        gap: .75rem;
+    }
+
+    .ticketingPanel .paginationLeft {
+        gap: .5rem;
+        white-space: normal;
+    }
+
     .listItemMain {
         grid-template-columns: 1fr auto;
     }
 
     .listItemMain .statusBadge {
         grid-column: 1 / -1;
+    }
+}
+
+@container content (max-width: 420px) {
+    .eventImageActions {
+        align-items: flex-start;
+        flex-direction: column;
     }
 }

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/utils/pagination.css">
+    <link rel="stylesheet" href="../css/utils/showData/table.css">
+    <link rel="stylesheet" href="../css/utils/loaders/loader.css">
+    <link rel="stylesheet" href="../css/utils/floatingMenu.css">
+    <link rel="stylesheet" href="../css/utils/modals/modal.css">
+    <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/modules/ticketOrders/ticketOrders.css">
+    <script src="../js/utils/dark.mode.init.js"></script>
+    <title>Órdenes de boletos</title>
+</head>
+
+<body>
+    <div class="containerModal hide" id="ticketOrderDetailModal">
+        <section class="modalAdd ticketOrderModal" role="dialog" aria-modal="true" aria-labelledby="ticketOrderDetailTitle">
+            <button class="btnClose" id="btnCloseTicketOrderDetail" type="button" aria-label="Cerrar detalle de la compra">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+                    <line x1="10" y1="10" x2="22" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                    <line x1="22" y1="10" x2="10" y2="22" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
+            </button>
+            <div class="ticketOrderDetailContent" id="ticketOrderDetailContent">
+                <div class="ticketOrderDetailHeader">
+                    <div>
+                        <span class="ticketOrdersEyebrow">DETALLE DE COMPRA</span>
+                        <h2 id="ticketOrderDetailTitle">Detalle de compra</h2>
+                        <p id="ticketOrderDetailCustomer"></p>
+                    </div>
+                    <span class="ticketOrderStatus" id="ticketOrderDetailStatus"></span>
+                </div>
+                <div class="ticketOrderFacts" id="ticketOrderFacts"></div>
+                <section class="ticketOrderSection">
+                    <div class="ticketOrderSectionHeading">
+                        <h3>Boletos seleccionados</h3>
+                        <span id="ticketOrderDetailTotal"></span>
+                    </div>
+                    <div class="ticketOrderLines" id="ticketOrderLines"></div>
+                </section>
+                <section class="ticketOrderSection">
+                    <div class="ticketOrderSectionHeading">
+                        <h3>Pago</h3>
+                    </div>
+                    <div class="ticketOrderPayments" id="ticketOrderPayments"></div>
+                </section>
+                <section class="ticketOrderSection">
+                    <div class="ticketOrderSectionHeading">
+                        <h3>Boletos emitidos</h3>
+                        <span id="ticketOrderTicketCount"></span>
+                    </div>
+                    <div class="ticketOrderTickets" id="ticketOrderTickets"></div>
+                </section>
+            </div>
+        </section>
+    </div>
+    <div class="containerMobileHeader"></div>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+        <main class="content ticketOrdersPage">
+            <div class="headerContent">
+                <div class="breadCrumbSection">
+                    <a class="breadcrumb">Órdenes de boletos</a>
+                </div>
+            </div>
+
+            <section class="ticketOrdersLayout" aria-label="Órdenes de clientes">
+                <article class="ticketOrdersPanel">
+                    <div class="ticketOrdersHeading">
+                        <div>
+                            <span class="ticketOrdersEyebrow">VENTAS DIGITALES</span>
+                            <h1>Órdenes de boletos</h1>
+                        </div>
+                        <p>Consulta el comprador, el evento, el pago y los boletos emitidos.</p>
+                    </div>
+                    <div class="ticketOrdersTableWrap">
+                        <div class="containerLoader hide" id="ticketOrdersLoader">
+                            <div class="loader"></div>
+                            <div>Cargando órdenes...</div>
+                        </div>
+                        <table class="table ticketOrdersTable">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Evento</th>
+                                    <th>Boletos</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketOrdersTableBody"></tbody>
+                        </table>
+                        <div class="ticketOrdersEmpty hide" id="ticketOrdersEmpty"></div>
+                    </div>
+                    <div class="paginationContainer ticketOrdersPagination">
+                        <div class="paginationLeft">
+                            <span class="paginationInfo"></span>
+                            <div class="pageSize">
+                                <select id="ticketOrdersSizeSelect" aria-label="Órdenes por página">
+                                    <option value="10">10</option>
+                                    <option value="15" selected>15</option>
+                                    <option value="30">30</option>
+                                    <option value="50">50</option>
+                                </select>
+                                <span>por página</span>
+                            </div>
+                        </div>
+                        <div class="paginationRight" id="ticketOrdersPaginationButtons"></div>
+                    </div>
+            </section>
+        </main>
+    </div>
+    <script type="module" src="../js/modules/ticketOrders/ticketOrders.controller.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
+</body>
+
+</html>

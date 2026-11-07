@@ -219,6 +219,16 @@ const createSidebar = () => {
                     requiredPrivileges: ['READ_TICKETING', 'WRITE_TICKETING']
                 },
                 {
+                    href: '../pages/ticketOrders.html',
+                    id: 'ticketOrdersItem',
+                    text: 'Órdenes de boletos',
+                    iconData: [
+                        { tag: 'path', attrs: { d: 'M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z' } },
+                        { tag: 'path', attrs: { d: 'M8 8h8M8 12h8M8 16h5' } }
+                    ],
+                    requiredPrivileges: ['READ_SALES']
+                },
+                {
                     href: '../pages/ticketValidation.html',
                     id: 'ticketValidationItem',
                     text: 'Validar ingreso',

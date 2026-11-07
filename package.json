@@ -10,6 +10,9 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage"
   },
+  "dependencies": {
+    "@zxing/browser": "^0.1.5"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Leal-Import/Leal-Import.git"
