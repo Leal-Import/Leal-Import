@@ -14,23 +14,9 @@
     box-shadow: var(--bx-shadow-primary, 0 4px 20px rgb(0 0 0 / .06));
 }
 
-.ticketOrdersHeading {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 24px 26px 18px;
-}
-
-.ticketOrdersHeading h1,
 .ticketOrderDetailHeader h2 {
     margin: 5px 0 0;
     color: var(--text-color);
-}
-
-.ticketOrdersHeading p {
-    max-width: 290px;
-    margin: 8px 0 0;
-    color: var(--text-color-secondary);
 }
 
 .ticketOrdersEyebrow {
@@ -211,14 +197,6 @@
 }
 
 @media screen and (width <= 700px) {
-    .ticketOrdersHeading {
-        display: block;
-    }
-
-    .ticketOrdersHeading p {
-        max-width: none;
-    }
-
     .ticketOrderDetailHeader {
         display: block;
     }
