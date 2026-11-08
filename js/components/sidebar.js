@@ -227,7 +227,7 @@ const createSidebar = () => {
                         { tag: 'path', attrs: { d: 'M8 8h8M8 12h8M8 16h5' } }
                     ],
                     requiredPrivileges: ['READ_TICKET_ORDERS']
-                },
+                }
             ]
         },
         {
