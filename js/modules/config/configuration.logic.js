@@ -59,14 +59,15 @@ export const getPrivilegeNameInSpanish = (privilegeName) => {
         "WRITE_CUSTOMERS": "Manipular Clientes",
         "READ_WORK_ORDERS": "Leer Órdenes de Trabajo",
         "WRITE_WORK_ORDERS": "Manipular Órdenes de Trabajo",
-        "READ_TICKET_TYPES": "Leer Tipos de Boleto",
-        "WRITE_TICKET_TYPES": "Manipular Tipos de Boleto",
         "READ_TICKETING": "Leer Boletería",
         "WRITE_TICKETING": "Administrar Boletería",
+        "READ_TICKET_ORDERS": "Consultar Órdenes de Boletos",
         "WRITE_TICKET_SALES": "Registrar Ventas de Boletos",
+        "VALIDATE_TICKETS": "Validar Boletos",
         "MANAGE_SECURITY": "Gestionar Seguridad",
         "MANAGE_CONFIG": "Gestionar Configuración",
         "VIEW_DASHBOARD": "Ver Dashboard"
     };
-    return translations[privilegeName] || privilegeName;
+    const key = typeof privilegeName === 'string' ? privilegeName.trim().toUpperCase() : '';
+    return translations[key] || privilegeName;
 };

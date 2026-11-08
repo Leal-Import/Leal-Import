@@ -11,5 +11,5 @@ export const validateTicketQr = (qrContent) => apiRequest(
         body: JSON.stringify({ qrContent })
     },
     'No se pudo validar el boleto',
-    ['WRITE_TICKETING']
+    ['VALIDATE_TICKETS']
 ).then(response => response?.data ?? response);

@@ -66,7 +66,7 @@ const onOpenOrderActions = (button, orderId) => {
     showFloatingMenu({ currentTarget: button }, [
         {
             label: 'Ver detalles de la compra',
-            privilege: 'READ_SALES',
+            privilege: 'READ_TICKET_ORDERS',
             onClick: () => selectOrder(orderId, button)
         }
     ]);

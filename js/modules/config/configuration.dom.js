@@ -198,7 +198,7 @@ export const renderRolePrivileges = (role, allPrivileges, privilegesEl, countEl,
                 removeButton = document.createElement('button');
                 removeButton.type = 'button';
                 removeButton.className = 'btnRemovePrivilege';
-                removeButton.title = `Remover ${privilege.name}`;
+                removeButton.title = `Remover ${getPrivilegeNameInSpanish(privilege.name)}`;
                 removeButton.setAttribute('aria-label', `Remover ${getPrivilegeNameInSpanish(privilege.name)}`);
                 removeButton.innerHTML = `
                     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round">

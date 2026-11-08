@@ -84,7 +84,7 @@ const startCamera = async () => {
 };
 
 const initializeUI = () => {
-    if (!canAccess(['WRITE_TICKETING'])) {
+    if (!canAccess(['VALIDATE_TICKETS'])) {
         renderPermissionDenied();
         return;
     }
