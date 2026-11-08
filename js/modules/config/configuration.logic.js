@@ -68,5 +68,6 @@ export const getPrivilegeNameInSpanish = (privilegeName) => {
         "MANAGE_CONFIG": "Gestionar Configuración",
         "VIEW_DASHBOARD": "Ver Dashboard"
     };
-    return translations[privilegeName] || privilegeName;
+    const key = typeof privilegeName === 'string' ? privilegeName.trim().toUpperCase() : '';
+    return translations[key] || privilegeName;
 };
