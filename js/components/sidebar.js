@@ -216,7 +216,7 @@ const createSidebar = () => {
                         { tag: 'path', attrs: { d: 'M4 5.5v14A2.5 2.5 0 0 0 6.5 22H20V7H6.5A2.5 2.5 0 0 1 4 5.5z' } },
                         { tag: 'line', attrs: { x1: '8', y1: '11', x2: '16', y2: '11' } }
                     ],
-                    requiredPrivileges: ['READ_TICKETING', 'WRITE_TICKETING']
+                    requiredPrivileges: ['READ_TICKETING']
                 },
                 {
                     href: '../pages/ticketOrders.html',
@@ -226,7 +226,7 @@ const createSidebar = () => {
                         { tag: 'path', attrs: { d: 'M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z' } },
                         { tag: 'path', attrs: { d: 'M8 8h8M8 12h8M8 16h5' } }
                     ],
-                    requiredPrivileges: ['READ_SALES']
+                    requiredPrivileges: ['READ_TICKET_ORDERS']
                 },
             ]
         },

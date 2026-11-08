@@ -155,16 +155,23 @@ export const renderEventDetail = (event, ticketTypes) => {
     }
 
     const totalCapacity = ticketTypes.reduce((total, ticketType) => total + ticketType.capacity, 0);
+    const totalAvailable = ticketTypes.reduce((total, ticketType) => total + ticketType.availableQuantity, 0);
     const typesMetric = document.createElement('div');
     typesMetric.className = 'metricCard';
     typesMetric.append(createElement('span', '', 'Tipos visibles'), createElement('strong', '', ticketTypes.length));
+    const availableMetric = document.createElement('div');
+    availableMetric.className = 'metricCard';
+    availableMetric.append(
+        createElement('span', '', 'Cupos disponibles'),
+        createElement('strong', '', totalAvailable.toLocaleString('es-SV'))
+    );
     const capacityMetric = document.createElement('div');
     capacityMetric.className = 'metricCard';
     capacityMetric.append(
-        createElement('span', '', 'Cupos visibles'),
+        createElement('span', '', 'Cupos configurados'),
         createElement('strong', '', totalCapacity.toLocaleString('es-SV'))
     );
-    refs.eventMetrics.replaceChildren(typesMetric, capacityMetric);
+    refs.eventMetrics.replaceChildren(typesMetric, availableMetric, capacityMetric);
 };
 
 export const renderTicketTypes = (ticketTypes) => {
@@ -178,7 +185,7 @@ export const renderTicketTypes = (ticketTypes) => {
     const table = createElement('table', 'table ticketingTable compactTable');
     const head = document.createElement('thead');
     const headRow = document.createElement('tr');
-    ['Boleto', 'Precio', 'Cupos', 'Estado', 'Acciones'].forEach((label) => {
+    ['Boleto', 'Precio', 'Disponibles', 'Estado', 'Acciones'].forEach((label) => {
         headRow.appendChild(createElement('th', '', label));
     });
     head.appendChild(headRow);
@@ -189,7 +196,11 @@ export const renderTicketTypes = (ticketTypes) => {
         const nameCell = document.createElement('td');
         nameCell.appendChild(createElement('strong', '', ticketType.name));
         const priceCell = createElement('td', '', formatCurrencyFromCents(ticketType.priceInCents));
-        const capacityCell = createElement('td', '', ticketType.capacity.toLocaleString('es-SV'));
+        const capacityCell = createElement('td', 'ticketCapacityCell');
+        capacityCell.append(
+            createElement('strong', '', ticketType.availableQuantity.toLocaleString('es-SV')),
+            createElement('small', '', `de ${ticketType.capacity.toLocaleString('es-SV')} configurados`)
+        );
         const statusCell = document.createElement('td');
         statusCell.appendChild(createStatus(ticketType.active));
         const actionsCell = document.createElement('td');
@@ -210,7 +221,9 @@ export const renderTicketTypesError = () => {
 
 export const renderTicketTypesSummary = (ticketTypes) => {
     DOMRefs.refs.ticketTypesTitle.textContent = 'Tipos de boleto';
-    DOMRefs.refs.ticketTypesHint.textContent = `${ticketTypes.reduce((total, item) => total + item.capacity, 0).toLocaleString('es-SV')} cupos visibles en esta página.`;
+    const available = ticketTypes.reduce((total, item) => total + item.availableQuantity, 0);
+    const capacity = ticketTypes.reduce((total, item) => total + item.capacity, 0);
+    DOMRefs.refs.ticketTypesHint.textContent = `${available.toLocaleString('es-SV')} disponibles de ${capacity.toLocaleString('es-SV')} configurados.`;
     renderTicketTypes(ticketTypes);
 };
 
