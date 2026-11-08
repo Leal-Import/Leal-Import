@@ -1,3 +1,5 @@
+import { $ } from '../../utils/dom.js';
+import { formatCurrencyFromCents, formatDateTime } from '../../utils/formatters.js';
 import { canAccess } from '../../utils/privilegesValidator.js';
 
 export const DOMRefs = {
@@ -5,82 +7,105 @@ export const DOMRefs = {
 
     init() {
         this.refs = {
-            eventLoader: document.getElementById('eventLoader'),
-            eventsTableBody: document.getElementById('eventsTableBody'),
-            eventsEmptyState: document.getElementById('eventsEmptyState'),
-            eventDetailEmpty: document.getElementById('eventDetailEmpty'),
-            eventDetailContent: document.getElementById('eventDetailContent'),
-            selectedEventName: document.getElementById('selectedEventName'),
-            selectedEventMeta: document.getElementById('selectedEventMeta'),
-            selectedEventStatus: document.getElementById('selectedEventStatus'),
-            eventMetrics: document.getElementById('eventMetrics'),
-            zonesList: document.getElementById('zonesList'),
-            selectedZoneTitle: document.getElementById('selectedZoneTitle'),
-            selectedZoneHint: document.getElementById('selectedZoneHint'),
-            ticketTypesList: document.getElementById('ticketTypesList'),
-            eventModal: document.getElementById('eventModal'),
-            zoneModal: document.getElementById('zoneModal'),
-            ticketTypeModal: document.getElementById('ticketTypeModal'),
-            eventModalTitle: document.getElementById('eventModalTitle'),
-            zoneModalTitle: document.getElementById('zoneModalTitle'),
-            ticketTypeModalTitle: document.getElementById('ticketTypeModalTitle'),
-            eventForm: document.getElementById('eventForm'),
-            zoneForm: document.getElementById('zoneForm'),
-            ticketTypeForm: document.getElementById('ticketTypeForm'),
-            eventSubmitLabel: document.getElementById('eventSubmitLabel'),
-            zoneSubmitLabel: document.getElementById('zoneSubmitLabel'),
-            ticketTypeSubmitLabel: document.getElementById('ticketTypeSubmitLabel'),
-            eventSubmitLoader: document.getElementById('eventSubmitLoader'),
-            zoneSubmitLoader: document.getElementById('zoneSubmitLoader'),
-            ticketTypeSubmitLoader: document.getElementById('ticketTypeSubmitLoader')
+            eventLoader: $('eventLoader'),
+            eventsTableBody: $('eventsTableBody'),
+            eventsEmptyState: $('eventsEmptyState'),
+            eventDetailEmpty: $('eventDetailEmpty'),
+            eventDetailContent: $('eventDetailContent'),
+            selectedEventName: $('selectedEventName'),
+            selectedEventMeta: $('selectedEventMeta'),
+            selectedEventStatus: $('selectedEventStatus'),
+            ticketingPosterDay: $('ticketingPosterDay'),
+            ticketingPosterMonth: $('ticketingPosterMonth'),
+            ticketingPosterName: $('ticketingPosterName'),
+            ticketingPosterVenue: $('ticketingPosterVenue'),
+            ticketingPosterImage: $('ticketingPosterImage'),
+            eventMetrics: $('eventMetrics'),
+            ticketTypesTitle: $('ticketTypesTitle'),
+            ticketTypesHint: $('ticketTypesHint'),
+            ticketTypesList: $('ticketTypesList'),
+            eventModal: $('eventModal'),
+            ticketTypeModal: $('ticketTypeModal'),
+            eventModalTitle: $('eventModalTitle'),
+            ticketTypeModalTitle: $('ticketTypeModalTitle'),
+            eventForm: $('eventForm'),
+            ticketTypeForm: $('ticketTypeForm'),
+            eventSubmitLabel: $('eventSubmitLabel'),
+            ticketTypeSubmitLabel: $('ticketTypeSubmitLabel'),
+            eventSubmitLoader: $('eventSubmitLoader'),
+            ticketTypeSubmitLoader: $('ticketTypeSubmitLoader'),
+            eventImage: $('eventImage'),
+            eventImagePreviewImage: $('eventImagePreviewImage'),
+            eventImagePreviewName: $('eventImagePreviewName'),
+            eventImagePlaceholder: $('eventImagePlaceholder'),
+            eventImageActions: $('eventImageActions'),
+            btnRemoveEventImage: $('btnRemoveEventImage')
         };
 
         return this.refs;
     }
 };
 
-const escapeHtml = (value) => String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+const createElement = (tagName, className, value) => {
+    const element = document.createElement(tagName);
+    if (className) element.className = className;
+    if (value !== undefined) element.textContent = value;
+    return element;
+};
 
-const money = (cents) => new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-}).format((cents || 0) / 100);
+const eventPosterDate = (value) => {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return { day: '--', month: '---' };
 
-const dateTime = (value) => value
-    ? new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
-    : 'Sin fecha';
+    const parts = new Intl.DateTimeFormat('es-SV', { day: '2-digit', month: 'short' }).formatToParts(date);
+    return {
+        day: parts.find(part => part.type === 'day')?.value || '--',
+        month: (parts.find(part => part.type === 'month')?.value || '---').replace('.', '').toUpperCase()
+    };
+};
 
-const status = (active) => `<span class="statusBadge ${active ? 'statusActive' : 'statusInactive'}">${active ? 'Activo' : 'Inactivo'}</span>`;
+const createStatus = (active) => createElement(
+    'span',
+    `statusBadge ${active ? 'statusActive' : 'statusInactive'}`,
+    active ? 'Activo' : 'Inactivo'
+);
 
-const actionMenuButton = (action, id, label) => {
-    if (!canAccess(['WRITE_TICKETING'])) return '';
-    return `<button class="actionButton" type="button" data-action="${escapeHtml(action)}" data-id="${escapeHtml(id)}" aria-label="${escapeHtml(label)}">⋯</button>`;
+const createActionMenuButton = (action, id, label) => {
+    if (!canAccess(['WRITE_TICKETING'])) return null;
+    const button = createElement('button', 'actionButton', '⋯');
+    button.type = 'button';
+    button.dataset.action = action;
+    button.dataset.id = id;
+    button.setAttribute('aria-label', label);
+    return button;
 };
 
 export const renderEvents = (events, selectedEventId, onSelect) => {
     const { eventsTableBody, eventsEmptyState } = DOMRefs.refs;
-    eventsTableBody.textContent = '';
+    eventsTableBody.replaceChildren();
     eventsEmptyState.classList.toggle('hide', events.length > 0);
 
     events.forEach((event) => {
         const row = document.createElement('tr');
         row.className = event.id === selectedEventId ? 'selectedRow' : '';
-        row.innerHTML = `
-            <td><button class="tableLink" type="button" data-action="select-event" data-id="${escapeHtml(event.id)}">${escapeHtml(event.name)}</button><span class="tableSecondaryText">${escapeHtml(event.venue)}</span></td>
-            <td>${escapeHtml(dateTime(event.startsAt))}</td>
-            <td>${status(event.active)}</td>
-            <td>${actionMenuButton('event-actions', event.id, `Acciones de ${event.name}`)}</td>
-        `;
+
+        const eventCell = document.createElement('td');
+        const eventName = createElement('span', 'ticketingEventName');
+        const eventButton = createElement('button', 'tableLink', event.name);
+        eventButton.type = 'button';
+        eventButton.dataset.action = 'select-event';
+        eventButton.dataset.id = event.id;
+        eventName.append(eventButton, createStatus(event.active));
+        eventCell.append(eventName, createElement('span', 'tableSecondaryText', event.venue));
+
+        const dateCell = createElement('td', '', formatDateTime(event.startsAt, 'es-SV', 'Sin fecha'));
+        const actionsCell = document.createElement('td');
+        const actionsButton = createActionMenuButton('event-actions', event.id, `Acciones de ${event.name}`);
+        if (actionsButton) actionsCell.appendChild(actionsButton);
+
+        row.append(eventCell, dateCell, actionsCell);
         row.addEventListener('click', (clickEvent) => {
-            const action = clickEvent.target.closest('[data-action]')?.dataset.action;
-            if (action) return;
+            if (clickEvent.target.closest('[data-action]')) return;
             onSelect(event.id);
         });
         eventsTableBody.appendChild(row);
@@ -88,101 +113,104 @@ export const renderEvents = (events, selectedEventId, onSelect) => {
 };
 
 export const renderEventsError = () => {
-    DOMRefs.refs.eventsTableBody.textContent = '';
-    DOMRefs.refs.eventsEmptyState.classList.remove('hide');
-    DOMRefs.refs.eventsEmptyState.innerHTML = '<strong>No se pudieron cargar los eventos</strong><span>Revisa la conexión o tus permisos e inténtalo de nuevo.</span>';
+    const { eventsTableBody, eventsEmptyState } = DOMRefs.refs;
+    eventsTableBody.replaceChildren();
+    eventsEmptyState.classList.remove('hide');
+    eventsEmptyState.replaceChildren(
+        createElement('strong', '', 'No se pudieron cargar los eventos'),
+        createElement('span', '', 'Revisa la conexión o tus permisos e inténtalo de nuevo.')
+    );
 };
 
-export const renderEventDetail = (event, zones) => {
-    DOMRefs.refs.eventDetailEmpty.classList.add('hide');
-    DOMRefs.refs.eventDetailContent.classList.remove('hide');
-    DOMRefs.refs.selectedEventName.textContent = event.name;
-    DOMRefs.refs.selectedEventMeta.innerHTML = `
-        <span class="ticketingEventVenue">${escapeHtml(event.venue)}</span>
-        <span class="ticketingEventSeparator" aria-hidden="true">·</span>
-        <span class="ticketingEventDates">
-            <time datetime="${escapeHtml(event.startsAt)}">${escapeHtml(dateTime(event.startsAt))}</time>
-            <span aria-hidden="true">a</span>
-            <time datetime="${escapeHtml(event.endsAt)}">${escapeHtml(dateTime(event.endsAt))}</time>
-        </span>
-    `;
-    DOMRefs.refs.selectedEventStatus.className = `statusBadge ${event.active ? 'statusActive' : 'statusInactive'}`;
-    DOMRefs.refs.selectedEventStatus.textContent = event.active ? 'Activo' : 'Inactivo';
+export const renderEventDetail = (event, ticketTypes) => {
+    const refs = DOMRefs.refs;
+    refs.eventDetailEmpty.classList.add('hide');
+    refs.eventDetailContent.classList.remove('hide');
+    refs.selectedEventName.textContent = event.name;
 
-    const totalCapacity = zones.reduce((total, zone) => total + zone.capacity, 0);
-    DOMRefs.refs.eventMetrics.innerHTML = `
-        <div class="metricCard"><span>Zonas</span><strong>${zones.length}</strong></div>
-        <div class="metricCard"><span>Capacidad configurada</span><strong>${totalCapacity.toLocaleString('es-CO')}</strong></div>
-    `;
-};
+    const dates = createElement('span', 'ticketingEventDates');
+    const start = createElement('time', '', formatDateTime(event.startsAt, 'es-SV', 'Sin fecha'));
+    const end = createElement('time', '', formatDateTime(event.endsAt, 'es-SV', 'Sin fecha'));
+    start.dateTime = event.startsAt || '';
+    end.dateTime = event.endsAt || '';
+    dates.append(start, createElement('span', '', 'a'), end);
+    refs.selectedEventMeta.replaceChildren(
+        createElement('span', 'ticketingEventVenue', event.venue),
+        createElement('span', 'ticketingEventSeparator', '·'),
+        dates
+    );
+    refs.selectedEventStatus.className = `statusBadge ${event.active ? 'statusActive' : 'statusInactive'}`;
+    refs.selectedEventStatus.textContent = event.active ? 'Activo' : 'Inactivo';
 
-export const renderZones = (zones, selectedZoneId, onSelect) => {
-    const container = DOMRefs.refs.zonesList;
-    container.textContent = '';
-    if (!zones.length) {
-        container.innerHTML = '<div class="inlineEmptyState">Este evento todavía no tiene zonas configuradas.</div>';
-        return;
+    const posterDate = eventPosterDate(event.startsAt);
+    refs.ticketingPosterDay.textContent = posterDate.day;
+    refs.ticketingPosterMonth.textContent = posterDate.month;
+    refs.ticketingPosterName.textContent = event.name;
+    refs.ticketingPosterVenue.textContent = event.venue;
+    refs.ticketingPosterImage.classList.toggle('hide', !event.imageUrl);
+    if (event.imageUrl) {
+        refs.ticketingPosterImage.src = event.imageUrl;
+    } else {
+        refs.ticketingPosterImage.removeAttribute('src');
     }
 
-    zones.forEach((zone) => {
-        const item = document.createElement('div');
-        item.className = `ticketingListItem ${zone.id === selectedZoneId ? 'selectedListItem' : ''}`;
-        item.innerHTML = `
-            <button class="listItemMain" type="button" data-zone-id="${escapeHtml(zone.id)}">
-                <span><strong>${escapeHtml(zone.name)}</strong><small>Cupos disponibles</small></span>
-                <span><strong>${escapeHtml(zone.capacity.toLocaleString('es-CO'))}</strong><small>cupos</small></span>
-                ${status(zone.active)}
-            </button>
-            <div class="listItemActions">${actionMenuButton('zone-actions', zone.id, `Acciones de ${zone.name}`)}</div>
-        `;
-        item.querySelector('[data-zone-id]').addEventListener('click', () => onSelect(zone.id));
-        container.appendChild(item);
-    });
-};
-
-export const renderZonesError = () => {
-    DOMRefs.refs.zonesList.innerHTML = '<div class="inlineEmptyState">No se pudieron cargar las zonas del evento.</div>';
+    const totalCapacity = ticketTypes.reduce((total, ticketType) => total + ticketType.capacity, 0);
+    const typesMetric = document.createElement('div');
+    typesMetric.className = 'metricCard';
+    typesMetric.append(createElement('span', '', 'Tipos visibles'), createElement('strong', '', ticketTypes.length));
+    const capacityMetric = document.createElement('div');
+    capacityMetric.className = 'metricCard';
+    capacityMetric.append(
+        createElement('span', '', 'Cupos visibles'),
+        createElement('strong', '', totalCapacity.toLocaleString('es-SV'))
+    );
+    refs.eventMetrics.replaceChildren(typesMetric, capacityMetric);
 };
 
 export const renderTicketTypes = (ticketTypes) => {
     const container = DOMRefs.refs.ticketTypesList;
-    container.textContent = '';
+    container.replaceChildren();
     if (!ticketTypes.length) {
-        container.innerHTML = '<div class="inlineEmptyState">Esta zona todavía no tiene tipos de boleto.</div>';
+        container.appendChild(createElement('div', 'inlineEmptyState', 'Este evento todavía no tiene tipos de boleto.'));
         return;
     }
 
-    const table = document.createElement('table');
-    table.className = 'table ticketingTable compactTable';
-    table.innerHTML = '<thead><tr><th>Boleto</th><th>Precio</th><th>Cupos</th><th>Estado</th><th>Acciones</th></tr></thead><tbody></tbody>';
-    const body = table.querySelector('tbody');
+    const table = createElement('table', 'table ticketingTable compactTable');
+    const head = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    ['Boleto', 'Precio', 'Cupos', 'Estado', 'Acciones'].forEach((label) => {
+        headRow.appendChild(createElement('th', '', label));
+    });
+    head.appendChild(headRow);
+
+    const body = document.createElement('tbody');
     ticketTypes.forEach((ticketType) => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td><strong>${escapeHtml(ticketType.name)}</strong></td>
-            <td>${escapeHtml(money(ticketType.priceInCents))}</td>
-            <td>${escapeHtml(ticketType.capacity.toLocaleString('es-CO'))}</td>
-            <td>${status(ticketType.active)}</td>
-            <td>${actionMenuButton('ticket-type-actions', ticketType.id, `Acciones de ${ticketType.name}`)}</td>
-        `;
+        const nameCell = document.createElement('td');
+        nameCell.appendChild(createElement('strong', '', ticketType.name));
+        const priceCell = createElement('td', '', formatCurrencyFromCents(ticketType.priceInCents));
+        const capacityCell = createElement('td', '', ticketType.capacity.toLocaleString('es-SV'));
+        const statusCell = document.createElement('td');
+        statusCell.appendChild(createStatus(ticketType.active));
+        const actionsCell = document.createElement('td');
+        const actionsButton = createActionMenuButton('ticket-type-actions', ticketType.id, `Acciones de ${ticketType.name}`);
+        if (actionsButton) actionsCell.appendChild(actionsButton);
+        row.append(nameCell, priceCell, capacityCell, statusCell, actionsCell);
         body.appendChild(row);
     });
+    table.append(head, body);
     container.appendChild(table);
 };
 
 export const renderTicketTypesError = () => {
-    DOMRefs.refs.ticketTypesList.innerHTML = '<div class="inlineEmptyState">No se pudieron cargar los tipos de boleto.</div>';
+    DOMRefs.refs.ticketTypesList.replaceChildren(
+        createElement('div', 'inlineEmptyState', 'No se pudieron cargar los tipos de boleto.')
+    );
 };
 
-export const renderSelectedZone = (zone, ticketTypes) => {
-    if (!zone) {
-        DOMRefs.refs.selectedZoneTitle.textContent = 'Tipos de boleto';
-        DOMRefs.refs.selectedZoneHint.textContent = 'Selecciona una zona para administrar sus boletos.';
-        DOMRefs.refs.ticketTypesList.textContent = '';
-        return;
-    }
-    DOMRefs.refs.selectedZoneTitle.textContent = `Tipos de boleto · ${zone.name}`;
-    DOMRefs.refs.selectedZoneHint.textContent = `${zone.capacity.toLocaleString('es-CO')} cupos configurados en esta zona.`;
+export const renderTicketTypesSummary = (ticketTypes) => {
+    DOMRefs.refs.ticketTypesTitle.textContent = 'Tipos de boleto';
+    DOMRefs.refs.ticketTypesHint.textContent = `${ticketTypes.reduce((total, item) => total + item.capacity, 0).toLocaleString('es-SV')} cupos visibles en esta página.`;
     renderTicketTypes(ticketTypes);
 };
 

@@ -1,3 +1,4 @@
+import { BrowserQRCodeReader } from '@zxing/browser';
 import { createModuleInitializer } from '../../utils/dom.js';
 import { handleApiError } from '../../utils/api.utils.js';
 import { canAccess } from '../../utils/privilegesValidator.js';
@@ -5,17 +6,15 @@ import { validateTicketQr } from './ticketValidation.service.js';
 import { DOMRefs, clearValidationForm, clearValidationResult, renderPermissionDenied, renderValidationError, renderValidationSuccess, setCameraMessage, setCameraState, setValidationBusy } from './ticketValidation.dom.js';
 import { resetTicketValidationState, ticketValidationState } from './ticketValidation.state.js';
 
-const hasCameraScanner = () => Boolean(
-    navigator.mediaDevices?.getUserMedia &&
-    'BarcodeDetector' in window
-);
+const hasCamera = () => Boolean(navigator.mediaDevices?.getUserMedia);
 
 const stopCamera = () => {
     ticketValidationState.scanning = false;
-    ticketValidationState.scanRequestId += 1;
+    ticketValidationState.controls?.stop();
     ticketValidationState.stream?.getTracks().forEach(track => track.stop());
     ticketValidationState.stream = null;
-    ticketValidationState.detector = null;
+    ticketValidationState.reader = null;
+    ticketValidationState.controls = null;
     DOMRefs.refs.qrVideo.srcObject = null;
     setCameraState(false);
 };
@@ -45,55 +44,38 @@ const submitValidation = async (content) => {
     }
 };
 
-const scanFrame = async (requestId) => {
-    if (!ticketValidationState.scanning || requestId !== ticketValidationState.scanRequestId) return;
-
-    try {
-        const detectedCodes = await ticketValidationState.detector.detect(DOMRefs.refs.qrVideo);
-        const qrCode = detectedCodes.find(code => code.rawValue?.trim());
-        if (qrCode) {
-            DOMRefs.refs.qrContent.value = qrCode.rawValue.trim();
-            await submitValidation(qrCode.rawValue);
-            return;
-        }
-    } catch {
-        if (ticketValidationState.scanning) {
-            setCameraMessage('No se pudo leer el QR. Alinea el código dentro del área de la cámara.', 'warning');
-        }
-    }
-
-    if (ticketValidationState.scanning && requestId === ticketValidationState.scanRequestId) {
-        window.requestAnimationFrame(() => scanFrame(requestId));
-    }
-};
-
 const startCamera = async () => {
     if (ticketValidationState.scanning || ticketValidationState.submitting) return;
 
-    if (!hasCameraScanner()) {
-        setCameraMessage('Este navegador no permite escanear QR con la cámara. Utiliza la validación manual.', 'warning');
+    if (!hasCamera()) {
+        setCameraMessage('Este navegador no permite acceder a la cámara. Utiliza la validación manual.', 'warning');
         return;
     }
 
     try {
         setCameraMessage('Solicitando acceso a la cámara…');
-        ticketValidationState.detector = new window.BarcodeDetector({ formats: ['qr_code'] });
-        ticketValidationState.stream = await navigator.mediaDevices.getUserMedia({
-            audio: false,
-            video: {
-                facingMode: { ideal: 'environment' },
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-            }
-        });
-
-        DOMRefs.refs.qrVideo.srcObject = ticketValidationState.stream;
-        await DOMRefs.refs.qrVideo.play();
+        ticketValidationState.reader = new BrowserQRCodeReader();
         ticketValidationState.scanning = true;
-        ticketValidationState.scanRequestId += 1;
+        ticketValidationState.controls = await ticketValidationState.reader.decodeFromVideoDevice(
+            undefined,
+            DOMRefs.refs.qrVideo,
+            async (result, error) => {
+                if (result && ticketValidationState.scanning && !ticketValidationState.submitting) {
+                    const qrContent = result.getText().trim();
+                    DOMRefs.refs.qrContent.value = qrContent;
+                    await submitValidation(qrContent);
+                    return;
+                }
+
+                if (error && error.name !== 'NotFoundException' && ticketValidationState.scanning) {
+                    setCameraMessage('No se pudo leer el QR. Alinea el código dentro del área de la cámara.', 'warning');
+                }
+            }
+        );
+
+        ticketValidationState.scanning = true;
         setCameraState(true);
         setCameraMessage('Apunta la cámara al código QR del boleto.');
-        window.requestAnimationFrame(() => scanFrame(ticketValidationState.scanRequestId));
     } catch (error) {
         stopCamera();
         const message = error?.name === 'NotAllowedError'

@@ -1,13 +1,20 @@
 export const ticketingState = {
     events: [],
     selectedEvent: null,
-    zones: [],
-    selectedZone: null,
     ticketTypes: [],
     editingEventId: null,
-    editingZoneId: null,
     editingTicketTypeId: null,
+    eventImage: {
+        file: null,
+        previewObjectUrl: null,
+        existingImageUrl: null,
+        removeImage: false
+    },
     pagination: {
+        page: 1,
+        size: 15
+    },
+    ticketTypesPagination: {
         page: 1,
         size: 15
     }
@@ -16,11 +23,15 @@ export const ticketingState = {
 export const resetTicketingState = () => {
     ticketingState.events = [];
     ticketingState.selectedEvent = null;
-    ticketingState.zones = [];
-    ticketingState.selectedZone = null;
     ticketingState.ticketTypes = [];
     ticketingState.editingEventId = null;
-    ticketingState.editingZoneId = null;
     ticketingState.editingTicketTypeId = null;
+    ticketingState.eventImage = {
+        file: null,
+        previewObjectUrl: null,
+        existingImageUrl: null,
+        removeImage: false
+    };
     ticketingState.pagination = { page: 1, size: 15 };
+    ticketingState.ticketTypesPagination = { page: 1, size: 15 };
 };

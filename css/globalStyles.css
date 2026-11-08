@@ -2,7 +2,7 @@
 
 :root {
     --bg-color-white: #F9F9F9;
-    --bg-color: #f1f0f0;   
+    --bg-color: #f1f0f0;
     --text-color: #0D0503;
     --text-color-light: #FFF;
     --text-color-secondary: #81859E;
@@ -74,6 +74,8 @@ body{
     width: 100%;
     flex-direction: column;
     gap: 20px;
+    container-type: inline-size;
+    container-name: content;
     overflow: hidden auto;
 }
 

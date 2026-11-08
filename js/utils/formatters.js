@@ -54,6 +54,33 @@ export const formatWithCommas = (number) => {
     })}`;
 };
 
+export const formatCurrencyFromCents = (cents, currency = 'USD') => {
+    const numericCents = Number(cents);
+    const amount = Number.isFinite(numericCents) ? numericCents / 100 : 0;
+
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount);
+};
+
+export const formatDateTime = (
+    value,
+    locale = 'es-SV',
+    fallback = 'No disponible'
+) => {
+    if (!value) return fallback;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return fallback;
+
+    return new Intl.DateTimeFormat(locale, {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+    }).format(date);
+};
+
 /* Utilidad para cuando se quita el focus de un input o elemento editable */
 export const formatOnBlur = (event, isInput) => {
     const element = event.target;

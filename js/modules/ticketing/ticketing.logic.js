@@ -27,11 +27,10 @@ export const isoToLocalDateTime = (value) => {
 };
 
 export const mapEventForm = (formData) => ({
-    name: formData.name.trim(),
-    venue: formData.venue.trim(),
+    name: String(formData.name ?? '').trim(),
+    venue: String(formData.venue ?? '').trim(),
     startsAt: localDateTimeToIso(formData.startsAt),
-    endsAt: localDateTimeToIso(formData.endsAt),
-    refundPolicy: formData.refundPolicy.trim()
+    endsAt: localDateTimeToIso(formData.endsAt)
 });
 
 export const validateEvent = (event) => {
@@ -39,23 +38,11 @@ export const validateEvent = (event) => {
     if (!requiredText(event.venue)) return 'El lugar del evento es obligatorio.';
     if (!event.startsAt || !event.endsAt) return 'Debes indicar las fechas del evento.';
     if (new Date(event.endsAt) <= new Date(event.startsAt)) return 'La finalización debe ser posterior al inicio.';
-    if (!requiredText(event.refundPolicy)) return 'La política de devolución es obligatoria.';
-    return null;
-};
-
-export const mapZoneForm = (formData) => ({
-    name: formData.name.trim(),
-    capacity: Number(formData.capacity)
-});
-
-export const validateZone = (zone) => {
-    if (!requiredText(zone.name)) return 'El nombre de la zona es obligatorio.';
-    if (!Number.isInteger(zone.capacity) || zone.capacity < 1) return 'La capacidad debe ser un entero mayor que cero.';
     return null;
 };
 
 export const mapTicketTypeForm = (formData) => ({
-    name: formData.name.trim(),
+    name: String(formData.name ?? '').trim(),
     priceInCents: decimalToMinorUnits(formData.price, 2),
     capacity: Number(formData.capacity)
 });

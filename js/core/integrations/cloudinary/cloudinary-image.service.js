@@ -2,6 +2,7 @@ import config from '../../../config.js';
 import { apiRequest } from '../../../utils/api.utils.js';
 
 const SIGNATURE_URL = `${config.API_BASE_URL}/cloudinary/images/upload-signature`;
+const UPLOADED_IMAGES_URL = `${config.API_BASE_URL}/cloudinary/images/uploaded`;
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 const SIGNATURE_VALIDITY_MS = 60 * 60 * 1000;
 const SIGNATURE_SAFETY_WINDOW_MS = 60 * 1000;
@@ -11,7 +12,7 @@ let signatureExpiresAt = 0;
 let signatureRequest = null;
 
 export const uploadImage = async (file) => {
-    validateFile(file);
+    validateImageFile(file);
     const signature = await getSignature();
     const response = await fetch(signature.uploadUrl, createUploadRequest(file, signature));
     const payload = await response.json().catch(() => null);
@@ -20,6 +21,21 @@ export const uploadImage = async (file) => {
 };
 
 export const uploadImages = (files = []) => Promise.all(files.map(uploadImage));
+
+export const cleanupUploadedImage = (image) => {
+    if (!image?.publicId || !image?.url) return Promise.resolve();
+
+    return apiRequest(
+        UPLOADED_IMAGES_URL,
+        {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(image)
+        },
+        'No fue posible limpiar la imagen temporal',
+        ['WRITE_TICKETING']
+    );
+};
 
 const getSignature = () => {
     if (cachedSignature && Date.now() < signatureExpiresAt) {
@@ -78,7 +94,7 @@ const toMediaReference = (response, payload) => {
     };
 };
 
-const validateFile = (file) => {
+export const validateImageFile = (file) => {
     if (!(file instanceof File)) {
         throw new Error('Debes seleccionar una imagen.');
     }

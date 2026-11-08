@@ -1,18 +1,21 @@
+import { $, qs } from '../../utils/dom.js';
+import { formatDateTime } from '../../utils/formatters.js';
+
 export const DOMRefs = {
     refs: {},
 
     init() {
         this.refs = {
-            qrVideo: document.getElementById('qrVideo'),
-            cameraPlaceholder: document.querySelector('[data-camera-placeholder]'),
-            btnStartCamera: document.getElementById('btnStartCamera'),
-            btnStopCamera: document.getElementById('btnStopCamera'),
-            cameraMessage: document.getElementById('cameraMessage'),
-            manualValidationForm: document.getElementById('manualValidationForm'),
-            qrContent: document.getElementById('qrContent'),
-            btnValidateManual: document.getElementById('btnValidateManual'),
-            btnClearValidation: document.getElementById('btnClearValidation'),
-            validationResult: document.getElementById('validationResult')
+            qrVideo: $('qrVideo'),
+            cameraPlaceholder: qs('[data-camera-placeholder]'),
+            btnStartCamera: $('btnStartCamera'),
+            btnStopCamera: $('btnStopCamera'),
+            cameraMessage: $('cameraMessage'),
+            manualValidationForm: $('manualValidationForm'),
+            qrContent: $('qrContent'),
+            btnValidateManual: $('btnValidateManual'),
+            btnClearValidation: $('btnClearValidation'),
+            validationResult: $('validationResult')
         };
 
         return this.refs;
@@ -31,11 +34,6 @@ const createStatusIcon = (type) => {
     icon.setAttribute('aria-hidden', 'true');
     return icon;
 };
-
-const formatDate = (value) => new Intl.DateTimeFormat('es-SV', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-}).format(new Date(value));
 
 export const setCameraState = (active) => {
     const { qrVideo, cameraPlaceholder, btnStartCamera, btnStopCamera } = DOMRefs.refs;
@@ -88,7 +86,7 @@ export const renderValidationSuccess = (ticket) => {
         createMetadata('Zona', ticket.zoneName),
         createMetadata('Tipo de boleto', ticket.ticketTypeName),
         createMetadata('Boleto', `#${ticket.ticketNumber}`),
-        createMetadata('Validado a las', formatDate(ticket.usedAt))
+        createMetadata('Validado a las', formatDateTime(ticket.usedAt))
     );
     panel.append(heading, metadata, createElement('p', 'validationResultNote', 'El boleto fue marcado como utilizado y no podrá volver a ingresar.'));
     validationResult.replaceChildren(panel);
