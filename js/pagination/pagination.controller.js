@@ -1,9 +1,12 @@
 export const createPagination = ({
     initialSize = 10,
-    onChange
+    onChange,
+    container: containerTarget = '.paginationContainer'
 }) => {
 
-    const container = document.querySelector('.paginationContainer');
+    const container = typeof containerTarget === 'string'
+        ? document.querySelector(containerTarget)
+        : containerTarget;
     const infoEl = container.querySelector('.paginationInfo');
     const sizeSelect = container.querySelector('.pageSize select');
     const pagesContainer = container.querySelector('.paginationRight');

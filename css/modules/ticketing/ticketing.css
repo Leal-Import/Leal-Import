@@ -564,6 +564,10 @@
     margin-top: 0;
 }
 
+.ticketTypesPagination {
+    margin-top: 1rem;
+}
+
 @container content (max-width: 1120px) {
     .ticketingGrid {
         grid-template-columns: 1fr;

@@ -32,7 +32,7 @@ export const updateTicketEvent = (eventId, payload) =>
 export const changeTicketEventStatus = (eventId, active) =>
     request(`${TICKETING_API}/events/${eventId}/active`, 'PATCH', TICKETING_WRITE, { active }, 'No se pudo actualizar el evento').then(getData);
 
-export const getTicketTypes = (eventId, page = 0, size = 30) =>
+export const getTicketTypes = (eventId, page = 0, size = 15) =>
     request(`${TICKETING_API}/events/${eventId}/ticket-types?page=${page}&size=${size}`, 'GET', TICKETING_READ, undefined, 'No se pudieron cargar los tipos de boleto');
 
 export const createTicketType = (eventId, payload) =>

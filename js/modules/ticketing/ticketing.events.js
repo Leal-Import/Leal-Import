@@ -1,5 +1,5 @@
 import { DOMRefs } from './ticketing.dom.js';
-import { addModalCloseEvents } from '../../utils/dom.js';
+import { $, addModalCloseEvents } from '../../utils/dom.js';
 
 export const initTicketingEvents = ({ onSubmitEvent, onSubmitTicketType, onEventImageChange, onRemoveEventImage, onSelectEvent, onOpenEventActions, onOpenTicketTypeActions, onOpenEventModal, onOpenTicketTypeModal, onCloseModal }) => {
     DOMRefs.refs.eventForm.addEventListener('submit', onSubmitEvent);
@@ -7,8 +7,8 @@ export const initTicketingEvents = ({ onSubmitEvent, onSubmitTicketType, onEvent
     DOMRefs.refs.eventImage.addEventListener('change', onEventImageChange);
     DOMRefs.refs.btnRemoveEventImage.addEventListener('click', onRemoveEventImage);
 
-    document.getElementById('btnOpenEventModal').addEventListener('click', onOpenEventModal);
-    document.getElementById('btnOpenTicketTypeModal').addEventListener('click', onOpenTicketTypeModal);
+    $('btnOpenEventModal').addEventListener('click', onOpenEventModal);
+    $('btnOpenTicketTypeModal').addEventListener('click', onOpenTicketTypeModal);
     const modals = [
         ['eventModal', 'btnOpenEventModal'],
         ['ticketTypeModal', 'btnOpenTicketTypeModal']
@@ -16,21 +16,21 @@ export const initTicketingEvents = ({ onSubmitEvent, onSubmitTicketType, onEvent
 
     const closeModal = (modalId, triggerId) => {
         onCloseModal(modalId);
-        document.getElementById(triggerId)?.focus();
+        $(triggerId)?.focus();
     };
 
-    document.getElementById('btnCloseEventModal').addEventListener('click', () => closeModal('eventModal', 'btnOpenEventModal'));
-    document.getElementById('btnCloseTicketTypeModal').addEventListener('click', () => closeModal('ticketTypeModal', 'btnOpenTicketTypeModal'));
+    $('btnCloseEventModal').addEventListener('click', () => closeModal('eventModal', 'btnOpenEventModal'));
+    $('btnCloseTicketTypeModal').addEventListener('click', () => closeModal('ticketTypeModal', 'btnOpenTicketTypeModal'));
 
     modals.forEach(([modalId, triggerId]) => {
-        const modal = document.getElementById(modalId);
+        const modal = $(modalId);
         addModalCloseEvents(modal, () => closeModal(modalId, triggerId));
     });
 
     document.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape') return;
         const openModal = modals
-            .map(([modalId]) => document.getElementById(modalId))
+            .map(([modalId]) => $(modalId))
             .find(modal => modal && !modal.classList.contains('hide'));
         if (openModal) {
             const triggerId = modals.find(([modalId]) => modalId === openModal.id)?.[1];

@@ -13,6 +13,10 @@ export const ticketingState = {
     pagination: {
         page: 1,
         size: 15
+    },
+    ticketTypesPagination: {
+        page: 1,
+        size: 15
     }
 };
 
@@ -29,4 +33,5 @@ export const resetTicketingState = () => {
         removeImage: false
     };
     ticketingState.pagination = { page: 1, size: 15 };
+    ticketingState.ticketTypesPagination = { page: 1, size: 15 };
 };

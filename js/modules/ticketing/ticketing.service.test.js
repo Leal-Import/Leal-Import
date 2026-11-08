@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import config from '../../config.js';
 import { setUserPrivileges, clearUserPrivileges } from '../../utils/privilegesValidator.js';
-import { updateTicketEvent, updateTicketType } from './ticketing.service.js';
+import { getTicketTypes, updateTicketEvent, updateTicketType } from './ticketing.service.js';
 
 const response = (data) => new Response(JSON.stringify({ data }), {
     status: 200,
@@ -50,5 +50,16 @@ describe('ticketing service update contract', () => {
         await expect(updateTicketEvent('event-id', {})).rejects.toMatchObject({ status: 403 });
 
         expect(fetch).not.toHaveBeenCalled();
+    });
+
+    test('loads a ticket type page using the shared pagination contract', async () => {
+        setUserPrivileges(['READ_TICKETING']);
+        await getTicketTypes('event-id', 1, 15);
+
+        expect(fetch).toHaveBeenNthCalledWith(
+            1,
+            `${config.API_BASE_URL}/admin/ticketing/events/event-id/ticket-types?page=1&size=15`,
+            expect.objectContaining({ method: 'GET' })
+        );
     });
 });

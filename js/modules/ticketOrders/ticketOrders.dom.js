@@ -1,24 +1,24 @@
+import { $ } from '../../utils/dom.js';
+import { formatCurrencyFromCents, formatDateTime } from '../../utils/formatters.js';
+
 export const DOMRefs = {
     refs: {},
     init() {
         this.refs = {
-            loader: document.getElementById('ticketOrdersLoader'),
-            tableBody: document.getElementById('ticketOrdersTableBody'),
-            empty: document.getElementById('ticketOrdersEmpty'),
-            pagination: document.getElementById('ticketOrdersPaginationButtons'),
-            detailModal: document.getElementById('ticketOrderDetailModal'),
-            closeDetail: document.getElementById('btnCloseTicketOrderDetail'),
-            detailTitle: document.getElementById('ticketOrderDetailTitle'),
-            detailCustomer: document.getElementById('ticketOrderDetailCustomer'),
-            detailStatus: document.getElementById('ticketOrderDetailStatus'),
-            facts: document.getElementById('ticketOrderFacts'),
-            detailTotal: document.getElementById('ticketOrderDetailTotal'),
-            lines: document.getElementById('ticketOrderLines'),
-            payments: document.getElementById('ticketOrderPayments'),
-            tickets: document.getElementById('ticketOrderTickets'),
-            ticketCount: document.getElementById('ticketOrderTicketCount'),
-            sizeSelect: document.getElementById('ticketOrdersSizeSelect'),
-            paginationInfo: document.querySelector('.ticketOrdersPagination .paginationInfo')
+            loader: $('ticketOrdersLoader'),
+            tableBody: $('ticketOrdersTableBody'),
+            empty: $('ticketOrdersEmpty'),
+            detailModal: $('ticketOrderDetailModal'),
+            closeDetail: $('btnCloseTicketOrderDetail'),
+            detailTitle: $('ticketOrderDetailTitle'),
+            detailCustomer: $('ticketOrderDetailCustomer'),
+            detailStatus: $('ticketOrderDetailStatus'),
+            facts: $('ticketOrderFacts'),
+            detailTotal: $('ticketOrderDetailTotal'),
+            lines: $('ticketOrderLines'),
+            payments: $('ticketOrderPayments'),
+            tickets: $('ticketOrderTickets'),
+            ticketCount: $('ticketOrderTicketCount')
         };
         return this.refs;
     }
@@ -29,14 +29,6 @@ const text = (value, fallback = 'No disponible') => {
     element.textContent = value === null || value === undefined || value === '' ? fallback : value;
     return element;
 };
-
-const formatMoney = (cents, currency = 'USD') => new Intl.NumberFormat('en-US', {
-    style: 'currency', currency, minimumFractionDigits: 2
-}).format((cents || 0) / 100);
-
-const formatDate = (value) => value
-    ? new Intl.DateTimeFormat('es-SV', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
-    : 'No disponible';
 
 const statusLabel = (status) => ({
     RESERVED: 'Reservada',
@@ -88,11 +80,11 @@ export const renderOrders = (orders, onOpenActions) => {
         const ticketsCell = document.createElement('td');
         ticketsCell.textContent = order.totalTickets;
         const amountCell = document.createElement('td');
-        amountCell.textContent = formatMoney(order.amountInCents, order.currency);
+        amountCell.textContent = formatCurrencyFromCents(order.amountInCents, order.currency);
         const statusCell = document.createElement('td');
         statusCell.appendChild(createStatus(statusLabel(order.status), order.status));
         const dateCell = document.createElement('td');
-        dateCell.textContent = formatDate(order.createdAt);
+        dateCell.textContent = formatDateTime(order.createdAt);
         const actionsCell = document.createElement('td');
         const actionsButton = document.createElement('button');
         actionsButton.type = 'button';
@@ -111,38 +103,6 @@ export const renderOrders = (orders, onOpenActions) => {
     });
 };
 
-export const renderPagination = ({ page, totalPages, totalElements, size, onChange }) => {
-    const { pagination, paginationInfo, sizeSelect } = DOMRefs.refs;
-    const start = totalElements ? ((page - 1) * size) + 1 : 0;
-    const end = Math.min(page * size, totalElements);
-    paginationInfo.textContent = `Mostrando ${start}–${end} de ${totalElements} resultados`;
-    sizeSelect.value = size;
-    pagination.textContent = '';
-    const addButton = (label, disabled, nextPage, active = false) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = `pageBtn${active ? ' active' : ''}`;
-        button.textContent = label;
-        button.disabled = disabled;
-        button.addEventListener('click', () => onChange(nextPage));
-        pagination.appendChild(button);
-    };
-    addButton('‹', page <= 1, page - 1);
-    for (let index = 1; index <= totalPages; index += 1) {
-        if (totalPages > 6 && index > 3 && index < totalPages - 1) {
-            if (index === 4) {
-                const dots = document.createElement('span');
-                dots.className = 'pageDots';
-                dots.textContent = '…';
-                pagination.appendChild(dots);
-            }
-            continue;
-        }
-        addButton(String(index), index === page, index, index === page);
-    }
-    addButton('›', page >= totalPages, page + 1);
-};
-
 export const renderOrderDetail = (order) => {
     const refs = DOMRefs.refs;
     refs.detailTitle.textContent = 'Detalle de compra';
@@ -154,12 +114,12 @@ export const renderOrderDetail = (order) => {
     refs.facts.replaceChildren(
         createInfoItem('Evento', order.lines[0]?.eventName),
         createInfoItem('Lugar', order.lines[0]?.eventVenue),
-        createInfoItem('Fecha de compra', formatDate(order.createdAt)),
-        createInfoItem('Creada', formatDate(order.createdAt)),
-        createInfoItem('Reserva hasta', formatDate(order.reservedUntil)),
+        createInfoItem('Fecha de compra', formatDateTime(order.createdAt)),
+        createInfoItem('Creada', formatDateTime(order.createdAt)),
+        createInfoItem('Reserva hasta', formatDateTime(order.reservedUntil)),
         createInfoItem('Cantidad de boletos', order.lines.reduce((total, line) => total + line.quantity, 0))
     );
-    refs.detailTotal.textContent = formatMoney(order.amountInCents, order.currency);
+    refs.detailTotal.textContent = formatCurrencyFromCents(order.amountInCents, order.currency);
     refs.lines.replaceChildren();
     order.lines.forEach((line) => {
         const item = document.createElement('div');
@@ -169,7 +129,7 @@ export const renderOrderDetail = (order) => {
         const meta = document.createElement('span');
         meta.textContent = `${line.eventName} · ${line.eventVenue}`;
         const price = document.createElement('b');
-        price.textContent = formatMoney(line.quantity * line.unitPriceInCents, order.currency);
+        price.textContent = formatCurrencyFromCents(line.quantity * line.unitPriceInCents, order.currency);
         item.append(document.createElement('div'), price);
         item.firstChild.append(title, meta);
         refs.lines.appendChild(item);
@@ -184,7 +144,7 @@ export const renderOrderDetail = (order) => {
             const title = document.createElement('strong');
             title.textContent = paymentStatusLabel(payment.status);
             const meta = document.createElement('span');
-            meta.textContent = `${payment.paymentMethodType || 'Método no informado'} · ${payment.environment === 'PRODUCTION' ? 'Producción' : 'Pruebas'} · ${formatMoney(payment.amountInCents, payment.currency)} · ${formatDate(payment.createdAt)}`;
+            meta.textContent = `${payment.paymentMethodType || 'Método no informado'} · ${payment.environment === 'PRODUCTION' ? 'Producción' : 'Pruebas'} · ${formatCurrencyFromCents(payment.amountInCents, payment.currency)} · ${formatDateTime(payment.createdAt)}`;
             item.append(title, meta);
             refs.payments.appendChild(item);
         });
@@ -200,7 +160,7 @@ export const renderOrderDetail = (order) => {
             const title = document.createElement('strong');
             title.textContent = `Boleto #${ticket.ticketNumber} · ${ticket.ticketTypeName}`;
             const meta = document.createElement('span');
-            meta.textContent = `${ticket.status === 'USED' ? 'Utilizado' : ticket.status === 'ISSUED' ? 'Emitido' : ticket.status} · ${formatDate(ticket.issuedAt)}`;
+            meta.textContent = `${ticket.status === 'USED' ? 'Utilizado' : ticket.status === 'ISSUED' ? 'Emitido' : ticket.status} · ${formatDateTime(ticket.issuedAt)}`;
             item.append(title, meta);
             refs.tickets.appendChild(item);
         });

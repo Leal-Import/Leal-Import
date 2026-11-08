@@ -1,11 +1,11 @@
 import { createPagination } from '../../pagination/pagination.controller.js';
-import { createModuleInitializer, disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from '../../utils/dom.js';
+import { $, createModuleInitializer, disableElement, hideElement, removeDisable, showElement, showMessage, toggleModal } from '../../utils/dom.js';
 import { handleApiError } from '../../utils/api.utils.js';
 import { showFloatingMenu } from '../../utils/floatingMenu.js';
 import { canAccess } from '../../utils/privilegesValidator.js';
-import { uploadImage, validateImageFile } from '../../core/integrations/cloudinary/cloudinary-image.service.js';
+import { cleanupUploadedImage, uploadImage, validateImageFile } from '../../core/integrations/cloudinary/cloudinary-image.service.js';
 import { ticketingState, resetTicketingState } from './ticketing.state.js';
-import { DOMRefs, formatTicketMoney, renderEvents, renderEventsError, renderEventDetail, renderTicketTypesSummary, renderTicketTypesError, setLoading } from './ticketing.dom.js';
+import { DOMRefs, renderEvents, renderEventsError, renderEventDetail, renderTicketTypesSummary, renderTicketTypesError, setLoading } from './ticketing.dom.js';
 import { initTicketingEvents } from './ticketing.events.js';
 import { isoToLocalDateTime, mapEventForm, mapTicketTypeForm, validateEvent, validateTicketType } from './ticketing.logic.js';
 import { getTicketEvents, createTicketEvent, updateTicketEvent, changeTicketEventStatus, getTicketTypes, createTicketType, updateTicketType, changeTicketTypeStatus } from './ticketing.service.js';
@@ -18,6 +18,16 @@ const pagination = createPagination({
         ticketingState.pagination.page = page;
         ticketingState.pagination.size = size;
         loadEvents();
+    }
+});
+
+const ticketTypesPagination = createPagination({
+    initialSize: ticketingState.ticketTypesPagination.size,
+    container: '[data-ticket-types-pagination]',
+    onChange: ({ page, size }) => {
+        ticketingState.ticketTypesPagination.page = page;
+        ticketingState.ticketTypesPagination.size = size;
+        loadTicketTypes();
     }
 });
 
@@ -97,14 +107,14 @@ const resetModal = (modalId) => {
 };
 
 const closeModal = (modalId) => {
-    toggleModal(document.getElementById(modalId), false);
+    toggleModal($(modalId), false);
     resetModal(modalId);
 };
 
 const openCreateModal = (modalId, type) => {
     resetModal(modalId);
     setModalMode(type, false);
-    toggleModal(document.getElementById(modalId), true);
+    toggleModal($(modalId), true);
 };
 
 const loadEvents = async () => {
@@ -134,10 +144,20 @@ const loadTicketTypes = async () => {
     const event = selectedEvent();
     if (!event) return;
     try {
-        const pageData = getPageData(await getTicketTypes(event.id));
+        const pageData = getPageData(await getTicketTypes(
+            event.id,
+            ticketingState.ticketTypesPagination.page - 1,
+            ticketingState.ticketTypesPagination.size
+        ));
         ticketingState.ticketTypes = pageData.content || [];
         renderEventDetail(event, ticketingState.ticketTypes);
         renderTicketTypesSummary(ticketingState.ticketTypes);
+        ticketTypesPagination.setTotal({
+            totalElements: pageData.page.totalElements,
+            totalPages: pageData.page.totalPages,
+            page: pageData.page.number + 1,
+            size: pageData.page.size
+        });
     } catch (error) {
         renderTicketTypesError();
         await handleApiError(error, 'No se pudieron cargar los tipos de boleto.');
@@ -149,6 +169,7 @@ const selectEvent = async (eventId) => {
     if (!event) return;
     ticketingState.selectedEvent = event;
     ticketingState.ticketTypes = [];
+    ticketingState.ticketTypesPagination.page = 1;
     renderEvents(ticketingState.events, event.id, selectEvent);
     await loadTicketTypes();
 };
@@ -181,17 +202,28 @@ const onSubmitEvent = async (event) => {
         const image = ticketingState.eventImage.file
             ? await uploadImage(ticketingState.eventImage.file)
             : null;
-        const request = {
-            ...payload,
-            ...(image ? { image } : {}),
-            ...(editing ? { removeImage: ticketingState.eventImage.removeImage } : {})
-        };
-        const savedEvent = editing
-            ? await updateTicketEvent(ticketingState.editingEventId, request)
-            : await createTicketEvent(request);
-        ticketingState.selectedEvent = savedEvent;
-        if (!editing) ticketingState.pagination.page = 1;
-        await loadEvents();
+        try {
+            const request = {
+                ...payload,
+                ...(image ? { image } : {}),
+                ...(editing ? { removeImage: ticketingState.eventImage.removeImage } : {})
+            };
+            const savedEvent = editing
+                ? await updateTicketEvent(ticketingState.editingEventId, request)
+                : await createTicketEvent(request);
+            ticketingState.selectedEvent = savedEvent;
+            if (!editing) ticketingState.pagination.page = 1;
+            await loadEvents();
+        } catch (error) {
+            if (image) {
+                try {
+                    await cleanupUploadedImage(image);
+                } catch (cleanupError) {
+                    console.error('No se pudo limpiar la imagen temporal de Cloudinary.', cleanupError);
+                }
+            }
+            throw error;
+        }
     }, editing ? 'Evento actualizado correctamente.' : 'Evento registrado correctamente.', 'eventModal');
     if (saved && ticketingState.selectedEvent) await loadTicketTypes();
 };

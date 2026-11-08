@@ -1,11 +1,21 @@
+import { createPagination } from '../../pagination/pagination.controller.js';
 import { addModalCloseEvents, createModuleInitializer, toggleModal } from '../../utils/dom.js';
 import { handleApiError } from '../../utils/api.utils.js';
-import { DOMRefs, renderOrderDetail, renderOrders, renderOrdersError, renderPagination, setLoading } from './ticketOrders.dom.js';
+import { DOMRefs, renderOrderDetail, renderOrders, renderOrdersError, setLoading } from './ticketOrders.dom.js';
 import { getTicketOrder, getTicketOrders } from './ticketOrders.service.js';
 import { resetTicketOrdersState, ticketOrdersState } from './ticketOrders.state.js';
 import { showFloatingMenu } from '../../utils/floatingMenu.js';
 
 const getPageData = (response) => response?.data ?? response;
+
+const pagination = createPagination({
+    initialSize: ticketOrdersState.pagination.size,
+    onChange: ({ page, size }) => {
+        ticketOrdersState.pagination.page = page;
+        ticketOrdersState.pagination.size = size;
+        loadOrders();
+    }
+});
 
 const loadOrders = async () => {
     setLoading(true);
@@ -18,12 +28,11 @@ const loadOrders = async () => {
         ticketOrdersState.pagination.total = pageData.page.totalElements;
         ticketOrdersState.pagination.totalPages = pageData.page.totalPages || 1;
         renderOrders(ticketOrdersState.orders, onOpenOrderActions);
-        renderPagination({
-            page: ticketOrdersState.pagination.page,
-            totalPages: ticketOrdersState.pagination.totalPages,
-            totalElements: ticketOrdersState.pagination.total,
-            size: ticketOrdersState.pagination.size,
-            onChange: changePage
+        pagination.setTotal({
+            totalElements: pageData.page.totalElements,
+            totalPages: pageData.page.totalPages,
+            page: pageData.page.number + 1,
+            size: pageData.page.size
         });
     } catch (error) {
         renderOrdersError();
@@ -33,15 +42,24 @@ const loadOrders = async () => {
     }
 };
 
-const selectOrder = async (orderId) => {
+const selectOrder = async (orderId, trigger) => {
     const order = ticketOrdersState.orders.find((item) => item.id === orderId);
     if (!order) return;
+    ticketOrdersState.detailTrigger = trigger;
     try {
         renderOrderDetail(await getTicketOrder(orderId));
         toggleModal(DOMRefs.refs.detailModal, true);
+        DOMRefs.refs.closeDetail.focus();
     } catch (error) {
         await handleApiError(error);
     }
+};
+
+const closeDetail = () => {
+    toggleModal(DOMRefs.refs.detailModal, false);
+    const trigger = ticketOrdersState.detailTrigger;
+    ticketOrdersState.detailTrigger = null;
+    if (trigger?.isConnected) trigger.focus();
 };
 
 const onOpenOrderActions = (button, orderId) => {
@@ -49,29 +67,16 @@ const onOpenOrderActions = (button, orderId) => {
         {
             label: 'Ver detalles de la compra',
             privilege: 'READ_SALES',
-            onClick: () => selectOrder(orderId)
+            onClick: () => selectOrder(orderId, button)
         }
     ]);
 };
 
-const changePage = (page) => {
-    if (page < 1 || page > ticketOrdersState.pagination.totalPages) return;
-    ticketOrdersState.pagination.page = page;
-    loadOrders();
-};
-
-const changePageSize = (size) => {
-    ticketOrdersState.pagination.page = 1;
-    ticketOrdersState.pagination.size = size;
-    loadOrders();
-};
-
 const initialize = () => {
-    DOMRefs.refs.sizeSelect.addEventListener('change', () => changePageSize(Number(DOMRefs.refs.sizeSelect.value)));
-    DOMRefs.refs.closeDetail.addEventListener('click', () => toggleModal(DOMRefs.refs.detailModal, false));
-    addModalCloseEvents(DOMRefs.refs.detailModal, () => toggleModal(DOMRefs.refs.detailModal, false));
+    DOMRefs.refs.closeDetail.addEventListener('click', closeDetail);
+    addModalCloseEvents(DOMRefs.refs.detailModal, closeDetail);
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') toggleModal(DOMRefs.refs.detailModal, false);
+        if (event.key === 'Escape' && !DOMRefs.refs.detailModal.classList.contains('hide')) closeDetail();
     });
 };
 
