@@ -9,10 +9,6 @@ describe('ticket validation rendering', () => {
             <button id="btnStartCamera"></button>
             <button id="btnStopCamera"></button>
             <p id="cameraMessage"></p>
-            <form id="manualValidationForm"></form>
-            <textarea id="qrContent"></textarea>
-            <button id="btnValidateManual"></button>
-            <button id="btnClearValidation"></button>
             <section id="validationResult"></section>`;
         DOMRefs.init();
     });

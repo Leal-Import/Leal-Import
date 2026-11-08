@@ -228,17 +228,6 @@ const createSidebar = () => {
                     ],
                     requiredPrivileges: ['READ_SALES']
                 },
-                {
-                    href: '../pages/ticketValidation.html',
-                    id: 'ticketValidationItem',
-                    text: 'Validar ingreso',
-                    iconData: [
-                        { tag: 'path', attrs: { d: 'M3 7V4a1 1 0 0 1 1-1h3M17 3h3a1 1 0 0 1 1 1v3M21 17v3a1 1 0 0 1-1 1h-3M7 21H4a1 1 0 0 1-1-1v-3' } },
-                        { tag: 'rect', attrs: { x: '8', y: '8', width: '8', height: '8', rx: '1' } },
-                        { tag: 'path', attrs: { d: 'M10 10h1v1h-1zM13 10h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1z' } }
-                    ],
-                    requiredPrivileges: ['WRITE_TICKETING']
-                }
             ]
         },
         {

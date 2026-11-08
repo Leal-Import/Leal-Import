@@ -1,9 +1,9 @@
-import { BrowserQRCodeReader } from '@zxing/browser';
+import { BrowserQRCodeReader } from 'https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/+esm';
 import { createModuleInitializer } from '../../utils/dom.js';
 import { handleApiError } from '../../utils/api.utils.js';
 import { canAccess } from '../../utils/privilegesValidator.js';
 import { validateTicketQr } from './ticketValidation.service.js';
-import { DOMRefs, clearValidationForm, clearValidationResult, renderPermissionDenied, renderValidationError, renderValidationSuccess, setCameraMessage, setCameraState, setValidationBusy } from './ticketValidation.dom.js';
+import { DOMRefs, clearValidationResult, renderPermissionDenied, renderValidationError, renderValidationSuccess, setCameraMessage, setCameraState, setValidationBusy } from './ticketValidation.dom.js';
 import { resetTicketValidationState, ticketValidationState } from './ticketValidation.state.js';
 
 const hasCamera = () => Boolean(navigator.mediaDevices?.getUserMedia);
@@ -31,7 +31,6 @@ const submitValidation = async (content) => {
     try {
         const ticket = await validateTicketQr(qrContent);
         renderValidationSuccess(ticket);
-        clearValidationForm();
     } catch (error) {
         if (error?.status === 401 || error?.status === 403) {
             await handleApiError(error);
@@ -48,7 +47,7 @@ const startCamera = async () => {
     if (ticketValidationState.scanning || ticketValidationState.submitting) return;
 
     if (!hasCamera()) {
-        setCameraMessage('Este navegador no permite acceder a la cámara. Utiliza la validación manual.', 'warning');
+        setCameraMessage('Este navegador no permite acceder a la cámara.', 'warning');
         return;
     }
 
@@ -62,7 +61,6 @@ const startCamera = async () => {
             async (result, error) => {
                 if (result && ticketValidationState.scanning && !ticketValidationState.submitting) {
                     const qrContent = result.getText().trim();
-                    DOMRefs.refs.qrContent.value = qrContent;
                     await submitValidation(qrContent);
                     return;
                 }
@@ -79,8 +77,8 @@ const startCamera = async () => {
     } catch (error) {
         stopCamera();
         const message = error?.name === 'NotAllowedError'
-            ? 'No se concedió permiso para usar la cámara. Puedes validar el código manualmente.'
-            : 'No fue posible iniciar la cámara. Puedes validar el código manualmente.';
+            ? 'No se concedió permiso para usar la cámara.'
+            : 'No fue posible iniciar la cámara.';
         setCameraMessage(message, 'error');
     }
 };
@@ -96,17 +94,6 @@ const initializeUI = () => {
         stopCamera();
         setCameraMessage('Cámara detenida.');
     });
-    DOMRefs.refs.manualValidationForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        submitValidation(DOMRefs.refs.qrContent.value);
-    });
-    DOMRefs.refs.btnClearValidation.addEventListener('click', () => {
-        stopCamera();
-        clearValidationForm();
-        clearValidationResult();
-        setCameraMessage('');
-    });
-
     window.addEventListener('pagehide', stopCamera, { once: true });
 };
 

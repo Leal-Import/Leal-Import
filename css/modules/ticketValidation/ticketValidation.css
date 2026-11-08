@@ -5,11 +5,8 @@
 }
 
 .ticketValidationGrid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr);
-    gap: 1rem;
+    display: block;
     width: 100%;
-    align-items: start;
 }
 
 .ticketValidationPanel {
@@ -129,20 +126,6 @@
     color: var(--danger-color);
 }
 
-.ticketValidationForm .txtInputs {
-    width: 100%;
-}
-
-.ticketManualPanel {
-    display: grid;
-    gap: 1rem;
-}
-
-.ticketValidationForm {
-    display: grid;
-    gap: 1rem;
-}
-
 .validationResult {
     margin-top: 1.25rem;
 }
@@ -217,13 +200,7 @@
     line-height: 1.5;
 }
 
-@container content (max-width: 1050px) {
-    .ticketValidationGrid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@container content (max-width: 620px) {
+@media screen and (width <= 620px) {
     .ticketValidationPanel {
         padding: .9rem;
     }

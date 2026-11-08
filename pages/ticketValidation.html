@@ -36,7 +36,7 @@
                             <p class="panelEyebrow">Acceso al evento</p>
                             <h1 class="panelTitle">Validar boleto</h1>
                         </div>
-                        <span class="panelHint">Escanea el código QR del boleto o ingrésalo manualmente.</span>
+                        <span class="panelHint">Escanea el código QR del boleto con la cámara.</span>
                     </div>
 
                     <div class="qrScanner" data-camera-container>
@@ -82,26 +82,6 @@
                     <p id="cameraMessage" class="ticketValidationMessage" role="status" aria-live="polite"></p>
                 </article>
 
-                <article class="ticketValidationPanel ticketManualPanel">
-                    <div class="panelHeader">
-                        <div>
-                            <p class="panelEyebrow">Alternativa</p>
-                            <h2 class="panelTitle">Validación manual</h2>
-                        </div>
-                    </div>
-
-                    <form id="manualValidationForm" class="ticketValidationForm">
-                        <div class="formGroup">
-                            <label for="qrContent" class="lblInputs">Contenido del código QR</label>
-                            <textarea id="qrContent" name="qrContent" class="txtInputs" rows="4" maxlength="500" required placeholder="LEAL-TICKET:1:..." autocomplete="off"></textarea>
-                            <small class="fieldHint">Utiliza esta opción si la cámara no está disponible o el QR no puede leerse.</small>
-                        </div>
-                        <div class="ticketValidationActions">
-                            <button id="btnValidateManual" class="btnPrimary" type="submit">Validar boleto</button>
-                            <button id="btnClearValidation" class="btnSecondary" type="button">Limpiar</button>
-                        </div>
-                    </form>
-                </article>
             </section>
 
             <section id="validationResult" class="validationResult hide" aria-live="polite" aria-atomic="true"></section>

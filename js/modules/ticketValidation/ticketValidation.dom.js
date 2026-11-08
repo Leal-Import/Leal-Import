@@ -11,10 +11,6 @@ export const DOMRefs = {
             btnStartCamera: $('btnStartCamera'),
             btnStopCamera: $('btnStopCamera'),
             cameraMessage: $('cameraMessage'),
-            manualValidationForm: $('manualValidationForm'),
-            qrContent: $('qrContent'),
-            btnValidateManual: $('btnValidateManual'),
-            btnClearValidation: $('btnClearValidation'),
             validationResult: $('validationResult')
         };
 
@@ -53,15 +49,10 @@ export const setCameraMessage = (message, type = '') => {
 };
 
 export const setValidationBusy = (busy) => {
-    const { btnValidateManual, btnClearValidation, btnStartCamera, btnStopCamera } = DOMRefs.refs;
-    [btnValidateManual, btnClearValidation, btnStartCamera, btnStopCamera].forEach(button => {
+    const { btnStartCamera, btnStopCamera } = DOMRefs.refs;
+    [btnStartCamera, btnStopCamera].forEach(button => {
         button.disabled = busy;
     });
-};
-
-export const clearValidationForm = () => {
-    DOMRefs.refs.qrContent.value = '';
-    DOMRefs.refs.qrContent.focus();
 };
 
 const createMetadata = (label, value) => {
@@ -115,10 +106,7 @@ export const renderPermissionDenied = () => {
     const { validationResult } = DOMRefs.refs;
     [
         DOMRefs.refs.btnStartCamera,
-        DOMRefs.refs.btnStopCamera,
-        DOMRefs.refs.btnValidateManual,
-        DOMRefs.refs.btnClearValidation,
-        DOMRefs.refs.qrContent
+        DOMRefs.refs.btnStopCamera
     ].forEach(control => {
         control.disabled = true;
     });
