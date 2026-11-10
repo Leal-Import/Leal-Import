@@ -34,12 +34,18 @@ const statusLabel = (status) => ({
     RESERVED: 'Reservada',
     PENDING_PAYMENT: 'Pago pendiente',
     PAID: 'Pagada',
-    EXPIRED: 'Vencida'
+    EXPIRED: 'Vencida',
+    CANCELLED: 'Anulada'
 }[status] || status || 'Sin estado');
 
 const paymentStatusLabel = (status) => ({
-    PENDING: 'Pendiente', APPROVED: 'Aprobado', DECLINED: 'Rechazado', VOIDED: 'Anulado', ERROR: 'Error'
+    PENDING: 'Pendiente', CONFIRMED: 'Confirmado', APPROVED: 'Aprobado', DECLINED: 'Rechazado', VOIDED: 'Anulado', ERROR: 'Error'
 }[status] || status || 'Sin estado');
+
+const paymentMethodLabel = (method) => ({
+    CASH: 'Efectivo',
+    WOMPI: 'Wompi'
+}[method] || method || 'Método no informado');
 
 const createInfoItem = (label, value) => {
     const item = document.createElement('div');
@@ -57,6 +63,12 @@ const createStatus = (label, value) => {
     return badge;
 };
 
+const createTableCell = (label) => {
+    const cell = document.createElement('td');
+    cell.dataset.label = label;
+    return cell;
+};
+
 export const setLoading = (loading) => DOMRefs.refs.loader.classList.toggle('hide', !loading);
 
 export const renderOrders = (orders, onOpenActions) => {
@@ -70,22 +82,23 @@ export const renderOrders = (orders, onOpenActions) => {
 
     orders.forEach((order) => {
         const row = document.createElement('tr');
-        const customerCell = document.createElement('td');
+        const customerCell = createTableCell('Cliente');
         customerCell.appendChild(text(order.customerEmail));
-        const eventCell = document.createElement('td');
+        const eventCell = createTableCell('Evento');
         eventCell.appendChild(text(order.eventName));
         const eventVenue = document.createElement('small');
         eventVenue.textContent = order.eventVenue || 'Sin lugar';
         eventCell.appendChild(eventVenue);
-        const ticketsCell = document.createElement('td');
+        const ticketsCell = createTableCell('Boletos');
         ticketsCell.textContent = order.totalTickets;
-        const amountCell = document.createElement('td');
+        const amountCell = createTableCell('Total');
         amountCell.textContent = formatCurrencyFromCents(order.amountInCents, order.currency);
-        const statusCell = document.createElement('td');
+        const statusCell = createTableCell('Estado');
         statusCell.appendChild(createStatus(statusLabel(order.status), order.status));
-        const dateCell = document.createElement('td');
+        const dateCell = createTableCell('Fecha');
         dateCell.textContent = formatDateTime(order.createdAt);
-        const actionsCell = document.createElement('td');
+        const actionsCell = createTableCell('Acción');
+        actionsCell.className = 'tableResponsiveAction';
         const actionsButton = document.createElement('button');
         actionsButton.type = 'button';
         actionsButton.className = 'ticketOrderActions';
@@ -105,6 +118,7 @@ export const renderOrders = (orders, onOpenActions) => {
 
 export const renderOrderDetail = (order) => {
     const refs = DOMRefs.refs;
+    const primaryLine = order.lines[0];
     refs.detailTitle.textContent = 'Detalle de compra';
     refs.detailCustomer.textContent = order.customerName
         ? `${order.customerName} · ${order.customerEmail}`
@@ -112,47 +126,62 @@ export const renderOrderDetail = (order) => {
     refs.detailStatus.textContent = statusLabel(order.status);
     refs.detailStatus.className = `ticketOrderStatus ticketOrderBadge-${String(order.status || '').toLowerCase()}`;
     refs.facts.replaceChildren(
-        createInfoItem('Evento', order.lines[0]?.eventName),
-        createInfoItem('Lugar', order.lines[0]?.eventVenue),
-        createInfoItem('Fecha de compra', formatDateTime(order.createdAt)),
-        createInfoItem('Creada', formatDateTime(order.createdAt)),
-        createInfoItem('Reserva hasta', formatDateTime(order.reservedUntil)),
+        createInfoItem('Evento', [primaryLine?.eventName, primaryLine?.eventVenue].filter(Boolean).join(' · ')),
+        createInfoItem('Fecha del evento', formatDateTime(primaryLine?.eventStartsAt)),
+        createInfoItem('Compra registrada', formatDateTime(order.createdAt)),
         createInfoItem('Cantidad de boletos', order.lines.reduce((total, line) => total + line.quantity, 0))
     );
     refs.detailTotal.textContent = formatCurrencyFromCents(order.amountInCents, order.currency);
     refs.lines.replaceChildren();
+    const hasMultipleLines = order.lines.length > 1;
     order.lines.forEach((line) => {
         const item = document.createElement('div');
         item.className = 'ticketOrderLine';
         const title = document.createElement('strong');
         title.textContent = `${line.quantity} × ${line.ticketTypeName}`;
         const meta = document.createElement('span');
-        meta.textContent = `${line.eventName} · ${line.eventVenue}`;
+        meta.textContent = `${formatCurrencyFromCents(line.unitPriceInCents, order.currency)} por boleto`;
         const price = document.createElement('b');
         price.textContent = formatCurrencyFromCents(line.quantity * line.unitPriceInCents, order.currency);
-        item.append(document.createElement('div'), price);
+        item.append(document.createElement('div'));
         item.firstChild.append(title, meta);
+        if (hasMultipleLines) item.appendChild(price);
         refs.lines.appendChild(item);
     });
     refs.payments.replaceChildren();
     if (!order.payments.length) {
-        refs.payments.appendChild(text('No hay intentos de pago registrados.'));
+        const emptyPayment = text('No hay pagos registrados para esta orden.');
+        emptyPayment.className = 'ticketOrderEmptyRecord';
+        refs.payments.appendChild(emptyPayment);
     } else {
         order.payments.forEach((payment) => {
             const item = document.createElement('div');
             item.className = 'ticketOrderRecord';
+            const header = document.createElement('div');
+            header.className = 'ticketOrderRecordHeader';
             const title = document.createElement('strong');
-            title.textContent = paymentStatusLabel(payment.status);
+            title.textContent = paymentMethodLabel(payment.paymentMethod);
+            header.append(title, createStatus(paymentStatusLabel(payment.status), payment.status));
             const meta = document.createElement('span');
-            meta.textContent = `${payment.paymentMethodType || 'Método no informado'} · ${payment.environment === 'PRODUCTION' ? 'Producción' : 'Pruebas'} · ${formatCurrencyFromCents(payment.amountInCents, payment.currency)} · ${formatDateTime(payment.createdAt)}`;
-            item.append(title, meta);
+            const details = [
+                formatCurrencyFromCents(payment.amountInCents, payment.currency),
+                formatDateTime(payment.paidAt || payment.createdAt)
+            ];
+            if (payment.paymentMethod === 'CASH' && payment.cashReceivedInCents !== null) {
+                details.push(`Recibido: ${formatCurrencyFromCents(payment.cashReceivedInCents, payment.currency)}`);
+                details.push(`Cambio: ${formatCurrencyFromCents(payment.changeInCents || 0, payment.currency)}`);
+            }
+            meta.textContent = details.join(' · ');
+            item.append(header, meta);
             refs.payments.appendChild(item);
         });
     }
     refs.tickets.replaceChildren();
     refs.ticketCount.textContent = `${order.tickets.length} emitidos`;
     if (!order.tickets.length) {
-        refs.tickets.appendChild(text('Todavía no se han emitido boletos.'));
+        const emptyTickets = text('Todavía no se han emitido boletos.');
+        emptyTickets.className = 'ticketOrderEmptyRecord';
+        refs.tickets.appendChild(emptyTickets);
     } else {
         order.tickets.forEach((ticket) => {
             const item = document.createElement('div');

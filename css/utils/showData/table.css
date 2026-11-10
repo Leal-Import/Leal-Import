@@ -65,3 +65,93 @@
     height: 100%;
     text-align: center;
 }
+
+/* Tables that opt in keep their desktop columns and become labelled records on narrow containers. */
+@container content (max-width: 760px) {
+    .tableResponsive,
+    .tableResponsive tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .tableResponsive thead {
+        display: none;
+    }
+
+    .tableResponsive tbody {
+        display: grid;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .tableResponsive tbody tr,
+    .tableResponsive tbody tr:nth-child(even) {
+        display: grid;
+        gap: 0;
+        overflow: hidden;
+        border: var(--border);
+        border-radius: var(--border-radius-input);
+        background: var(--bg-color-white);
+    }
+
+    .tableResponsive tbody tr:hover {
+        box-shadow: none;
+        transform: none;
+    }
+
+    .tableResponsive td {
+        display: grid;
+        grid-template-columns: minmax(5.5rem, 36%) minmax(0, 1fr);
+        gap: 10px;
+        max-width: none;
+        padding: 10px 12px;
+        overflow: visible;
+        border-bottom: 1px solid var(--bg-color);
+        font-size: var(--font-size-sm);
+        text-overflow: clip;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .tableResponsive td:last-child {
+        border-bottom: 0;
+    }
+
+    .tableResponsive td::before {
+        color: var(--text-color-dark);
+        content: attr(data-label);
+        font-size: var(--font-size-sh);
+        font-weight: var(--font-weight-semibold);
+        line-height: 1.35;
+    }
+
+    .tableResponsive td[data-label=""]::before {
+        content: '';
+    }
+
+    .tableResponsive td.tableResponsiveAction {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: 44px;
+    }
+
+    .tableResponsive td.tableResponsiveAction::before {
+        margin-right: auto;
+    }
+
+    .tableResponsive td.tableResponsiveEmpty {
+        display: block;
+        padding: 28px 12px;
+        text-align: center;
+    }
+
+    .tableResponsive td.tableResponsiveEmpty::before {
+        display: none;
+    }
+
+    .tableResponsiveAction > button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}

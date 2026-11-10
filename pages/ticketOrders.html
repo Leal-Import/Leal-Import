@@ -28,7 +28,6 @@
             <div class="ticketOrderDetailContent" id="ticketOrderDetailContent">
                 <div class="ticketOrderDetailHeader">
                     <div>
-                        <span class="ticketOrdersEyebrow">DETALLE DE COMPRA</span>
                         <h2 id="ticketOrderDetailTitle">Detalle de compra</h2>
                         <p id="ticketOrderDetailCustomer"></p>
                     </div>
@@ -38,7 +37,10 @@
                 <section class="ticketOrderSection">
                     <div class="ticketOrderSectionHeading">
                         <h3>Boletos seleccionados</h3>
-                        <span id="ticketOrderDetailTotal"></span>
+                        <div class="ticketOrderTotal">
+                            <span>Total pagado</span>
+                            <strong id="ticketOrderDetailTotal"></strong>
+                        </div>
                     </div>
                     <div class="ticketOrderLines" id="ticketOrderLines"></div>
                 </section>
@@ -69,13 +71,13 @@
             </div>
 
             <section class="ticketOrdersLayout" aria-label="Órdenes de clientes">
-                <article class="ticketOrdersPanel">
+                <article class="containerTable ticketOrdersPanel">
                     <div class="ticketOrdersTableWrap">
                         <div class="containerLoader hide" id="ticketOrdersLoader">
                             <div class="loader"></div>
                             <div>Cargando órdenes...</div>
                         </div>
-                        <table class="table ticketOrdersTable">
+                        <table class="table tableResponsive ticketOrdersTable">
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
