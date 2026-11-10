@@ -1,8 +1,9 @@
 import { createPagination } from '../../pagination/pagination.controller.js';
 import { addModalCloseEvents, createModuleInitializer, toggleModal } from '../../utils/dom.js';
 import { handleApiError } from '../../utils/api.utils.js';
-import { DOMRefs, renderOrderDetail, renderOrders, renderOrdersError, setLoading } from './ticketOrders.dom.js';
-import { getTicketOrder, getTicketOrders } from './ticketOrders.service.js';
+import { canAccess } from '../../utils/privilegesValidator.js';
+import { DOMRefs, renderOrderDetail, renderOrders, renderOrdersError, setCashSaleVoidAvailable, setLoading } from './ticketOrders.dom.js';
+import { getTicketOrder, getTicketOrders, voidCashSale } from './ticketOrders.service.js';
 import { resetTicketOrdersState, ticketOrdersState } from './ticketOrders.state.js';
 import { showFloatingMenu } from '../../utils/floatingMenu.js';
 
@@ -47,7 +48,14 @@ const selectOrder = async (orderId, trigger) => {
     if (!order) return;
     ticketOrdersState.detailTrigger = trigger;
     try {
-        renderOrderDetail(await getTicketOrder(orderId));
+        const detail = await getTicketOrder(orderId);
+        ticketOrdersState.selectedOrder = detail;
+        renderOrderDetail(detail);
+        setCashSaleVoidAvailable(
+            canAccess(['CANCEL_TICKET_SALES'])
+            && detail.status === 'PAID'
+            && detail.payments.some((payment) => payment.paymentMethod === 'CASH' && payment.status === 'CONFIRMED')
+        );
         toggleModal(DOMRefs.refs.detailModal, true);
         DOMRefs.refs.closeDetail.focus();
     } catch (error) {
@@ -57,9 +65,43 @@ const selectOrder = async (orderId, trigger) => {
 
 const closeDetail = () => {
     toggleModal(DOMRefs.refs.detailModal, false);
+    ticketOrdersState.selectedOrder = null;
     const trigger = ticketOrdersState.detailTrigger;
     ticketOrdersState.detailTrigger = null;
     if (trigger?.isConnected) trigger.focus();
+};
+
+const closeCashSaleVoid = () => {
+    toggleModal(DOMRefs.refs.voidModal, false);
+    DOMRefs.refs.voidForm.reset();
+    DOMRefs.refs.openCashSaleVoid.focus();
+};
+
+const openCashSaleVoid = () => {
+    if (!ticketOrdersState.selectedOrder) return;
+    toggleModal(DOMRefs.refs.voidModal, true);
+    DOMRefs.refs.voidReason.focus();
+};
+
+const submitCashSaleVoid = async (event) => {
+    event.preventDefault();
+    const order = ticketOrdersState.selectedOrder;
+    const reason = DOMRefs.refs.voidReason.value.trim();
+    if (!order || !reason) return;
+    const button = event.submitter;
+    button.disabled = true;
+    button.textContent = 'Anulando...';
+    try {
+        await voidCashSale(order.id, reason);
+        closeCashSaleVoid();
+        closeDetail();
+        await loadOrders();
+    } catch (error) {
+        await handleApiError(error);
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Confirmar anulación';
+    }
 };
 
 const onOpenOrderActions = (button, orderId) => {
@@ -75,8 +117,15 @@ const onOpenOrderActions = (button, orderId) => {
 const initialize = () => {
     DOMRefs.refs.closeDetail.addEventListener('click', closeDetail);
     addModalCloseEvents(DOMRefs.refs.detailModal, closeDetail);
+    DOMRefs.refs.openCashSaleVoid.addEventListener('click', openCashSaleVoid);
+    DOMRefs.refs.closeCashSaleVoid.addEventListener('click', closeCashSaleVoid);
+    DOMRefs.refs.cancelCashSaleVoid.addEventListener('click', closeCashSaleVoid);
+    DOMRefs.refs.voidForm.addEventListener('submit', submitCashSaleVoid);
+    addModalCloseEvents(DOMRefs.refs.voidModal, closeCashSaleVoid);
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !DOMRefs.refs.detailModal.classList.contains('hide')) closeDetail();
+        if (event.key !== 'Escape') return;
+        if (!DOMRefs.refs.voidModal.classList.contains('hide')) closeCashSaleVoid();
+        else if (!DOMRefs.refs.detailModal.classList.contains('hide')) closeDetail();
     });
 };
 

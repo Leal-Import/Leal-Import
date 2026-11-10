@@ -16,6 +16,7 @@ export const ROUTES = {
     WORK_ORDERS: '/pages/workOrders.html',
     WORK_ORDER_FORM: '/pages/workOrderForm.html',
     WORK_ORDER_HISTORY: '/pages/workOrderHistory.html',
+    TICKET_CASH_SALES: '/pages/ticketCashSales.html',
     TICKET_ORDERS: '/pages/ticketOrders.html'
 };
 

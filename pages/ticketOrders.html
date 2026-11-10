@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../css/utils/modals/modal.css">
     <link rel="stylesheet" href="../css/utils/darkMode.css">
     <link rel="stylesheet" href="../css/modules/ticketOrders/ticketOrders.css">
-    <script src="../js/utils/dark.mode.init.js"></script>
+    <script type="module" src="../js/utils/dark.mode.init.js"></script>
     <title>Órdenes de boletos</title>
 </head>
 
@@ -50,6 +50,11 @@
                     </div>
                     <div class="ticketOrderPayments" id="ticketOrderPayments"></div>
                 </section>
+                <div class="ticketOrderActionsPanel" id="ticketOrderActionsPanel">
+                    <button class="btnSecondary hide" id="btnOpenCashSaleVoid" data-privilege="CANCEL_TICKET_SALES" type="button">
+                        Anular venta en efectivo
+                    </button>
+                </div>
                 <section class="ticketOrderSection">
                     <div class="ticketOrderSectionHeading">
                         <h3>Boletos emitidos</h3>
@@ -59,6 +64,21 @@
                 </section>
             </div>
         </section>
+    </div>
+    <div class="containerModal hide" id="cashSaleVoidModal">
+        <form class="modalAdd ticketOrderVoidModal" id="cashSaleVoidForm" aria-labelledby="cashSaleVoidTitle">
+            <button class="btnClose" id="btnCloseCashSaleVoid" type="button" aria-label="Cerrar anulación">×</button>
+            <h2 class="titleModal" id="cashSaleVoidTitle">Anular venta en efectivo</h2>
+            <p class="ticketOrderVoidIntro">La anulación cancela los boletos emitidos y queda registrada con el motivo indicado.</p>
+            <div class="formGroup">
+                <label class="lblInputs" for="cashSaleVoidReason">Motivo de anulación</label>
+                <textarea class="txtInputs" id="cashSaleVoidReason" maxlength="500" required></textarea>
+            </div>
+            <div class="ticketOrderVoidActions">
+                <button class="btnSecondary" id="btnCancelCashSaleVoid" type="button">Volver</button>
+                <button class="btnPrimary btnSubmitData" id="btnConfirmCashSaleVoid" type="submit">Confirmar anulación</button>
+            </div>
+        </form>
     </div>
     <div class="containerMobileHeader"></div>
     <div class="bodyContent">
