@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venta de boletos | Leal Import</title>
+    <link rel="icon" type="image/x-icon" href="../media/appMedia/Logo Lealimport.png">
+    <link rel="stylesheet" href="../css/globalStyles.css">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
+    <link rel="stylesheet" href="../css/utils/loaders/loader.css">
+    <link rel="stylesheet" href="../css/utils/darkMode.css">
+    <link rel="stylesheet" href="../css/modules/ticketCashSales/ticketCashSales.css">
+    <script type="module" src="../js/utils/dark.mode.init.js"></script>
+</head>
+
+<body>
+    <div class="containerMobileHeader"></div>
+    <div id="darkMode" class="darkMode"></div>
+    <div class="bodyContent">
+        <div id="sidebar"></div>
+
+        <main class="content cashSalePage">
+            <header class="headerContent cashSaleHeader">
+                <div class="breadCrumbSection">
+                    <span class="breadcrumb">Venta de boletos</span>
+                </div>
+            </header>
+
+            <p class="cashSaleMessage hide" id="cashSaleMessage" role="status" aria-live="polite"></p>
+
+            <section class="cashSaleLayout" id="cashSaleWorkspace" aria-label="Registro de venta en efectivo">
+                <form class="cashSalePanel" id="cashSaleForm">
+                    <div class="cashSalePanelHeader">
+                        <div>
+                            <p class="cashSaleEyebrow">Datos de la venta</p>
+                            <h1>Comprador y boletos</h1>
+                        </div>
+                        <span class="cashSaleStep">1</span>
+                    </div>
+
+                    <section class="cashSaleSection" aria-labelledby="cashSaleBuyerTitle">
+                        <h2 id="cashSaleBuyerTitle">Comprador</h2>
+                        <div class="cashSaleFormGrid">
+                            <div class="formGroup">
+                                <label class="lblInputs" for="cashSaleCustomerName">Nombre completo</label>
+                                <input class="txtInputs" id="cashSaleCustomerName" autocomplete="name" maxlength="256" required>
+                            </div>
+                            <div class="formGroup">
+                                <label class="lblInputs" for="cashSaleCustomerEmail">Correo electrónico</label>
+                                <input class="txtInputs" id="cashSaleCustomerEmail" type="email" autocomplete="email" maxlength="320" required>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="cashSaleSection" aria-labelledby="cashSaleEventTitle">
+                        <div class="cashSaleSectionHeading">
+                            <div>
+                                <h2 id="cashSaleEventTitle">Evento y boletos</h2>
+                                <p>Solo se muestran tipos de boleto activos con disponibilidad.</p>
+                            </div>
+                        </div>
+                        <div class="formGroup">
+                            <label class="lblInputs" for="cashSaleEvent">Evento</label>
+                            <select class="txtInputs" id="cashSaleEvent" required disabled>
+                                <option value="">Cargando eventos...</option>
+                            </select>
+                        </div>
+                        <div class="cashSaleTicketTypes" id="cashSaleTicketTypes" aria-live="polite">
+                            <div class="cashSaleInlineState">
+                                <div class="loader"></div>
+                                <span>Cargando eventos disponibles...</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="cashSaleFormActions">
+                        <button class="btnSecondary" id="btnQuoteCashSale" type="submit">Calcular total</button>
+                    </div>
+                </form>
+
+                <aside class="cashSalePanel cashSalePaymentPanel" aria-labelledby="cashSalePaymentTitle">
+                    <div class="cashSalePanelHeader">
+                        <div>
+                            <p class="cashSaleEyebrow">Cobro</p>
+                            <h2 id="cashSalePaymentTitle">Resumen de pago</h2>
+                        </div>
+                        <span class="cashSaleStep">2</span>
+                    </div>
+
+                    <div class="cashSaleQuoteEmpty" id="cashSaleQuoteEmpty">
+                        <strong>Calcula la venta para continuar</strong>
+                        <span>El sistema verificará disponibilidad y el importe vigente antes de cobrar.</span>
+                    </div>
+
+                    <div class="cashSaleQuote hide" id="cashSaleQuote">
+                        <div class="cashSaleQuoteEvent">
+                            <strong id="cashSaleQuoteEventName"></strong>
+                            <span id="cashSaleQuoteEventMeta"></span>
+                        </div>
+                        <div class="cashSaleQuoteLines" id="cashSaleQuoteLines"></div>
+                        <div class="cashSaleQuoteTotal">
+                            <span>Total a cobrar</span>
+                            <strong id="cashSaleQuoteTotal"></strong>
+                        </div>
+                        <div class="formGroup">
+                            <label class="lblInputs" for="cashSaleCashReceived">Efectivo recibido</label>
+                            <input class="txtInputs" id="cashSaleCashReceived" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00" disabled required>
+                            <small class="cashSaleFieldHint" id="cashSaleChangeHint">Ingresa el monto recibido para calcular el cambio.</small>
+                        </div>
+                        <button class="btnPrimary btnSubmitData" id="btnConfirmCashSale" type="button" disabled>
+                            Confirmar venta y emitir boletos
+                        </button>
+                    </div>
+                </aside>
+            </section>
+
+            <section class="cashSaleReceipt hide" id="cashSaleReceipt" aria-labelledby="cashSaleReceiptTitle" aria-live="polite">
+                <div class="cashSaleReceiptHeading">
+                    <div>
+                        <p class="cashSaleEyebrow">Venta confirmada</p>
+                        <h2 id="cashSaleReceiptTitle">Boletos emitidos</h2>
+                        <p id="cashSaleReceiptDescription"></p>
+                    </div>
+                    <button class="btnSecondary" id="btnNewCashSale" type="button">Registrar otra venta</button>
+                </div>
+                <div class="cashSaleReceiptFacts" id="cashSaleReceiptFacts"></div>
+                <div class="cashSaleIssuedTickets" id="cashSaleIssuedTickets"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="../js/modules/ticketCashSales/ticketCashSales.controller.js"></script>
+    <script type="module" src="../js/components/sidebar.js"></script>
+</body>
+
+</html>

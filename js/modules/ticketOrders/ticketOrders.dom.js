@@ -17,6 +17,12 @@ export const DOMRefs = {
             detailTotal: $('ticketOrderDetailTotal'),
             lines: $('ticketOrderLines'),
             payments: $('ticketOrderPayments'),
+            openCashSaleVoid: $('btnOpenCashSaleVoid'),
+            voidModal: $('cashSaleVoidModal'),
+            closeCashSaleVoid: $('btnCloseCashSaleVoid'),
+            cancelCashSaleVoid: $('btnCancelCashSaleVoid'),
+            voidForm: $('cashSaleVoidForm'),
+            voidReason: $('cashSaleVoidReason'),
             tickets: $('ticketOrderTickets'),
             ticketCount: $('ticketOrderTicketCount')
         };
@@ -194,6 +200,10 @@ export const renderOrderDetail = (order) => {
             refs.tickets.appendChild(item);
         });
     }
+};
+
+export const setCashSaleVoidAvailable = (available) => {
+    DOMRefs.refs.openCashSaleVoid.classList.toggle('hide', !available);
 };
 
 export const renderOrdersError = () => {

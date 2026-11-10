@@ -219,6 +219,17 @@ const createSidebar = () => {
                     requiredPrivileges: ['READ_TICKETING']
                 },
                 {
+                    href: '../pages/ticketCashSales.html',
+                    id: 'ticketCashSalesItem',
+                    text: 'Venta de boletos',
+                    iconData: [
+                        { tag: 'path', attrs: { d: 'M5 4h14a2 2 0 0 1 2 2v5a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V6a2 2 0 0 1 2-2z' } },
+                        { tag: 'path', attrs: { d: 'M8 9h8M8 15h5' } },
+                        { tag: 'path', attrs: { d: 'M12 4v16' } }
+                    ],
+                    requiredPrivileges: ['WRITE_TICKET_SALES']
+                },
+                {
                     href: '../pages/ticketOrders.html',
                     id: 'ticketOrdersItem',
                     text: 'Órdenes de boletos',

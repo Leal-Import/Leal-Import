@@ -1,0 +1,384 @@
+.cashSalePage {
+    min-width: 0;
+    overflow-x: clip;
+}
+
+.cashSaleHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.cashSaleHeader .breadCrumbSection {
+    margin-bottom: 0;
+}
+
+.cashSaleHeaderHint {
+    max-width: 420px;
+    margin: 0;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.55;
+    text-align: right;
+}
+
+.cashSaleLayout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, .8fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.cashSalePanel,
+.cashSaleReceipt {
+    min-width: 0;
+    border: var(--border);
+    border-radius: var(--border-radius-card);
+    background: var(--bg-color-white);
+    box-shadow: var(--bx-shadow-primary);
+}
+
+.cashSalePanel {
+    padding: clamp(18px, 2.2vw, 30px);
+}
+
+.cashSalePanelHeader,
+.cashSaleSectionHeading,
+.cashSaleReceiptHeading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.cashSaleEyebrow {
+    margin: 0 0 4px;
+    color: var(--danger-color);
+    font-size: var(--font-size-sh);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.cashSalePanel h1,
+.cashSalePanel h2,
+.cashSaleReceipt h2 {
+    margin: 0;
+    color: var(--text-color);
+}
+
+.cashSalePanel h1,
+.cashSaleReceipt h2 {
+    font-size: var(--font-size-title);
+}
+
+.cashSalePanel h2 {
+    font-size: var(--font-size-default);
+}
+
+.cashSaleStep {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    place-items: center;
+    background: var(--bg-danger-badge);
+    color: var(--danger-color);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+}
+
+.cashSaleSection {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: var(--border);
+}
+
+.cashSaleSectionHeading p,
+.cashSaleFieldHint,
+.cashSaleQuoteEvent span,
+.cashSaleQuoteEmpty span,
+.cashSaleTicketTypeDetails span,
+.cashSaleIssuedTicket span {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+}
+
+.cashSaleFormGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.cashSaleSection > .formGroup {
+    margin-top: 14px;
+}
+
+.cashSaleTicketTypes {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.cashSaleTicketType {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+    background: var(--bg-color-white);
+}
+
+.cashSaleTicketTypeDetails {
+    min-width: 0;
+}
+
+.cashSaleTicketTypeDetails strong,
+.cashSaleTicketTypeDetails span {
+    overflow-wrap: anywhere;
+}
+
+.cashSaleQuantity {
+    display: grid;
+    grid-template-columns: 74px;
+    align-items: center;
+    gap: 8px;
+}
+
+.cashSaleQuantity .txtInputs {
+    min-width: 0;
+    text-align: right;
+}
+
+.cashSaleInlineState,
+.cashSaleQuoteEmpty {
+    display: grid;
+    gap: 8px;
+    padding: 22px 16px;
+    place-items: center;
+    border: 1px dashed var(--text-color-secondary);
+    border-radius: var(--border-radius-input);
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    text-align: center;
+}
+
+.cashSaleInlineState .loader {
+    width: 24px;
+    height: 24px;
+}
+
+.cashSaleFormActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.cashSalePaymentPanel {
+    position: sticky;
+    top: 14px;
+}
+
+.cashSaleQuote {
+    margin-top: 24px;
+}
+
+.cashSaleQuoteEvent {
+    padding-bottom: 16px;
+    border-bottom: var(--border);
+}
+
+.cashSaleQuoteLines {
+    display: grid;
+    gap: 10px;
+    padding: 16px 0;
+}
+
+.cashSaleQuoteLine {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+}
+
+.cashSaleQuoteLine strong {
+    white-space: nowrap;
+}
+
+.cashSaleQuoteTotal {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 16px 0;
+    border-top: var(--border);
+    border-bottom: var(--border);
+}
+
+.cashSaleQuoteTotal span {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.cashSaleQuoteTotal strong {
+    color: var(--text-color);
+    font-size: var(--font-size-title);
+    white-space: nowrap;
+}
+
+.cashSalePaymentPanel .btnSubmitData {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px 16px;
+}
+
+.cashSaleMessage {
+    margin: 0;
+    padding: 11px 14px;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+    font-size: var(--font-size-sm);
+}
+
+.cashSaleMessageError {
+    border-color: var(--danger-color);
+    background: var(--bg-danger-badge);
+    color: var(--dark-danger-color);
+}
+
+.cashSaleMessageSuccess {
+    border-color: var(--success-color);
+    background: var(--bg-success-badge);
+    color: var(--dark-success-color);
+}
+
+.cashSaleMessageInfo {
+    background: var(--bg-color-white);
+    color: var(--text-color-secondary);
+}
+
+.cashSaleReceipt {
+    margin-top: 20px;
+    padding: clamp(18px, 2.2vw, 30px);
+}
+
+.cashSaleReceiptHeading p {
+    max-width: 620px;
+    margin: 8px 0 0;
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+.cashSaleReceiptFacts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 22px 0;
+}
+
+.cashSaleReceiptFact {
+    min-width: 0;
+    padding: 13px;
+    border: var(--border);
+    border-radius: var(--border-radius-input);
+}
+
+.cashSaleReceiptFact span,
+.cashSaleReceiptFact strong {
+    display: block;
+}
+
+.cashSaleReceiptFact span {
+    color: var(--text-color-secondary);
+    font-size: var(--font-size-sh);
+}
+
+.cashSaleReceiptFact strong {
+    margin-top: 5px;
+    overflow-wrap: anywhere;
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+}
+
+.cashSaleIssuedTickets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 10px;
+}
+
+.cashSaleIssuedTicket {
+    padding: 14px;
+    border-top: 3px solid var(--danger-color);
+    background: var(--bg-color);
+}
+
+.cashSaleIssuedTicket strong,
+.cashSaleIssuedTicket span {
+    overflow-wrap: anywhere;
+}
+
+@container content (max-width: 920px) {
+    .cashSaleLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .cashSalePaymentPanel {
+        position: static;
+    }
+
+    .cashSaleReceiptFacts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container content (max-width: 620px) {
+    .cashSaleHeader,
+    .cashSaleReceiptHeading {
+        flex-direction: column;
+    }
+
+    .cashSaleHeaderHint {
+        max-width: none;
+        text-align: left;
+    }
+
+    .cashSaleFormGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .cashSaleTicketType {
+        grid-template-columns: 1fr;
+    }
+
+    .cashSaleQuantity {
+        grid-template-columns: 90px;
+        justify-content: end;
+    }
+
+    .cashSaleFormActions > .btnSecondary,
+    .cashSaleReceiptHeading > .btnSecondary {
+        width: 100%;
+    }
+}
+
+@container content (max-width: 420px) {
+    .cashSalePanel,
+    .cashSaleReceipt {
+        padding: 16px;
+    }
+
+    .cashSaleReceiptFacts {
+        grid-template-columns: 1fr;
+    }
+}

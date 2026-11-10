@@ -87,7 +87,7 @@ export const isValidURL = (url) => {
     try {
         const parsed = new URL(url);
         return parsed.protocol === "https:";
-    } catch (error) {
+    } catch {
         return false;
     }
 };

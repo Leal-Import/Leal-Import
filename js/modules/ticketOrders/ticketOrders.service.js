@@ -19,3 +19,14 @@ export const getTicketOrder = (orderId) => apiRequest(
     'No se pudo cargar el detalle de la orden',
     READ_TICKET_ORDERS
 ).then(getData);
+
+export const voidCashSale = (orderId, reason) => apiRequest(
+    `${config.API_BASE_URL}/admin/ticketing/cash-sales/${orderId}/void`,
+    {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+    },
+    'No se pudo anular la venta en efectivo',
+    ['CANCEL_TICKET_SALES']
+).then(getData);
