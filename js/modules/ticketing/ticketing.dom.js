@@ -53,6 +53,12 @@ const createElement = (tagName, className, value) => {
     return element;
 };
 
+const createTableCell = (label, className = '') => {
+    const cell = createElement('td', className);
+    cell.dataset.label = label;
+    return cell;
+};
+
 const eventPosterDate = (value) => {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return { day: '--', month: '---' };
@@ -89,7 +95,7 @@ export const renderEvents = (events, selectedEventId, onSelect) => {
         const row = document.createElement('tr');
         row.className = event.id === selectedEventId ? 'selectedRow' : '';
 
-        const eventCell = document.createElement('td');
+        const eventCell = createTableCell('Evento');
         const eventName = createElement('span', 'ticketingEventName');
         const eventButton = createElement('button', 'tableLink', event.name);
         eventButton.type = 'button';
@@ -98,12 +104,17 @@ export const renderEvents = (events, selectedEventId, onSelect) => {
         eventName.append(eventButton, createStatus(event.active));
         eventCell.append(eventName, createElement('span', 'tableSecondaryText', event.venue));
 
-        const dateCell = createElement('td', '', formatDateTime(event.startsAt, 'es-SV', 'Sin fecha'));
-        const actionsCell = document.createElement('td');
+        const dateCell = createTableCell('Fecha');
+        dateCell.textContent = formatDateTime(event.startsAt, 'es-SV', 'Sin fecha');
+        const actionsCell = createTableCell('Acción', 'tableResponsiveAction');
         const actionsButton = createActionMenuButton('event-actions', event.id, `Acciones de ${event.name}`);
-        if (actionsButton) actionsCell.appendChild(actionsButton);
+        const cells = [eventCell, dateCell];
+        if (actionsButton) {
+            actionsCell.appendChild(actionsButton);
+            cells.push(actionsCell);
+        }
 
-        row.append(eventCell, dateCell, actionsCell);
+        row.append(...cells);
         row.addEventListener('click', (clickEvent) => {
             if (clickEvent.target.closest('[data-action]')) return;
             onSelect(event.id);
@@ -182,7 +193,7 @@ export const renderTicketTypes = (ticketTypes) => {
         return;
     }
 
-    const table = createElement('table', 'table ticketingTable compactTable');
+    const table = createElement('table', 'table tableResponsive ticketingTable compactTable');
     const head = document.createElement('thead');
     const headRow = document.createElement('tr');
     ['Boleto', 'Precio', 'Disponibles', 'Estado', 'Acciones'].forEach((label) => {
@@ -193,20 +204,29 @@ export const renderTicketTypes = (ticketTypes) => {
     const body = document.createElement('tbody');
     ticketTypes.forEach((ticketType) => {
         const row = document.createElement('tr');
-        const nameCell = document.createElement('td');
+        const nameCell = createTableCell('Boleto');
         nameCell.appendChild(createElement('strong', '', ticketType.name));
-        const priceCell = createElement('td', '', formatCurrencyFromCents(ticketType.priceInCents));
-        const capacityCell = createElement('td', 'ticketCapacityCell');
-        capacityCell.append(
+        const priceCell = createTableCell('Precio');
+        priceCell.textContent = formatCurrencyFromCents(ticketType.priceInCents);
+        const capacityCell = createTableCell('Cupos', 'ticketCapacityCell');
+        const capacityValue = createElement('div', 'ticketCapacityValue');
+        capacityValue.append(
             createElement('strong', '', ticketType.availableQuantity.toLocaleString('es-SV')),
             createElement('small', '', `de ${ticketType.capacity.toLocaleString('es-SV')} configurados`)
         );
-        const statusCell = document.createElement('td');
+        capacityCell.appendChild(capacityValue);
+        const statusCell = createTableCell('Estado');
         statusCell.appendChild(createStatus(ticketType.active));
-        const actionsCell = document.createElement('td');
+        const actionsCell = createTableCell('Acción', 'tableResponsiveAction');
         const actionsButton = createActionMenuButton('ticket-type-actions', ticketType.id, `Acciones de ${ticketType.name}`);
-        if (actionsButton) actionsCell.appendChild(actionsButton);
-        row.append(nameCell, priceCell, capacityCell, statusCell, actionsCell);
+        const cells = [nameCell, priceCell, capacityCell, statusCell];
+        if (actionsButton) {
+            actionsCell.appendChild(actionsButton);
+            cells.push(actionsCell);
+        } else {
+            statusCell.classList.add('ticketTypeStatusCell');
+        }
+        row.append(...cells);
         body.appendChild(row);
     });
     table.append(head, body);

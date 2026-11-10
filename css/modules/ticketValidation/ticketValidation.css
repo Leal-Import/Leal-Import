@@ -24,7 +24,8 @@
 }
 
 .ticketValidationPanel .panelTitle {
-    font-size: var(--font-size-title-lg);
+    font-size: var(--font-size-title);
+    font-weight: var(--font-weight-semibold);
 }
 
 .qrScanner {
@@ -63,7 +64,7 @@
     height: 4.25rem;
     align-items: center;
     justify-content: center;
-    color: var(--danger-color);
+    color: var(--text-color-secondary);
     font-size: var(--font-size-title-lg);
     line-height: 1;
 }
@@ -139,11 +140,11 @@
 }
 
 .validationResultSuccess {
-    border-color: var(--success-color);
+    border-color: #d6e4d8;
 }
 
 .validationResultError {
-    border-color: var(--danger-color);
+    border-color: #ead9d7;
 }
 
 .validationResultHeading {
@@ -151,8 +152,8 @@
     align-items: center;
     gap: .75rem;
     color: var(--text-color);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-semibold);
 }
 
 .validationResultIcon {
@@ -162,14 +163,17 @@
     flex: 0 0 2.25rem;
     place-items: center;
     border-radius: 50%;
-    background: var(--success-color);
-    color: var(--text-color-light);
+    background: #f4f8f4;
+    border: 1px solid #d6e4d8;
+    color: #49634e;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
 }
 
 .validationResultError .validationResultIcon {
-    background: var(--danger-color);
+    background: #fbf6f5;
+    border-color: #ead9d7;
+    color: #7d5a55;
 }
 
 .validationMeta {
@@ -190,7 +194,7 @@
     margin: .25rem 0 0;
     color: var(--text-color);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-medium);
 }
 
 .validationResultNote {

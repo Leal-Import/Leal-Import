@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { clearUserPrivileges, setUserPrivileges } from '../../utils/privilegesValidator.js';
-import { DOMRefs, renderEventDetail, renderEvents } from './ticketing.dom.js';
+import { DOMRefs, renderEventDetail, renderEvents, renderTicketTypes } from './ticketing.dom.js';
 
 describe('ticketing administration actions', () => {
     beforeEach(() => {
@@ -15,6 +15,7 @@ describe('ticketing administration actions', () => {
         renderEvents([{ id: 'event-id', name: 'Evento', venue: 'Lugar', startsAt: '2026-11-01T18:00:00Z', active: true }], null, () => {});
 
         expect(document.querySelector('[data-action="event-actions"]')).not.toBeNull();
+        expect(document.querySelector('#eventsTableBody td')?.dataset.label).toBe('Evento');
     });
 
     test('does not render write actions to read-only users', () => {
@@ -23,6 +24,25 @@ describe('ticketing administration actions', () => {
         renderEvents([{ id: 'event-id', name: 'Evento', venue: 'Lugar', startsAt: '2026-11-01T18:00:00Z', active: true }], null, () => {});
 
         expect(document.querySelector('[data-action="event-actions"]')).toBeNull();
+    });
+
+    test('groups the available capacity and its context in one ticket-type value', () => {
+        document.body.innerHTML = '<div id="ticketTypesList"></div>';
+        DOMRefs.init();
+
+        renderTicketTypes([{
+            id: 'type-id',
+            name: 'General',
+            priceInCents: 400,
+            availableQuantity: 2986,
+            capacity: 3000,
+            active: true
+        }]);
+
+        const capacity = document.querySelector('.ticketCapacityCell');
+        expect(capacity?.dataset.label).toBe('Cupos');
+        expect(capacity?.querySelector('.ticketCapacityValue')?.textContent).toContain('2,986');
+        expect(capacity?.querySelector('.ticketCapacityValue')?.textContent).toContain('de 3,000 configurados');
     });
 
     test('renders the public-event preview from the selected event data', () => {

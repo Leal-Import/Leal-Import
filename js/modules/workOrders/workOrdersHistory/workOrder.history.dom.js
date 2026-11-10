@@ -44,6 +44,12 @@ export const loadVehicleInfo = (data, Refs) => {
     vinRef.textContent = vin;
 };
 
+const createTableCell = (label) => {
+    const cell = document.createElement("td");
+    cell.dataset.label = label;
+    return cell;
+};
+
 export const insertWorkOrderHistory = (container, workOrders, onActions, tableHistory) => {
     if (!container || !tableHistory) return;
 
@@ -56,7 +62,7 @@ export const insertWorkOrderHistory = (container, workOrders, onActions, tableHi
 
         td.colSpan = 7;
         td.textContent = "No hay órdenes de trabajo registradas";
-        td.classList.add("no-data-message");
+        td.classList.add("no-data-message", "tableResponsiveEmpty");
         td.style.textAlign = "center";
         td.style.padding = "15px";
         td.style.color = "#777";
@@ -71,18 +77,18 @@ export const insertWorkOrderHistory = (container, workOrders, onActions, tableHi
     workOrders.forEach(wo => {
         const tr = document.createElement("tr");
 
-        const tdEmployee = document.createElement("td");
+        const tdEmployee = createTableCell("Empleado");
         tdEmployee.textContent = wo.employeeName ?? "—";
 
-        const tdCustomer = document.createElement("td");
+        const tdCustomer = createTableCell("Cliente");
         const customerName = document.createElement("div");
         customerName.textContent = wo.customerName || "Sin cliente";
         tdCustomer.appendChild(customerName);
 
-        const tdOrderDate = document.createElement("td");
+        const tdOrderDate = createTableCell("Fecha");
         tdOrderDate.textContent = wo.estimatedDate;
 
-        const tdStatus = document.createElement("td");
+        const tdStatus = createTableCell("Estado");
         const containerDtStatus = document.createElement("div");
         containerDtStatus.classList.add("containerDtStatus");
         const orderColor = document.createElement("div");
@@ -114,17 +120,20 @@ export const insertWorkOrderHistory = (container, workOrders, onActions, tableHi
             statusBadge.textContent = "Espera de Aprobación";
         }
 
-        const tdCost = document.createElement("td");
+        const tdCost = createTableCell("Costo");
         tdCost.textContent = formatWithCommas(wo.repairCost);
 
-        const tdDue = document.createElement("td");
+        const tdDue = createTableCell("Debe");
         tdDue.textContent = formatWithCommas(wo.amountDue);
         if (wo.amountDue > 0) tdDue.classList.add("textDanger");
 
         /* ACCIONES (MENÚ FLOTANTE) */
-        const tdActions = document.createElement("td");
+        const tdActions = createTableCell("Acción");
+        tdActions.classList.add("tableResponsiveAction");
         const actionButton = document.createElement("button");
 
+        actionButton.type = "button";
+        actionButton.setAttribute("aria-label", "Acciones de la orden");
         actionButton.textContent = "⋯";
         actionButton.classList.add("actionButton");
         tdActions.appendChild(actionButton);
