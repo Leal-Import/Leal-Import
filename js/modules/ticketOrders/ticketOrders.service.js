@@ -1,4 +1,5 @@
 import config from '../../config.js';
+import { buildParams } from '../../utils/dom.js';
 import { apiRequest } from '../../utils/api.utils.js';
 
 const ORDERS_API = `${config.API_BASE_URL}/admin/ticketing/orders`;
@@ -6,12 +7,15 @@ const READ_TICKET_ORDERS = ['READ_TICKET_ORDERS'];
 
 const getData = (response) => response?.data ?? response;
 
-export const getTicketOrders = (page, size) => apiRequest(
-    `${ORDERS_API}?page=${page}&size=${size}`,
-    { method: 'GET' },
-    'No se pudieron cargar las órdenes de boletos',
-    READ_TICKET_ORDERS
-);
+export const getTicketOrders = (page, size, filters = {}) => {
+    const params = buildParams({ page, size, search: filters.search, status: filters.status });
+    return apiRequest(
+        `${ORDERS_API}?${params.toString()}`,
+        { method: 'GET' },
+        'No se pudieron cargar las órdenes de boletos',
+        READ_TICKET_ORDERS
+    );
+};
 
 export const getTicketOrder = (orderId) => apiRequest(
     `${ORDERS_API}/${orderId}`,

@@ -92,6 +92,18 @@
 
             <section class="ticketOrdersLayout" aria-label="Órdenes de clientes">
                 <article class="containerTable ticketOrdersPanel">
+                    <div class="filterSection">
+                        <input type="text" id="ticketOrdersSearch" class="txtSearchData"
+                            placeholder="Buscar por correo, nombre, teléfono o evento">
+                        <select id="ticketOrdersStatusSelect" class="cmbFilterData" aria-label="Filtrar por estado">
+                            <option value="">Todos los estados</option>
+                            <option value="RESERVED">Reservada</option>
+                            <option value="PENDING_PAYMENT">Pago pendiente</option>
+                            <option value="PAID">Pagada</option>
+                            <option value="EXPIRED">Vencida</option>
+                            <option value="CANCELLED">Anulada</option>
+                        </select>
+                    </div>
                     <div class="ticketOrdersTableWrap">
                         <div class="containerLoader hide" id="ticketOrdersLoader">
                             <div class="loader"></div>
@@ -101,6 +113,7 @@
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
+                                    <th>Teléfono</th>
                                     <th>Evento</th>
                                     <th>Boletos</th>
                                     <th>Total</th>
