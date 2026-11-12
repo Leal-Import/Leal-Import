@@ -16,6 +16,7 @@ describe('ticket orders rendering', () => {
         renderOrders([{
             id: 'order-1',
             customerEmail: 'buyer@example.com',
+            phone: '7897-8989',
             eventName: 'Copa Leal',
             eventVenue: 'Autódromo',
             totalTickets: 2,
@@ -29,6 +30,7 @@ describe('ticket orders rendering', () => {
         expect(document.querySelector('.ticketOrderActions')).not.toBeNull();
         expect(document.querySelector('#ticketOrdersTableBody').textContent).toContain('Copa Leal');
         expect(document.querySelector('#ticketOrdersTableBody').textContent).toContain('$9.00');
+        expect(document.querySelector('#ticketOrdersTableBody').textContent).toContain('7897-8989');
         expect(document.querySelector('#ticketOrdersTableBody td')?.dataset.label).toBe('Cliente');
     });
 
@@ -67,6 +69,7 @@ describe('ticket orders rendering', () => {
         renderOrderDetail({
             customerName: 'Leonardo Mejía',
             customerEmail: 'leonardo@example.com',
+            customerPhone: '7897-8989',
             status: 'PAID',
             createdAt: '2026-11-09T18:50:00Z',
             amountInCents: 400,
@@ -93,6 +96,7 @@ describe('ticket orders rendering', () => {
         expect(line?.textContent).toContain('$4.00 por boleto');
         expect(line?.textContent).not.toContain('Autódromo');
         expect(line?.querySelector('b')).toBeNull();
+        expect(document.querySelector('#ticketOrderFacts')?.textContent).toContain('7897-8989');
         expect(document.querySelector('.ticketOrderRecordHeader strong')?.textContent).toBe('Wompi');
         expect(document.querySelector('.ticketOrderRecordHeader .ticketOrderBadge')?.textContent).toBe('Aprobado');
     });

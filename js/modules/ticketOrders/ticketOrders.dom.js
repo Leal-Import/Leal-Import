@@ -5,6 +5,8 @@ export const DOMRefs = {
     refs: {},
     init() {
         this.refs = {
+            searchInput: $('ticketOrdersSearch'),
+            statusSelect: $('ticketOrdersStatusSelect'),
             loader: $('ticketOrdersLoader'),
             tableBody: $('ticketOrdersTableBody'),
             empty: $('ticketOrdersEmpty'),
@@ -90,6 +92,8 @@ export const renderOrders = (orders, onOpenActions) => {
         const row = document.createElement('tr');
         const customerCell = createTableCell('Cliente');
         customerCell.appendChild(text(order.customerEmail));
+        const phoneCell = createTableCell('Teléfono');
+        phoneCell.appendChild(text(order.phone));
         const eventCell = createTableCell('Evento');
         eventCell.appendChild(text(order.eventName));
         const eventVenue = document.createElement('small');
@@ -117,7 +121,7 @@ export const renderOrders = (orders, onOpenActions) => {
             onOpenActions(actionsButton, order.id);
         });
         actionsCell.appendChild(actionsButton);
-        row.append(customerCell, eventCell, ticketsCell, amountCell, statusCell, dateCell, actionsCell);
+        row.append(customerCell, phoneCell, eventCell, ticketsCell, amountCell, statusCell, dateCell, actionsCell);
         tableBody.appendChild(row);
     });
 };
@@ -133,6 +137,7 @@ export const renderOrderDetail = (order) => {
     refs.detailStatus.className = `ticketOrderStatus ticketOrderBadge-${String(order.status || '').toLowerCase()}`;
     refs.facts.replaceChildren(
         createInfoItem('Evento', [primaryLine?.eventName, primaryLine?.eventVenue].filter(Boolean).join(' · ')),
+        createInfoItem('Teléfono del comprador', order.customerPhone),
         createInfoItem('Fecha del evento', formatDateTime(primaryLine?.eventStartsAt)),
         createInfoItem('Compra registrada', formatDateTime(order.createdAt)),
         createInfoItem('Cantidad de boletos', order.lines.reduce((total, line) => total + line.quantity, 0))

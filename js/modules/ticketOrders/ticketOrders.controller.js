@@ -2,6 +2,7 @@ import { createPagination } from '../../pagination/pagination.controller.js';
 import { addModalCloseEvents, createModuleInitializer, toggleModal } from '../../utils/dom.js';
 import { handleApiError } from '../../utils/api.utils.js';
 import { canAccess } from '../../utils/privilegesValidator.js';
+import { initWorkOrdersEvents } from '../workOrders/workOrder.event.js';
 import { DOMRefs, renderOrderDetail, renderOrders, renderOrdersError, setCashSaleVoidAvailable, setLoading } from './ticketOrders.dom.js';
 import { getTicketOrder, getTicketOrders, voidCashSale } from './ticketOrders.service.js';
 import { resetTicketOrdersState, ticketOrdersState } from './ticketOrders.state.js';
@@ -23,7 +24,8 @@ const loadOrders = async () => {
     try {
         const pageData = getPageData(await getTicketOrders(
             ticketOrdersState.pagination.page - 1,
-            ticketOrdersState.pagination.size
+            ticketOrdersState.pagination.size,
+            ticketOrdersState.filters
         ));
         ticketOrdersState.orders = pageData.content || [];
         ticketOrdersState.pagination.total = pageData.page.totalElements;
@@ -41,6 +43,15 @@ const loadOrders = async () => {
     } finally {
         setLoading(false);
     }
+};
+
+const onSearchOrders = (filters) => {
+    ticketOrdersState.filters = {
+        search: filters.search,
+        status: filters.idStatus
+    };
+    ticketOrdersState.pagination.page = 1;
+    loadOrders();
 };
 
 const selectOrder = async (orderId, trigger) => {
@@ -115,6 +126,13 @@ const onOpenOrderActions = (button, orderId) => {
 };
 
 const initialize = () => {
+    initWorkOrdersEvents({
+        Refs: {
+            txtSearchData: DOMRefs.refs.searchInput,
+            cmbSearchByStatus: DOMRefs.refs.statusSelect
+        },
+        onSearchWorkOrder: onSearchOrders
+    });
     DOMRefs.refs.closeDetail.addEventListener('click', closeDetail);
     addModalCloseEvents(DOMRefs.refs.detailModal, closeDetail);
     DOMRefs.refs.openCashSaleVoid.addEventListener('click', openCashSaleVoid);
