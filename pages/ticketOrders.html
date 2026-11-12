@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/sidebar.css">
     <link rel="stylesheet" href="../css/utils/pagination.css">
+    <link rel="stylesheet" href="../css/utils/controls/controls.css">
     <link rel="stylesheet" href="../css/utils/showData/table.css">
     <link rel="stylesheet" href="../css/utils/loaders/loader.css">
     <link rel="stylesheet" href="../css/utils/floatingMenu.css">
@@ -88,22 +89,22 @@
                 <div class="breadCrumbSection">
                     <a class="breadcrumb">Órdenes de boletos</a>
                 </div>
+                <div class="filterSection">
+                    <input type="text" id="ticketOrdersSearch" class="txtSearchData"
+                        placeholder="Buscar por correo, nombre, teléfono o evento">
+                    <select id="ticketOrdersStatusSelect" class="cmbFilterData" aria-label="Filtrar por estado">
+                        <option value="">Todos los estados</option>
+                        <option value="RESERVED">Reservada</option>
+                        <option value="PENDING_PAYMENT">Pago pendiente</option>
+                        <option value="PAID">Pagada</option>
+                        <option value="EXPIRED">Vencida</option>
+                        <option value="CANCELLED">Anulada</option>
+                    </select>
+                </div>
             </div>
 
             <section class="ticketOrdersLayout" aria-label="Órdenes de clientes">
                 <article class="containerTable ticketOrdersPanel">
-                    <div class="filterSection">
-                        <input type="text" id="ticketOrdersSearch" class="txtSearchData"
-                            placeholder="Buscar por correo, nombre, teléfono o evento">
-                        <select id="ticketOrdersStatusSelect" class="cmbFilterData" aria-label="Filtrar por estado">
-                            <option value="">Todos los estados</option>
-                            <option value="RESERVED">Reservada</option>
-                            <option value="PENDING_PAYMENT">Pago pendiente</option>
-                            <option value="PAID">Pagada</option>
-                            <option value="EXPIRED">Vencida</option>
-                            <option value="CANCELLED">Anulada</option>
-                        </select>
-                    </div>
                     <div class="ticketOrdersTableWrap">
                         <div class="containerLoader hide" id="ticketOrdersLoader">
                             <div class="loader"></div>
